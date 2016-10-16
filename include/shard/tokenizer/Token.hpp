@@ -19,11 +19,11 @@
 /* ************************************************************************* */
 
 #include <cmath>
-// Shard Core
-#include "core/src/String.hpp"
-// Shard Tokenizer
-#include "TokenType.hpp"
-#include "KeywordType.hpp"
+
+// Shard
+#include "shard/String.hpp"
+#include "shard/tokenizer/TokenType.hpp"
+#include "shard/tokenizer/KeywordType.hpp"
 
 /* ************************************************************************* */
 

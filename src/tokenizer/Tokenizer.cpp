@@ -14,14 +14,15 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#include "Tokenizer.hpp"
+#include "shard/tokenizer/Tokenizer.hpp"
 
 /* ************************************************************************* */
 
 // C++
 #include <algorithm>
-// Shard Core
-#include "core/src/Map.hpp"
+
+// Shard
+#include "shard/Map.hpp"
 
 /* ************************************************************************* */
 

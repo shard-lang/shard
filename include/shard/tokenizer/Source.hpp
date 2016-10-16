@@ -19,10 +19,11 @@
 /* ************************************************************************* */
 
 #include <fstream>
-// Shard Core
-#include "core/src/Path.hpp"
-#include "core/src/String.hpp"
-#include "core/src/UniquePtr.hpp"
+
+// Shard
+#include "shard/Path.hpp"
+#include "shard/String.hpp"
+#include "shard/UniquePtr.hpp"
 
 /* ************************************************************************* */
 

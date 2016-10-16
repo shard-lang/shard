@@ -18,15 +18,14 @@
 
 /* ************************************************************************* */
 
-// Shard Core
-#include "core/src/Path.hpp"
-#include "core/src/String.hpp"
-// Shard Tokenizer
-#include "Source.hpp"
-#include "KeywordType.hpp"
-#include "TokenType.hpp"
-#include "Token.hpp"
-#include "TokenizerException.hpp"
+// Shard
+#include "shard/Path.hpp"
+#include "shard/String.hpp"
+#include "shard/tokenizer/Source.hpp"
+#include "shard/tokenizer/KeywordType.hpp"
+#include "shard/tokenizer/TokenType.hpp"
+#include "shard/tokenizer/Token.hpp"
+#include "shard/tokenizer/TokenizerException.hpp"
 
 /* ************************************************************************* */
 

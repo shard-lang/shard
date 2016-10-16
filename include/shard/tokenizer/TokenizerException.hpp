@@ -18,9 +18,9 @@
 
 /* ************************************************************************* */
 
-// Shard Core
-#include "core/src/String.hpp"
-#include "core/src/Exception.hpp"
+// Shard
+#include "shard/String.hpp"
+#include "shard/Exception.hpp"
 
 /* ************************************************************************* */
 
