@@ -14,13 +14,14 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#include <gtest/gtest.h>
-// Shard Core
-#include "core/src/Path.hpp"
-#include "core/src/String.hpp"
-#include "core/src/DynamicArray.hpp"
-// Shard Tokenizer
-#include "tokenizer/src/Source.hpp"
+// Google test
+#include "gtest/gtest.h"
+
+// Shard
+#include "shard/Path.hpp"
+#include "shard/String.hpp"
+#include "shard/DynamicArray.hpp"
+#include "shard/tokenizer/Source.hpp"
 
 /* ************************************************************************* */
 
@@ -104,10 +105,10 @@ TEST(Source, empty)
 }
 TEST(Source, file_basic)
 {
-    test_file("../test/source-test-file_basic.txt",
+    test_file("source-test-file_basic.txt",
     {'\n', '\r', 'a', '\n', '{', '}', ' ', ' ', ' ', 'b', '\t', 'a'});
 }
 TEST(Source, file_empty)
 {
-    test_file("../test/source-test-file_empty.txt", {});
+    test_file("source-test-file_empty.txt", {});
 }

@@ -14,12 +14,13 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#include <gtest/gtest.h>
-// Shard Core
-#include "core/src/String.hpp"
-#include "core/src/DynamicArray.hpp"
-// Shard Tokenizer
-#include "tokenizer/src/Tokenizer.hpp"
+// Google test
+#include "gtest/gtest.h"
+
+// Shard
+#include "shard/String.hpp"
+#include "shard/DynamicArray.hpp"
+#include "shard/tokenizer/Tokenizer.hpp"
 
 /* ************************************************************************* */
 

@@ -14,18 +14,22 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-# Core test
-add_shard_test(core_test
+add_shard_test(tokenizer-test
     SOURCES
-        SourceLocation.cpp
+        tokenizer-test.cpp
+        source-test.cpp
     LIBRARIES
-        shard-core
+        shard-tokenizer
+        stdc++fs
 )
 
 # ************************************************************************* #
 
-if (SHARD_BUILD_TOKENIZER)
-    add_subdirectory(tokenizer)
-endif ()
+# Copy test files
+file(COPY
+    source-test-file_empty.txt
+    source-test-file_basic.txt
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+)
 
 # ************************************************************************* #
