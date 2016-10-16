@@ -14,17 +14,32 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-enable_testing()
+add_executable(shard-core_test
+    SourceLocation.cpp
+)
 
-add_executable(tokenizer-test tokenizer-test.cpp)
-target_link_libraries(tokenizer-test gtest gtest_main)
-target_link_libraries(tokenizer-test shard-tokenizer)
+# ************************************************************************* #
 
-add_executable(source-test source-test.cpp)
-target_link_libraries(source-test gtest gtest_main)
-target_link_libraries(source-test shard-tokenizer stdc++fs)
+set_target_properties(shard-core_test PROPERTIES
+    CXX_STANDARD 14
+    CXX_STANDARD_REQUIRED On
+    CXX_EXTENSIONS Off
+)
 
-add_test(tokenizer-test tokenizer-test)
-add_test(source-test source-test)
+target_include_directories(shard-core_test
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..
+)
+
+target_link_libraries(shard-core_test
+    shard-core
+    gtest_main
+)
+
+add_test(shard-core_test shard-core_test)
+
+# ************************************************************************* #
+
+# Add other tests
+add_subdirectory(tokenizer)
 
 # ************************************************************************* #

@@ -18,16 +18,40 @@ cmake_minimum_required(VERSION 3.1)
 
 # ************************************************************************* #
 
-if (NOT TARGET shard-core)
-    add_subdirectory(core)
-endif ()
+option(SHARD_BUILD_TESTS "Build unit tests" Off)
+option(SHARD_BUILD_TOKENIZER "Build tokenizer" On)
 
 # ************************************************************************* #
 
+function (add_shard_library NAME)
+    include(CMakeParseArguments)
+    cmake_parse_arguments(ARG "" "" "HEADERS;SOURCES;LIBRARIES" ${ARGN})
+
+    add_library(${NAME} ${ARG_SOURCES})
+
+    set_target_properties(${NAME} PROPERTIES
+        CXX_STANDARD 14
+        CXX_STANDARD_REQUIRED On
+        CXX_EXTENSIONS Off
+    )
+
+    target_include_directories(${NAME}
+        PUBLIC ${CMAKE_SOURCE_DIR}/include
+    )
+endfunction ()
+
+# ************************************************************************* #
+
+# Add source files
 add_subdirectory(src)
 
 # ************************************************************************* #
 
-add_subdirectory(test)
+# Build tests
+if (SHARD_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(vendor/googletest)
+    add_subdirectory(test)
+endif ()
 
 # ************************************************************************* #

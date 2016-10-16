@@ -14,33 +14,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-add_shard_library(shard-core
+add_shard_library(shard-tokenizer
     HEADERS
-        Assert.hpp
-        Byte.hpp
-        DynamicArray.hpp
-        Exception.hpp
-        FilePath.hpp
-        FixedArray.hpp
-        HashMap.hpp
-        Map.hpp
-        SharedPtr.hpp
-        SourceLocation.hpp
-        SourceRange.hpp
-        String.hpp
-        StringView.hpp
-        UniquePtr.hpp
-        ViewPtr.hpp
-        error.hpp
-        utility.hpp
+        Tokenizer.hpp
+        Token.hpp
+        TokenType.hpp
+        KeywordType.hpp
+        TokenizerException.hpp
+        Source.hpp
     SOURCES
-        error.cpp
+        Tokenizer.cpp
+    LIBRARIES
+        shard-core
 )
-
-# ************************************************************************* #
-
-if (SHARD_BUILD_TOKENIZER)
-    add_subdirectory(tokenizer)
-endif ()
 
 # ************************************************************************* #
