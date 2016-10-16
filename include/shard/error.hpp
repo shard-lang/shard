@@ -14,11 +14,12 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-// Declaration
-#include "src/error.hpp"
+#pragma once
 
-// C++
-#include <iostream>
+/* ************************************************************************* */
+
+// Shard
+#include "shard/StringView.hpp"
 
 /* ************************************************************************* */
 
@@ -27,11 +28,11 @@ inline namespace v1 {
 
 /* ************************************************************************* */
 
-void error(StringView str) noexcept
-{
-    std::cerr << "\033[31m[ERROR]: " << str << "\033[0m" << std::endl;
-    exit(1);
-}
+/**
+ * @brief Prints error and terminate application.
+ * @param str Error string.
+ */
+[[noreturn]] void error(StringView str) noexcept;
 
 /* ************************************************************************* */
 
