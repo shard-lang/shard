@@ -39,3 +39,60 @@ TEST(SourceLocationTest, constructor)
 }
 
 /* ************************************************************************ */
+
+TEST(SourceLocationTest, boolean)
+{
+    SourceLocation loc1;
+    SourceLocation loc2{100, 1000};
+    SourceLocation loc3{0, 50};
+    SourceLocation loc4{10, 0};
+
+    EXPECT_FALSE(loc1);
+    EXPECT_TRUE(loc2);
+    EXPECT_FALSE(loc3);
+    EXPECT_FALSE(loc4);
+}
+
+/* ************************************************************************ */
+
+TEST(SourceLocationTest, relationalOperators)
+{
+    SourceLocation loc1;
+    SourceLocation loc2{100, 1000};
+    SourceLocation loc3{100, 1000};
+    SourceLocation loc4{100, 456};
+    SourceLocation loc5{32, 456};
+
+    EXPECT_EQ(loc1, loc1);
+    EXPECT_EQ(loc2, loc2);
+    EXPECT_EQ(loc3, loc3);
+    EXPECT_EQ(loc4, loc4);
+    EXPECT_EQ(loc5, loc5);
+
+    EXPECT_NE(loc1, loc2);
+    EXPECT_NE(loc1, loc3);
+    EXPECT_NE(loc1, loc4);
+    EXPECT_NE(loc1, loc5);
+
+    EXPECT_NE(loc2, loc1);
+    EXPECT_EQ(loc2, loc3);
+    EXPECT_NE(loc2, loc4);
+    EXPECT_NE(loc2, loc5);
+
+    EXPECT_NE(loc3, loc1);
+    EXPECT_EQ(loc3, loc2);
+    EXPECT_NE(loc3, loc4);
+    EXPECT_NE(loc3, loc5);
+
+    EXPECT_NE(loc4, loc1);
+    EXPECT_NE(loc4, loc2);
+    EXPECT_NE(loc4, loc3);
+    EXPECT_NE(loc4, loc5);
+
+    EXPECT_NE(loc5, loc1);
+    EXPECT_NE(loc5, loc2);
+    EXPECT_NE(loc5, loc3);
+    EXPECT_NE(loc5, loc4);
+}
+
+/* ************************************************************************ */

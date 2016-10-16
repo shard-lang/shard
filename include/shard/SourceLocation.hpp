@@ -56,6 +56,20 @@ public:
     }
 
 
+// Public Operators
+public:
+
+
+    /**
+     * @brief Bool operator.
+     * @return If location is valid.
+     */
+    explicit operator bool() const noexcept
+    {
+        return m_line != 0 && m_column != 0;
+    }
+
+
 // Public Accessors & Mutators
 public:
 
@@ -90,6 +104,32 @@ private:
     unsigned int m_column = 0;
 
 };
+
+/* ************************************************************************* */
+
+/**
+ * @brief Source location equals operator.
+ * @param lhs The first source location.
+ * @param rhs The second source location.
+ * @return If source locations are equals.
+ */
+inline bool operator==(const SourceLocation& lhs, const SourceLocation& rhs) noexcept
+{
+    return lhs.getLine() == rhs.getLine() && lhs.getColumn() == rhs.getColumn();
+}
+
+/* ************************************************************************* */
+
+/**
+ * @brief Source location not equals operator.
+ * @param lhs The first source location.
+ * @param rhs The second source location.
+ * @return If source locations not are equals.
+ */
+inline bool operator!=(const SourceLocation& lhs, const SourceLocation& rhs) noexcept
+{
+    return !operator==(lhs, rhs);
+}
 
 /* ************************************************************************* */
 
