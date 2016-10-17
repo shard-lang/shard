@@ -21,6 +21,7 @@
 // Shard
 #include "shard/Path.hpp"
 #include "shard/String.hpp"
+#include "shard/ViewPtr.hpp"
 #include "shard/tokenizer/Source.hpp"
 #include "shard/tokenizer/KeywordType.hpp"
 #include "shard/tokenizer/TokenType.hpp"
@@ -32,6 +33,41 @@
 namespace shard {
 inline namespace v1 {
 namespace tokenizer {
+
+/* ************************************************************************* */
+
+class Tokenizer;
+
+class TokenizerIterator
+{
+
+protected:
+
+    ViewPtr<Tokenizer> m_tokenizer;
+    Token m_token;
+
+public:
+
+    TokenizerIterator() = default;
+    TokenizerIterator(Tokenizer* tokenizer, const Token& token):
+        m_tokenizer(tokenizer), m_token(token) {}
+    TokenizerIterator(TokenizerIterator&) = default;
+    TokenizerIterator(TokenizerIterator&&) = default;
+
+    const Token& operator*() const;
+    TokenizerIterator& operator++();
+    TokenizerIterator operator++(int);
+};
+
+inline bool operator==(const TokenizerIterator& lhs, const TokenizerIterator& rhs)
+{
+    return (*lhs).getType() == TokenType::End && (*rhs).getType() == TokenType::End;
+}
+
+inline bool operator!=(const TokenizerIterator& lhs, const TokenizerIterator& rhs)
+{
+    return !(lhs == rhs);
+}
 
 /* ************************************************************************* */
 
@@ -243,6 +279,26 @@ public:
     inline bool isEof()
     {
         return m_current.getType() == TokenType::End;
+    }
+
+// ===================================================================================== //
+
+public:
+
+    /**
+     * @brief returns tokenizer iterator pointing to currect token.
+     */
+    inline TokenizerIterator begin() noexcept
+    {
+        return TokenizerIterator(this, m_current);
+    }
+
+    /**
+     * @brief returns tokenizer iterator pointing to token with end.
+     */
+    inline TokenizerIterator end() noexcept
+    {
+        return TokenizerIterator(this, Token(TokenType::End));
     }
 };
 

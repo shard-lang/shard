@@ -58,6 +58,30 @@ static void test_impl(
             default: break;
         }
     }
+
+    DynamicArray<Token> resultIt;
+    resultIt.reserve(correct.size());
+    for (auto&& x : Tokenizer(code))
+    {
+        resultIt.push_back(x);
+    }
+
+    ASSERT_EQ(correct.size(), resultIt.size() - 1u); // Skip the End token
+
+    for (int i = 0; i < correct.size(); ++i)
+    {
+        ASSERT_EQ(correct[i].getType(), resultIt[i].getType());
+        switch (correct[i].getType())
+        {
+            case TokenType::Identifier: ASSERT_EQ(correct[i].getStringValue(), resultIt[i].getStringValue()); break;
+            case TokenType::Keyword: ASSERT_EQ(correct[i].getKeywordType(), resultIt[i].getKeywordType());    break;
+            case TokenType::String: ASSERT_EQ(correct[i].getStringValue(), resultIt[i].getStringValue());     break;
+            case TokenType::Float: ASSERT_FLOAT_EQ(correct[i].getFloatValue(), resultIt[i].getFloatValue());  break;
+            case TokenType::Char: ASSERT_EQ(correct[i].getCharValue(), resultIt[i].getCharValue());           break;
+            case TokenType::Int: ASSERT_EQ(correct[i].getIntValue(), resultIt[i].getIntValue());              break;
+            default: break;
+        }
+    }
 }
 
 static void test_invalid_impl(int line, const String& code)

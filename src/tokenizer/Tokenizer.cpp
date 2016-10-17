@@ -61,6 +61,26 @@ static const Map<char, char> g_escapeMap {
 
 /* ************************************************************************* */
 
+const Token& TokenizerIterator::operator*() const
+{
+    return m_token;
+}
+
+TokenizerIterator& TokenizerIterator::operator++()
+{
+    m_token = m_tokenizer->extract();
+    return *this;
+}
+
+TokenizerIterator TokenizerIterator::operator++(int)
+{
+    TokenizerIterator tmp(*this);
+    operator++();
+    return tmp;
+}
+
+/* ************************************************************************* */
+
 void Tokenizer::tokenizeNumber()
 {
     String buf;
