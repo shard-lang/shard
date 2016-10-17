@@ -183,6 +183,8 @@ protected:
 
 // ===================================================================================== //
 
+protected:
+
     /**
      * @brief tokenizes tokentype number.
      */
@@ -235,6 +237,9 @@ public:
         return tmp;
     }
 
+    /**
+     * @brief checks if there is token available.
+     */
     inline bool isEof()
     {
         return m_current.getType() == TokenType::End;
