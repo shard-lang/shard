@@ -35,20 +35,13 @@ static void test_impl(
     SCOPED_TRACE(code);
 
     Tokenizer tokenizer(code);
-
     DynamicArray<Token> result;
     result.reserve(correct.size());
-
-    try
+    while (!tokenizer.isEof())
     {
+        result.push_back(tokenizer.get());
         tokenizer.next();
-        while (!tokenizer.isEof())
-        {
-            result.push_back(tokenizer.get());
-            tokenizer.next();
-        }
     }
-    catch (Exception& ex) {}
 
     ASSERT_EQ(correct.size(), result.size());
 

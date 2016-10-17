@@ -50,11 +50,11 @@ protected:
 
 public:
 
-    Tokenizer (const Path& path):
-            m_src(path){}
+    Tokenizer(const Path& path):
+            m_src(path){next();}
 
-    Tokenizer (const String& source):
-            m_src(source){}
+    Tokenizer(const String& source):
+            m_src(source){next();}
 
 // ===================================================================================== //
 
