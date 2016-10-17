@@ -66,7 +66,7 @@ static void test_impl(
         resultIt.push_back(x);
     }
 
-    ASSERT_EQ(correct.size(), resultIt.size() - 1u); // Skip the End token
+    ASSERT_EQ(correct.size(), resultIt.size());
 
     for (int i = 0; i < correct.size(); ++i)
     {
