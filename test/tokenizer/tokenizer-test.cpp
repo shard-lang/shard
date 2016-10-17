@@ -39,8 +39,7 @@ static void test_impl(
     result.reserve(correct.size());
     while (!tokenizer.isEof())
     {
-        result.push_back(tokenizer.get());
-        tokenizer.next();
+        result.push_back(tokenizer.extract());
     }
 
     ASSERT_EQ(correct.size(), result.size());
@@ -65,16 +64,14 @@ static void test_invalid_impl(int line, const String& code)
 {
     SCOPED_TRACE(code);
 
-    Tokenizer tokenizer(code);
-
     ASSERT_THROW
     (
-        do
+        Tokenizer tokenizer(code);
+        while (!tokenizer.isEof())
         {
             tokenizer.next();
-        }
-        while (!tokenizer.isEof())
-    , TokenizerException
+        },
+        TokenizerException
     );
 
 }
