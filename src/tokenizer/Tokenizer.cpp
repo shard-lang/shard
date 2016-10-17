@@ -63,12 +63,12 @@ static const Map<char, char> g_escapeMap {
 
 const Token& TokenizerIterator::operator*() const
 {
-    return m_token;
+    return m_tokenizer->get();
 }
 
 TokenizerIterator& TokenizerIterator::operator++()
 {
-    m_token = m_tokenizer->extract();
+    m_tokenizer->next();
     return *this;
 }
 

@@ -44,24 +44,28 @@ class TokenizerIterator
 protected:
 
     ViewPtr<Tokenizer> m_tokenizer;
-    Token m_token;
 
 public:
 
     TokenizerIterator() = default;
-    TokenizerIterator(Tokenizer* tokenizer, const Token& token):
-        m_tokenizer(tokenizer), m_token(token) {}
+    TokenizerIterator(Tokenizer* tokenizer):
+        m_tokenizer(tokenizer) {}
     TokenizerIterator(TokenizerIterator&) = default;
     TokenizerIterator(TokenizerIterator&&) = default;
 
     const Token& operator*() const;
     TokenizerIterator& operator++();
     TokenizerIterator operator++(int);
+
+    inline Tokenizer* getTokenizer() const
+    {
+        return m_tokenizer;
+    }
 };
 
 inline bool operator==(const TokenizerIterator& lhs, const TokenizerIterator& rhs)
 {
-    return (*lhs).getType() == TokenType::End && (*rhs).getType() == TokenType::End;
+    return (lhs.getTokenizer() == nullptr || (*lhs).getType() == TokenType::End) && (rhs.getTokenizer() == nullptr || (*rhs).getType() == TokenType::End);
 }
 
 inline bool operator!=(const TokenizerIterator& lhs, const TokenizerIterator& rhs)
@@ -290,7 +294,7 @@ public:
      */
     inline TokenizerIterator begin() noexcept
     {
-        return TokenizerIterator(this, m_current);
+        return TokenizerIterator(this);
     }
 
     /**
@@ -298,7 +302,7 @@ public:
      */
     inline TokenizerIterator end() noexcept
     {
-        return TokenizerIterator(this, Token(TokenType::End));
+        return TokenizerIterator(nullptr);
     }
 };
 
