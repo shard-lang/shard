@@ -116,6 +116,7 @@ inline bool operator==(const Token& lhs, const Token& rhs)
 
     switch (lhs.getType())
     {
+        case TokenType::Identifier: return lhs.getStringValue() == rhs.getStringValue();
         case TokenType::Keyword: return lhs.getKeywordType() == rhs.getKeywordType();
         case TokenType::String: return lhs.getStringValue() == rhs.getStringValue();
         case TokenType::Float: return
