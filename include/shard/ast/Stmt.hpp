@@ -46,7 +46,17 @@ enum class StmtKind
 {
     Expr,
     Decl,
-    Compound
+    Compound,
+    If,
+    While,
+    DoWhile,
+    For,
+    Switch,
+    Case,
+    Default,
+    Continue,
+    Break,
+    Return
 };
 
 /* ************************************************************************* */
@@ -251,6 +261,406 @@ public:
 
     using StmtHelper<StmtKind::Compound, CompoundStmt>::is;
     using StmtHelper<StmtKind::Compound, CompoundStmt>::cast;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief If branch statement.
+ */
+class IfStmt
+    : public Stmt
+    , private StmtHelper<StmtKind::If, IfStmt>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param cond      Condition expression.
+     * @param trueStmt  True branch statement.
+     * @param falseStmt False branch statement.
+     * @param range     Source range.
+     */
+    explicit IfStmt(UniquePtr<Expr> cond, UniquePtr<Stmt> trueStmt, UniquePtr<Stmt> falseStmt = nullptr, SourceRange range = {}) noexcept;
+
+
+// Public Operations
+public:
+
+
+    using StmtHelper<StmtKind::If, IfStmt>::is;
+    using StmtHelper<StmtKind::If, IfStmt>::cast;
+
+
+// Private Data Members
+private:
+
+    /// Condition expression.
+    UniquePtr<Expr> m_cond;
+
+    /// True branch statement.
+    UniquePtr<Stmt> m_trueStmt;
+
+    /// False branch statement.
+    UniquePtr<Stmt> m_falseStmt;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief While loop statement.
+ */
+class WhileStmt
+    : public Stmt
+    , private StmtHelper<StmtKind::While, WhileStmt>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param cond  Condition expression.
+     * @param stmt  Body statement.
+     * @param range Source range.
+     */
+    explicit WhileStmt(UniquePtr<Expr> cond, UniquePtr<Stmt> stmt, SourceRange range = {}) noexcept;
+
+
+// Public Operations
+public:
+
+
+    using StmtHelper<StmtKind::While, WhileStmt>::is;
+    using StmtHelper<StmtKind::While, WhileStmt>::cast;
+
+
+// Private Data Members
+private:
+
+    /// Loop condition.
+    UniquePtr<Expr> m_cond;
+
+    /// Body statement.
+    UniquePtr<Stmt> m_stmt;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief Do-while loop statement.
+ */
+class DoWhileStmt
+    : public Stmt
+    , private StmtHelper<StmtKind::DoWhile, DoWhileStmt>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param cond  Condition expression.
+     * @param stmt  Body statement.
+     * @param range Source range.
+     */
+    explicit DoWhileStmt(UniquePtr<Expr> cond, UniquePtr<Stmt> stmt, SourceRange range = {}) noexcept;
+
+
+// Public Operations
+public:
+
+
+    using StmtHelper<StmtKind::DoWhile, DoWhileStmt>::is;
+    using StmtHelper<StmtKind::DoWhile, DoWhileStmt>::cast;
+
+
+// Private Data Members
+private:
+
+    /// Loop condition.
+    UniquePtr<Expr> m_cond;
+
+    /// Body statement.
+    UniquePtr<Stmt> m_stmt;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief For loop statement.
+ */
+class ForStmt
+    : public Stmt
+    , private StmtHelper<StmtKind::For, ForStmt>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param init  Initialization statement.
+     * @param test  Test expression.
+     * @param inc   Increment statement.
+     * @param stmt  Body statement.
+     * @param range Source range.
+     */
+    explicit ForStmt(UniquePtr<Stmt> init, UniquePtr<Expr> cond, UniquePtr<Expr> inc, UniquePtr<Stmt> stmt, SourceRange range = {}) noexcept;
+
+
+// Public Operations
+public:
+
+
+    using StmtHelper<StmtKind::For, ForStmt>::is;
+    using StmtHelper<StmtKind::For, ForStmt>::cast;
+
+
+// Private Data Members
+private:
+
+    /// Initialization statement.
+    UniquePtr<Stmt> m_init;
+
+    /// Loop condition.
+    UniquePtr<Expr> m_cond;
+
+    /// Increment expression.
+    UniquePtr<Expr> m_inc;
+
+    /// Body statement.
+    UniquePtr<Stmt> m_stmt;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief Switch branch statement.
+ */
+class SwitchStmt
+    : public Stmt
+    , private StmtHelper<StmtKind::Switch, SwitchStmt>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param test  Test expression.
+     * @param stmt  Body statement.
+     * @param range Source range.
+     */
+    explicit SwitchStmt(UniquePtr<Expr> test, UniquePtr<CompoundStmt> stmt, SourceRange range = {}) noexcept;
+
+
+// Public Operations
+public:
+
+
+    using StmtHelper<StmtKind::Switch, SwitchStmt>::is;
+    using StmtHelper<StmtKind::Switch, SwitchStmt>::cast;
+
+
+// Private Data Members
+private:
+
+    /// Switch expression.
+    UniquePtr<Expr> m_test;
+
+    /// Body statement.
+    UniquePtr<CompoundStmt> m_stmt;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief Case statement.
+ */
+class CaseStmt
+    : public Stmt
+    , private StmtHelper<StmtKind::Case, CaseStmt>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param test  Test expression.
+     * @param stmt  Body statement.
+     * @param range Source range.
+     */
+    explicit CaseStmt(UniquePtr<Expr> test, UniquePtr<Stmt> stmt, SourceRange range = {}) noexcept;
+
+
+// Public Operations
+public:
+
+
+    using StmtHelper<StmtKind::Case, CaseStmt>::is;
+    using StmtHelper<StmtKind::Case, CaseStmt>::cast;
+
+
+// Private Data Members
+private:
+
+    /// Case test expression.
+    UniquePtr<Expr> m_test;
+
+    /// Body statement.
+    UniquePtr<Stmt> m_stmt;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief Default statement.
+ */
+class DefaultStmt
+    : public Stmt
+    , private StmtHelper<StmtKind::Default, DefaultStmt>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param stmt  Body statement.
+     * @param range Source range.
+     */
+    explicit DefaultStmt(UniquePtr<Stmt> stmt, SourceRange range = {}) noexcept;
+
+
+// Public Operations
+public:
+
+
+    using StmtHelper<StmtKind::Default, DefaultStmt>::is;
+    using StmtHelper<StmtKind::Default, DefaultStmt>::cast;
+
+
+// Private Data Members
+private:
+
+    /// Body statement.
+    UniquePtr<Stmt> m_stmt;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief Continue statement.
+ */
+class ContinueStmt
+    : public Stmt
+    , private StmtHelper<StmtKind::Continue, ContinueStmt>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param range Source range.
+     */
+    explicit ContinueStmt(SourceRange range = {}) noexcept;
+
+
+// Public Operations
+public:
+
+
+    using StmtHelper<StmtKind::Continue, ContinueStmt>::is;
+    using StmtHelper<StmtKind::Continue, ContinueStmt>::cast;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief Break statement.
+ */
+class BreakStmt
+    : public Stmt
+    , private StmtHelper<StmtKind::Break, BreakStmt>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param range Source range.
+     */
+    explicit BreakStmt(SourceRange range = {}) noexcept;
+
+
+// Public Operations
+public:
+
+
+    using StmtHelper<StmtKind::Break, BreakStmt>::is;
+    using StmtHelper<StmtKind::Break, BreakStmt>::cast;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief Return statement.
+ */
+class ReturnStmt
+    : public Stmt
+    , private StmtHelper<StmtKind::Return, ReturnStmt>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param res   Result expression.
+     * @param range Source range.
+     */
+    explicit ReturnStmt(UniquePtr<Expr> res, SourceRange range = {}) noexcept;
+
+
+// Public Operations
+public:
+
+
+    using StmtHelper<StmtKind::Return, ReturnStmt>::is;
+    using StmtHelper<StmtKind::Return, ReturnStmt>::cast;
+
+
+// Private Data Members
+private:
+
+    /// Return expression.
+    UniquePtr<Expr> m_res;
 
 };
 
