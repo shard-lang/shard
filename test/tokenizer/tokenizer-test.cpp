@@ -35,36 +35,32 @@ static void test_impl(
     SCOPED_TRACE(code);
 
     Tokenizer tokenizer(code);
-
     DynamicArray<Token> result;
     result.reserve(correct.size());
-
-    try
+    while (!tokenizer.isEof())
     {
-        tokenizer.next();
-        while (!tokenizer.isEof())
-        {
-            result.push_back(tokenizer.get());
-            tokenizer.next();
-        }
+        result.push_back(tokenizer.extract());
     }
-    catch (Exception& ex) {}
 
     ASSERT_EQ(correct.size(), result.size());
 
     for (int i = 0; i < correct.size(); ++i)
     {
-        ASSERT_EQ(correct[i].getType(), result[i].getType());
-        switch (correct[i].getType())
-        {
-            case TokenType::Identifier: ASSERT_EQ(correct[i].getStringValue(), result[i].getStringValue()); break;
-            case TokenType::Keyword: ASSERT_EQ(correct[i].getKeywordType(), result[i].getKeywordType());    break;
-            case TokenType::String: ASSERT_EQ(correct[i].getStringValue(), result[i].getStringValue());     break;
-            case TokenType::Float: ASSERT_FLOAT_EQ(correct[i].getFloatValue(), result[i].getFloatValue());  break;
-            case TokenType::Char: ASSERT_EQ(correct[i].getCharValue(), result[i].getCharValue());           break;
-            case TokenType::Int: ASSERT_EQ(correct[i].getIntValue(), result[i].getIntValue());              break;
-            default: break;
-        }
+        ASSERT_EQ(correct[i], result[i]) << result[i];
+    }
+
+    DynamicArray<Token> resultIt;
+    resultIt.reserve(correct.size());
+    for (auto&& x : Tokenizer(code))
+    {
+        resultIt.push_back(x);
+    }
+
+    ASSERT_EQ(correct.size(), resultIt.size());
+
+    for (int i = 0; i < correct.size(); ++i)
+    {
+        ASSERT_EQ(correct[i], resultIt[i]) << resultIt[i];
     }
 }
 
@@ -72,16 +68,14 @@ static void test_invalid_impl(int line, const String& code)
 {
     SCOPED_TRACE(code);
 
-    Tokenizer tokenizer(code);
-
     ASSERT_THROW
     (
-        do
+        Tokenizer tokenizer(code);
+        while (!tokenizer.isEof())
         {
             tokenizer.next();
-        }
-        while (!tokenizer.isEof())
-    , TokenizerException
+        },
+        TokenizerException
     );
 
 }

@@ -19,6 +19,8 @@
 /* ************************************************************************* */
 
 #include <cmath>
+#include <limits>
+#include <ostream>
 
 // Shard
 #include "shard/String.hpp"
@@ -55,26 +57,28 @@ public:
 
     Token() = default;
 
-    Token(TokenType type):
+    explicit Token(TokenType type):
         m_type(type) {}
 
-    Token(TokenType type, String value):
+    explicit Token(TokenType type, const String& value):
         m_type(type), m_sValue(value) {}
      
-    Token(String value):
+    explicit Token(const String& value):
         m_type(TokenType::Identifier), m_sValue(value) {}
    
-    Token (FloatType value):
+    explicit Token (FloatType value):
         m_type(TokenType::Float), m_fValue(value) {}
         
-    Token(char value):
+    explicit Token(char value):
         m_type(TokenType::Char), m_cValue(value) {}
         
-    Token(IntType value):
+    explicit Token(IntType value):
         m_type(TokenType::Int), m_iValue(value) {}
 
-    Token(KeywordType type):
+    explicit Token(KeywordType type):
         m_type(TokenType::Keyword), m_kType(type) {}
+
+/* ************************************************************************* */
 
     inline TokenType getType() const noexcept
     {
@@ -107,6 +111,8 @@ public:
     }
 };
 
+/* ************************************************************************* */
+
 inline bool operator==(const Token& lhs, const Token& rhs)
 {
     if (lhs.getType() != rhs.getType())
@@ -116,6 +122,7 @@ inline bool operator==(const Token& lhs, const Token& rhs)
 
     switch (lhs.getType())
     {
+        case TokenType::Identifier: return lhs.getStringValue() == rhs.getStringValue();
         case TokenType::Keyword: return lhs.getKeywordType() == rhs.getKeywordType();
         case TokenType::String: return lhs.getStringValue() == rhs.getStringValue();
         case TokenType::Float: return
@@ -125,6 +132,27 @@ inline bool operator==(const Token& lhs, const Token& rhs)
         case TokenType::Int: return lhs.getIntValue() == rhs.getIntValue();
         default: return true;
     }
+}
+
+inline bool operator!=(const Token& lhs, const Token& rhs)
+{
+    return !(lhs == rhs);
+}
+
+inline std::ostream& operator<<(std::ostream& os, const Token& obj)
+{
+    os << "TokenType: " << static_cast<int>(obj.getType()) << ", TokenValue: ";
+    switch (obj.getType())
+    {
+        case TokenType::Identifier: os << obj.getStringValue(); break;
+        case TokenType::Keyword: os << static_cast<int>(obj.getKeywordType()); break;
+        case TokenType::String: os << obj.getStringValue(); break;
+        case TokenType::Float: os << obj.getFloatValue(); break;
+        case TokenType::Char: os << obj.getCharValue(); break;
+        case TokenType::Int: os << obj.getIntValue(); break;
+        default: break;
+    }
+    return os;
 }
 
 /* ************************************************************************* */

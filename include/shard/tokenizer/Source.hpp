@@ -44,7 +44,7 @@ public:
     /**
      * @brief input from file
      */
-    Source (const Path& path):
+    explicit Source (const Path& path):
             m_sb([](const auto& l_path)
             {
                 auto ptr = makeUnique<std::basic_filebuf<ReadMode>>();
@@ -55,8 +55,12 @@ public:
     /**
      * @brief input from string
      */
-    Source (const String& source):
+    explicit Source (const String& source):
             m_sb(makeUnique<std::basic_stringbuf<ReadMode>>(source)) {}
+
+/* ************************************************************************* */
+
+public:
 
     /**
      * @brief returns if imput is empty

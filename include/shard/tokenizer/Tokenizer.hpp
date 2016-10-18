@@ -21,6 +21,7 @@
 // Shard
 #include "shard/Path.hpp"
 #include "shard/String.hpp"
+#include "shard/ViewPtr.hpp"
 #include "shard/tokenizer/Source.hpp"
 #include "shard/tokenizer/KeywordType.hpp"
 #include "shard/tokenizer/TokenType.hpp"
@@ -35,6 +36,45 @@ namespace tokenizer {
 
 /* ************************************************************************* */
 
+class Tokenizer;
+
+class TokenizerIterator
+{
+
+protected:
+
+    ViewPtr<Tokenizer> m_tokenizer;
+
+public:
+
+    TokenizerIterator() = default;
+    TokenizerIterator(ViewPtr<Tokenizer> tokenizer):
+        m_tokenizer(tokenizer) {}
+    TokenizerIterator(TokenizerIterator&) = default;
+    TokenizerIterator(TokenizerIterator&&) = default;
+
+    const Token& operator*() const;
+    TokenizerIterator& operator++();
+    TokenizerIterator operator++(int);
+
+    inline ViewPtr<Tokenizer> getTokenizer() const
+    {
+        return m_tokenizer;
+    }
+};
+
+inline bool operator==(const TokenizerIterator& lhs, const TokenizerIterator& rhs)
+{
+    return (lhs.getTokenizer() == nullptr || (*lhs).getType() == TokenType::End) && (rhs.getTokenizer() == nullptr || (*rhs).getType() == TokenType::End);
+}
+
+inline bool operator!=(const TokenizerIterator& lhs, const TokenizerIterator& rhs)
+{
+    return !(lhs == rhs);
+}
+
+/* ************************************************************************* */
+
 class Tokenizer
 {
 
@@ -46,17 +86,17 @@ protected:
     static constexpr char string_literal_border = '"';
     static constexpr char char_literal_border = '\'';
 
-// ===================================================================================== //
+/* ************************************************************************* */
 
 public:
 
-    Tokenizer (const Path& path):
-            m_src(path){}
+    explicit Tokenizer(const Path& path):
+            m_src(path){next();}
 
-    Tokenizer (const String& source):
-            m_src(source){}
-
-// ===================================================================================== //
+    explicit Tokenizer(const String& source):
+            m_src(source){next();}
+            
+/* ************************************************************************* */
 
 protected:
 
@@ -158,7 +198,7 @@ protected:
         return false;
     }
 
-// ===================================================================================== //
+/* ************************************************************************* */
 
 protected:
 
@@ -181,7 +221,9 @@ protected:
         return m_src.empty();
     }
 
-// ===================================================================================== //
+/* ************************************************************************* */
+
+protected:
 
     /**
      * @brief tokenizes tokentype number.
@@ -208,7 +250,7 @@ protected:
      */
     void tokenizeOperator();
 
-// ===================================================================================== //
+/* ************************************************************************* */
 
 public:
 
@@ -228,16 +270,39 @@ public:
     /**
      * @brief get current token an move to next.
      */
-    inline const Token extract()
+    inline Token extract()
     {
         auto tmp = m_current;
         next();
         return tmp;
     }
 
+    /**
+     * @brief checks if there is token available.
+     */
     inline bool isEof()
     {
         return m_current.getType() == TokenType::End;
+    }
+
+/* ************************************************************************* */
+
+public:
+
+    /**
+     * @brief returns tokenizer iterator pointing to currect token.
+     */
+    inline TokenizerIterator begin() noexcept
+    {
+        return TokenizerIterator(this);
+    }
+
+    /**
+     * @brief returns tokenizer iterator pointing to token with end.
+     */
+    inline TokenizerIterator end() noexcept
+    {
+        return TokenizerIterator(nullptr);
     }
 };
 
