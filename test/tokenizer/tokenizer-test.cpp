@@ -142,6 +142,10 @@ TEST(Tokenizer, floats)
         {Token(3.1415926538)}
     );
     test(
+        "00003.1415926538",
+        {Token(3.1415926538)}
+    );
+    test(
         "3.1415926538+1.4",
         {Token(3.1415926538), Token(TokenType::Plus), Token(1.4)}
     );
@@ -191,6 +195,10 @@ TEST(Tokenizer, ints)
     test(
         "a123+123+123a",
         {Token("a123"), Token(TokenType::Plus), Token(123l), Token(TokenType::Plus), Token(123l), Token("a")}
+    );
+    test(
+        "0000321",
+        {Token(321l)}
     );
     test(
         "a3.1415926538+1.4",
