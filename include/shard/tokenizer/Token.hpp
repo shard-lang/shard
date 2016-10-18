@@ -55,26 +55,28 @@ public:
 
     Token() = default;
 
-    Token(TokenType type):
+    explicit Token(TokenType type):
         m_type(type) {}
 
-    Token(TokenType type, String value):
+    explicit Token(TokenType type, const String& value):
         m_type(type), m_sValue(value) {}
      
-    Token(String value):
+    explicit Token(const String& value):
         m_type(TokenType::Identifier), m_sValue(value) {}
    
-    Token (FloatType value):
+    explicit Token (FloatType value):
         m_type(TokenType::Float), m_fValue(value) {}
         
-    Token(char value):
+    explicit Token(char value):
         m_type(TokenType::Char), m_cValue(value) {}
         
-    Token(IntType value):
+    explicit Token(IntType value):
         m_type(TokenType::Int), m_iValue(value) {}
 
-    Token(KeywordType type):
+    explicit Token(KeywordType type):
         m_type(TokenType::Keyword), m_kType(type) {}
+
+/* ************************************************************************* */
 
     inline TokenType getType() const noexcept
     {
@@ -107,6 +109,8 @@ public:
     }
 };
 
+/* ************************************************************************* */
+
 inline bool operator==(const Token& lhs, const Token& rhs)
 {
     if (lhs.getType() != rhs.getType())
@@ -128,6 +132,10 @@ inline bool operator==(const Token& lhs, const Token& rhs)
     }
 }
 
+inline bool operator!=(const Token& lhs, const Token& rhs)
+{
+    return !(lhs == rhs);
+}
 /* ************************************************************************* */
 
 }
