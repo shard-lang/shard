@@ -120,26 +120,26 @@ void Tokenizer::tokenizeNumber()
     
     auto ptr = buf.cbegin();
 
-    const Token::IntType aparseInt = [&]() noexcept
+    const auto parseInt = [&ptr]() noexcept -> Token::IntType
     {
         Token::IntType res = 0;
-        for (; *ptr >= 0 && *ptr <= 9; ++ptr)
+        for (; *ptr >= '0' && *ptr <= '9'; ++ptr)
         {
             res = res * 10 + (*ptr - '0');
         }
         return res;
     };
 
-    const Token::FloatType aparseFloat = [&]() noexcept
+    const auto parseFloat = [&ptr, &parseInt]() noexcept -> Token::FloatType
     {
-        Token::FloatType base = aparseInt();
+        Token::FloatType base = parseInt();
 
         Token::FloatType decimal = 0;
         if (*ptr == '.')
         {
             ++ptr;
             auto counter = ptr;
-            decimal = aparseInt() / std::pow(10, std::distance(ptr, counter));
+            decimal = parseInt() / std::pow(10.0, std::distance(counter, ptr));
         }
 
         Token::FloatType exp = 1;
@@ -153,14 +153,14 @@ void Tokenizer::tokenizeNumber()
                 case '+': ++ptr;
                 default: break;
             }
-            exp = std::pow(10, aparseInt());
+            exp = std::pow(10.0, parseInt());
             exp = negativeExp ? (1 / exp) : exp;
         }
 
         return (base + decimal) * exp;
     };
 
-    m_current = floatFlag ? Token(aparseFloat()) : Token(aparseInt());
+    m_current = floatFlag ? Token(parseFloat()) : Token(parseInt());
 }
 
 void Tokenizer::tokenizeString()
