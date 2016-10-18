@@ -270,7 +270,7 @@ public:
     /**
      * @brief get current token an move to next.
      */
-    inline const Token extract()
+    inline Token extract()
     {
         auto tmp = m_current;
         next();
