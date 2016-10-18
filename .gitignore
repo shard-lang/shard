@@ -1,1 +1,7 @@
 /build*
+/.codelite
+/.idea
+/.clang
+
+shard.project
+shard.workspace
