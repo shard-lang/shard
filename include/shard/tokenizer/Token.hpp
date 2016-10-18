@@ -19,6 +19,8 @@
 /* ************************************************************************* */
 
 #include <cmath>
+#include <limits>
+#include <ostream>
 
 // Shard
 #include "shard/String.hpp"
@@ -136,6 +138,23 @@ inline bool operator!=(const Token& lhs, const Token& rhs)
 {
     return !(lhs == rhs);
 }
+
+std::ostream& operator<<(std::ostream& os, const Token& obj)
+{
+    os << static_cast<int>(obj.getType());
+    switch (obj.getType())
+    {
+        case TokenType::Identifier: os << obj.getStringValue(); break;
+        case TokenType::Keyword: os << static_cast<int>(obj.getKeywordType()); break;
+        case TokenType::String: os << obj.getStringValue(); break;
+        case TokenType::Float: os << obj.getFloatValue(); break;
+        case TokenType::Char: os << obj.getCharValue(); break;
+        case TokenType::Int: os << obj.getIntValue(); break;
+        default: break;
+    }
+    return os;
+}
+
 /* ************************************************************************* */
 
 }

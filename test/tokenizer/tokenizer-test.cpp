@@ -46,17 +46,7 @@ static void test_impl(
 
     for (int i = 0; i < correct.size(); ++i)
     {
-        ASSERT_EQ(correct[i].getType(), result[i].getType());
-        switch (correct[i].getType())
-        {
-            case TokenType::Identifier: ASSERT_EQ(correct[i].getStringValue(), result[i].getStringValue()); break;
-            case TokenType::Keyword: ASSERT_EQ(correct[i].getKeywordType(), result[i].getKeywordType());    break;
-            case TokenType::String: ASSERT_EQ(correct[i].getStringValue(), result[i].getStringValue());     break;
-            case TokenType::Float: ASSERT_FLOAT_EQ(correct[i].getFloatValue(), result[i].getFloatValue());  break;
-            case TokenType::Char: ASSERT_EQ(correct[i].getCharValue(), result[i].getCharValue());           break;
-            case TokenType::Int: ASSERT_EQ(correct[i].getIntValue(), result[i].getIntValue());              break;
-            default: break;
-        }
+        ASSERT_EQ(correct[i], result[i]) << result[i];
     }
 
     DynamicArray<Token> resultIt;
@@ -70,17 +60,7 @@ static void test_impl(
 
     for (int i = 0; i < correct.size(); ++i)
     {
-        ASSERT_EQ(correct[i].getType(), resultIt[i].getType());
-        switch (correct[i].getType())
-        {
-            case TokenType::Identifier: ASSERT_EQ(correct[i].getStringValue(), resultIt[i].getStringValue()); break;
-            case TokenType::Keyword: ASSERT_EQ(correct[i].getKeywordType(), resultIt[i].getKeywordType());    break;
-            case TokenType::String: ASSERT_EQ(correct[i].getStringValue(), resultIt[i].getStringValue());     break;
-            case TokenType::Float: ASSERT_FLOAT_EQ(correct[i].getFloatValue(), resultIt[i].getFloatValue());  break;
-            case TokenType::Char: ASSERT_EQ(correct[i].getCharValue(), resultIt[i].getCharValue());           break;
-            case TokenType::Int: ASSERT_EQ(correct[i].getIntValue(), resultIt[i].getIntValue());              break;
-            default: break;
-        }
+        ASSERT_EQ(correct[i], resultIt[i]) << resultIt[i];
     }
 }
 
