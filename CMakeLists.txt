@@ -23,6 +23,10 @@ option(SHARD_BUILD_TOKENIZER "Build tokenizer" On)
 
 # ************************************************************************* #
 
+set(CURRENT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
+# ************************************************************************* #
+
 function (add_shard_library NAME)
     include(CMakeParseArguments)
     cmake_parse_arguments(ARG "" "" "HEADERS;SOURCES;LIBRARIES" ${ARGN})
@@ -36,7 +40,7 @@ function (add_shard_library NAME)
     )
 
     target_include_directories(${NAME}
-        PUBLIC ${CMAKE_SOURCE_DIR}/include
+        PUBLIC ${CURRENT_DIR}/include
     )
 endfunction ()
 
@@ -65,7 +69,7 @@ if (SHARD_BUILD_TESTS)
         )
 
         target_include_directories(${NAME}
-            PUBLIC ${CMAKE_SOURCE_DIR}/include
+            PUBLIC ${CURRENT_DIR}/include
         )
 
         target_link_libraries(${NAME}
