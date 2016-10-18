@@ -139,9 +139,9 @@ inline bool operator!=(const Token& lhs, const Token& rhs)
     return !(lhs == rhs);
 }
 
-std::ostream& operator<<(std::ostream& os, const Token& obj)
+inline std::ostream& operator<<(std::ostream& os, const Token& obj)
 {
-    os << static_cast<int>(obj.getType());
+    os << "TokenType: " << static_cast<int>(obj.getType()) << ", TokenValue: ";
     switch (obj.getType())
     {
         case TokenType::Identifier: os << obj.getStringValue(); break;
