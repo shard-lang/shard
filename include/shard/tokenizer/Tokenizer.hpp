@@ -48,7 +48,7 @@ protected:
 public:
 
     TokenizerIterator() = default;
-    TokenizerIterator(Tokenizer* tokenizer):
+    TokenizerIterator(ViewPtr<Tokenizer> tokenizer):
         m_tokenizer(tokenizer) {}
     TokenizerIterator(TokenizerIterator&) = default;
     TokenizerIterator(TokenizerIterator&&) = default;
@@ -57,7 +57,7 @@ public:
     TokenizerIterator& operator++();
     TokenizerIterator operator++(int);
 
-    inline Tokenizer* getTokenizer() const
+    inline ViewPtr<Tokenizer> getTokenizer() const
     {
         return m_tokenizer;
     }
