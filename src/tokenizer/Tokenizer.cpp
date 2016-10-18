@@ -20,6 +20,7 @@
 
 // C++
 #include <algorithm>
+#include <cmath>
 
 // Shard
 #include "shard/Map.hpp"
@@ -117,21 +118,49 @@ void Tokenizer::tokenizeNumber()
         readNumber();
     }
     
-    std::istringstream istr(buf);
-    istr.imbue(std::locale("C"));
-    
-    if (floatFlag)
+    auto ptr = buf.cbegin();
+
+    const auto parseInt = [&ptr]() noexcept -> Token::IntType
     {
-        Token::FloatType value = 0.0f;
-        istr >> value;
-        m_current = Token(value);
-    }
-    else
+        Token::IntType res = 0;
+        for (; *ptr >= '0' && *ptr <= '9'; ++ptr)
+        {
+            res = res * 10 + (*ptr - '0');
+        }
+        return res;
+    };
+
+    const auto parseFloat = [&ptr, &parseInt]() noexcept -> Token::FloatType
     {
-        Token::IntType value = 0;
-        istr >> value;
-        m_current = Token(value);
-    }
+        Token::FloatType base = parseInt();
+
+        Token::FloatType decimal = 0;
+        if (*ptr == '.')
+        {
+            ++ptr;
+            auto counter = ptr;
+            decimal = parseInt() / std::pow(10.0, std::distance(counter, ptr));
+        }
+
+        Token::FloatType exp = 1;
+        if (*ptr == 'e' || *ptr == 'E')
+        {
+            ++ptr;
+            bool negativeExp = false;
+            switch (*ptr)
+            {
+                case '-': negativeExp = true;
+                case '+': ++ptr;
+                default: break;
+            }
+            exp = std::pow(10.0, parseInt());
+            exp = negativeExp ? (1 / exp) : exp;
+        }
+
+        return (base + decimal) * exp;
+    };
+
+    m_current = floatFlag ? Token(parseFloat()) : Token(parseInt());
 }
 
 void Tokenizer::tokenizeString()
