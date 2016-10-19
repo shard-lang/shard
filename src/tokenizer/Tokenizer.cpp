@@ -281,6 +281,7 @@ void Tokenizer::tokenizeOperator()
         case '/': m_current = Token(TokenType::Slash); break;
         case '\\': m_current = Token(TokenType::Backslash); break;
         case '^': m_current = Token(TokenType::Caret); break;
+        case '~': m_current = Token(TokenType::Tilde); break;
         case '%': m_current = Token(TokenType::Percent); break;
         case '&': m_current = Token(TokenType::Ampersand); break;
         case '?': m_current = Token(TokenType::QMark); break;

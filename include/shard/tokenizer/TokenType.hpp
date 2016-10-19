@@ -53,6 +53,7 @@ enum class TokenType
     Slash,      // /
     Backslash,  //
     Caret,      // ^
+    Tilde,      // ~
     Percent,    // %
     Ampersand,  // &
 
