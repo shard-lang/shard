@@ -141,7 +141,7 @@ public:
      * @param expr  Expression.
      * @param range Source range.
      */
-    explicit ExprStmt(UniquePtr<Expr> expr, SourceRange range = {}) noexcept;
+    explicit ExprStmt(UniquePtr<Expr> expr = nullptr, SourceRange range = {}) noexcept;
 
 
 // Public Accessors & Mutators
@@ -194,12 +194,6 @@ public:
      * @param range Source range.
      */
     explicit DeclStmt(UniquePtr<Decl> decl, SourceRange range = {}) noexcept;
-
-
-    /**
-     * @brief Destructor.
-     */
-    ~DeclStmt();
 
 
 // Public Accessors & Mutators
@@ -280,12 +274,46 @@ public:
 
     /**
      * @brief Constructor.
-     * @param cond      Condition expression.
-     * @param trueStmt  True branch statement.
-     * @param falseStmt False branch statement.
-     * @param range     Source range.
+     * @param condExpr Condition expression.
+     * @param thenStmt Then branch statement.
+     * @param elseStmt Else branch statement.
+     * @param range    Source range.
      */
-    explicit IfStmt(UniquePtr<Expr> cond, UniquePtr<Stmt> trueStmt, UniquePtr<Stmt> falseStmt = nullptr, SourceRange range = {}) noexcept;
+    explicit IfStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stmt> elseStmt = nullptr, SourceRange range = {}) noexcept;
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief Return condition expression.
+     * @return Condition expression.
+     */
+    ViewPtr<const Expr> getCondExpr() const noexcept
+    {
+        return m_condExpr.get();
+    }
+
+
+    /**
+     * @brief Return then branch statement.
+     * @return Then branch statement.
+     */
+    ViewPtr<const Stmt> getThenStmt() const noexcept
+    {
+        return m_thenStmt.get();
+    }
+
+
+    /**
+     * @brief Return else branch statement.
+     * @return Else branch statement.
+     */
+    ViewPtr<const Stmt> getElseStmt() const noexcept
+    {
+        return m_elseStmt.get();
+    }
 
 
 // Public Operations
@@ -300,13 +328,13 @@ public:
 private:
 
     /// Condition expression.
-    UniquePtr<Expr> m_cond;
+    UniquePtr<Expr> m_condExpr;
 
-    /// True branch statement.
-    UniquePtr<Stmt> m_trueStmt;
+    /// Then branch statement.
+    UniquePtr<Stmt> m_thenStmt;
 
-    /// False branch statement.
-    UniquePtr<Stmt> m_falseStmt;
+    /// Else branch statement.
+    UniquePtr<Stmt> m_elseStmt;
 
 };
 
@@ -326,11 +354,35 @@ public:
 
     /**
      * @brief Constructor.
-     * @param cond  Condition expression.
-     * @param stmt  Body statement.
-     * @param range Source range.
+     * @param condExpr  Condition expression.
+     * @param bodyStmt  Body statement.
+     * @param range     Source range.
      */
-    explicit WhileStmt(UniquePtr<Expr> cond, UniquePtr<Stmt> stmt, SourceRange range = {}) noexcept;
+    explicit WhileStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range = {}) noexcept;
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief Returns condition expression.
+     * @return Expression.
+     */
+    ViewPtr<const Expr> getCondExpr() const noexcept
+    {
+        return m_condExpr.get();
+    }
+
+
+    /**
+     * @brief Returns body statement.
+     * @return Body statement.
+     */
+    ViewPtr<const Stmt> getBodyStmt() const noexcept
+    {
+        return m_bodyStmt.get();
+    }
 
 
 // Public Operations
@@ -345,10 +397,10 @@ public:
 private:
 
     /// Loop condition.
-    UniquePtr<Expr> m_cond;
+    UniquePtr<Expr> m_condExpr;
 
     /// Body statement.
-    UniquePtr<Stmt> m_stmt;
+    UniquePtr<Stmt> m_bodyStmt;
 
 };
 
@@ -368,11 +420,35 @@ public:
 
     /**
      * @brief Constructor.
-     * @param cond  Condition expression.
-     * @param stmt  Body statement.
-     * @param range Source range.
+     * @param condExpr Condition expression.
+     * @param bodyStmt Body statement.
+     * @param range    Source range.
      */
-    explicit DoWhileStmt(UniquePtr<Expr> cond, UniquePtr<Stmt> stmt, SourceRange range = {}) noexcept;
+    explicit DoWhileStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range = {}) noexcept;
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief Returns condition expression.
+     * @return Expression.
+     */
+    ViewPtr<const Expr> getCondExpr() const noexcept
+    {
+        return m_condExpr.get();
+    }
+
+
+    /**
+     * @brief Returns body statement.
+     * @return Body statement.
+     */
+    ViewPtr<const CompoundStmt> getBodyStmt() const noexcept
+    {
+        return m_bodyStmt.get();
+    }
 
 
 // Public Operations
@@ -387,10 +463,10 @@ public:
 private:
 
     /// Loop condition.
-    UniquePtr<Expr> m_cond;
+    UniquePtr<Expr> m_condExpr;
 
     /// Body statement.
-    UniquePtr<Stmt> m_stmt;
+    UniquePtr<CompoundStmt> m_bodyStmt;
 
 };
 
@@ -410,13 +486,57 @@ public:
 
     /**
      * @brief Constructor.
-     * @param init  Initialization statement.
-     * @param test  Test expression.
-     * @param inc   Increment statement.
-     * @param stmt  Body statement.
-     * @param range Source range.
+     * @param initStmt Initialization statement.
+     * @param condExpr Test expression.
+     * @param incExpr  Increment statement.
+     * @param bodyStmt Body statement.
+     * @param range    Source range.
      */
-    explicit ForStmt(UniquePtr<Stmt> init, UniquePtr<Expr> cond, UniquePtr<Expr> inc, UniquePtr<Stmt> stmt, SourceRange range = {}) noexcept;
+    explicit ForStmt(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<Expr> incExpr, UniquePtr<Stmt> bodyStmt, SourceRange range = {}) noexcept;
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief Returns initialization statement.
+     * @return Initialization statement.
+     */
+    ViewPtr<const Stmt> getInitStmt() const noexcept
+    {
+        return m_initStmt.get();
+    }
+
+
+    /**
+     * @brief Returns condition epxression.
+     * @return Condition epxression.
+     */
+    ViewPtr<const Expr> getCondExpr() const noexcept
+    {
+        return m_condExpr.get();
+    }
+
+
+    /**
+     * @brief Returns increment expression.
+     * @return Increment expression.
+     */
+    ViewPtr<const Expr> getIncExpr() const noexcept
+    {
+        return m_incExpr.get();
+    }
+
+
+    /**
+     * @brief Returns body statement.
+     * @return Body statement.
+     */
+    ViewPtr<const Stmt> getBodyStmt() const noexcept
+    {
+        return m_bodyStmt.get();
+    }
 
 
 // Public Operations
@@ -431,16 +551,16 @@ public:
 private:
 
     /// Initialization statement.
-    UniquePtr<Stmt> m_init;
+    UniquePtr<Stmt> m_initStmt;
 
     /// Loop condition.
-    UniquePtr<Expr> m_cond;
+    UniquePtr<Expr> m_condExpr;
 
     /// Increment expression.
-    UniquePtr<Expr> m_inc;
+    UniquePtr<Expr> m_incExpr;
 
     /// Body statement.
-    UniquePtr<Stmt> m_stmt;
+    UniquePtr<Stmt> m_bodyStmt;
 
 };
 
@@ -460,11 +580,35 @@ public:
 
     /**
      * @brief Constructor.
-     * @param test  Test expression.
-     * @param stmt  Body statement.
-     * @param range Source range.
+     * @param condExpr Condition expression.
+     * @param bodyStmt Body statement.
+     * @param range    Source range.
      */
-    explicit SwitchStmt(UniquePtr<Expr> test, UniquePtr<CompoundStmt> stmt, SourceRange range = {}) noexcept;
+    explicit SwitchStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range = {}) noexcept;
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief Returns condition expression.
+     * @return Condition expression.
+     */
+    ViewPtr<const Expr> getCondExpr() const noexcept
+    {
+        return m_condExpr.get();
+    }
+
+
+    /**
+     * @brief Returns body statement.
+     * @return Body statement.
+     */
+    ViewPtr<const CompoundStmt> getBodyStmt() const noexcept
+    {
+        return m_bodyStmt.get();
+    }
 
 
 // Public Operations
@@ -479,10 +623,10 @@ public:
 private:
 
     /// Switch expression.
-    UniquePtr<Expr> m_test;
+    UniquePtr<Expr> m_condExpr;
 
     /// Body statement.
-    UniquePtr<CompoundStmt> m_stmt;
+    UniquePtr<CompoundStmt> m_bodyStmt;
 
 };
 
@@ -502,11 +646,35 @@ public:
 
     /**
      * @brief Constructor.
-     * @param test  Test expression.
+     * @param expr  Test expression.
      * @param stmt  Body statement.
      * @param range Source range.
      */
-    explicit CaseStmt(UniquePtr<Expr> test, UniquePtr<Stmt> stmt, SourceRange range = {}) noexcept;
+    explicit CaseStmt(UniquePtr<Expr> expr, UniquePtr<Stmt> bodyStmt, SourceRange range = {}) noexcept;
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief Returns condition expression.
+     * @return Condition expression.
+     */
+    ViewPtr<const Expr> getExpr() const noexcept
+    {
+        return m_expr.get();
+    }
+
+
+    /**
+     * @brief Returns body statement.
+     * @return Body statement.
+     */
+    ViewPtr<const Stmt> getBodyStmt() const noexcept
+    {
+        return m_bodyStmt.get();
+    }
 
 
 // Public Operations
@@ -521,10 +689,10 @@ public:
 private:
 
     /// Case test expression.
-    UniquePtr<Expr> m_test;
+    UniquePtr<Expr> m_expr;
 
     /// Body statement.
-    UniquePtr<Stmt> m_stmt;
+    UniquePtr<Stmt> m_bodyStmt;
 
 };
 
@@ -544,10 +712,24 @@ public:
 
     /**
      * @brief Constructor.
-     * @param stmt  Body statement.
-     * @param range Source range.
+     * @param bodyStmt Body statement.
+     * @param range    Source range.
      */
-    explicit DefaultStmt(UniquePtr<Stmt> stmt, SourceRange range = {}) noexcept;
+    explicit DefaultStmt(UniquePtr<Stmt> bodyStmt, SourceRange range = {}) noexcept;
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief Returns body statement.
+     * @return Body statement.
+     */
+    ViewPtr<const Stmt> getBodyStmt() const noexcept
+    {
+        return m_bodyStmt.get();
+    }
 
 
 // Public Operations
@@ -562,7 +744,7 @@ public:
 private:
 
     /// Body statement.
-    UniquePtr<Stmt> m_stmt;
+    UniquePtr<Stmt> m_bodyStmt;
 
 };
 
@@ -642,10 +824,24 @@ public:
 
     /**
      * @brief Constructor.
-     * @param res   Result expression.
-     * @param range Source range.
+     * @param resExpr Result expression.
+     * @param range   Source range.
      */
-    explicit ReturnStmt(UniquePtr<Expr> res, SourceRange range = {}) noexcept;
+    explicit ReturnStmt(UniquePtr<Expr> resExpr = nullptr, SourceRange range = {}) noexcept;
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief Returns result expression.
+     * @return Result expression.
+     */
+    ViewPtr<const Expr> getResExpr() const noexcept
+    {
+        return m_resExpr.get();
+    }
 
 
 // Public Operations
@@ -660,7 +856,7 @@ public:
 private:
 
     /// Return expression.
-    UniquePtr<Expr> m_res;
+    UniquePtr<Expr> m_resExpr;
 
 };
 

@@ -18,6 +18,7 @@
 #include "shard/ast/Stmt.hpp"
 
 // Shard
+#include "shard/Assert.hpp"
 #include "shard/ast/Expr.hpp"
 #include "shard/ast/Decl.hpp"
 
@@ -55,81 +56,91 @@ DeclStmt::DeclStmt(UniquePtr<Decl> decl, SourceRange range) noexcept
     : Stmt(StmtKind::Decl, moveValue(range))
     , m_decl(moveValue(decl))
 {
+    SHARD_ASSERT(m_decl);
+}
+
+/* ************************************************************************* */
+
+CompoundStmt::CompoundStmt(DynamicArray<UniquePtr<Stmt>> stmts, SourceRange range) noexcept
+    : Stmt(StmtKind::Compound, moveValue(range))
+    , StmtContainer(moveValue(stmts))
+{
     // Nothing to do
 }
 
 /* ************************************************************************* */
 
-DeclStmt::~DeclStmt() = default;
-
-/* ************************************************************************* */
-
-IfStmt::IfStmt(UniquePtr<Expr> cond, UniquePtr<Stmt> trueStmt, UniquePtr<Stmt> falseStmt, SourceRange range) noexcept
+IfStmt::IfStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stmt> elseStmt, SourceRange range) noexcept
     : Stmt(StmtKind::If, moveValue(range))
-    , m_cond(moveValue(cond))
-    , m_trueStmt(moveValue(trueStmt))
-    , m_falseStmt(moveValue(falseStmt))
+    , m_condExpr(moveValue(condExpr))
+    , m_thenStmt(moveValue(thenStmt))
+    , m_elseStmt(moveValue(elseStmt))
 {
-    // Nothing to do
+    SHARD_ASSERT(m_condExpr);
+    SHARD_ASSERT(m_thenStmt);
 }
 
 /* ************************************************************************* */
 
-WhileStmt::WhileStmt(UniquePtr<Expr> cond, UniquePtr<Stmt> stmt, SourceRange range) noexcept
+WhileStmt::WhileStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range) noexcept
     : Stmt(StmtKind::While, moveValue(range))
-    , m_cond(moveValue(cond))
-    , m_stmt(moveValue(stmt))
+    , m_condExpr(moveValue(condExpr))
+    , m_bodyStmt(moveValue(bodyStmt))
 {
-    // Nothing to do
+    SHARD_ASSERT(m_condExpr);
+    SHARD_ASSERT(m_bodyStmt);
 }
 
 /* ************************************************************************* */
 
-DoWhileStmt::DoWhileStmt(UniquePtr<Expr> cond, UniquePtr<Stmt> stmt, SourceRange range) noexcept
+DoWhileStmt::DoWhileStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range) noexcept
     : Stmt(StmtKind::DoWhile, moveValue(range))
-    , m_cond(moveValue(cond))
-    , m_stmt(moveValue(stmt))
+    , m_condExpr(moveValue(condExpr))
+    , m_bodyStmt(moveValue(bodyStmt))
 {
-    // Nothing to do
+    SHARD_ASSERT(m_condExpr);
+    SHARD_ASSERT(m_bodyStmt);
 }
 
 /* ************************************************************************* */
 
-ForStmt::ForStmt(UniquePtr<Stmt> init, UniquePtr<Expr> cond, UniquePtr<Expr> inc, UniquePtr<Stmt> stmt, SourceRange range) noexcept
+ForStmt::ForStmt(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<Expr> incExpr, UniquePtr<Stmt> bodyStmt, SourceRange range) noexcept
     : Stmt(StmtKind::For, moveValue(range))
-    , m_init(moveValue(init))
-    , m_cond(moveValue(cond))
-    , m_inc(moveValue(inc))
-    , m_stmt(moveValue(stmt))
+    , m_initStmt(moveValue(initStmt))
+    , m_condExpr(moveValue(condExpr))
+    , m_incExpr(moveValue(incExpr))
+    , m_bodyStmt(moveValue(bodyStmt))
 {
-    // Nothing to do
+    SHARD_ASSERT(m_initStmt);
+    SHARD_ASSERT(m_bodyStmt);
 }
 
 /* ************************************************************************* */
 
-SwitchStmt::SwitchStmt(UniquePtr<Expr> test, UniquePtr<CompoundStmt> stmt, SourceRange range) noexcept
+SwitchStmt::SwitchStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range) noexcept
     : Stmt(StmtKind::Switch, moveValue(range))
-    , m_test(moveValue(test))
-    , m_stmt(moveValue(stmt))
+    , m_condExpr(moveValue(condExpr))
+    , m_bodyStmt(moveValue(bodyStmt))
 {
-    // Nothing to do
+    SHARD_ASSERT(m_condExpr);
+    SHARD_ASSERT(m_bodyStmt);
 }
 
 /* ************************************************************************* */
 
-CaseStmt::CaseStmt(UniquePtr<Expr> test, UniquePtr<Stmt> stmt, SourceRange range) noexcept
+CaseStmt::CaseStmt(UniquePtr<Expr> expr, UniquePtr<Stmt> bodyStmt, SourceRange range) noexcept
     : Stmt(StmtKind::Case, moveValue(range))
-    , m_test(moveValue(test))
-    , m_stmt(moveValue(stmt))
+    , m_expr(moveValue(expr))
+    , m_bodyStmt(moveValue(bodyStmt))
 {
-    // Nothing to do
+    SHARD_ASSERT(m_expr);
 }
 
 /* ************************************************************************* */
 
-DefaultStmt::DefaultStmt(UniquePtr<Stmt> stmt, SourceRange range) noexcept
+DefaultStmt::DefaultStmt(UniquePtr<Stmt> bodyStmt, SourceRange range) noexcept
     : Stmt(StmtKind::Default, moveValue(range))
-    , m_stmt(moveValue(stmt))
+    , m_bodyStmt(moveValue(bodyStmt))
 {
     // Nothing to do
 }
@@ -152,9 +163,9 @@ BreakStmt::BreakStmt(SourceRange range) noexcept
 
 /* ************************************************************************* */
 
-ReturnStmt::ReturnStmt(UniquePtr<Expr> res, SourceRange range) noexcept
+ReturnStmt::ReturnStmt(UniquePtr<Expr> resExpr, SourceRange range) noexcept
     : Stmt(StmtKind::Return, moveValue(range))
-    , m_res(moveValue(res))
+    , m_resExpr(moveValue(resExpr))
 {
     // Nothing to do
 }

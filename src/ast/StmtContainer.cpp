@@ -20,6 +20,7 @@
 // Shard
 #include "shard/utility.hpp"
 #include "shard/ast/Stmt.hpp"
+#include "shard/ast/Expr.hpp"
 
 /* ************************************************************************* */
 
