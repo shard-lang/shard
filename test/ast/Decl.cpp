@@ -61,9 +61,9 @@ TEST(VariableDecl, construction)
         EXPECT_TRUE(VariableDecl::is(decl));
         EXPECT_EQ("foo2", decl.getName());
         EXPECT_EQ(&TYPE_BUILTIN_STRING, decl.getType());
-        ASSERT_TRUE(decl.getInitializer());
-        ASSERT_TRUE(StringLiteralExpr::is(decl.getInitializer()));
-        EXPECT_EQ("bar", StringLiteralExpr::cast(decl.getInitializer())->getValue());
+        ASSERT_TRUE(decl.getInitExpr());
+        ASSERT_TRUE(StringLiteralExpr::is(decl.getInitExpr()));
+        EXPECT_EQ("bar", StringLiteralExpr::cast(decl.getInitExpr())->getValue());
     }
 }
 

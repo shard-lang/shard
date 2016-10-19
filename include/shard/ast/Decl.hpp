@@ -72,7 +72,7 @@ public:
      * @param context Declaration context.
      * @param range   Source range.
      */
-    Decl(ViewPtr<DeclContext> context, DeclKind type, SourceRange range) noexcept;
+    explicit Decl(ViewPtr<DeclContext> context, DeclKind type, SourceRange range) noexcept;
 
 
     /**
@@ -168,7 +168,7 @@ public:
      * @param name    Declaration name.
      * @param range   Source range.
      */
-    NamedDecl(ViewPtr<DeclContext> context, DeclKind kind, String name, SourceRange range = {}) noexcept;
+    explicit NamedDecl(ViewPtr<DeclContext> context, DeclKind kind, String name, SourceRange range = {}) noexcept;
 
 
 // Public Accessors & Mutators
@@ -223,7 +223,7 @@ public:
      * @param init    Initializer expression.
      * @param range   Source range.
      */
-    explicit VariableDecl(ViewPtr<DeclContext> context, String name, TypeInfo type, UniquePtr<Expr> init = nullptr, SourceRange range = {}) noexcept;
+    explicit VariableDecl(ViewPtr<DeclContext> context, String name, TypeInfo type, UniquePtr<Expr> initExpr = nullptr, SourceRange range = {}) noexcept;
 
 
     /**
@@ -260,19 +260,9 @@ public:
      * @brief Returns initializer expression.
      * @return Expression.
      */
-    ViewPtr<Expr> getInitializer() noexcept
+    ViewPtr<const Expr> getInitExpr() const noexcept
     {
-        return m_initializer.get();
-    }
-
-
-    /**
-     * @brief Returns initializer expression.
-     * @return Expression.
-     */
-    ViewPtr<const Expr> getInitializer() const noexcept
-    {
-        return m_initializer.get();
+        return m_initExpr.get();
     }
 
 
@@ -291,7 +281,7 @@ private:
     TypeInfo m_typeInfo;
 
     /// Initializer expression.
-    UniquePtr<Expr> m_initializer;
+    UniquePtr<Expr> m_initExpr;
 
 };
 
@@ -311,15 +301,15 @@ public:
 
     /**
      * @brief Constructor.
-     * @param context Declaration context.
-     * @param name    Function name.
-     * @param retType Return type information.
-     * @param params  Function parameters.
-     * @param body    Function body.
-     * @param range   Source range.
+     * @param context  Declaration context.
+     * @param name     Function name.
+     * @param retType  Return type information.
+     * @param params   Function parameters.
+     * @param bodyStmt Function body.
+     * @param range    Source range.
      */
     explicit FunctionDecl(ViewPtr<DeclContext> context, String name, TypeInfo retType,
-        DynamicArray<UniquePtr<VariableDecl>> params, UniquePtr<CompoundStmt> body, SourceRange range = {}) noexcept;
+        DynamicArray<UniquePtr<VariableDecl>> params, UniquePtr<CompoundStmt> bodyStmt, SourceRange range = {}) noexcept;
 
 
     /**
@@ -364,21 +354,11 @@ public:
 
     /**
      * @brief Returns pointer to function body.
-     * @return
+     * @return Body statement.
      */
-    ViewPtr<CompoundStmt> getBody() noexcept
+    ViewPtr<const CompoundStmt> getBodyStmt() const noexcept
     {
-        return m_body.get();
-    }
-
-
-    /**
-     * @brief Returns pointer to function body.
-     * @return
-     */
-    ViewPtr<const CompoundStmt> getBody() const noexcept
-    {
-        return m_body.get();
+        return m_bodyStmt.get();
     }
 
 
@@ -400,7 +380,7 @@ private:
     DynamicArray<UniquePtr<VariableDecl>> m_parameters;
 
     /// Function body.
-    UniquePtr<CompoundStmt> m_body;
+    UniquePtr<CompoundStmt> m_bodyStmt;
 
 };
 

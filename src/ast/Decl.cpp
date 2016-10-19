@@ -18,6 +18,7 @@
 #include "shard/ast/Decl.hpp"
 
 // Shard
+#include "shard/Assert.hpp"
 #include "shard/ast/DeclContext.hpp"
 #include "shard/ast/Stmt.hpp"
 #include "shard/ast/Expr.hpp"
@@ -55,15 +56,15 @@ NamedDecl::NamedDecl(ViewPtr<DeclContext> context, DeclKind kind, String name, S
     : Decl(context, kind, moveValue(range))
     , m_name(moveValue(name))
 {
-    // Nothing to do
+    SHARD_ASSERT(!m_name.empty());
 }
 
 /* ************************************************************************* */
 
-VariableDecl::VariableDecl(ViewPtr<DeclContext> context, String name, TypeInfo type, UniquePtr<Expr> init, SourceRange range) noexcept
+VariableDecl::VariableDecl(ViewPtr<DeclContext> context, String name, TypeInfo type, UniquePtr<Expr> initExpr, SourceRange range) noexcept
     : NamedDecl(context, DeclKind::Variable, moveValue(name), moveValue(range))
     , m_typeInfo(moveValue(type))
-    , m_initializer(moveValue(init))
+    , m_initExpr(moveValue(initExpr))
 {
     // Nothing to do
 }
@@ -76,14 +77,14 @@ VariableDecl::~VariableDecl() = default;
 
 FunctionDecl::FunctionDecl(ViewPtr<DeclContext> context, String name,
     TypeInfo retType, DynamicArray<UniquePtr<VariableDecl>> params,
-    UniquePtr<CompoundStmt> body, SourceRange range
+    UniquePtr<CompoundStmt> bodyStmt, SourceRange range
 ) noexcept
     : NamedDecl(context, DeclKind::Function, moveValue(name), moveValue(range))
     , m_retTypeInfo(moveValue(retType))
     , m_parameters(moveValue(params))
-    , m_body(moveValue(body))
+    , m_bodyStmt(moveValue(bodyStmt))
 {
-    // Nothing to do
+    SHARD_ASSERT(m_bodyStmt);
 }
 
 /* ************************************************************************* */
