@@ -18,6 +18,7 @@
 add_shard_test(core_test
     SOURCES
         SourceLocation.cpp
+        ViewPtr.cpp
     LIBRARIES
         shard-core
 )

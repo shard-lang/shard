@@ -145,7 +145,7 @@ public:
     static ViewPtr<ChildT> cast(ViewPtr<BaseT> value) noexcept
     {
         SHARD_ASSERT(ChildT::is(value));
-        return ViewPtr<ChildT>(static_cast<ChildT*>(value));
+        return ViewPtr<ChildT>(static_cast<ChildT*>(value.get()));
     }
 
 
@@ -157,7 +157,7 @@ public:
     static ViewPtr<const ChildT> cast(ViewPtr<const BaseT> value) noexcept
     {
         SHARD_ASSERT(ChildT::is(value));
-        return ViewPtr<const ChildT>(static_cast<const ChildT*>(value));
+        return ViewPtr<const ChildT>(static_cast<const ChildT*>(value.get()));
     }
 
 };
