@@ -28,4 +28,8 @@ if (SHARD_BUILD_TOKENIZER)
     add_subdirectory(tokenizer)
 endif ()
 
+if (SHARD_BUILD_AST)
+    add_subdirectory(ast)
+endif ()
+
 # ************************************************************************* #

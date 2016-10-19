@@ -14,37 +14,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-add_shard_library(shard-core
-    HEADERS
-        Assert.hpp
-        Byte.hpp
-        DynamicArray.hpp
-        Exception.hpp
-        FilePath.hpp
-        FixedArray.hpp
-        HashMap.hpp
-        Map.hpp
-        SharedPtr.hpp
-        SourceLocation.hpp
-        SourceRange.hpp
-        String.hpp
-        StringView.hpp
-        UniquePtr.hpp
-        ViewPtr.hpp
-        error.hpp
-        utility.hpp
+add_shard_test(shard-ast_test
     SOURCES
-        error.cpp
+        Type.cpp
+        Expr.cpp
+        Decl.cpp
+        Stmt.cpp
+    LIBRARIES
+        shard-ast
 )
-
-# ************************************************************************* #
-
-if (SHARD_BUILD_TOKENIZER)
-    add_subdirectory(tokenizer)
-endif ()
-
-if (SHARD_BUILD_AST)
-    add_subdirectory(ast)
-endif ()
 
 # ************************************************************************* #
