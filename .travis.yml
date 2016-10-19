@@ -1,0 +1,112 @@
+# ************************************************************************* #
+# This file is part of Shard.                                               #
+#                                                                           #
+# Shard is free software: you can redistribute it and/or modify             #
+# it under the terms of the GNU Affero General Public License as            #
+# published by the Free Software Foundation.                                #
+#                                                                           #
+# This program is distributed in the hope that it will be useful,           #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              #
+# GNU Affero General Public License for more details.                       #
+#                                                                           #
+# You should have received a copy of the GNU Affero General Public License  #
+# along with this program. If not, see <http://www.gnu.org/licenses/>.      #
+# ************************************************************************* #
+
+sudo: required
+dist: trusty
+os: linux
+
+language: cpp
+
+matrix:
+    include:
+        - compiler: gcc
+          addons:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                packages:
+                    - g++-4.9
+          env:
+            - CC=gcc-4.9
+            - CXX=g++-4.9
+        - compiler: gcc
+          addons:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                packages:
+                    - g++-5
+          env:
+            - CC=gcc-5
+            - CXX=g++-5
+        - compiler: gcc
+          addons:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                packages:
+                    - g++-6
+          env:
+            - CC=gcc-6
+            - CXX=g++-6
+        - compiler: clang
+          addons:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                    - llvm-toolchain-precise-3.6
+                packages:
+                    - clang-3.6
+          env:
+            - CC=clang-3.6
+            - CXX=clang++-3.6
+        - compiler: clang
+          addons:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                    - llvm-toolchain-precise-3.7
+                packages:
+                    - clang-3.7
+          env:
+            - CC=clang-3.7
+            - CXX=clang++-3.7
+        - compiler: clang
+          addons:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                    - llvm-toolchain-precise-3.8
+                packages:
+                    - clang-3.8
+          env:
+            - CC=clang-3.8
+            - CXX=clang++-3.8
+        - compiler: clang
+          addons:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                    - llvm-toolchain-precise-3.9
+                packages:
+                    - clang-3.9
+          env:
+            - CC=clang-3.9
+            - CXX=clang++-3.9
+
+before_script:
+    - mkdir build
+    - pushd build
+    - cmake -DCMAKE_BUILD_TYPE=release -DSHARD_BUILD_TESTS=On ..
+    - popd
+
+script:
+    - VERBOSE=1 cmake --build build
+    - pushd build
+    - GTEST_COLOR=1 ctest --verbose
+    - popd
+
+# ######################################################################### #
