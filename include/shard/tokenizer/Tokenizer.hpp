@@ -36,7 +36,7 @@ namespace tokenizer {
 
 /* ************************************************************************* */
 
-class Tokenizer;
+class Tokenizer; //FWD declaration
 
 class TokenizerIterator
 {
@@ -47,8 +47,15 @@ protected:
 
 public:
 
+    /**
+     * @brief constructs empty TokenizerIterator.
+     */
     TokenizerIterator() = default;
-    TokenizerIterator(ViewPtr<Tokenizer> tokenizer):
+
+    /**
+     * @brief constructs TokenizerIterator for given Tokenizer.
+     */
+    explicit TokenizerIterator(ViewPtr<Tokenizer> tokenizer):
         m_tokenizer(tokenizer) {}
     TokenizerIterator(TokenizerIterator&) = default;
     TokenizerIterator(TokenizerIterator&&) = default;
@@ -57,7 +64,10 @@ public:
     TokenizerIterator& operator++();
     TokenizerIterator operator++(int);
 
-    inline ViewPtr<Tokenizer> getTokenizer() const
+    /**
+     * @brief returns pointer to related tokenizer.
+     */
+    inline ViewPtr<Tokenizer> getTokenizer() const noexcept
     {
         return m_tokenizer;
     }
@@ -90,11 +100,21 @@ protected:
 
 public:
 
-    explicit Tokenizer(const Path& path):
-            m_src(path){next();}
+    /**
+     * @brief constructs Tokenizer which reads from file.
+     */
+    explicit Tokenizer(const Path& path): m_src(path)
+    {
+        next();
+    }
 
-    explicit Tokenizer(const String& source):
-            m_src(source){next();}
+    /**
+     * @brief constructs Tokenizer which reads from String.
+     */
+    explicit Tokenizer(const String& source): m_src(source)
+    {
+        next();
+    }
             
 /* ************************************************************************* */
 
@@ -278,7 +298,7 @@ public:
     }
 
     /**
-     * @brief checks if there is token available.
+     * @brief checks if there is non-ending token available.
      */
     inline bool isEof()
     {
