@@ -37,6 +37,9 @@ using ReadMode = char;
 
 class Source
 {
+
+protected:
+
     UniquePtr<std::basic_streambuf<ReadMode>> m_sb;
 
 public:

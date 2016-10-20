@@ -43,7 +43,7 @@ public:
     using FloatType = double;
     using IntType = long int;
 
-private:
+protected:
 
     TokenType m_type;
 
