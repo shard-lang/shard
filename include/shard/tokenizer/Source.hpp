@@ -70,14 +70,14 @@ public:
      */
     inline bool empty()
     {
-        return getCurrent() == std::char_traits<ReadMode>::eof();
+        return get() == std::char_traits<ReadMode>::eof();
         //return m_sb->in_avail() <= 0;
     }
 
     /**
      * @brief read current character.
      */
-    inline ReadMode getCurrent()
+    inline ReadMode get()
     {
         return static_cast<ReadMode>(m_sb->sgetc());
     }

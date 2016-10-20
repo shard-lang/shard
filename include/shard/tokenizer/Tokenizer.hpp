@@ -125,7 +125,7 @@ protected:
      */
     inline bool isBetween(char value1, char value2) noexcept
     {
-        return !empty() && (m_src.getCurrent() >= value1) && (m_src.getCurrent() <= value2);
+        return !empty() && (m_src.get() >= value1) && (m_src.get() <= value2);
     }
 
     /**
@@ -165,7 +165,7 @@ protected:
      */
     inline bool is(char value) noexcept
     {
-        return !empty() && m_src.getCurrent() == value;
+        return !empty() && m_src.get() == value;
     }
 
     /**
