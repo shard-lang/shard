@@ -52,7 +52,7 @@ class UnknownOperatorException : public TokenizerException
 
 public:
 
-    UnknownOperatorException(const char op)
+    explicit UnknownOperatorException(const char op)
             : m_msg(String("Unknown operator (") + op + ")") {}
 
     const char *what() const noexcept
