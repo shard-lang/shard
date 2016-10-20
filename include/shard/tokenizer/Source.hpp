@@ -37,12 +37,15 @@ using ReadMode = char;
 
 class Source
 {
+
+protected:
+
     UniquePtr<std::basic_streambuf<ReadMode>> m_sb;
 
 public:
 
     /**
-     * @brief input from file
+     * @brief constructs Source with input from file.
      */
     explicit Source (const Path& path):
             m_sb([](const auto& l_path)
@@ -53,7 +56,7 @@ public:
             }(path)) {}
 
     /**
-     * @brief input from string
+     * @brief constructs Source with input from string.
      */
     explicit Source (const String& source):
             m_sb(makeUnique<std::basic_stringbuf<ReadMode>>(source)) {}
@@ -63,36 +66,36 @@ public:
 public:
 
     /**
-     * @brief returns if imput is empty
+     * @brief returns if input is empty.
      */
     inline bool empty()
     {
-        return getCurrent() == std::char_traits<ReadMode>::eof();
+        return get() == std::char_traits<ReadMode>::eof();
         //return m_sb->in_avail() <= 0;
     }
 
     /**
-     * @brief read current character
+     * @brief read current character.
      */
-    inline ReadMode getCurrent()
+    inline ReadMode get()
     {
-        return (ReadMode) m_sb->sgetc();
+        return static_cast<ReadMode>(m_sb->sgetc());
     }
 
     /**
-     * @brief read current character and move to next
+     * @brief read current character and move to next.
      */
     inline ReadMode extract()
     {
-        return (ReadMode) m_sb->sbumpc();
+        return static_cast<ReadMode>(m_sb->sbumpc());
     }
 
     /**
-     * @brief move to next character and read it
+     * @brief move to next character and read it.
      */
     inline ReadMode getNext()
     {
-        return (ReadMode) m_sb->snextc();
+        return static_cast<ReadMode>(m_sb->snextc());
     }
 };
 

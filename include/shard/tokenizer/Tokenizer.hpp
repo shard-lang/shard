@@ -36,7 +36,7 @@ namespace tokenizer {
 
 /* ************************************************************************* */
 
-class Tokenizer;
+class Tokenizer; //FWD declaration
 
 class TokenizerIterator
 {
@@ -47,21 +47,31 @@ protected:
 
 public:
 
+    /**
+     * @brief constructs empty TokenizerIterator.
+     */
     TokenizerIterator() = default;
-    TokenizerIterator(ViewPtr<Tokenizer> tokenizer):
+
+    /**
+     * @brief constructs TokenizerIterator for given Tokenizer.
+     */
+    explicit TokenizerIterator(ViewPtr<Tokenizer> tokenizer):
         m_tokenizer(tokenizer) {}
-    TokenizerIterator(TokenizerIterator&) = default;
-    TokenizerIterator(TokenizerIterator&&) = default;
 
-    const Token& operator*() const;
-    TokenizerIterator& operator++();
-    TokenizerIterator operator++(int);
+    inline const Token& operator*() const;
+    inline TokenizerIterator& operator++();
+    inline TokenizerIterator operator++(int);
 
-    inline ViewPtr<Tokenizer> getTokenizer() const
+    /**
+     * @brief returns pointer to related tokenizer.
+     */
+    inline ViewPtr<Tokenizer> getTokenizer() const noexcept
     {
         return m_tokenizer;
     }
 };
+
+/* ************************************************************************* */
 
 inline bool operator==(const TokenizerIterator& lhs, const TokenizerIterator& rhs)
 {
@@ -90,11 +100,21 @@ protected:
 
 public:
 
-    explicit Tokenizer(const Path& path):
-            m_src(path){next();}
+    /**
+     * @brief constructs Tokenizer which reads from file.
+     */
+    explicit Tokenizer(const Path& path): m_src(path)
+    {
+        next();
+    }
 
-    explicit Tokenizer(const String& source):
-            m_src(source){next();}
+    /**
+     * @brief constructs Tokenizer which reads from String.
+     */
+    explicit Tokenizer(const String& source): m_src(source)
+    {
+        next();
+    }
             
 /* ************************************************************************* */
 
@@ -105,7 +125,7 @@ protected:
      */
     inline bool isBetween(char value1, char value2) noexcept
     {
-        return !empty() && (m_src.getCurrent() >= value1) && (m_src.getCurrent() <= value2);
+        return !empty() && (m_src.get() >= value1) && (m_src.get() <= value2);
     }
 
     /**
@@ -145,7 +165,7 @@ protected:
      */
     inline bool is(char value) noexcept
     {
-        return !empty() && m_src.getCurrent() == value;
+        return !empty() && m_src.get() == value;
     }
 
     /**
@@ -278,7 +298,7 @@ public:
     }
 
     /**
-     * @brief checks if there is token available.
+     * @brief checks if there is non-ending token available.
      */
     inline bool isEof()
     {
@@ -305,6 +325,26 @@ public:
         return TokenizerIterator(nullptr);
     }
 };
+
+/* ************************************************************************* */
+
+inline const Token& TokenizerIterator::operator*() const
+{
+    return m_tokenizer->get();
+}
+
+inline TokenizerIterator& TokenizerIterator::operator++()
+{
+    m_tokenizer->next();
+    return *this;
+}
+
+inline TokenizerIterator TokenizerIterator::operator++(int)
+{
+    TokenizerIterator tmp(*this);
+    operator++();
+    return tmp;
+}
 
 /* ************************************************************************* */
 

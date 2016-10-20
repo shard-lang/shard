@@ -33,134 +33,80 @@ namespace tokenizer {
 
 /* ************************************************************************* */
 
-namespace {
-
-/* ************************************************************************* */
-
-static const Map<String, KeywordType> g_keywordMap {{
-#define KEYWORD(name, str) { # str, KeywordType::name }
-    KEYWORDS
-#undef KEYWORD
-}};
-
-static const Map<char, char> g_escapeMap {
-    {'0', '\0'},
-    {'a', '\a'},
-    {'b', '\b'},
-    {'f', '\f'},
-    {'n', '\n'},
-    {'r', '\r'},
-    {'t', '\t'},
-    {'v', '\v'},
-    {'\\', '\\'},
-    {'"', '"'}
-};
-
-/* ************************************************************************* */
-
-}
-
-/* ************************************************************************* */
-
-const Token& TokenizerIterator::operator*() const
+namespace
 {
-    return m_tokenizer->get();
-}
+    static const Map<String, KeywordType> g_keywordMap {{
+    #define KEYWORD(name, str) { # str, KeywordType::name }
+        KEYWORDS
+    #undef KEYWORD
+    }};
 
-TokenizerIterator& TokenizerIterator::operator++()
-{
-    m_tokenizer->next();
-    return *this;
-}
-
-TokenizerIterator TokenizerIterator::operator++(int)
-{
-    TokenizerIterator tmp(*this);
-    operator++();
-    return tmp;
+    static const Map<char, char> g_escapeMap {
+        {'0', '\0'},
+        {'a', '\a'},
+        {'b', '\b'},
+        {'f', '\f'},
+        {'n', '\n'},
+        {'r', '\r'},
+        {'t', '\t'},
+        {'v', '\v'},
+        {'\\', '\\'},
+        {'"', '"'}
+    };
 }
 
 /* ************************************************************************* */
 
 void Tokenizer::tokenizeNumber()
 {
-    String buf;
     bool floatFlag = false;
+    int digitSize = 0;
     
-    const auto readNumber = [this, &buf]()
+    const auto readNumber = [&]() -> Token::IntType
     {
+        digitSize = 0;
         if (!isDigit())
         {
             throw ExpectedNumberException();
         }
+        Token::IntType res = 0;
         do
         {
-            buf += m_src.extract();
+            res = res * 10 + (m_src.extract() - '0');
+            ++digitSize;
         }
         while (isDigit());
-    };
-
-    readNumber();
-    if (is('.'))
-    {
-        floatFlag = true;
-        buf += m_src.extract();
-        readNumber();
-    }
-    if (is('e', 'E'))
-    {
-        floatFlag = true;
-        buf += m_src.extract();
-        if (is('-', '+'))
-        {
-            buf += m_src.extract();
-        }
-        readNumber();
-    }
-    
-    auto ptr = buf.cbegin();
-
-    const auto parseInt = [&ptr]() noexcept -> Token::IntType
-    {
-        Token::IntType res = 0;
-        for (; *ptr >= '0' && *ptr <= '9'; ++ptr)
-        {
-            res = res * 10 + (*ptr - '0');
-        }
         return res;
     };
 
-    const auto parseFloat = [&ptr, &parseInt]() noexcept -> Token::FloatType
+    Token::IntType base = readNumber();
+    
+    Token::FloatType decimal = 0;
+    if (match('.'))
     {
-        Token::FloatType base = parseInt();
+        floatFlag = true;
+        decimal = readNumber();
+        decimal = decimal / std::pow(10.0, digitSize);
+    }
 
-        Token::FloatType decimal = 0;
-        if (*ptr == '.')
+    Token::FloatType exp = 1;
+    if (match('e', 'E'))
+    {
+        floatFlag = true;
+        bool negativeExp = false;
+        switch (m_src.get())
         {
-            ++ptr;
-            auto counter = ptr;
-            decimal = parseInt() / std::pow(10.0, std::distance(counter, ptr));
+            case '-': negativeExp = true;
+            case '+': m_src.extract();
+            default: break;
         }
+        exp = std::pow(10.0, readNumber());
+        exp = negativeExp ? (1 / exp) : exp;
+    }
 
-        Token::FloatType exp = 1;
-        if (*ptr == 'e' || *ptr == 'E')
-        {
-            ++ptr;
-            bool negativeExp = false;
-            switch (*ptr)
-            {
-                case '-': negativeExp = true;
-                case '+': ++ptr;
-                default: break;
-            }
-            exp = std::pow(10.0, parseInt());
-            exp = negativeExp ? (1 / exp) : exp;
-        }
+    Token::FloatType value = (static_cast<Token::FloatType>(base) + decimal) * exp;
 
-        return (base + decimal) * exp;
-    };
-
-    m_current = floatFlag ? Token(parseFloat()) : Token(parseInt());
+    m_current = floatFlag ? Token(value) : Token(base);
 }
 
 void Tokenizer::tokenizeString()
@@ -242,22 +188,22 @@ void Tokenizer::tokenizeChar()
 
 void Tokenizer::tokenizeIdentifier() noexcept
 {
-    String buf;
+    String value;
     
     do
     {
-        buf += m_src.extract();
+        value += m_src.extract();
     }
     while (isIdentifier());
 
-    auto search = g_keywordMap.find(buf);
+    auto search = g_keywordMap.find(value);
     if (search != g_keywordMap.end())
     {
         m_current = Token(search->second);
     }
     else
     {
-        m_current = Token(buf);
+        m_current = Token(value);
     }
 }
 
@@ -281,6 +227,7 @@ void Tokenizer::tokenizeOperator()
         case '/': m_current = Token(TokenType::Slash); break;
         case '\\': m_current = Token(TokenType::Backslash); break;
         case '^': m_current = Token(TokenType::Caret); break;
+        case '~': m_current = Token(TokenType::Tilde); break;
         case '%': m_current = Token(TokenType::Percent); break;
         case '&': m_current = Token(TokenType::Ampersand); break;
         case '?': m_current = Token(TokenType::QMark); break;
