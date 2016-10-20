@@ -59,83 +59,54 @@ namespace
 
 void Tokenizer::tokenizeNumber()
 {
-    String buf;
     bool floatFlag = false;
+    int digitSize = 0;
     
-    const auto readNumber = [this, &buf]()
+    const auto readNumber = [&]() -> Token::IntType
     {
+        digitSize = 0;
         if (!isDigit())
         {
             throw ExpectedNumberException();
         }
+        Token::IntType res = 0;
         do
         {
-            buf += m_src.extract();
+            res = res * 10 + (m_src.extract() - '0');
+            ++digitSize;
         }
         while (isDigit());
-    };
-
-    readNumber();
-    if (is('.'))
-    {
-        floatFlag = true;
-        buf += m_src.extract();
-        readNumber();
-    }
-    if (is('e', 'E'))
-    {
-        floatFlag = true;
-        buf += m_src.extract();
-        if (is('-', '+'))
-        {
-            buf += m_src.extract();
-        }
-        readNumber();
-    }
-    
-    auto ptr = buf.cbegin();
-
-    const auto parseInt = [&ptr]() noexcept -> Token::IntType
-    {
-        Token::IntType res = 0;
-        for (; *ptr >= '0' && *ptr <= '9'; ++ptr)
-        {
-            res = res * 10 + (*ptr - '0');
-        }
         return res;
     };
 
-    const auto parseFloat = [&ptr, &parseInt]() noexcept -> Token::FloatType
+    Token::IntType base = readNumber();
+    
+    Token::FloatType decimal = 0;
+    if (match('.'))
     {
-        Token::FloatType base = parseInt();
+        floatFlag = true;
+        decimal = readNumber();
+        decimal = decimal / std::pow(10.0, digitSize);
+    }
 
-        Token::FloatType decimal = 0;
-        if (*ptr == '.')
+    Token::FloatType exp = 1;
+    if (match('e', 'E'))
+    {
+        floatFlag = true;
+        bool negativeExp = false;
+        switch (m_src.get())
         {
-            ++ptr;
-            auto counter = ptr;
-            decimal = parseInt() / std::pow(10.0, std::distance(counter, ptr));
+            case '-': negativeExp = true;
+            case '+': m_src.extract();
+            default: break;
         }
+        exp = std::pow(10.0, readNumber());
+        exp = negativeExp ? (1 / exp) : exp;
+    }
 
-        Token::FloatType exp = 1;
-        if (*ptr == 'e' || *ptr == 'E')
-        {
-            ++ptr;
-            bool negativeExp = false;
-            switch (*ptr)
-            {
-                case '-': negativeExp = true;
-                case '+': ++ptr;
-                default: break;
-            }
-            exp = std::pow(10.0, parseInt());
-            exp = negativeExp ? (1 / exp) : exp;
-        }
+    Token::FloatType value = (static_cast<Token::FloatType>(base) + decimal) * exp;
 
-        return (base + decimal) * exp;
-    };
-
-    m_current = floatFlag ? Token(parseFloat()) : Token(parseInt());
+    m_current = floatFlag ? Token(value) : Token(base);
 }
 
 void Tokenizer::tokenizeString()
