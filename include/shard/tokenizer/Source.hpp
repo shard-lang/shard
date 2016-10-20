@@ -76,7 +76,7 @@ public:
      */
     inline ReadMode getCurrent()
     {
-        return (ReadMode) m_sb->sgetc();
+        return static_cast<ReadMode>(m_sb->sgetc());
     }
 
     /**
@@ -84,7 +84,7 @@ public:
      */
     inline ReadMode extract()
     {
-        return (ReadMode) m_sb->sbumpc();
+        return static_cast<ReadMode>(m_sb->sbumpc());
     }
 
     /**
@@ -92,7 +92,7 @@ public:
      */
     inline ReadMode getNext()
     {
-        return (ReadMode) m_sb->snextc();
+        return static_cast<ReadMode>(m_sb->snextc());
     }
 };
 
