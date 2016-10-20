@@ -217,22 +217,22 @@ void Tokenizer::tokenizeChar()
 
 void Tokenizer::tokenizeIdentifier() noexcept
 {
-    String buf;
+    String value;
     
     do
     {
-        buf += m_src.extract();
+        value += m_src.extract();
     }
     while (isIdentifier());
 
-    auto search = g_keywordMap.find(buf);
+    auto search = g_keywordMap.find(value);
     if (search != g_keywordMap.end())
     {
         m_current = Token(search->second);
     }
     else
     {
-        m_current = Token(buf);
+        m_current = Token(value);
     }
 }
 
