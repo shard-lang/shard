@@ -57,12 +57,10 @@ public:
      */
     explicit TokenizerIterator(ViewPtr<Tokenizer> tokenizer):
         m_tokenizer(tokenizer) {}
-    TokenizerIterator(TokenizerIterator&) = default;
-    TokenizerIterator(TokenizerIterator&&) = default;
 
-    const Token& operator*() const;
-    TokenizerIterator& operator++();
-    TokenizerIterator operator++(int);
+    inline const Token& operator*() const;
+    inline TokenizerIterator& operator++();
+    inline TokenizerIterator operator++(int);
 
     /**
      * @brief returns pointer to related tokenizer.
@@ -325,6 +323,26 @@ public:
         return TokenizerIterator(nullptr);
     }
 };
+
+/* ************************************************************************* */
+
+inline const Token& TokenizerIterator::operator*() const
+{
+    return m_tokenizer->get();
+}
+
+inline TokenizerIterator& TokenizerIterator::operator++()
+{
+    m_tokenizer->next();
+    return *this;
+}
+
+inline TokenizerIterator TokenizerIterator::operator++(int)
+{
+    TokenizerIterator tmp(*this);
+    operator++();
+    return tmp;
+}
 
 /* ************************************************************************* */
 

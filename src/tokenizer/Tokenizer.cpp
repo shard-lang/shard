@@ -33,51 +33,26 @@ namespace tokenizer {
 
 /* ************************************************************************* */
 
-namespace {
-
-/* ************************************************************************* */
-
-static const Map<String, KeywordType> g_keywordMap {{
-#define KEYWORD(name, str) { # str, KeywordType::name }
-    KEYWORDS
-#undef KEYWORD
-}};
-
-static const Map<char, char> g_escapeMap {
-    {'0', '\0'},
-    {'a', '\a'},
-    {'b', '\b'},
-    {'f', '\f'},
-    {'n', '\n'},
-    {'r', '\r'},
-    {'t', '\t'},
-    {'v', '\v'},
-    {'\\', '\\'},
-    {'"', '"'}
-};
-
-/* ************************************************************************* */
-
-}
-
-/* ************************************************************************* */
-
-const Token& TokenizerIterator::operator*() const
+namespace
 {
-    return m_tokenizer->get();
-}
+    static const Map<String, KeywordType> g_keywordMap {{
+    #define KEYWORD(name, str) { # str, KeywordType::name }
+        KEYWORDS
+    #undef KEYWORD
+    }};
 
-TokenizerIterator& TokenizerIterator::operator++()
-{
-    m_tokenizer->next();
-    return *this;
-}
-
-TokenizerIterator TokenizerIterator::operator++(int)
-{
-    TokenizerIterator tmp(*this);
-    operator++();
-    return tmp;
+    static const Map<char, char> g_escapeMap {
+        {'0', '\0'},
+        {'a', '\a'},
+        {'b', '\b'},
+        {'f', '\f'},
+        {'n', '\n'},
+        {'r', '\r'},
+        {'t', '\t'},
+        {'v', '\v'},
+        {'\\', '\\'},
+        {'"', '"'}
+    };
 }
 
 /* ************************************************************************* */
