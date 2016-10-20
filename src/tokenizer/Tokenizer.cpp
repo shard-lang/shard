@@ -36,9 +36,8 @@ namespace tokenizer {
 namespace
 {
     static const Map<String, KeywordType> g_keywordMap {{
-    #define KEYWORD(name, str) { # str, KeywordType::name }
-        KEYWORDS
-    #undef KEYWORD
+    #define KEYWORD(name, str) { str, KeywordType::name },
+    #include "shard/tokenizer/Token.def"
     }};
 
     static const Map<char, char> g_escapeMap {

@@ -1,0 +1,101 @@
+/* ************************************************************************* */
+/* This file is part of Shard.                                               */
+/*                                                                           */
+/* Shard is free software: you can redistribute it and/or modify             */
+/* it under the terms of the GNU Affero General Public License as            */
+/* published by the Free Software Foundation.                                */
+/*                                                                           */
+/* This program is distributed in the hope that it will be useful,           */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of            */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              */
+/* GNU Affero General Public License for more details.                       */
+/*                                                                           */
+/* You should have received a copy of the GNU Affero General Public License  */
+/* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
+/* ************************************************************************* */
+
+#ifndef TOKEN
+#define TOKEN(name)
+#endif
+
+#ifndef PUNCTUATOR
+#define PUNCTUATOR(name, str) TOKEN(name)
+#endif
+
+#ifndef KEYWORD
+#define KEYWORD(name, str)
+#endif
+
+/* ************************************************************************* */
+
+TOKEN(End)
+
+TOKEN(Identifier)
+TOKEN(Keyword)
+TOKEN(String)
+TOKEN(Int)
+TOKEN(Float)
+TOKEN(Char)
+
+/* ************************************************************************* */
+
+PUNCTUATOR(Period,     ".")
+PUNCTUATOR(Comma,      ",")
+PUNCTUATOR(Colon,      ":")
+PUNCTUATOR(Semicolon,  ";")
+
+PUNCTUATOR(CBracketO,  "{")
+PUNCTUATOR(CBracketC,  "}")
+PUNCTUATOR(SBracketO,  "[")
+PUNCTUATOR(SBracketC,  "]")
+PUNCTUATOR(BracketO,   "(")
+PUNCTUATOR(BracketC,   ")")
+
+PUNCTUATOR(Plus,       "+")
+PUNCTUATOR(Minus,      "-")
+PUNCTUATOR(Star,       "*")
+PUNCTUATOR(Slash,      "/")
+PUNCTUATOR(Backslash,  "\\")
+PUNCTUATOR(Caret,      "^")
+PUNCTUATOR(Tilde,      "~")
+PUNCTUATOR(Percent,    "%")
+PUNCTUATOR(Ampersand,  "&")
+
+PUNCTUATOR(QMark,      "?")
+PUNCTUATOR(EMark,      "!")
+
+PUNCTUATOR(Equal,      "=")
+PUNCTUATOR(Less,       "<")
+PUNCTUATOR(Greater,    ">")
+PUNCTUATOR(Hash,       "#")
+
+/* ************************************************************************* */
+
+KEYWORD(Class,      "class")
+KEYWORD(Public,     "public")
+KEYWORD(Protected,  "protected")
+KEYWORD(Private,    "private")
+KEYWORD(Var,        "var")
+KEYWORD(Auto,       "auto")
+KEYWORD(Int,        "int")
+KEYWORD(Char,       "char")
+KEYWORD(Bool,       "bool")
+KEYWORD(Float,      "float")
+KEYWORD(String,     "string")
+KEYWORD(Null,       "null")
+KEYWORD(True,       "true")
+KEYWORD(False,      "false")
+KEYWORD(If,         "if")
+KEYWORD(Else,       "else")
+KEYWORD(Do,         "do")
+KEYWORD(While,      "while")
+KEYWORD(For,        "for")
+KEYWORD(Throw,      "throw")
+
+/* ************************************************************************* */
+
+#undef KEYWORD
+#undef PUNCTUATOR
+#undef TOKEN
+
+/* ************************************************************************* */

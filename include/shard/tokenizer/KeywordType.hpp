@@ -18,44 +18,6 @@
 
 /* ************************************************************************* */
 
-#define KEYWORDS \
-    KEYWORD(Namespace, namespace), \
-    KEYWORD(Class, class), \
-    KEYWORD(Enum, enum), \
-    KEYWORD(Presenter, presenter), \
-    KEYWORD(Model, model), \
-    KEYWORD(Public, public), \
-    KEYWORD(Protected, protected), \
-    KEYWORD(Private, private), \
-    KEYWORD(Action, action), \
-    KEYWORD(Render, render), \
-    KEYWORD(Before, before), \
-    KEYWORD(Var, var), \
-    KEYWORD(Auto, auto), \
-    KEYWORD(Int, int), \
-    KEYWORD(Char, char), \
-    KEYWORD(Bool, bool), \
-    KEYWORD(Float, float), \
-    KEYWORD(String, string), \
-    KEYWORD(Null, null), \
-    KEYWORD(True, true), \
-    KEYWORD(False, false), \
-    KEYWORD(Array, array), \
-    KEYWORD(As, as), \
-    KEYWORD(Use, use), \
-    KEYWORD(Extends, extends), \
-    KEYWORD(If, if), \
-    KEYWORD(Else, else), \
-    KEYWORD(Do, do), \
-    KEYWORD(While, while), \
-    KEYWORD(For, for), \
-    KEYWORD(Try, try), \
-    KEYWORD(Catch, catch), \
-    KEYWORD(Finally, finally), \
-    KEYWORD(Throw, throw)
-
-/* ************************************************************************* */
-
 namespace shard {
 inline namespace v1 {
 namespace tokenizer {
@@ -64,9 +26,8 @@ namespace tokenizer {
 
 enum class KeywordType
 {
-#define KEYWORD(name, str) name
-    KEYWORDS
-#undef KEYWORD
+#define KEYWORD(name, str) name,
+#include "Token.def"
 };
 
 /* ************************************************************************* */

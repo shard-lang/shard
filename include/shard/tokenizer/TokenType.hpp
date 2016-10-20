@@ -26,44 +26,8 @@ namespace tokenizer {
 
 enum class TokenType
 {
-    End,
-
-    Identifier,
-    Keyword,
-    String,
-    Int,
-    Float,
-    Char,
-
-    Period,     // .
-    Comma,      // ,
-    Colon,      // :
-    Semicolon,  // ;
-
-    CBracketO,  // {
-    CBracketC,  // }
-    SBracketO,  // [
-    SBracketC,  // ]
-    BracketO,   // (
-    BracketC,   // )
-
-    Plus,       // +
-    Minus,      // -
-    Star,       // *
-    Slash,      // /
-    Backslash,  //
-    Caret,      // ^
-    Tilde,      // ~
-    Percent,    // %
-    Ampersand,  // &
-
-    QMark,      // ?
-    EMark,      // !
-
-    Equal,      // =
-    Less,       // <
-    Greater,    // >
-    Hash,       // #
+#define TOKEN(X) X,
+#include "Token.def"
 };
 
 /* ************************************************************************* */
