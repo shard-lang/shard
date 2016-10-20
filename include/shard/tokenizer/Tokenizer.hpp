@@ -71,6 +71,8 @@ public:
     }
 };
 
+/* ************************************************************************* */
+
 inline bool operator==(const TokenizerIterator& lhs, const TokenizerIterator& rhs)
 {
     return (lhs.getTokenizer() == nullptr || (*lhs).getType() == TokenType::End) && (rhs.getTokenizer() == nullptr || (*rhs).getType() == TokenType::End);

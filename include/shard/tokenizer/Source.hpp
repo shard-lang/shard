@@ -45,7 +45,7 @@ protected:
 public:
 
     /**
-     * @brief input from file
+     * @brief constructs Source with input from file.
      */
     explicit Source (const Path& path):
             m_sb([](const auto& l_path)
@@ -56,7 +56,7 @@ public:
             }(path)) {}
 
     /**
-     * @brief input from string
+     * @brief constructs Source with input from string.
      */
     explicit Source (const String& source):
             m_sb(makeUnique<std::basic_stringbuf<ReadMode>>(source)) {}
@@ -66,7 +66,7 @@ public:
 public:
 
     /**
-     * @brief returns if imput is empty
+     * @brief returns if input is empty.
      */
     inline bool empty()
     {
@@ -75,7 +75,7 @@ public:
     }
 
     /**
-     * @brief read current character
+     * @brief read current character.
      */
     inline ReadMode getCurrent()
     {
@@ -83,7 +83,7 @@ public:
     }
 
     /**
-     * @brief read current character and move to next
+     * @brief read current character and move to next.
      */
     inline ReadMode extract()
     {
@@ -91,7 +91,7 @@ public:
     }
 
     /**
-     * @brief move to next character and read it
+     * @brief move to next character and read it.
      */
     inline ReadMode getNext()
     {

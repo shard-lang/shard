@@ -57,54 +57,93 @@ public:
 
     Token() = default;
 
+    /**
+     * @brief constructs Token of given type.
+     */
     explicit Token(TokenType type):
         m_type(type) {}
 
+    /**
+     * @brief constructs Token of given type with given String value.
+     */
     explicit Token(TokenType type, const String& value):
         m_type(type), m_sValue(value) {}
-     
+    
+    /**
+     * @brief constructs Token of type identifier with given String value.
+     */ 
     explicit Token(const String& value):
         m_type(TokenType::Identifier), m_sValue(value) {}
-   
+    
+    /**
+     * @brief constructs Token of type Float with given Float value.
+     */
     explicit Token (FloatType value):
         m_type(TokenType::Float), m_fValue(value) {}
         
+    /**
+     * @brief constructs Token of type Char with given char value.
+     */
     explicit Token(char value):
         m_type(TokenType::Char), m_cValue(value) {}
-        
+       
+    /**
+     * @brief constructs Token of type Int with given IntType value.
+     */ 
     explicit Token(IntType value):
         m_type(TokenType::Int), m_iValue(value) {}
 
+    /**
+     * @brief constructs Token of type Keyword with given KeywordType value.
+     */
     explicit Token(KeywordType type):
         m_type(TokenType::Keyword), m_kType(type) {}
 
 /* ************************************************************************* */
 
+    /**
+     * @brief returns Type of current token.
+     */
     inline TokenType getType() const noexcept
     {
         return m_type;
     }
 
+    /**
+     * @brief returns String value of current token.
+     */
     inline const String& getStringValue() const noexcept
     {
         return m_sValue;
     }
     
+    /**
+     * @brief returns FloatValue of current token.
+     */
     inline FloatType getFloatValue() const noexcept
     {
         return m_fValue;
     }
     
+    /**
+     * @brief returns CharValue of current token.
+     */
     inline float getCharValue() const noexcept
     {
         return m_cValue;
     }
     
+    /**
+     * @brief returns IntValue of current token.
+     */
     inline IntType getIntValue() const noexcept
     {
         return m_iValue;
     }
 
+    /**
+     * @brief returns KeywordType of current token.
+     */
     inline KeywordType getKeywordType() const noexcept
     {
         return m_kType;
