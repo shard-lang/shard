@@ -90,6 +90,8 @@ KEYWORD(Else,       "else")
 KEYWORD(Do,         "do")
 KEYWORD(While,      "while")
 KEYWORD(For,        "for")
+KEYWORD(Try,        "try")
+KEYWORD(Catch,      "catch")
 KEYWORD(Throw,      "throw")
 
 /* ************************************************************************* */
