@@ -41,6 +41,9 @@ namespace
     #include "shard/tokenizer/Token.def"
     }};
 
+    /**
+     * @brief returns escaped char value.
+     */
     static char getEscaped(const char value)
     {
         switch (value)
