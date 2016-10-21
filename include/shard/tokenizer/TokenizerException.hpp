@@ -83,7 +83,7 @@ class CharWithoutEndException : public TokenizerException
 
 /* ************************************************************************* */
 
-class InvalidCharLiteralException : public TokenizerException
+class EmptyCharLiteralException : public TokenizerException
 {
     const char *what() const noexcept
     {

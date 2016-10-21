@@ -23,7 +23,7 @@
 #include <cmath>
 
 // Shard
-#include "shard/Map.hpp"
+#include "shard/StaticArray.hpp"
 
 /* ************************************************************************* */
 
@@ -35,23 +35,30 @@ namespace tokenizer {
 
 namespace
 {
-    static const Map<String, KeywordType> g_keywordMap {{
+    static const StaticArray<std::pair<String, KeywordType>, 22> g_keywordMap
+    {{
     #define KEYWORD(name, str) { str, KeywordType::name },
     #include "shard/tokenizer/Token.def"
     }};
 
-    static const Map<char, char> g_escapeMap {
-        {'0', '\0'},
-        {'a', '\a'},
-        {'b', '\b'},
-        {'f', '\f'},
-        {'n', '\n'},
-        {'r', '\r'},
-        {'t', '\t'},
-        {'v', '\v'},
-        {'\\', '\\'},
-        {'"', '"'}
-    };
+    static char getEscaped(const char value)
+    {
+        switch (value)
+        {
+            case '0': return '\0';
+            case 'a': return '\a';
+            case 'b': return '\b';
+            case 'f': return '\f';
+            case 'n': return '\n';
+            case 'r': return '\r';
+            case 't': return '\t';
+            case 'v': return '\v';
+            case '\\': return '\\';
+            case '"': return '"';
+            case '\'': return '\'';
+            default: throw InvalidEscapeSequenceException();
+        }
+    }
 }
 
 /* ************************************************************************* */
@@ -124,15 +131,7 @@ void Tokenizer::tokenizeString()
             {
                 throw StringWithoutEndException();
             }
-            auto search = g_escapeMap.find(m_src.extract());
-            if (search != g_escapeMap.end())
-            {
-                value += search->second;
-            }
-            else
-            {
-                throw InvalidEscapeSequenceException();
-            }
+            value += getEscaped(m_src.extract());
         }
         else
         {
@@ -155,34 +154,24 @@ void Tokenizer::tokenizeChar()
             {
                 throw CharWithoutEndException();
             }
-            auto search = g_escapeMap.find(m_src.extract());
-            if (search != g_escapeMap.end())
-            {
-                value = search->second;
-            }
-            else
-            {
-                throw InvalidEscapeSequenceException();
-            }
+            value = getEscaped(m_src.extract());
             break;
         }
         case char_literal_border:
         {
-            throw InvalidCharLiteralException();
+            throw EmptyCharLiteralException();
         }
         default:
         {
             value = local;
         }
     }
-    
     if (!match(char_literal_border))
     {
         throw CharWithoutEndException();
     }
     
     m_current = Token(value);
-
 }
 
 void Tokenizer::tokenizeIdentifier() noexcept
@@ -194,8 +183,10 @@ void Tokenizer::tokenizeIdentifier() noexcept
         value += m_src.extract();
     }
     while (isIdentifier());
-
-    auto search = g_keywordMap.find(value);
+    auto search = std::find_if(
+        g_keywordMap.begin(), g_keywordMap.end(),
+        [&](const std::pair<String, KeywordType>& test){ return test.first == value; }
+    );
     if (search != g_keywordMap.end())
     {
         m_current = Token(search->second);
