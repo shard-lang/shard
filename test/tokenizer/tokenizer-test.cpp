@@ -233,3 +233,18 @@ TEST(Tokenizer, keywords)
         {Token(KeywordType::Throw), Token("Exception"), Token(TokenType::Amp), Token("ex"), Token(TokenType::Semicolon)}
     );
 }
+TEST(Tokenizer, comments)
+{
+    test(
+        "123//comment\n123",
+        {Token(123l), Token(123l)}
+    );
+    test(
+        "123/*dadjabj\ndadbhj\rda*/123",
+        {Token(123l), Token(123l)}
+    );
+    test(
+        "123//comment\r123",
+        {Token(123l), Token(123l)}
+    );
+}

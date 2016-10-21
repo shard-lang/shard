@@ -45,6 +45,10 @@ namespace
     {
         switch (value)
         {
+            case '"': return '"';
+            case '\'': return '\'';
+            case '?': return '\?';
+            case '\\': return '\\';
             case '0': return '\0';
             case 'a': return '\a';
             case 'b': return '\b';
@@ -53,9 +57,6 @@ namespace
             case 'r': return '\r';
             case 't': return '\t';
             case 'v': return '\v';
-            case '\\': return '\\';
-            case '"': return '"';
-            case '\'': return '\'';
             default: throw InvalidEscapeSequenceException();
         }
     }
@@ -322,6 +323,8 @@ void Tokenizer::tokenizeOperator()
 
 void Tokenizer::next()
 {
+    skipWhitespace();
+    skipComments();
     skipWhitespace();
 
     if (empty())

@@ -233,6 +233,30 @@ protected:
         }
     }
 
+    inline void skipComments() noexcept
+    {
+        if (match('/'))
+        {
+            if (match('*'))
+            {
+                while (!match('*') || !match('/'))
+                {
+                    m_src.extract();
+                }
+                return;
+            }
+            if (match('/'))
+            {
+                while (!match('\n') && !match('\r'))
+                {
+                    m_src.extract();
+                }
+                return;
+            }
+            m_src.unget();
+        }
+    }
+
     /**
      * @brief chcecks if source is empty.
      */
