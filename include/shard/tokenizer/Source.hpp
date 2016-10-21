@@ -97,6 +97,14 @@ public:
     {
         return static_cast<ReadMode>(m_sb->snextc());
     }
+
+    /**
+     * @brief return to previous character and read it.
+     */
+    inline ReadMode unget()
+    {
+        return static_cast<ReadMode>(m_sb->sungetc());
+    }
 };
 
 /* ************************************************************************* */

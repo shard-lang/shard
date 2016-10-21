@@ -23,7 +23,7 @@
 #include <cmath>
 
 // Shard
-#include "shard/Map.hpp"
+#include "shard/StaticArray.hpp"
 
 /* ************************************************************************* */
 
@@ -35,23 +35,31 @@ namespace tokenizer {
 
 namespace
 {
-    static const Map<String, KeywordType> g_keywordMap {{
+    static const StaticArray<std::pair<String, KeywordType>, 22> g_keywordMap
+    {{
     #define KEYWORD(name, str) { str, KeywordType::name },
     #include "shard/tokenizer/Token.def"
     }};
 
-    static const Map<char, char> g_escapeMap {
-        {'0', '\0'},
-        {'a', '\a'},
-        {'b', '\b'},
-        {'f', '\f'},
-        {'n', '\n'},
-        {'r', '\r'},
-        {'t', '\t'},
-        {'v', '\v'},
-        {'\\', '\\'},
-        {'"', '"'}
-    };
+    static char getEscaped(const char value)
+    {
+        switch (value)
+        {
+            case '"': return '"';
+            case '\'': return '\'';
+            case '?': return '\?';
+            case '\\': return '\\';
+            case '0': return '\0';
+            case 'a': return '\a';
+            case 'b': return '\b';
+            case 'f': return '\f';
+            case 'n': return '\n';
+            case 'r': return '\r';
+            case 't': return '\t';
+            case 'v': return '\v';
+            default: throw InvalidEscapeSequenceException();
+        }
+    }
 }
 
 /* ************************************************************************* */
@@ -124,15 +132,7 @@ void Tokenizer::tokenizeString()
             {
                 throw StringWithoutEndException();
             }
-            auto search = g_escapeMap.find(m_src.extract());
-            if (search != g_escapeMap.end())
-            {
-                value += search->second;
-            }
-            else
-            {
-                throw InvalidEscapeSequenceException();
-            }
+            value += getEscaped(m_src.extract());
         }
         else
         {
@@ -155,34 +155,24 @@ void Tokenizer::tokenizeChar()
             {
                 throw CharWithoutEndException();
             }
-            auto search = g_escapeMap.find(m_src.extract());
-            if (search != g_escapeMap.end())
-            {
-                value = search->second;
-            }
-            else
-            {
-                throw InvalidEscapeSequenceException();
-            }
+            value = getEscaped(m_src.extract());
             break;
         }
         case char_literal_border:
         {
-            throw InvalidCharLiteralException();
+            throw EmptyCharLiteralException();
         }
         default:
         {
             value = local;
         }
     }
-    
     if (!match(char_literal_border))
     {
         throw CharWithoutEndException();
     }
     
     m_current = Token(value);
-
 }
 
 void Tokenizer::tokenizeIdentifier() noexcept
@@ -194,8 +184,10 @@ void Tokenizer::tokenizeIdentifier() noexcept
         value += m_src.extract();
     }
     while (isIdentifier());
-
-    auto search = g_keywordMap.find(value);
+    auto search = std::find_if(
+        g_keywordMap.begin(), g_keywordMap.end(),
+        [&](const std::pair<String, KeywordType>& test){ return test.first == value; }
+    );
     if (search != g_keywordMap.end())
     {
         m_current = Token(search->second);
@@ -214,33 +206,125 @@ void Tokenizer::tokenizeOperator()
         case ',': m_current = Token(TokenType::Comma); break;
         case ':': m_current = Token(TokenType::Colon); break;
         case ';': m_current = Token(TokenType::Semicolon); break;
-        case '{': m_current = Token(TokenType::CBracketO); break;
-        case '}': m_current = Token(TokenType::CBracketC); break;
-        case '[': m_current = Token(TokenType::SBracketO); break;
-        case ']': m_current = Token(TokenType::SBracketC); break;
-        case '(': m_current = Token(TokenType::BracketO); break;
-        case ')': m_current = Token(TokenType::BracketC); break;
-        case '+': m_current = Token(TokenType::Plus); break;
-        case '-': m_current = Token(TokenType::Minus); break;
-        case '*': m_current = Token(TokenType::Star); break;
-        case '/': m_current = Token(TokenType::Slash); break;
-        case '\\': m_current = Token(TokenType::Backslash); break;
-        case '^': m_current = Token(TokenType::Caret); break;
+        case '{': m_current = Token(TokenType::BraceO); break;
+        case '}': m_current = Token(TokenType::BraceC); break;
+        case '[': m_current = Token(TokenType::SquareO); break;
+        case ']': m_current = Token(TokenType::SquareC); break;
+        case '(': m_current = Token(TokenType::ParenO); break;
+        case ')': m_current = Token(TokenType::ParenC); break;
+        case '=':
+        {
+            switch (m_src.get())
+            {
+                case '=': m_current = Token(TokenType::EqualEqual); m_src.extract(); break;
+                case '<': m_current = Token(TokenType::LessEqual); m_src.extract(); break;
+                case '>': m_current = Token(TokenType::GreaterEqual); m_src.extract(); break;
+                default: m_current = Token(TokenType::Equal); break;
+            } break;
+        }
+        case '+':
+        {
+            switch (m_src.get())
+            {
+                case '+': m_current = Token(TokenType::PlusPlus); m_src.extract(); break;
+                case '=': m_current = Token(TokenType::PlusEqual); m_src.extract(); break;
+                default: m_current = Token(TokenType::Plus); break;
+            } break;
+        }
+        case '-':
+        {
+            switch (m_src.get())
+            {
+                case '-': m_current = Token(TokenType::MinusMinus); m_src.extract(); break;
+                case '=': m_current = Token(TokenType::MinusEqual); m_src.extract(); break;
+                default: m_current = Token(TokenType::Minus); break;
+            } break;
+        }
+        case '*':
+        {
+            switch (m_src.get())
+            {
+                case '=': m_current = Token(TokenType::StarEqual); m_src.extract(); break;
+                default: m_current = Token(TokenType::Star); break;
+            } break;
+        }
+        case '/':
+        {
+            switch (m_src.get())
+            {
+                case '=': m_current = Token(TokenType::SlashEqual); m_src.extract(); break;
+                default: m_current = Token(TokenType::Slash); break;
+            } break;
+        }
+        case '^':
+        {
+            switch (m_src.get())
+            {
+                case '=': m_current = Token(TokenType::CaretEqual); m_src.extract(); break;
+                default: m_current = Token(TokenType::Caret); break;
+            } break;
+        }
         case '~': m_current = Token(TokenType::Tilde); break;
-        case '%': m_current = Token(TokenType::Percent); break;
-        case '&': m_current = Token(TokenType::Ampersand); break;
-        case '?': m_current = Token(TokenType::QMark); break;
-        case '!': m_current = Token(TokenType::EMark); break;
-        case '=': m_current = Token(TokenType::Equal); break;
-        case '<': m_current = Token(TokenType::Less); break;
-        case '>': m_current = Token(TokenType::Greater); break;
         case '#': m_current = Token(TokenType::Hash); break;
+        case '\\': m_current = Token(TokenType::Backslash); break;
+        case '%': 
+        {
+            switch (m_src.get())
+            {
+                case '=': m_current = Token(TokenType::PercentEqual); m_src.extract(); break;
+                default: m_current = Token(TokenType::Equal); break;
+            } break;
+        }
+        case '&':
+        {
+            switch (m_src.get())
+            {
+                case '&': m_current = Token(TokenType::AmpAmp); m_src.extract(); break;
+                default: m_current = Token(TokenType::Amp); break;
+            } break;
+        }
+        case '|':
+        {
+            switch (m_src.get())
+            {
+                case '|': m_current = Token(TokenType::PipePipe); m_src.extract(); break;
+                case '=': m_current = Token(TokenType::PipeEqual); m_src.extract(); break;
+                default: m_current = Token(TokenType::Pipe); break;
+            } break;
+        }
+        case '?': m_current = Token(TokenType::QMark); break;
+        case '!':
+        {
+            switch (m_src.get())
+            {
+                case '=': m_current = Token(TokenType::EMarkEqual); m_src.extract(); break;
+                default: m_current = Token(TokenType::EMark); break;
+            } break;
+        }
+        case '<':
+        {
+            switch (m_src.get())
+            {
+                case '=': m_current = Token(TokenType::LessEqual); m_src.extract(); break;
+                default: m_current = Token(TokenType::Less); break;
+            } break;
+        }
+        case '>':
+        {
+            switch (m_src.get())
+            {
+                case '=': m_current = Token(TokenType::GreaterEqual); m_src.extract(); break;
+                default: m_current = Token(TokenType::Greater); break;
+            } break;
+        }
         default: throw UnknownOperatorException(local);
     }
 }
 
 void Tokenizer::next()
 {
+    skipWhitespace();
+    skipComments();
     skipWhitespace();
 
     if (empty())
