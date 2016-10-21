@@ -23,6 +23,7 @@
 // Shard
 #include "shard/Path.hpp"
 #include "shard/String.hpp"
+#include "shard/ViewPtr.hpp"
 #include "shard/UniquePtr.hpp"
 
 /* ************************************************************************* */
@@ -34,6 +35,60 @@ namespace tokenizer {
 /* ************************************************************************* */
 
 using ReadMode = char;
+
+/* ************************************************************************* */
+
+class Source; //FWD declaration
+
+/* ************************************************************************* */
+
+class SourceIterator
+{
+
+protected:
+
+    ViewPtr<Source> m_source;
+
+public:
+
+    /**
+     * @brief constructs empty SourceIterator.
+     */
+    SourceIterator() = default;
+
+    /**
+     * @brief constructs SourceIterator for given Source.
+     */
+    explicit SourceIterator(ViewPtr<Source> source):
+        m_source(source) {}
+
+    inline ReadMode operator*() const;
+    inline SourceIterator& operator++();
+    inline SourceIterator operator++(int);
+
+    /**
+     * @brief returns pointer to related Source.
+     */
+    inline ViewPtr<Source> getSource() const noexcept
+    {
+        return m_source;
+    }
+};
+
+/* ************************************************************************* */
+
+inline bool operator==(const SourceIterator& lhs, const SourceIterator& rhs)
+{
+    return (lhs.getSource() == nullptr || (*lhs) == std::char_traits<ReadMode>::eof())
+        && (rhs.getSource() == nullptr || (*rhs) == std::char_traits<ReadMode>::eof());
+}
+
+inline bool operator!=(const SourceIterator& lhs, const SourceIterator& rhs)
+{
+    return !(lhs == rhs);
+}
+
+/* ************************************************************************* */
 
 class Source
 {
@@ -105,7 +160,47 @@ public:
     {
         return static_cast<ReadMode>(m_sb->sungetc());
     }
+
+    /* ************************************************************************* */
+
+public:
+
+    /**
+     * @brief returns tokenizer iterator pointing to currect token.
+     */
+    inline SourceIterator begin() noexcept
+    {
+        return SourceIterator(this);
+    }
+
+    /**
+     * @brief returns tokenizer iterator pointing to token with end.
+     */
+    inline SourceIterator end() noexcept
+    {
+        return SourceIterator(nullptr);
+    }
 };
+
+/* ************************************************************************* */
+
+inline char SourceIterator::operator*() const
+{
+    return m_source->get();
+}
+
+inline SourceIterator& SourceIterator::operator++()
+{
+    m_source->extract();
+    return *this;
+}
+
+inline SourceIterator SourceIterator::operator++(int)
+{
+    SourceIterator tmp(*this);
+    operator++();
+    return tmp;
+}
 
 /* ************************************************************************* */
 
