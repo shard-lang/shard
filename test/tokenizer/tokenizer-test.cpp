@@ -94,8 +94,8 @@ TEST(Tokenizer, identifier)
     test(
         ",.-jhdba{}&\\)^/",
         {Token(TokenType::Comma), Token(TokenType::Period), Token(TokenType::Minus), Token("jhdba"),
-        Token(TokenType::CBracketO), Token(TokenType::CBracketC), Token(TokenType::Ampersand), Token(TokenType::Backslash),
-        Token(TokenType::BracketC), Token(TokenType::Caret), Token(TokenType::Slash)}
+        Token(TokenType::BraceO), Token(TokenType::BraceC), Token(TokenType::Amp), Token(TokenType::Backslash),
+        Token(TokenType::ParenC), Token(TokenType::Caret), Token(TokenType::Slash)}
     );
     test(
         "+   blabla17_fcr8_4",
@@ -212,16 +212,16 @@ TEST(Tokenizer, keywords)
         {Token(KeywordType::For), Token(KeywordType::Float), Token(KeywordType::Null), Token(KeywordType::While)}
     );
     test(
-        "for (int i = 0; i < 10; i++)",
-        {Token(KeywordType::For), Token(TokenType::BracketO), Token(KeywordType::Int), Token("i"),
+        "for (int i = 0; i <= 10; i++)",
+        {Token(KeywordType::For), Token(TokenType::ParenO), Token(KeywordType::Int), Token("i"),
         Token(TokenType::Equal), Token(0l), Token(TokenType::Semicolon), Token("i"),
-        Token(TokenType::Less), Token(10l), Token(TokenType::Semicolon), Token("i"),
-        Token(TokenType::Plus), Token(TokenType::Plus), Token(TokenType::BracketC)}
+        Token(TokenType::LessEqual), Token(10l), Token(TokenType::Semicolon), Token("i"),
+        Token(TokenType::PlusPlus), Token(TokenType::ParenC)}
     );
     test(
         "while(true){[]}",
-        {Token(KeywordType::While), Token(TokenType::BracketO), Token(KeywordType::True), Token(TokenType::BracketC),
-        Token(TokenType::CBracketO), Token(TokenType::SBracketO), Token(TokenType::SBracketC), Token(TokenType::CBracketC)}
+        {Token(KeywordType::While), Token(TokenType::ParenO), Token(KeywordType::True), Token(TokenType::ParenC),
+        Token(TokenType::BraceO), Token(TokenType::SquareO), Token(TokenType::SquareC), Token(TokenType::BraceC)}
     );
     test(
         "string a = \"bla\";",
@@ -230,6 +230,6 @@ TEST(Tokenizer, keywords)
     );
     test(
         "throw Exception& ex;",
-        {Token(KeywordType::Throw), Token("Exception"), Token(TokenType::Ampersand), Token("ex"), Token(TokenType::Semicolon)}
+        {Token(KeywordType::Throw), Token("Exception"), Token(TokenType::Amp), Token("ex"), Token(TokenType::Semicolon)}
     );
 }
