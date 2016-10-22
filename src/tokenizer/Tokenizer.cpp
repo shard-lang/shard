@@ -35,7 +35,7 @@ namespace tokenizer {
 
 namespace
 {
-    static const StaticArray<std::pair<String, KeywordType>, 22> g_keywordMap
+    static const StaticArray<std::pair<String, KeywordType>, KeywordTypeCount> g_keywordMap
     {{
     #define KEYWORD(name, str) { str, KeywordType::name },
     #include "shard/tokenizer/Token.def"

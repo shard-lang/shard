@@ -18,17 +18,36 @@
 
 /* ************************************************************************* */
 
+// Shard
+#include "shard/utility.hpp"
+
+/* ************************************************************************* */
+
 namespace shard {
 inline namespace v1 {
 namespace tokenizer {
 
 /* ************************************************************************* */
 
+/**
+ * @brief Supported keyword types.
+ */
 enum class KeywordType
 {
 #define KEYWORD(name, str) name,
 #include "Token.def"
 };
+
+/* ************************************************************************* */
+
+/**
+ * @brief Number of token types.
+ */
+/*inline*/ constexpr auto KeywordTypeCount = ARG_COUNT<
+#define KEYWORD(name, str) void,
+#include "Token.def"
+    void
+> - 1;
 
 /* ************************************************************************* */
 
