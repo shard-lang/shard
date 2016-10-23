@@ -62,7 +62,7 @@ public:
     explicit SourceIterator(ViewPtr<Source> source):
         m_source(source) {}
 
-    inline ReadMode operator*() const;
+    inline int operator*() const;
     inline SourceIterator& operator++();
     inline SourceIterator operator++(int);
 

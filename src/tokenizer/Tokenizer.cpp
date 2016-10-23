@@ -161,7 +161,7 @@ void Tokenizer::tokenizeChar()
         {
             bytes = 2;
         }
-        else if (value <= -64 ||value >= 192)
+        else if (value <= -64 || value >= 192)
         {
             bytes = 1;
         }
