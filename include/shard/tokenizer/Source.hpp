@@ -123,7 +123,7 @@ public:
     /**
      * @brief returns if input is empty.
      */
-    inline bool empty()
+    inline bool empty() const
     {
         return get() == std::char_traits<ReadMode>::eof();
         //return m_sb->in_avail() <= 0;
@@ -132,7 +132,7 @@ public:
     /**
      * @brief read current character.
      */
-    inline int get()
+    inline int get() const
     {
         return m_sb->sgetc();
     }
@@ -140,7 +140,7 @@ public:
     /**
      * @brief read current character and move to next.
      */
-    inline int extract()
+    inline int extract() const
     {
         return m_sb->sbumpc();
     }
@@ -148,7 +148,7 @@ public:
     /**
      * @brief move to next character and read it.
      */
-    inline int getNext()
+    inline int getNext() const
     {
         return m_sb->snextc();
     }
@@ -156,9 +156,17 @@ public:
     /**
      * @brief return to previous character and read it.
      */
-    inline int unget()
+    inline int unget() const
     {
         return m_sb->sungetc();
+    }
+
+    /**
+     * @brief discard current character and move to next.
+     */
+    inline void toss() const
+    {
+        m_sb->sbumpc();
     }
 
     /* ************************************************************************* */
