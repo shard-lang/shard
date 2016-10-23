@@ -244,9 +244,15 @@ void Tokenizer::tokenizeOperator()
             switch (m_src.get())
             {
                 case '=': m_current = Token(TokenType::EqualEqual); m_src.extract(); break;
-                case '<': m_current = Token(TokenType::LessEqual); m_src.extract(); break;
-                case '>': m_current = Token(TokenType::GreaterEqual); m_src.extract(); break;
                 default: m_current = Token(TokenType::Equal); break;
+            } break;
+        }
+        case '!':
+        {
+            switch (m_src.get())
+            {
+                case '=': m_current = Token(TokenType::EMarkEqual); m_src.extract(); break;
+                default: m_current = Token(TokenType::EMark); break;
             } break;
         }
         case '+':
@@ -303,7 +309,15 @@ void Tokenizer::tokenizeOperator()
         {
             switch (m_src.get())
             {
-                case '&': m_current = Token(TokenType::AmpAmp); m_src.extract(); break;
+                case '&':
+                {
+                    switch (m_src.getNext())
+                    {
+                        case '=': m_current = Token(TokenType::AmpAmpEqual); m_src.extract(); break;
+                        default: m_current = Token(TokenType::AmpAmp); break;
+                    } break;
+                }
+                case '=': m_current = Token(TokenType::AmpEqual); m_src.extract(); break;
                 default: m_current = Token(TokenType::Amp); break;
             } break;
         }
@@ -311,23 +325,30 @@ void Tokenizer::tokenizeOperator()
         {
             switch (m_src.get())
             {
-                case '|': m_current = Token(TokenType::PipePipe); m_src.extract(); break;
+                case '|':
+                {
+                    switch (m_src.getNext())
+                    {
+                        case '=': m_current = Token(TokenType::PipePipeEqual); m_src.extract(); break;
+                        default: m_current = Token(TokenType::PipePipe); break;
+                    } break;
+                }
                 case '=': m_current = Token(TokenType::PipeEqual); m_src.extract(); break;
                 default: m_current = Token(TokenType::Pipe); break;
-            } break;
-        }
-        case '!':
-        {
-            switch (m_src.get())
-            {
-                case '=': m_current = Token(TokenType::EMarkEqual); m_src.extract(); break;
-                default: m_current = Token(TokenType::EMark); break;
             } break;
         }
         case '<':
         {
             switch (m_src.get())
             {
+                case '<':
+                {
+                    switch (m_src.getNext())
+                    {
+                        case '=': m_current = Token(TokenType::LessLessEqual); m_src.extract(); break;
+                        default: m_current = Token(TokenType::LessLess); break;
+                    } break;
+                }
                 case '=': m_current = Token(TokenType::LessEqual); m_src.extract(); break;
                 default: m_current = Token(TokenType::Less); break;
             } break;
@@ -336,6 +357,14 @@ void Tokenizer::tokenizeOperator()
         {
             switch (m_src.get())
             {
+                case '>':
+                {
+                    switch (m_src.getNext())
+                    {
+                        case '=': m_current = Token(TokenType::GreaterGreaterEqual); m_src.extract(); break;
+                        default: m_current = Token(TokenType::GreaterGreater); break;
+                    } break;
+                }
                 case '=': m_current = Token(TokenType::GreaterEqual); m_src.extract(); break;
                 default: m_current = Token(TokenType::Greater); break;
             } break;

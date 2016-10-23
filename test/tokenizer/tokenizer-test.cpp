@@ -286,3 +286,20 @@ TEST(Tokenizer, chars_utf)
         Token(0b1100'1111'1010'1110)}
     );
 }
+TEST(Tokenizer, operators_multichar)
+{
+    test(
+        "&&=||=||&&!=<<<<=>>=",
+        {Token(TokenType::AmpAmpEqual), Token(TokenType::PipePipeEqual), Token(TokenType::PipePipe),
+        Token(TokenType::AmpAmp), Token(TokenType::EMarkEqual), Token(TokenType::LessLess),
+        Token(TokenType::LessLessEqual), Token(TokenType::GreaterGreaterEqual)}
+    );
+    test(
+        "&&=||=||&&!=<<<<=>>=&&&",
+        {Token(TokenType::AmpAmpEqual), Token(TokenType::PipePipeEqual), Token(TokenType::PipePipe),
+        Token(TokenType::AmpAmp), Token(TokenType::EMarkEqual), Token(TokenType::LessLess),
+        Token(TokenType::LessLessEqual), Token(TokenType::GreaterGreaterEqual),
+        Token(TokenType::AmpAmp), Token(TokenType::Amp)}
+    );
+}
+
