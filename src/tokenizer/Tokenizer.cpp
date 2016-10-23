@@ -70,22 +70,15 @@ namespace
      */
     static Token::IntType getNumericValue(char value)
     {
-        switch (value)
+        if (value >= 'A' && value <= 'F')
         {
-            case 'A':
-            case 'B':
-            case 'C':
-            case 'D':
-            case 'E':
-            case 'F': return value - 'A' + 10;
-            case 'a':
-            case 'b':
-            case 'c':
-            case 'd':
-            case 'e':
-            case 'f': return value - 'a' + 10;
-            default: return value - '0';
+            return value - 'A' + 10;
         }
+        if (value >= 'a' && value <= 'f')
+        {
+            return value - 'a' + 10;
+        }
+        return value - '0';
     }
 }
 
@@ -119,14 +112,14 @@ void Tokenizer::tokenizeNumber()
 
     if (integer == 0)
     {
-        switch(m_src.extract())
+        switch(m_src.get())
         {
             case 'x':
-            case 'X': base = 16; m_current = Token(readNumber()); return;
+            case 'X': base = 16; m_src.toss(); m_current = Token(readNumber()); return;
             case 'o':
-            case 'O': base = 8; m_current = Token(readNumber()); return;
+            case 'O': base = 8; m_src.toss(); m_current = Token(readNumber()); return;
             case 'b':
-            case 'B': base = 2; m_current = Token(readNumber()); return;
+            case 'B': base = 2; m_src.toss(); m_current = Token(readNumber()); return;
             default: break;
         }
     }

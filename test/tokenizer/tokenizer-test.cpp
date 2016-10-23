@@ -193,6 +193,14 @@ TEST(Tokenizer, chars)
 TEST(Tokenizer, ints)
 {
     test(
+        "0",
+        {Token(0l)}
+    );
+    test(
+        "0;",
+        {Token(0l), Token(TokenType::Semicolon)}
+    );
+    test(
         "a123+123+123a",
         {Token("a123"), Token(TokenType::Plus), Token(123l), Token(TokenType::Plus), Token(123l), Token("a")}
     );
