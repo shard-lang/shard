@@ -150,18 +150,18 @@ void Tokenizer::tokenizeString()
 void Tokenizer::tokenizeChar()
 {
     Token::CharType value = m_src.extract();
-    if (value >= 0b1000'0000)
+    if (value >= 0x80)
     {
         char additionalBytes;
-        if (value >= 0b1111'0000)
+        if (value >= 0xF0)
         {
             additionalBytes = 3;
         }
-        else if (value >= 0b1110'0000)
+        else if (value >= 0xE0)
         {
             additionalBytes = 2;
         }
-        else if (value >= 0b1100'0000)
+        else if (value >= 0xC0)
         {
             additionalBytes = 1;
         }
