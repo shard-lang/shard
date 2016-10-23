@@ -150,7 +150,7 @@ void Tokenizer::tokenizeString()
 void Tokenizer::tokenizeChar()
 {
     Token::CharType value = m_src.extract();
-    if (value < 0 || value > 127)
+    if (value >= 0b1000'0000)
     {
         char additionalBytes;
         if (value >= 0b1111'0000)
