@@ -248,3 +248,37 @@ TEST(Tokenizer, comments)
         {Token(123l), Token(123l)}
     );
 }
+TEST(Tokenizer, strings_utf)
+{
+    test(
+        "123//comment\n123",
+        {Token(123l), Token(123l)}
+    );
+    test(
+        "123/*dadjabj\ndadbhj\rda*/123",
+        {Token(123l), Token(123l)}
+    );
+    test(
+        "123//comment\r123",
+        {Token(123l), Token(123l)}
+    );
+}
+TEST(Tokenizer, chars_utf)
+{
+    test(
+        "'š'",
+        {Token(0b1100010110100001)}
+    );
+    test(
+        "'𠜎'",
+        {Token(0b11110000101000001001110010001110)}
+    );
+    test(
+        "'Ϯ'",
+        {Token(0b1100111110101110)}
+    );
+    test(
+        "'š''𠜎''č''ř''Ϯ'",
+        {Token(0b1100010110100001), Token(0b11110000101000001001110010001110), Token(0b1100010010001001), Token(0b1100010110011001), Token(0b1100111110101110)}
+    );
+}

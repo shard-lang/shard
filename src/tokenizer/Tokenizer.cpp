@@ -21,6 +21,7 @@
 // C++
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 // Shard
 #include "shard/StaticArray.hpp"
@@ -148,26 +149,45 @@ void Tokenizer::tokenizeString()
 
 void Tokenizer::tokenizeChar()
 {
-    char value;
-
-    switch (char local = m_src.extract())
+    Token::CharType value = m_src.extract();
+    if (value < 0 || value > 127)
     {
-        case '\\':
+        char bytes;
+        if (value <= -112 || value >= 240)
         {
-            if (empty())
+            bytes = 3;
+        }
+        else if (value <= -96 || value >= 224)
+        {
+            bytes = 2;
+        }
+        else if (value <= -64 ||value >= 192)
+        {
+            bytes = 1;
+        }
+        for (char i = 0; i < bytes; ++i)
+        {
+            value = (value << 8)|(m_src.extract());
+        }
+    }
+    else
+    {
+        switch (value)
+        {
+            case '\\':
             {
-                throw CharWithoutEndException();
+                if (empty())
+                {
+                    throw CharWithoutEndException();
+                }
+                value = getEscaped(m_src.extract());
+                break;
             }
-            value = getEscaped(m_src.extract());
-            break;
-        }
-        case char_literal_border:
-        {
-            throw EmptyCharLiteralException();
-        }
-        default:
-        {
-            value = local;
+            case char_literal_border:
+            {
+                throw EmptyCharLiteralException();
+            }
+            default: break;
         }
     }
     if (!match(char_literal_border))
@@ -215,6 +235,10 @@ void Tokenizer::tokenizeOperator()
         case ']': m_current = Token(TokenType::SquareC); break;
         case '(': m_current = Token(TokenType::ParenO); break;
         case ')': m_current = Token(TokenType::ParenC); break;
+        case '?': m_current = Token(TokenType::QMark); break;
+        case '~': m_current = Token(TokenType::Tilde); break;
+        case '#': m_current = Token(TokenType::Hash); break;
+        case '\\': m_current = Token(TokenType::Backslash); break;
         case '=':
         {
             switch (m_src.get())
@@ -267,9 +291,6 @@ void Tokenizer::tokenizeOperator()
                 default: m_current = Token(TokenType::Caret); break;
             } break;
         }
-        case '~': m_current = Token(TokenType::Tilde); break;
-        case '#': m_current = Token(TokenType::Hash); break;
-        case '\\': m_current = Token(TokenType::Backslash); break;
         case '%': 
         {
             switch (m_src.get())
@@ -295,7 +316,6 @@ void Tokenizer::tokenizeOperator()
                 default: m_current = Token(TokenType::Pipe); break;
             } break;
         }
-        case '?': m_current = Token(TokenType::QMark); break;
         case '!':
         {
             switch (m_src.get())

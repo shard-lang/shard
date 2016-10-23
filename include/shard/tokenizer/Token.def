@@ -1,15 +1,15 @@
 /* ************************************************************************* */
-/* This file is part of Shard.                                               */
-/*                                                                           */
-/* Shard is free software: you can redistribute it and/or modify             */
-/* it under the terms of the GNU Affero General Public License as            */
-/* published by the Free Software Foundation.                                */
-/*                                                                           */
-/* This program is distributed in the hope that it will be useful,           */
-/* but WITHOUT ANY WARRANTY; without even the implied warranty of            */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              */
-/* GNU Affero General Public License for more details.                       */
-/*                                                                           */
+/* This file is part of Shard.                                                       */
+/*                                                                                       */
+/* Shard is free software: you can redistribute it and/or modify               */
+/* it under the terms of the GNU Affero General Public License as              */
+/* published by the Free Software Foundation.                                    */
+/*                                                                                       */
+/* This program is distributed in the hope that it will be useful,             */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of              */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                */
+/* GNU Affero General Public License for more details.                           */
+/*                                                                                       */
 /* You should have received a copy of the GNU Affero General Public License  */
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
@@ -39,54 +39,60 @@ TOKEN(Char)
 
 /* ************************************************************************* */
 
-PUNCTUATOR(Period,     		".")
-PUNCTUATOR(Comma,      		",")
-PUNCTUATOR(Colon,      		":")
-PUNCTUATOR(Semicolon, 	 	";")
+PUNCTUATOR(Period,              ".")
+PUNCTUATOR(Comma,               ",")
+PUNCTUATOR(Colon,               ":")
+PUNCTUATOR(Semicolon,           ";")
+PUNCTUATOR(QMark,               "?")
+PUNCTUATOR(Tilde,               "~")
+PUNCTUATOR(Hash,                "#")
+PUNCTUATOR(Backslash,           "\\")
 
-PUNCTUATOR(BraceO,     		"{")
-PUNCTUATOR(BraceC,  	   	"}")
-PUNCTUATOR(SquareO,	    	"[")
-PUNCTUATOR(SquareC,    		"]")
-PUNCTUATOR(ParenO,  	   	"(")
-PUNCTUATOR(ParenC,    		")")
+PUNCTUATOR(BraceO,              "{")
+PUNCTUATOR(BraceC,              "}")
+PUNCTUATOR(SquareO,             "[")
+PUNCTUATOR(SquareC,             "]")
+PUNCTUATOR(ParenO,              "(")
+PUNCTUATOR(ParenC,              ")")
 
-PUNCTUATOR(Equal,      		"=")
-PUNCTUATOR(EqualEqual,      "==")
+PUNCTUATOR(Equal,               "=")
+PUNCTUATOR(EqualEqual,          "==")
 
-PUNCTUATOR(Plus,    	   	"+")
-PUNCTUATOR(PlusPlus,   		"++")
-PUNCTUATOR(PlusEqual,  		"+=")
-PUNCTUATOR(Minus, 	 		"-")
-PUNCTUATOR(MinusMinus, 		"--")
-PUNCTUATOR(MinusEqual, 		"-=")
-PUNCTUATOR(Star,       		"*")
-PUNCTUATOR(StarEqual,  		"*=")
-PUNCTUATOR(Slash,			"/")
-PUNCTUATOR(SlashEqual,	 	"/=")
-PUNCTUATOR(Caret, 	 	    "^")
-PUNCTUATOR(CaretEqual,	 	"^=")
+PUNCTUATOR(Plus,                "+")
+PUNCTUATOR(PlusPlus,            "++")
+PUNCTUATOR(PlusEqual,           "+=")
+PUNCTUATOR(Minus,               "-")
+PUNCTUATOR(MinusMinus,          "--")
+PUNCTUATOR(MinusEqual,          "-=")
+PUNCTUATOR(Star,                "*")
+PUNCTUATOR(StarEqual,           "*=")
+PUNCTUATOR(Slash,               "/")
+PUNCTUATOR(SlashEqual,          "/=")
+PUNCTUATOR(Caret,               "^")
+PUNCTUATOR(CaretEqual,          "^=")
 
-PUNCTUATOR(Tilde,      		"~")
-PUNCTUATOR(Hash,       		"#")
-PUNCTUATOR(Backslash,   	"\\")
-PUNCTUATOR(Percent,    		"%")
-PUNCTUATOR(PercentEqual,	"%=")
+PUNCTUATOR(Percent,             "%")
+PUNCTUATOR(PercentEqual,        "%=")
 
-PUNCTUATOR(Amp,  	   		"&")
-PUNCTUATOR(AmpAmp,     		"&&")
-PUNCTUATOR(Pipe,  	   		"|")
-PUNCTUATOR(PipePipe,     	"||")
-PUNCTUATOR(PipeEqual,     	"|=")
+PUNCTUATOR(Amp,                 "&")
+PUNCTUATOR(AmpAmp,              "&&")
+PUNCTUATOR(AmpEqual,            "&=")
+PUNCTUATOR(Pipe,                "|")
+PUNCTUATOR(PipePipe,            "||")
+PUNCTUATOR(PipeEqual,           "|=")
+PUNCTUATOR(PipePipeEqual,       "||=")
 
-PUNCTUATOR(QMark,      		"?")
-PUNCTUATOR(EMark,      		"!")
-PUNCTUATOR(EMarkEqual,     	"!=")
+PUNCTUATOR(EMark,               "!")
+PUNCTUATOR(EMarkEqual,          "!=")
 
-PUNCTUATOR(Less,       		"<")
-PUNCTUATOR(LessEqual,   	">=")
-PUNCTUATOR(Greater,    		">")
-PUNCTUATOR(GreaterEqual,	">=")
+PUNCTUATOR(Less,                "<")
+PUNCTUATOR(LessLess,            "<<")
+PUNCTUATOR(LessEqual,           "<=")
+PUNCTUATOR(LessLessEqual,       "<<=")
+PUNCTUATOR(Greater,             ">")
+PUNCTUATOR(GreatrGreater,       ">>")
+PUNCTUATOR(GreaterEqual,        ">=")
+PUNCTUATOR(GreaterGreaterEqual, ">>=")
 
 /* ************************************************************************* */
 

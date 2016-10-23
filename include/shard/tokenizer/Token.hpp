@@ -41,6 +41,7 @@ class Token
 public:
 
     using FloatType = double;
+    using CharType = int32_t;
     using IntType = long int;
 
 protected:
@@ -50,7 +51,7 @@ protected:
     KeywordType m_kType;
     String m_sValue;
     FloatType m_fValue;
-    char m_cValue;
+    CharType m_cValue;
     IntType m_iValue;
 
 public:
@@ -85,6 +86,12 @@ public:
      * @brief constructs Token of type Char with given char value.
      */
     explicit Token(char value):
+        m_type(TokenType::Char), m_cValue(value) {}
+
+    /**
+     * @brief constructs Token of type Char with given integer value - multibyte character.
+     */
+    explicit Token(CharType value):
         m_type(TokenType::Char), m_cValue(value) {}
        
     /**
@@ -128,7 +135,7 @@ public:
     /**
      * @brief returns CharValue of current token.
      */
-    inline float getCharValue() const noexcept
+    inline CharType getCharValue() const noexcept
     {
         return m_cValue;
     }
