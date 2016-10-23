@@ -64,6 +64,26 @@ namespace
             default: throw InvalidEscapeSequenceException();
         }
     }
+
+    static Token::IntType getNumericValue(char value)
+    {
+        switch (value)
+        {
+            case 'A':
+            case 'B':
+            case 'C':
+            case 'D':
+            case 'E':
+            case 'F': return value - 'A' + 10;
+            case 'a':
+            case 'b':
+            case 'c':
+            case 'd':
+            case 'e':
+            case 'f': return value - 'a' + 10;
+            default: return value - '0';
+        }
+    }
 }
 
 /* ************************************************************************* */
@@ -77,49 +97,16 @@ void Tokenizer::tokenizeNumber()
     {
         digitSize = 0;
         Token::IntType res = 0;
-        if (base == 16)
+        if (!isDigit(base))
         {
-            if (!isHexDigit())
-            {
-                throw ExpectedNumberException();
-            }
-            do
-            {
-                auto value = m_src.extract();
-                switch (value)
-                {
-                    case 'A':
-                    case 'B':
-                    case 'C':
-                    case 'D':
-                    case 'E':
-                    case 'F': value -= 'A' - 10; break;
-                    case 'a':
-                    case 'b':
-                    case 'c':
-                    case 'd':
-                    case 'e':
-                    case 'f': value -= 'a' - 10; break;
-                    default: value -= '0'; break;
-                }
-                res = res * base + value;
-                ++digitSize;
-            }
-            while (isHexDigit());
+            throw ExpectedNumberException();
         }
-        else
+        do
         {
-            if (!isDigit())
-            {
-                throw ExpectedNumberException();
-            }
-            do
-            {
-                res = res * base + (m_src.extract() - '0');
-                ++digitSize;
-            }
-            while (isDigit());
+            res = res * base + getNumericValue(m_src.extract());
+            ++digitSize;
         }
+        while (isDigit(base));
         return res;
     };
 

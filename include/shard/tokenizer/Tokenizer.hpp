@@ -20,6 +20,7 @@
 
 // Shard
 #include "shard/Path.hpp"
+#include "shard/Assert.hpp"
 #include "shard/String.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/tokenizer/Source.hpp"
@@ -161,19 +162,18 @@ protected:
     }
 
     /**
-     * @brief returns if current character is a number.
+     * @brief returns if current character is a number in given numeric system.
      */
-    inline bool isDigit() noexcept
+    inline bool isDigit(int base = 10) noexcept
     {
-        return isBetween('0', '9');
-    }
-
-    /**
-     * @brief returns if current character is a hexadecimal number.
-     */
-    inline bool isHexDigit() noexcept
-    {
-        return isBetween('0', '9') || isBetween('a', 'f') || isBetween('A', 'F');
+        SHARD_ASSERT(base == 10 || base == 16 || base == 8 || base == 2);
+        switch (base)
+        {
+            case 10: return isBetween('0', '9');
+            case 16: return isBetween('0', '9') || isBetween('a', 'f') || isBetween('A', 'F');
+            case 8: return isBetween('0', '7');
+            case 2: return isBetween('0', '1');
+        }
     }
 
     /**

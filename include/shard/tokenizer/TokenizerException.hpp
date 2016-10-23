@@ -91,6 +91,8 @@ class EmptyCharLiteralException : public TokenizerException
     }
 };
 
+/* ************************************************************************* */
+
 class InvalidEscapeSequenceException : public TokenizerException
 {
     const char *what() const noexcept
