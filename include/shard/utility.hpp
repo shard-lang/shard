@@ -71,6 +71,16 @@ constexpr T&& forwardValue(typename std::remove_reference<T>::type&& t) noexcept
     return static_cast<T&&>(t);
 }
 
+
+/* ************************************************************************* */
+
+/**
+ * @brief Variable contains number of template arguments.
+ * @tparam... Args Types to count.
+ */
+template<typename... Args>
+constexpr unsigned int ARG_COUNT = sizeof...(Args);
+
 /* ************************************************************************* */
 
 }

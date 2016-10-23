@@ -23,6 +23,7 @@
 // Shard
 #include "shard/Path.hpp"
 #include "shard/String.hpp"
+#include "shard/ViewPtr.hpp"
 #include "shard/UniquePtr.hpp"
 
 /* ************************************************************************* */
@@ -34,6 +35,60 @@ namespace tokenizer {
 /* ************************************************************************* */
 
 using ReadMode = char;
+
+/* ************************************************************************* */
+
+class Source; //FWD declaration
+
+/* ************************************************************************* */
+
+class SourceIterator
+{
+
+protected:
+
+    ViewPtr<Source> m_source;
+
+public:
+
+    /**
+     * @brief constructs empty SourceIterator.
+     */
+    SourceIterator() = default;
+
+    /**
+     * @brief constructs SourceIterator for given Source.
+     */
+    explicit SourceIterator(ViewPtr<Source> source):
+        m_source(source) {}
+
+    inline int operator*() const;
+    inline SourceIterator& operator++();
+    inline SourceIterator operator++(int);
+
+    /**
+     * @brief returns pointer to related Source.
+     */
+    inline ViewPtr<Source> getSource() const noexcept
+    {
+        return m_source;
+    }
+};
+
+/* ************************************************************************* */
+
+inline bool operator==(const SourceIterator& lhs, const SourceIterator& rhs)
+{
+    return (lhs.getSource() == nullptr || (*lhs) == std::char_traits<ReadMode>::eof())
+        && (rhs.getSource() == nullptr || (*rhs) == std::char_traits<ReadMode>::eof());
+}
+
+inline bool operator!=(const SourceIterator& lhs, const SourceIterator& rhs)
+{
+    return !(lhs == rhs);
+}
+
+/* ************************************************************************* */
 
 class Source
 {
@@ -77,35 +132,75 @@ public:
     /**
      * @brief read current character.
      */
-    inline ReadMode get()
+    inline int get()
     {
-        return static_cast<ReadMode>(m_sb->sgetc());
+        return m_sb->sgetc();
     }
 
     /**
      * @brief read current character and move to next.
      */
-    inline ReadMode extract()
+    inline int extract()
     {
-        return static_cast<ReadMode>(m_sb->sbumpc());
+        return m_sb->sbumpc();
     }
 
     /**
      * @brief move to next character and read it.
      */
-    inline ReadMode getNext()
+    inline int getNext()
     {
-        return static_cast<ReadMode>(m_sb->snextc());
+        return m_sb->snextc();
     }
 
     /**
      * @brief return to previous character and read it.
      */
-    inline ReadMode unget()
+    inline int unget()
     {
-        return static_cast<ReadMode>(m_sb->sungetc());
+        return m_sb->sungetc();
+    }
+
+    /* ************************************************************************* */
+
+public:
+
+    /**
+     * @brief returns tokenizer iterator pointing to currect token.
+     */
+    inline SourceIterator begin() noexcept
+    {
+        return SourceIterator(this);
+    }
+
+    /**
+     * @brief returns tokenizer iterator pointing to token with end.
+     */
+    inline SourceIterator end() noexcept
+    {
+        return SourceIterator(nullptr);
     }
 };
+
+/* ************************************************************************* */
+
+inline int SourceIterator::operator*() const
+{
+    return m_source->get();
+}
+
+inline SourceIterator& SourceIterator::operator++()
+{
+    m_source->extract();
+    return *this;
+}
+
+inline SourceIterator SourceIterator::operator++(int)
+{
+    SourceIterator tmp(*this);
+    operator++();
+    return tmp;
+}
 
 /* ************************************************************************* */
 

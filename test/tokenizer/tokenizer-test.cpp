@@ -248,3 +248,58 @@ TEST(Tokenizer, comments)
         {Token(123l), Token(123l)}
     );
 }
+TEST(Tokenizer, strings_utf)
+{
+    test(
+        "\"blačššžžý\"",
+        {Token(TokenType::String, "blačššžžý")}
+    );
+}
+TEST(Tokenizer, chars_utf)
+{
+    test(
+        "'š'",
+        {Token(0b1100'0101'1010'0001)}
+    );
+    test(
+        "'č'",
+        {Token(0b1100'0100'1000'1101)}
+    );
+    test(
+        "'ř'",
+        {Token(0b1100'0101'1001'1001)}
+    );
+    test(
+        "'𠜎'",
+        {Token((int32_t)0b1111'0000'1010'0000'1001'1100'1000'1110)}
+    );
+    test(
+        "'Ϯ'",
+        {Token(0b1100'1111'1010'1110)}
+    );
+    test(
+        "'š''𠜎''č''ř''Ϯ'",
+        {Token(0b1100'0101'1010'0001),
+        Token((int32_t)0b1111'0000'1010'0000'1001'1100'1000'1110),
+        Token(0b1100'0100'1000'1101),
+        Token(0b1100'0101'1001'1001),
+        Token(0b1100'1111'1010'1110)}
+    );
+}
+TEST(Tokenizer, operators_multichar)
+{
+    test(
+        "&&=||=||&&!=<<<<=>>=",
+        {Token(TokenType::AmpAmpEqual), Token(TokenType::PipePipeEqual), Token(TokenType::PipePipe),
+        Token(TokenType::AmpAmp), Token(TokenType::EMarkEqual), Token(TokenType::LessLess),
+        Token(TokenType::LessLessEqual), Token(TokenType::GreaterGreaterEqual)}
+    );
+    test(
+        "&&=||=||&&!=<<<<=>>=&&&",
+        {Token(TokenType::AmpAmpEqual), Token(TokenType::PipePipeEqual), Token(TokenType::PipePipe),
+        Token(TokenType::AmpAmp), Token(TokenType::EMarkEqual), Token(TokenType::LessLess),
+        Token(TokenType::LessLessEqual), Token(TokenType::GreaterGreaterEqual),
+        Token(TokenType::AmpAmp), Token(TokenType::Amp)}
+    );
+}
+

@@ -18,17 +18,36 @@
 
 /* ************************************************************************* */
 
+// Shard
+#include "shard/utility.hpp"
+
+/* ************************************************************************* */
+
 namespace shard {
 inline namespace v1 {
 namespace tokenizer {
 
 /* ************************************************************************* */
 
+/**
+ * @brief Supported token types.
+ */
 enum class TokenType
 {
 #define TOKEN(X) X,
 #include "Token.def"
 };
+
+/* ************************************************************************* */
+
+/**
+ * @brief Number of token types.
+ */
+/*inline*/ constexpr auto TokenTypeCount = ARG_COUNT<
+#define TOKEN(X) void,
+#include "Token.def"
+    void
+> - 1;
 
 /* ************************************************************************* */
 
