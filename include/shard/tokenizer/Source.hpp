@@ -132,33 +132,33 @@ public:
     /**
      * @brief read current character.
      */
-    inline ReadMode get()
+    inline int get()
     {
-        return static_cast<ReadMode>(m_sb->sgetc());
+        return m_sb->sgetc();
     }
 
     /**
      * @brief read current character and move to next.
      */
-    inline ReadMode extract()
+    inline int extract()
     {
-        return static_cast<ReadMode>(m_sb->sbumpc());
+        return m_sb->sbumpc();
     }
 
     /**
      * @brief move to next character and read it.
      */
-    inline ReadMode getNext()
+    inline int getNext()
     {
-        return static_cast<ReadMode>(m_sb->snextc());
+        return m_sb->snextc();
     }
 
     /**
      * @brief return to previous character and read it.
      */
-    inline ReadMode unget()
+    inline int unget()
     {
-        return static_cast<ReadMode>(m_sb->sungetc());
+        return m_sb->sungetc();
     }
 
     /* ************************************************************************* */
@@ -184,7 +184,7 @@ public:
 
 /* ************************************************************************* */
 
-inline char SourceIterator::operator*() const
+inline int SourceIterator::operator*() const
 {
     return m_source->get();
 }
