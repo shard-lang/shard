@@ -189,19 +189,22 @@ void Tokenizer::tokenizeChar()
         char additionalBytes;
         if (value >= 0xF0)
         {
+            value &= 0x07;
             additionalBytes = 3;
         }
         else if (value >= 0xE0)
         {
+            value &= 0x0F;
             additionalBytes = 2;
         }
         else if (value >= 0xC0)
         {
+            value &= 0x1F;
             additionalBytes = 1;
         }
         for (char i = 0; i < additionalBytes; ++i)
         {
-            value = (value << 8)|(m_src.extract());
+            value = (value << 6)|(m_src.extract() & 0x3F);
         }
     }
     else

@@ -259,31 +259,31 @@ TEST(Tokenizer, chars_utf)
 {
     test(
         "'š'",
-        {Token(0b1100'0101'1010'0001)}
+        {Token(0x0161)}
     );
     test(
         "'č'",
-        {Token(0b1100'0100'1000'1101)}
+        {Token(0x010D)}
     );
     test(
         "'ř'",
-        {Token(0b1100'0101'1001'1001)}
+        {Token(0x0159)}
     );
     test(
         "'𠜎'",
-        {Token((int32_t)0b1111'0000'1010'0000'1001'1100'1000'1110)}
+        {Token((int32_t)0x2070e)}
     );
     test(
         "'Ϯ'",
-        {Token(0b1100'1111'1010'1110)}
+        {Token(0x03EE)}
     );
     test(
         "'š''𠜎''č''ř''Ϯ'",
-        {Token(0b1100'0101'1010'0001),
-        Token((int32_t)0b1111'0000'1010'0000'1001'1100'1000'1110),
-        Token(0b1100'0100'1000'1101),
-        Token(0b1100'0101'1001'1001),
-        Token(0b1100'1111'1010'1110)}
+        {Token(0x0161),
+        Token((int32_t)0x2070e),
+        Token(0x010D),
+        Token(0x0159),
+        Token(0x03EE)}
     );
 }
 TEST(Tokenizer, operators_multichar)
