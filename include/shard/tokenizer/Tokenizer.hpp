@@ -169,6 +169,14 @@ protected:
     }
 
     /**
+     * @brief returns if current character is a hexadecimal number.
+     */
+    inline bool isHexDigit() noexcept
+    {
+        return isBetween('0', '9') || isBetween('a', 'f') || isBetween('A', 'F');
+    }
+
+    /**
      * @brief returns if current character is tested character.
      */
     inline bool is(char value) noexcept
