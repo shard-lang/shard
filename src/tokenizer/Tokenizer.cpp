@@ -65,6 +65,9 @@ namespace
         }
     }
 
+    /**
+     * @brief returns numeric value of character in hexadecimal base.
+     */
     static Token::IntType getNumericValue(char value)
     {
         switch (value)
@@ -92,15 +95,17 @@ void Tokenizer::tokenizeNumber()
 {
     bool floatFlag = false;
     int digitSize = 0;
+    int base = 10;
     
-    const auto readNumber = [&](int base = 10) -> Token::IntType
+    const auto readNumber = [&]() -> Token::IntType
     {
         digitSize = 0;
-        Token::IntType res = 0;
         if (!isDigit(base))
         {
             throw ExpectedNumberException();
         }
+
+        Token::IntType res = 0;
         do
         {
             res = res * base + getNumericValue(m_src.extract());
@@ -110,21 +115,21 @@ void Tokenizer::tokenizeNumber()
         return res;
     };
 
-    if (is('0'))
+    Token::IntType integer = readNumber();
+
+    if (integer == 0)
     {
-        switch(m_src.getNext())
+        switch(m_src.extract())
         {
-            case 'b':
-            case 'B': m_src.toss(); m_current = Token(readNumber(2)); return;
             case 'x':
-            case 'X': m_src.toss(); m_current = Token(readNumber(16)); return;
+            case 'X': base = 16; m_current = Token(readNumber()); return;
             case 'o':
-            case 'O': m_src.toss(); m_current = Token(readNumber(8)); return;
-            default: m_src.unget(); break;
+            case 'O': base = 8; m_current = Token(readNumber()); return;
+            case 'b':
+            case 'B': base = 2; m_current = Token(readNumber()); return;
+            default: break;
         }
     }
-
-    Token::IntType base = readNumber();
     
     Token::FloatType decimal = 0;
     if (match('.'))
@@ -149,9 +154,9 @@ void Tokenizer::tokenizeNumber()
         exp = negativeExp ? (1 / exp) : exp;
     }
 
-    Token::FloatType value = (static_cast<Token::FloatType>(base) + decimal) * exp;
+    Token::FloatType value = (static_cast<Token::FloatType>(integer) + decimal) * exp;
 
-    m_current = floatFlag ? Token(value) : Token(base);
+    m_current = floatFlag ? Token(value) : Token(integer);
 }
 
 void Tokenizer::tokenizeString()
