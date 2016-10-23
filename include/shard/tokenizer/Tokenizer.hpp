@@ -169,6 +169,14 @@ protected:
     }
 
     /**
+     * @brief returns if current character is a hexadecimal number.
+     */
+    inline bool isHexDigit() noexcept
+    {
+        return isBetween('0', '9') || isBetween('a', 'f') || isBetween('A', 'F');
+    }
+
+    /**
      * @brief returns if current character is tested character.
      */
     inline bool is(char value) noexcept
@@ -201,7 +209,7 @@ protected:
     {
         if (is(value))
         {
-            m_src.extract();
+            m_src.toss();
             return true;
         }
         return false;
@@ -219,7 +227,7 @@ protected:
         {
             if (is(option))
             {
-                m_src.extract();
+                m_src.toss();
                 return true;
             }
         }
@@ -237,7 +245,7 @@ protected:
     {
         while (isWhitespace())
         {
-            m_src.extract();
+            m_src.toss();
         }
     }
 
@@ -249,7 +257,7 @@ protected:
             {
                 while (!match('*') || !match('/'))
                 {
-                    m_src.extract();
+                    m_src.toss();
                 }
                 return;
             }
@@ -257,7 +265,7 @@ protected:
             {
                 while (!match('\n') && !match('\r'))
                 {
-                    m_src.extract();
+                    m_src.toss();
                 }
                 return;
             }

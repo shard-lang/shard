@@ -302,4 +302,44 @@ TEST(Tokenizer, operators_multichar)
         Token(TokenType::AmpAmp), Token(TokenType::Amp)}
     );
 }
-
+TEST(Tokenizer, ints_bin)
+{
+    test(
+        "0b1111",
+        {Token(15l)}
+    );
+    test(
+        "0B0",
+        {Token(0l)}
+    );
+    test(
+        "0b10111011011011",
+        {Token(11995l)}
+    );
+}
+TEST(Tokenizer, ints_hex)
+{
+    test(
+        "0XFF",
+        {Token(255l)}
+    );
+    test(
+        "0x00FF",
+        {Token(255l)}
+    );
+}
+TEST(Tokenizer, ints_oct)
+{
+    test(
+        "0o123456",
+        {Token(42798l)}
+    );
+    test(
+        "0000321",
+        {Token(321l)}
+    );
+    test(
+        "0O571",
+        {Token(377l)}
+    );
+}
