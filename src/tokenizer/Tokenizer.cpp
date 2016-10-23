@@ -152,20 +152,20 @@ void Tokenizer::tokenizeChar()
     Token::CharType value = m_src.extract();
     if (value < 0 || value > 127)
     {
-        char bytes;
-        if (value <= -112 || value >= 240)
+        char additionalBytes;
+        if (value >= 0b1111'0000)
         {
-            bytes = 3;
+            additionalBytes = 3;
         }
-        else if (value <= -96 || value >= 224)
+        else if (value >= 0b1110'0000)
         {
-            bytes = 2;
+            additionalBytes = 2;
         }
-        else if (value <= -64 || value >= 192)
+        else if (value >= 0b1100'0000)
         {
-            bytes = 1;
+            additionalBytes = 1;
         }
-        for (char i = 0; i < bytes; ++i)
+        for (char i = 0; i < additionalBytes; ++i)
         {
             value = (value << 8)|(m_src.extract());
         }
