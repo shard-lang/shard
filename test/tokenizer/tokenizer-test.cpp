@@ -275,31 +275,31 @@ TEST(Tokenizer, chars_utf)
 {
     test(
         "'š'",
-        {Token(0x0161)}
+        {Token((char32_t)0x0161)}
     );
     test(
         "'č'",
-        {Token(0x010D)}
+        {Token((char32_t)0x010D)}
     );
     test(
         "'ř'",
-        {Token(0x0159)}
+        {Token((char32_t)0x0159)}
     );
     test(
         "'𠜎'",
-        {Token((int32_t)0x2070e)}
+        {Token((char32_t)0x2070e)}
     );
     test(
         "'Ϯ'",
-        {Token(0x03EE)}
+        {Token((char32_t)0x03EE)}
     );
     test(
         "'š''𠜎''č''ř''Ϯ'",
-        {Token(0x0161),
-        Token((int32_t)0x2070e),
-        Token(0x010D),
-        Token(0x0159),
-        Token(0x03EE)}
+        {Token((char32_t)0x0161),
+        Token((char32_t)0x2070e),
+        Token((char32_t)0x010D),
+        Token((char32_t)0x0159),
+        Token((char32_t)0x03EE)}
     );
 }
 TEST(Tokenizer, operators_multichar)
@@ -307,13 +307,13 @@ TEST(Tokenizer, operators_multichar)
     test(
         "&&=||=||&&!=<<<<=>>=",
         {Token(TokenType::AmpAmpEqual), Token(TokenType::PipePipeEqual), Token(TokenType::PipePipe),
-        Token(TokenType::AmpAmp), Token(TokenType::EMarkEqual), Token(TokenType::LessLess),
+        Token(TokenType::AmpAmp), Token(TokenType::ExclaimEqual), Token(TokenType::LessLess),
         Token(TokenType::LessLessEqual), Token(TokenType::GreaterGreaterEqual)}
     );
     test(
         "&&=||=||&&!=<<<<=>>=&&&",
         {Token(TokenType::AmpAmpEqual), Token(TokenType::PipePipeEqual), Token(TokenType::PipePipe),
-        Token(TokenType::AmpAmp), Token(TokenType::EMarkEqual), Token(TokenType::LessLess),
+        Token(TokenType::AmpAmp), Token(TokenType::ExclaimEqual), Token(TokenType::LessLess),
         Token(TokenType::LessLessEqual), Token(TokenType::GreaterGreaterEqual),
         Token(TokenType::AmpAmp), Token(TokenType::Amp)}
     );

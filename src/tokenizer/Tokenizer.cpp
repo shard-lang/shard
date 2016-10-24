@@ -270,7 +270,7 @@ void Tokenizer::tokenizeOperator()
         case ']': m_current = Token(TokenType::SquareC); return;
         case '(': m_current = Token(TokenType::ParenO); return;
         case ')': m_current = Token(TokenType::ParenC); return;
-        case '?': m_current = Token(TokenType::QMark); return;
+        case '?': m_current = Token(TokenType::Question); return;
         case '~': m_current = Token(TokenType::Tilde); return;
         case '#': m_current = Token(TokenType::Hash); return;
         case '\\': m_current = Token(TokenType::Backslash); return;
@@ -286,8 +286,8 @@ void Tokenizer::tokenizeOperator()
         {
             switch (m_src.get())
             {
-                case '=': m_current = Token(TokenType::EMarkEqual); m_src.toss(); return;
-                default: m_current = Token(TokenType::EMark); return;
+                case '=': m_current = Token(TokenType::ExclaimEqual); m_src.toss(); return;
+                default: m_current = Token(TokenType::Exclaim); return;
             }
         }
         case '+':

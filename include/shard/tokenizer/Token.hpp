@@ -41,7 +41,7 @@ class Token
 public:
 
     using FloatType = double;
-    using CharType = int32_t;
+    using CharType = char32_t;
     using IntType = long int;
 
 protected:
