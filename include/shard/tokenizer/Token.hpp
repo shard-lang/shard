@@ -168,9 +168,11 @@ inline bool operator==(const Token& lhs, const Token& rhs)
 
     switch (lhs.getType())
     {
-        case TokenType::Identifier: return lhs.getStringValue() == rhs.getStringValue();
+        case TokenType::String:
+        case TokenType::Identifier:
+        case TokenType::CommentBlock:
+        case TokenType::CommentInline: return lhs.getStringValue() == rhs.getStringValue();
         case TokenType::Keyword: return lhs.getKeywordType() == rhs.getKeywordType();
-        case TokenType::String: return lhs.getStringValue() == rhs.getStringValue();
         case TokenType::Float: return
                     std::abs(lhs.getFloatValue() - rhs.getFloatValue())
                     < std::numeric_limits<Token::FloatType>::epsilon();
@@ -190,9 +192,11 @@ inline std::ostream& operator<<(std::ostream& os, const Token& obj)
     os << "TokenType: " << static_cast<int>(obj.getType()) << ", TokenValue: ";
     switch (obj.getType())
     {
-        case TokenType::Identifier: os << obj.getStringValue(); break;
-        case TokenType::Keyword: os << static_cast<int>(obj.getKeywordType()); break;
+        case TokenType::CommentInline:
+        case TokenType::CommentBlock:
+        case TokenType::Identifier: 
         case TokenType::String: os << obj.getStringValue(); break;
+        case TokenType::Keyword: os << static_cast<int>(obj.getKeywordType()); break;
         case TokenType::Float: os << obj.getFloatValue(); break;
         case TokenType::Char: os << obj.getCharValue(); break;
         case TokenType::Int: os << obj.getIntValue(); break;

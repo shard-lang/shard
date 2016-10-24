@@ -320,9 +320,31 @@ void Tokenizer::tokenizeOperator()
         {
             switch (m_src.get())
             {
-                case '=': m_current = Token(TokenType::SlashEqual); m_src.toss(); break;
-                default: m_current = Token(TokenType::Slash); break;
-            } break;
+                case '=': m_current = Token(TokenType::SlashEqual); m_src.toss(); return;
+                case '/':
+                {
+                    m_src.toss();
+                    String buf;
+                    while (!match('\n', '\r'))
+                    {
+                        buf += m_src.extract();
+                    }
+                    m_current = Token(TokenType::CommentInline, buf);
+                    return;
+                }
+                case '*':
+                {
+                    m_src.toss();
+                    String buf;
+                    while (!isSeq('*', '/'))
+                    {
+                        buf += m_src.extract();
+                    }
+                    m_current = Token(TokenType::CommentBlock, buf);
+                    return;
+                }
+                default: m_current = Token(TokenType::Slash); return;
+            }
         }
         case '^':
         {
@@ -410,8 +432,6 @@ void Tokenizer::tokenizeOperator()
 
 void Tokenizer::next()
 {
-    skipWhitespace();
-    skipComments();
     skipWhitespace();
 
     if (empty())

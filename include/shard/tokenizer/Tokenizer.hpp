@@ -234,6 +234,30 @@ protected:
         return false;
     }
 
+    /**
+     * @brief returns if current sequence of characters at input is equal to given sequence.
+     * If so, skips the sequence, otherwise returns back.
+     */
+    template<typename... Chars>
+    inline bool isSeq(Chars... options) noexcept
+    {
+        const int size = sizeof...(options);
+        const char chars[]{options...};
+        for (int i = 0; i < size; ++i)
+        {
+            if (!is(chars[i]))
+            {
+                for (int j = 0; j < i; ++j)
+                {
+                    m_src.unget();
+                }
+                return false;
+            }
+            m_src.toss();
+        }
+        return true;
+    }
+
 /* ************************************************************************* */
 
 protected:
@@ -246,30 +270,6 @@ protected:
         while (isWhitespace())
         {
             m_src.toss();
-        }
-    }
-
-    inline void skipComments() noexcept
-    {
-        if (match('/'))
-        {
-            if (match('*'))
-            {
-                while (!match('*') || !match('/'))
-                {
-                    m_src.toss();
-                }
-                return;
-            }
-            if (match('/'))
-            {
-                while (!match('\n') && !match('\r'))
-                {
-                    m_src.toss();
-                }
-                return;
-            }
-            m_src.unget();
         }
     }
 

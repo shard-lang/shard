@@ -245,15 +245,23 @@ TEST(Tokenizer, comments)
 {
     test(
         "123//comment\n123",
-        {Token(123l), Token(123l)}
+        {Token(123l), Token(TokenType::CommentInline, "comment"), Token(123l)}
     );
     test(
         "123/*dadjabj\ndadbhj\rda*/123",
-        {Token(123l), Token(123l)}
+        {Token(123l), Token(TokenType::CommentBlock, "dadjabj\ndadbhj\rda"), Token(123l)}
     );
     test(
         "123//comment\r123",
-        {Token(123l), Token(123l)}
+        {Token(123l), Token(TokenType::CommentInline, "comment"), Token(123l)}
+    );
+    test(
+        "123//comme/nt\r123",
+        {Token(123l), Token(TokenType::CommentInline, "comme/nt"), Token(123l)}
+    );
+    test(
+        "123/*comme*nt\r123*/123",
+        {Token(123l), Token(TokenType::CommentBlock, "comme*nt\r123"), Token(123l)}
     );
 }
 TEST(Tokenizer, strings_utf)

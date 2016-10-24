@@ -29,7 +29,8 @@
 /* ************************************************************************* */
 
 TOKEN(End)
-
+TOKEN(CommentInline)
+TOKEN(CommentBlock)
 TOKEN(Identifier)
 TOKEN(Keyword)
 TOKEN(String)
