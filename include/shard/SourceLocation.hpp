@@ -48,7 +48,7 @@ public:
      * @param line   Line number.
      * @param column Column number.
      */
-    SourceLocation(unsigned int line, unsigned int column) noexcept
+    SourceLocation(int line, int column) noexcept
         : m_line(line)
         , m_column(column)
     {
@@ -78,7 +78,7 @@ public:
      * @brief Returns line number.
      * @return Line number.
      */
-    unsigned int getLine() const noexcept
+    int getLine() const noexcept
     {
         return m_line;
     }
@@ -88,9 +88,28 @@ public:
      * @brief Returns column number.
      * @return Column number.
      */
-    unsigned int getColumn() const noexcept
+    int getColumn() const noexcept
     {
         return m_column;
+    }
+
+
+    /**
+     * @brief Increments line number and sets column number to 1.
+     */
+    void addLine() noexcept
+    {
+        ++m_line;
+        m_column = 1;
+    }
+
+
+    /**
+     * @brief Increments column number.
+     */
+    void addColumn() noexcept
+    {
+        ++m_column;
     }
 
 
@@ -98,10 +117,10 @@ public:
 private:
 
     /// Line number.
-    unsigned int m_line = 0;
+    int m_line = 0;
 
     /// Column number.
-    unsigned int m_column = 0;
+    int m_column = 0;
 
 };
 

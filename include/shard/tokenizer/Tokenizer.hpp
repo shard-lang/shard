@@ -41,6 +41,9 @@ class Tokenizer; //FWD declaration
 
 /* ************************************************************************* */
 
+/**
+ * @brief Input iterator from Shard lexical analyzer.
+ */
 class TokenizerIterator
 {
 
@@ -94,6 +97,9 @@ inline bool operator!=(const TokenizerIterator& lhs, const TokenizerIterator& rh
 
 /* ************************************************************************* */
 
+/**
+ * @brief Shard lexical analyzer.
+ */
 class Tokenizer
 {
 

@@ -25,6 +25,7 @@
 #include "shard/String.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/UniquePtr.hpp"
+#include "shard/SourceLocation.hpp"
 
 /* ************************************************************************* */
 
@@ -42,6 +43,9 @@ class Source; //FWD declaration
 
 /* ************************************************************************* */
 
+/**
+ * @brief Input iterator from Source.
+ */
 class SourceIterator
 {
 
@@ -90,12 +94,16 @@ inline bool operator!=(const SourceIterator& lhs, const SourceIterator& rhs)
 
 /* ************************************************************************* */
 
+/**
+ * @brief Streams data from various types of input.
+ */
 class Source
 {
 
 protected:
 
     UniquePtr<std::basic_streambuf<ReadMode>> m_sb;
+    SourceLocation m_loc;
 
 public:
 
@@ -167,6 +175,15 @@ public:
     inline void toss() const
     {
         m_sb->sbumpc();
+    }
+
+    /* ************************************************************************* */
+
+public:
+
+    inline const SourceLocation& getLocation() const noexcept
+    {
+        return m_loc;
     }
 
     /* ************************************************************************* */
