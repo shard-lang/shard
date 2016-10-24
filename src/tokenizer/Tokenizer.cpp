@@ -260,61 +260,61 @@ void Tokenizer::tokenizeOperator()
 {
     switch (char local = m_src.extract())
     {
-        case '.': m_current = Token(TokenType::Period); break;
-        case ',': m_current = Token(TokenType::Comma); break;
-        case ':': m_current = Token(TokenType::Colon); break;
-        case ';': m_current = Token(TokenType::Semicolon); break;
-        case '{': m_current = Token(TokenType::BraceO); break;
-        case '}': m_current = Token(TokenType::BraceC); break;
-        case '[': m_current = Token(TokenType::SquareO); break;
-        case ']': m_current = Token(TokenType::SquareC); break;
-        case '(': m_current = Token(TokenType::ParenO); break;
-        case ')': m_current = Token(TokenType::ParenC); break;
-        case '?': m_current = Token(TokenType::QMark); break;
-        case '~': m_current = Token(TokenType::Tilde); break;
-        case '#': m_current = Token(TokenType::Hash); break;
-        case '\\': m_current = Token(TokenType::Backslash); break;
+        case '.': m_current = Token(TokenType::Period); return;
+        case ',': m_current = Token(TokenType::Comma); return;
+        case ':': m_current = Token(TokenType::Colon); return;
+        case ';': m_current = Token(TokenType::Semicolon); return;
+        case '{': m_current = Token(TokenType::BraceO); return;
+        case '}': m_current = Token(TokenType::BraceC); return;
+        case '[': m_current = Token(TokenType::SquareO); return;
+        case ']': m_current = Token(TokenType::SquareC); return;
+        case '(': m_current = Token(TokenType::ParenO); return;
+        case ')': m_current = Token(TokenType::ParenC); return;
+        case '?': m_current = Token(TokenType::QMark); return;
+        case '~': m_current = Token(TokenType::Tilde); return;
+        case '#': m_current = Token(TokenType::Hash); return;
+        case '\\': m_current = Token(TokenType::Backslash); return;
         case '=':
         {
             switch (m_src.get())
             {
-                case '=': m_current = Token(TokenType::EqualEqual); m_src.toss(); break;
-                default: m_current = Token(TokenType::Equal); break;
-            } break;
+                case '=': m_current = Token(TokenType::EqualEqual); m_src.toss(); return;
+                default: m_current = Token(TokenType::Equal); return;
+            }
         }
         case '!':
         {
             switch (m_src.get())
             {
-                case '=': m_current = Token(TokenType::EMarkEqual); m_src.toss(); break;
-                default: m_current = Token(TokenType::EMark); break;
-            } break;
+                case '=': m_current = Token(TokenType::EMarkEqual); m_src.toss(); return;
+                default: m_current = Token(TokenType::EMark); return;
+            }
         }
         case '+':
         {
             switch (m_src.get())
             {
-                case '+': m_current = Token(TokenType::PlusPlus); m_src.toss(); break;
-                case '=': m_current = Token(TokenType::PlusEqual); m_src.toss(); break;
-                default: m_current = Token(TokenType::Plus); break;
-            } break;
+                case '+': m_current = Token(TokenType::PlusPlus); m_src.toss(); return;
+                case '=': m_current = Token(TokenType::PlusEqual); m_src.toss(); return;
+                default: m_current = Token(TokenType::Plus); return;
+            }
         }
         case '-':
         {
             switch (m_src.get())
             {
-                case '-': m_current = Token(TokenType::MinusMinus); m_src.toss(); break;
-                case '=': m_current = Token(TokenType::MinusEqual); m_src.toss(); break;
-                default: m_current = Token(TokenType::Minus); break;
-            } break;
+                case '-': m_current = Token(TokenType::MinusMinus); m_src.toss(); return;
+                case '=': m_current = Token(TokenType::MinusEqual); m_src.toss(); return;
+                default: m_current = Token(TokenType::Minus); return;
+            }
         }
         case '*':
         {
             switch (m_src.get())
             {
-                case '=': m_current = Token(TokenType::StarEqual); m_src.toss(); break;
-                default: m_current = Token(TokenType::Star); break;
-            } break;
+                case '=': m_current = Token(TokenType::StarEqual); m_src.toss(); return;
+                default: m_current = Token(TokenType::Star); return;
+            }
         }
         case '/':
         {
@@ -328,17 +328,17 @@ void Tokenizer::tokenizeOperator()
         {
             switch (m_src.get())
             {
-                case '=': m_current = Token(TokenType::CaretEqual); m_src.toss(); break;
-                default: m_current = Token(TokenType::Caret); break;
-            } break;
+                case '=': m_current = Token(TokenType::CaretEqual); m_src.toss(); return;
+                default: m_current = Token(TokenType::Caret); return;
+            }
         }
         case '%': 
         {
             switch (m_src.get())
             {
-                case '=': m_current = Token(TokenType::PercentEqual); m_src.toss(); break;
-                default: m_current = Token(TokenType::Equal); break;
-            } break;
+                case '=': m_current = Token(TokenType::PercentEqual); m_src.toss(); return;
+                default: m_current = Token(TokenType::Equal); return;
+            }
         }
         case '&':
         {
@@ -348,13 +348,13 @@ void Tokenizer::tokenizeOperator()
                 {
                     switch (m_src.getNext())
                     {
-                        case '=': m_current = Token(TokenType::AmpAmpEqual); m_src.toss(); break;
-                        default: m_current = Token(TokenType::AmpAmp); break;
-                    } break;
+                        case '=': m_current = Token(TokenType::AmpAmpEqual); m_src.toss(); return;
+                        default: m_current = Token(TokenType::AmpAmp); return;
+                    }
                 }
-                case '=': m_current = Token(TokenType::AmpEqual); m_src.toss(); break;
-                default: m_current = Token(TokenType::Amp); break;
-            } break;
+                case '=': m_current = Token(TokenType::AmpEqual); m_src.toss(); return;
+                default: m_current = Token(TokenType::Amp); return;
+            }
         }
         case '|':
         {
@@ -364,13 +364,13 @@ void Tokenizer::tokenizeOperator()
                 {
                     switch (m_src.getNext())
                     {
-                        case '=': m_current = Token(TokenType::PipePipeEqual); m_src.toss(); break;
-                        default: m_current = Token(TokenType::PipePipe); break;
-                    } break;
+                        case '=': m_current = Token(TokenType::PipePipeEqual); m_src.toss(); return;
+                        default: m_current = Token(TokenType::PipePipe); return;
+                    }
                 }
-                case '=': m_current = Token(TokenType::PipeEqual); m_src.toss(); break;
-                default: m_current = Token(TokenType::Pipe); break;
-            } break;
+                case '=': m_current = Token(TokenType::PipeEqual); m_src.toss(); return;
+                default: m_current = Token(TokenType::Pipe); return;
+            }
         }
         case '<':
         {
@@ -380,13 +380,13 @@ void Tokenizer::tokenizeOperator()
                 {
                     switch (m_src.getNext())
                     {
-                        case '=': m_current = Token(TokenType::LessLessEqual); m_src.toss(); break;
-                        default: m_current = Token(TokenType::LessLess); break;
-                    } break;
+                        case '=': m_current = Token(TokenType::LessLessEqual); m_src.toss(); return;
+                        default: m_current = Token(TokenType::LessLess); return;
+                    }
                 }
-                case '=': m_current = Token(TokenType::LessEqual); m_src.toss(); break;
-                default: m_current = Token(TokenType::Less); break;
-            } break;
+                case '=': m_current = Token(TokenType::LessEqual); m_src.toss(); return;
+                default: m_current = Token(TokenType::Less); return;
+            }
         }
         case '>':
         {
@@ -396,13 +396,13 @@ void Tokenizer::tokenizeOperator()
                 {
                     switch (m_src.getNext())
                     {
-                        case '=': m_current = Token(TokenType::GreaterGreaterEqual); m_src.toss(); break;
-                        default: m_current = Token(TokenType::GreaterGreater); break;
-                    } break;
+                        case '=': m_current = Token(TokenType::GreaterGreaterEqual); m_src.toss(); return;
+                        default: m_current = Token(TokenType::GreaterGreater); return;
+                    }
                 }
-                case '=': m_current = Token(TokenType::GreaterEqual); m_src.toss(); break;
-                default: m_current = Token(TokenType::Greater); break;
-            } break;
+                case '=': m_current = Token(TokenType::GreaterEqual); m_src.toss(); return;
+                default: m_current = Token(TokenType::Greater); return;
+            }
         }
         default: throw UnknownOperatorException(local);
     }
