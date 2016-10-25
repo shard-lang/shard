@@ -105,6 +105,8 @@ protected:
     UniquePtr<std::basic_streambuf<ReadMode>> m_sb;
     SourceLocation m_loc;
 
+/* ************************************************************************* */
+
 public:
 
     /**
@@ -116,15 +118,34 @@ public:
                 auto ptr = makeUnique<std::basic_filebuf<ReadMode>>();
                 ptr->open(l_path, std::ios_base::in | std::ios_base::binary);
                 return ptr;
-            }(path)) {}
+            }(path)),
+            m_loc(SourceLocation(1, 1)) {}
 
     /**
      * @brief constructs Source with input from string.
      */
     explicit Source (const String& source):
-            m_sb(makeUnique<std::basic_stringbuf<ReadMode>>(source)) {}
+            m_sb(makeUnique<std::basic_stringbuf<ReadMode>>(source)),
+            m_loc(SourceLocation(1, 1)) {}
 
 /* ************************************************************************* */
+
+protected:
+
+    inline void incrLoc()
+    {
+        auto temp = get();
+        if (temp == '\n' || temp == '\r')
+        {
+            m_loc.addLine();
+        }
+        else
+        {
+            m_loc.addColumn();
+        }
+    }
+
+/* ************************************************************************* */    
 
 public:
 
@@ -148,32 +169,27 @@ public:
     /**
      * @brief read current character and move to next.
      */
-    inline int extract() const
+    inline int extract()
     {
+        incrLoc();
         return m_sb->sbumpc();
     }
 
     /**
      * @brief move to next character and read it.
      */
-    inline int getNext() const
+    inline int getNext()
     {
+        incrLoc();
         return m_sb->snextc();
-    }
-
-    /**
-     * @brief return to previous character and read it.
-     */
-    inline int unget() const
-    {
-        return m_sb->sungetc();
     }
 
     /**
      * @brief discard current character and move to next.
      */
-    inline void toss() const
+    inline void toss()
     {
+        incrLoc();
         m_sb->sbumpc();
     }
 

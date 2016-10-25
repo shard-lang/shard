@@ -336,8 +336,17 @@ void Tokenizer::tokenizeOperator()
                 {
                     m_src.toss();
                     String buf;
-                    while (!isSeq('*', '/'))
+                    while (true)
                     {
+                        if (is('*'))
+                        {
+                            if (m_src.getNext() == '/')
+                            {
+                                m_src.toss();
+                                break;
+                            }
+                            buf += '*';
+                        }
                         buf += m_src.extract();
                     }
                     m_current = Token(TokenType::CommentBlock, buf);
