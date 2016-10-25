@@ -91,6 +91,14 @@ class EmptyCharLiteralException : public TokenizerException
     }
 };
 
+class NewlineInCharLiteralException : public TokenizerException
+{
+    const char *what() const noexcept
+    {
+        return "Newline is not allowed in char literal.";
+    }
+};
+
 /* ************************************************************************* */
 
 class InvalidEscapeSequenceException : public TokenizerException

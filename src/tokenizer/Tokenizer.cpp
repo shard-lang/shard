@@ -218,10 +218,9 @@ void Tokenizer::tokenizeChar()
                 value = getEscaped(m_src.extract());
                 break;
             }
-            case char_literal_border:
-            {
-                throw EmptyCharLiteralException();
-            }
+            case '\n':
+            case '\r': throw NewlineInCharLiteralException();
+            case char_literal_border: throw EmptyCharLiteralException();
             default: break;
         }
     }

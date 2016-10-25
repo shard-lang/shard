@@ -187,6 +187,7 @@ TEST(Tokenizer, chars)
         "'a'+'b'",
         {Token('a'), Token(TokenType::Plus), Token('b')}
     );
+    test_invalid("'\n'");
     test_invalid("'abc'");
     test_invalid("'a");
 }
