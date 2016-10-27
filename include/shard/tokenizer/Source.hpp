@@ -25,7 +25,6 @@
 #include "shard/String.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/UniquePtr.hpp"
-#include "shard/SourceLocation.hpp"
 
 /* ************************************************************************* */
 
@@ -103,7 +102,6 @@ class Source
 protected:
 
     UniquePtr<std::basic_streambuf<ReadMode>> m_sb;
-    SourceLocation m_loc;
 
 /* ************************************************************************* */
 
@@ -118,32 +116,13 @@ public:
                 auto ptr = makeUnique<std::basic_filebuf<ReadMode>>();
                 ptr->open(l_path, std::ios_base::in | std::ios_base::binary);
                 return ptr;
-            }(path)),
-            m_loc(SourceLocation(1, 1)) {}
+            }(path)) {}
 
     /**
      * @brief constructs Source with input from string.
      */
     explicit Source (const String& source):
-            m_sb(makeUnique<std::basic_stringbuf<ReadMode>>(source)),
-            m_loc(SourceLocation(1, 1)) {}
-
-/* ************************************************************************* */
-
-protected:
-
-    inline void incrLoc()
-    {
-        auto temp = get();
-        if (temp == '\n' || temp == '\r')
-        {
-            m_loc.addLine();
-        }
-        else
-        {
-            m_loc.addColumn();
-        }
-    }
+            m_sb(makeUnique<std::basic_stringbuf<ReadMode>>(source)) {}
 
 /* ************************************************************************* */    
 
@@ -169,37 +148,25 @@ public:
     /**
      * @brief read current character and move to next.
      */
-    inline int extract()
+    inline int extract() const
     {
-        incrLoc();
         return m_sb->sbumpc();
     }
 
     /**
      * @brief move to next character and read it.
      */
-    inline int getNext()
+    inline int getNext() const
     {
-        incrLoc();
         return m_sb->snextc();
     }
 
     /**
      * @brief discard current character and move to next.
      */
-    inline void toss()
+    inline void toss() const 
     {
-        incrLoc();
         m_sb->sbumpc();
-    }
-
-    /* ************************************************************************* */
-
-public:
-
-    inline const SourceLocation& getLocation() const noexcept
-    {
-        return m_loc;
     }
 
     /* ************************************************************************* */
