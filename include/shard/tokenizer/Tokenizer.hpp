@@ -310,7 +310,7 @@ public:
     }
 
     /**
-     * @brief get current token an move to next.
+     * @brief get current token and move to next.
      */
     inline Token extract()
     {
@@ -320,7 +320,7 @@ public:
     }
 
     /**
-     * @brief checks if there is non-ending token available.
+     * @brief checks if current token is final EOF type.
      */
     inline bool isEof()
     {
