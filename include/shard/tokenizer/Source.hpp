@@ -138,7 +138,7 @@ public:
     }
 
     /**
-     * @brief read current character.
+     * @brief returns current character.
      */
     inline int get() const
     {
@@ -146,7 +146,7 @@ public:
     }
 
     /**
-     * @brief read current character and move to next.
+     * @brief returns current character and moves to next.
      */
     inline int extract() const
     {
@@ -154,7 +154,7 @@ public:
     }
 
     /**
-     * @brief move to next character and read it.
+     * @brief moves to next character and returns it.
      */
     inline int getNext() const
     {
@@ -162,7 +162,7 @@ public:
     }
 
     /**
-     * @brief discard current character and move to next.
+     * @brief discards current character and moves to next.
      */
     inline void toss() const 
     {
