@@ -24,6 +24,7 @@
 
 // Shard
 #include "shard/String.hpp"
+#include "shard/SourceLocation.hpp"
 #include "shard/tokenizer/TokenType.hpp"
 #include "shard/tokenizer/KeywordType.hpp"
 
@@ -46,6 +47,9 @@ public:
 
 protected:
 
+    SourceLocation m_start;
+    SourceLocation m_end;
+
     TokenType m_type;
 
     KeywordType m_kType;
@@ -53,6 +57,8 @@ protected:
     FloatType m_fValue;
     CharType m_cValue;
     IntType m_iValue;
+
+/* ************************************************************************* */
 
 public:
 
@@ -108,6 +114,8 @@ public:
 
 /* ************************************************************************* */
 
+public:
+
     /**
      * @brief returns Type of current token.
      */
@@ -154,6 +162,32 @@ public:
     inline KeywordType getKeywordType() const noexcept
     {
         return m_kType;
+    }
+
+/* ************************************************************************* */
+
+public:
+
+    /**
+     * @brief returns SourceLocation of tokens start.
+     */
+    inline SourceLocation getSourceStart() const noexcept
+    {
+        return m_start;
+    }
+
+    /**
+     * @brief returns Sourcelocation of tokens end.
+     */
+    inline SourceLocation getSourceEnd() const noexcept
+    {
+        return m_end;
+    }
+
+    inline void setLocation(SourceLocation start, SourceLocation end) noexcept
+    {
+        m_start = start;
+        m_end = end;
     }
 };
 

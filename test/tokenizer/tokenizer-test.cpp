@@ -73,7 +73,7 @@ static void test_invalid_impl(int line, const String& code)
         Tokenizer tokenizer(code);
         while (!tokenizer.isEof())
         {
-            tokenizer.next();
+            tokenizer.toss();
         },
         TokenizerException
     );

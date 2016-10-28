@@ -438,9 +438,11 @@ void Tokenizer::tokenizeOperator()
     }
 }
 
-void Tokenizer::next()
+void Tokenizer::tokenize()
 {
     skipWhitespace();
+
+    auto start = m_loc;
 
     if (empty())
     {
@@ -466,6 +468,10 @@ void Tokenizer::next()
     {
         tokenizeOperator();
     }
+
+    auto end = m_loc;
+
+    m_current.setLocation(start, end);
 }
 
 /* ************************************************************************* */

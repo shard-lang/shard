@@ -23,6 +23,7 @@
 #include "shard/Assert.hpp"
 #include "shard/String.hpp"
 #include "shard/ViewPtr.hpp"
+#include "shard/SourceLocation.hpp"
 #include "shard/tokenizer/Source.hpp"
 #include "shard/tokenizer/KeywordType.hpp"
 #include "shard/tokenizer/TokenType.hpp"
@@ -106,6 +107,8 @@ class Tokenizer
 protected:
 
     Source m_src;
+    SourceLocation m_loc;
+
     Token m_current;
 
     static constexpr char string_literal_border = '"';
@@ -118,17 +121,17 @@ public:
     /**
      * @brief constructs Tokenizer which reads from file.
      */
-    explicit Tokenizer(const Path& path): m_src(path)
+    explicit Tokenizer(const Path& path): m_src(path), m_loc(SourceLocation(1, 1))
     {
-        next();
+        tokenize();
     }
 
     /**
      * @brief constructs Tokenizer which reads from String.
      */
-    explicit Tokenizer(const String& source): m_src(source)
+    explicit Tokenizer(const String& source): m_src(source), m_loc(SourceLocation(1, 1))
     {
-        next();
+        tokenize();
     }
             
 /* ************************************************************************* */
@@ -265,25 +268,32 @@ protected:
 
 /* ************************************************************************* */
 
+public:
+
+    /**
+     * @brief load next token.
+     */
+    void tokenize();
+
 protected:
 
     /**
-     * @brief tokenizes tokentype number.
+     * @brief tokenizes int or float literal.
      */
     void tokenizeNumber();
 
     /**
-     * @brief tokenizes string into identifier.
+     * @brief tokenizes identifier or keyword.
      */
     void tokenizeIdentifier() noexcept;
 
     /**
-     * @brief tokenizes string value into keyword, function or identifier.
+     * @brief tokenizes string literal.
      */
     void tokenizeString();
 
     /**
-     * @brief tokenizes string value into keyword, function or identifier.
+     * @brief tokenizes char literal.
      */
     void tokenizeChar();
 
@@ -295,11 +305,6 @@ protected:
 /* ************************************************************************* */
 
 public:
-
-    /**
-     * @brief go to next token.
-     */
-    void next();
 
     /**
      * @brief get current token.
@@ -315,8 +320,25 @@ public:
     inline Token extract()
     {
         auto tmp = m_current;
-        next();
+        tokenize();
         return tmp;
+    }
+
+    /**
+     * @brief move to next token and return it.
+     */
+    inline const Token& getNext()
+    {
+        tokenize();
+        return m_current;
+    }
+
+    /**
+     * @brief discards current token and moves to next.
+     */
+    inline void toss()
+    {
+        tokenize();
     }
 
     /**
@@ -340,7 +362,7 @@ public:
     }
 
     /**
-     * @brief returns tokenizer iterator pointing to token with end.
+     * @brief returns empty tokenizer iterator.
      */
     inline TokenizerIterator end() noexcept
     {
@@ -357,7 +379,7 @@ inline const Token& TokenizerIterator::operator*() const
 
 inline TokenizerIterator& TokenizerIterator::operator++()
 {
-    m_tokenizer->next();
+    m_tokenizer->tokenize();
     return *this;
 }
 
