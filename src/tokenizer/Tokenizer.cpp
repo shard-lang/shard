@@ -133,7 +133,7 @@ void Tokenizer::tokenizeNumber()
     }
 
     Token::FloatType exp = 1;
-    if (match('e', 'E', 'p', 'P'))
+    if (match('e', 'E'))
     {
         floatFlag = true;
         bool negativeExp = false;
