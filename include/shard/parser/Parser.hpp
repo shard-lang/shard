@@ -19,7 +19,9 @@
 /* ************************************************************************* */
 
 // Shard
+#include "shard/UniquePtr.hpp"
 #include "shard/tokenizer/Tokenizer.hpp"
+#include "shard/ast/Module.hpp"
 
 /* ************************************************************************* */
 
@@ -38,6 +40,27 @@ class Parser
 protected:
 
 	Tokenizer m_tokenizer;
+
+/* ************************************************************************* */
+
+public:
+
+    /**
+     * @brief constructs Parser which reads from file.
+     */
+    explicit Parser(const Path& path): m_tokenizer(path){}
+
+    /**
+     * @brief constructs Parser which reads from String.
+     */
+    explicit Parser(const String& source): m_tokenizer(source){}
+
+/* ************************************************************************* */
+
+public:
+
+	UniquePtr<Module> parseFile();
+
 
 };
 

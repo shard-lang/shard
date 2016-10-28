@@ -14,7 +14,7 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#include "shard/tokenizer/Parser.hpp"
+#include "shard/parser/Parser.hpp"
 
 /* ************************************************************************* */
 

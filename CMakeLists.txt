@@ -21,6 +21,7 @@ cmake_minimum_required(VERSION 3.1)
 option(SHARD_BUILD_TESTS "Build unit tests" Off)
 option(SHARD_BUILD_TOKENIZER "Build tokenizer" On)
 option(SHARD_BUILD_AST "Build AST" On)
+option(SHARD_BUILD_PARSER "Build parser" On)
 
 # ************************************************************************* #
 
