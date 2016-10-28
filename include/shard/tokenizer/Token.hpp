@@ -184,6 +184,9 @@ public:
         return m_end;
     }
 
+    /**
+     * @brief sets Sourcelocation of tokens.
+     */
     inline void setLocation(SourceLocation start, SourceLocation end) noexcept
     {
         m_start = start;
