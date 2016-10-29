@@ -16,6 +16,9 @@
 
 language: generic
 sudo: required
+dist: trusty
+group: edge
+
 services:
     - docker
 
