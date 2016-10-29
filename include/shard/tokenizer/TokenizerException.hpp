@@ -21,6 +21,7 @@
 // Shard
 #include "shard/String.hpp"
 #include "shard/Exception.hpp"
+#include "shard/SourceLocation.hpp"
 
 /* ************************************************************************* */
 
@@ -30,83 +31,129 @@ namespace tokenizer {
 
 /* ************************************************************************* */
 
-class TokenizerException : public Exception
+class TokenizerException
 {
+
+protected:
+
+    SourceLocation m_loc;
+    static const char m_msg[];
+
+public:
+
+    explicit TokenizerException(const SourceLocation loc): m_loc(loc) {}
+
+    const SourceLocation& getLocation() const noexcept
+    {
+        return m_loc;
+    }
+
+    const String what() const noexcept
+    {
+        return String(m_msg) + " at " + toString(m_loc.getLine()) + ":" + toString(m_loc.getColumn()) + ".";
+    }
 };
 
 /* ************************************************************************* */
 
 class ExpectedNumberException : public TokenizerException
 {
-    const char *what() const noexcept
-    {
-        return "Expected Number.";
-    }
+
+protected:
+
+    static constexpr char m_msg[] = "Expected number";
+
+public:
+
+    explicit ExpectedNumberException(const SourceLocation loc): TokenizerException(loc) {}
+
 };
 
 /* ************************************************************************* */
 
 class UnknownOperatorException : public TokenizerException
 {
-    String m_msg;
+
+protected:
+
+    static constexpr char m_msg[] = "Unknown operator";
 
 public:
 
-    explicit UnknownOperatorException(const char op)
-            : m_msg(String("Unknown operator (") + op + ")") {}
+    explicit UnknownOperatorException(const SourceLocation loc): TokenizerException(loc) {}
 
-    const char *what() const noexcept
-    {
-        return m_msg.c_str();
-    }
 };
 
 /* ************************************************************************* */
 
 class StringWithoutEndException : public TokenizerException
 {
-    const char *what() const noexcept
-    {
-        return "Escape character for string not found.";
-    }
+
+protected:
+
+    static constexpr char m_msg[] = "Closing character for string not found";
+
+public:
+
+    explicit StringWithoutEndException(const SourceLocation loc): TokenizerException(loc) {}
+
 };
 
 /* ************************************************************************* */
 
 class CharWithoutEndException : public TokenizerException
 {
-    const char *what() const noexcept
-    {
-        return "Escape character for char not found.";
-    }
+    
+protected:
+
+    static constexpr char m_msg[] = "Closing character for char literal not found";
+
+public:
+
+    explicit CharWithoutEndException(const SourceLocation loc): TokenizerException(loc) {}
 };
 
 /* ************************************************************************* */
 
 class EmptyCharLiteralException : public TokenizerException
 {
-    const char *what() const noexcept
-    {
-        return "Cannot determine char value.";
-    }
+    
+protected:
+
+    static constexpr char m_msg[] = "Cannot determine char value";
+
+public:
+
+    explicit EmptyCharLiteralException(const SourceLocation loc): TokenizerException(loc) {}
+
 };
 
 class NewlineInCharLiteralException : public TokenizerException
 {
-    const char *what() const noexcept
-    {
-        return "Newline is not allowed in char literal.";
-    }
+    
+protected:
+
+    static constexpr char m_msg[] = "Found newline in char literal";
+
+public:
+
+    explicit NewlineInCharLiteralException(const SourceLocation loc): TokenizerException(loc) {}
+
 };
 
 /* ************************************************************************* */
 
 class InvalidEscapeSequenceException : public TokenizerException
 {
-    const char *what() const noexcept
-    {
-        return "Unknown escape sequence.";
-    }
+    
+protected:
+
+    static constexpr char m_msg [] = "Unknown escape sequence";
+
+public:
+
+    explicit InvalidEscapeSequenceException(const SourceLocation loc): TokenizerException(loc) {}
+
 };
 
 /* ************************************************************************* */
