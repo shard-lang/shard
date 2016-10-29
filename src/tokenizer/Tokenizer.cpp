@@ -115,11 +115,11 @@ void Tokenizer::tokenizeNumber()
         switch(m_src.get())
         {
             case 'x':
-            case 'X': base = 16; m_src.toss(); m_current = Token(readNumber()); return;
+            case 'X': base = 16; m_src.toss(); m_current = Token::IntLiteral(readNumber()); return;
             case 'o':
-            case 'O': base = 8; m_src.toss(); m_current = Token(readNumber()); return;
+            case 'O': base = 8; m_src.toss(); m_current = Token::IntLiteral(readNumber()); return;
             case 'b':
-            case 'B': base = 2; m_src.toss(); m_current = Token(readNumber()); return;
+            case 'B': base = 2; m_src.toss(); m_current = Token::IntLiteral(readNumber()); return;
             default: break;
         }
     }
@@ -149,7 +149,7 @@ void Tokenizer::tokenizeNumber()
 
     Token::FloatType value = (static_cast<Token::FloatType>(integer) + decimal) * exp;
 
-    m_current = floatFlag ? Token(value) : Token(integer);
+    m_current = floatFlag ? Token::FloatLiteral(value) : Token::IntLiteral(integer);
 }
 
 void Tokenizer::tokenizeString()
@@ -176,7 +176,7 @@ void Tokenizer::tokenizeString()
         }
     }
     
-    m_current = Token(TokenType::String, value);
+    m_current = Token::StringLiteral(value);
 }
 
 void Tokenizer::tokenizeChar()
@@ -229,7 +229,7 @@ void Tokenizer::tokenizeChar()
         throw CharWithoutEndException(m_loc);
     }
     
-    m_current = Token(value);
+    m_current = Token::CharLiteral(value);
 }
 
 void Tokenizer::tokenizeIdentifier() noexcept
@@ -247,11 +247,11 @@ void Tokenizer::tokenizeIdentifier() noexcept
     );
     if (search != g_keywordMap.end())
     {
-        m_current = Token(search->second);
+        m_current = Token::Keyword(search->second);
     }
     else
     {
-        m_current = Token(value);
+        m_current = Token::Identifier(value);
     }
 }
 
@@ -328,7 +328,7 @@ void Tokenizer::tokenizeOperator()
                     {
                         buf += m_src.extract();
                     }
-                    m_current = Token(TokenType::CommentInline, buf);
+                    m_current = Token::CommentLine(buf);
                     return;
                 }
                 case '*':
@@ -348,7 +348,7 @@ void Tokenizer::tokenizeOperator()
                         }
                         buf += m_src.extract();
                     }
-                    m_current = Token(TokenType::CommentBlock, buf);
+                    m_current = Token::CommentBlock(buf);
                     return;
                 }
                 default: m_current = Token(TokenType::Slash); return;

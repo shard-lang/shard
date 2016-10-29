@@ -66,50 +66,85 @@ public:
     /**
      * @brief constructs Token of given type.
      */
-    explicit Token(TokenType type):
-        m_type(type) {}
-
-    /**
-     * @brief constructs Token of given type with given String value.
-     */
-    explicit Token(TokenType type, const String& value):
-        m_type(type), m_sValue(value) {}
-    
-    /**
-     * @brief constructs Token of type identifier with given String value.
-     */ 
-    explicit Token(const String& value):
-        m_type(TokenType::Identifier), m_sValue(value) {}
-    
-    /**
-     * @brief constructs Token of type Float with given Float value.
-     */
-    explicit Token (FloatType value):
-        m_type(TokenType::Float), m_fValue(value) {}
-        
-    /**
-     * @brief constructs Token of type Char with given char value.
-     */
-    explicit Token(char value):
-        m_type(TokenType::Char), m_cValue(value) {}
-
-    /**
-     * @brief constructs Token of type Char with given integer value - multibyte character.
-     */
-    explicit Token(CharType value):
-        m_type(TokenType::Char), m_cValue(value) {}
-       
-    /**
-     * @brief constructs Token of type Int with given IntType value.
-     */ 
-    explicit Token(IntType value):
-        m_type(TokenType::Int), m_iValue(value) {}
+    explicit Token
+    (
+        TokenType type,
+        KeywordType keyVal = {},
+        const String& strVal = {},
+        FloatType fltVal = {},
+        CharType charVal = {},
+        IntType intVal = {}
+    ):
+        m_type(type),
+        m_kType(keyVal),
+        m_sValue(strVal),
+        m_fValue(fltVal),
+        m_cValue(charVal),
+        m_iValue(intVal) {}
 
     /**
      * @brief constructs Token of type Keyword with given KeywordType value.
      */
-    explicit Token(KeywordType type):
-        m_type(TokenType::Keyword), m_kType(type) {}
+    static Token Keyword(KeywordType type)
+    {
+        return Token(TokenType::Keyword, type);
+    }
+
+    /**
+     * @brief constructs Token of type identifier with given String value.
+     */ 
+    static Token Identifier(const String& value)
+    {
+        return Token(TokenType::Identifier, {}, value);
+    }
+
+    /**
+     * @brief constructs Token of type string with given String value.
+     */ 
+    static Token StringLiteral(const String& value)
+    {
+        return Token(TokenType::String, {}, value);
+    }
+    
+    /**
+     * @brief constructs Token of type comment block with given String value.
+     */ 
+    static Token CommentBlock(const String& value)
+    {
+        return Token(TokenType::CommentBlock, {}, value);
+    }
+
+    /**
+     * @brief constructs Token of type comment line with given String value.
+     */ 
+    static Token CommentLine(const String& value)
+    {
+        return Token(TokenType::CommentLine, {}, value);
+    }
+
+    /**
+     * @brief constructs Token of type Float with given Float value.
+     */
+    static Token FloatLiteral(FloatType value)
+    {
+        return Token(TokenType::Float, {}, {}, value);
+    }
+
+    /**
+     * @brief constructs Token of type Char with given integer value - multibyte character.
+     */
+    static Token CharLiteral(CharType value)
+    {
+        return Token(TokenType::Char, {}, {}, {}, value);
+    }
+       
+    /**
+     * @brief constructs Token of type Int with given IntType value.
+     */ 
+    static Token IntLiteral(IntType value)
+    {
+        return Token(TokenType::Int, {}, {}, {}, {}, value);
+    }
 
 /* ************************************************************************* */
 
@@ -195,17 +230,22 @@ inline bool operator==(const Token& lhs, const Token& rhs)
 
     switch (lhs.getType())
     {
-        case TokenType::String:
-        case TokenType::Identifier:
         case TokenType::CommentBlock:
-        case TokenType::CommentInline: return lhs.getStringValue() == rhs.getStringValue();
-        case TokenType::Keyword: return lhs.getKeywordType() == rhs.getKeywordType();
-        case TokenType::Float: return
-                    std::abs(lhs.getFloatValue() - rhs.getFloatValue())
+        case TokenType::CommentLine:
+        case TokenType::Identifier:
+        case TokenType::String:
+            return lhs.getStringValue() == rhs.getStringValue();
+        case TokenType::Keyword:
+            return lhs.getKeywordType() == rhs.getKeywordType();
+        case TokenType::Float:
+            return std::abs(lhs.getFloatValue() - rhs.getFloatValue())
                     < std::numeric_limits<Token::FloatType>::epsilon();
-        case TokenType::Char: return lhs.getCharValue() == rhs.getCharValue();
-        case TokenType::Int: return lhs.getIntValue() == rhs.getIntValue();
-        default: return true;
+        case TokenType::Char:
+            return lhs.getCharValue() == rhs.getCharValue();
+        case TokenType::Int:
+            return lhs.getIntValue() == rhs.getIntValue();
+        default:
+            return true;
     }
 }
 
@@ -219,8 +259,8 @@ inline std::ostream& operator<<(std::ostream& os, const Token& obj)
     os << "TokenType: " << static_cast<int>(obj.getType()) << ", TokenValue: ";
     switch (obj.getType())
     {
-        case TokenType::CommentInline:
         case TokenType::CommentBlock:
+        case TokenType::CommentLine:
         case TokenType::Identifier: 
         case TokenType::String: os << obj.getStringValue(); break;
         case TokenType::Keyword: os << static_cast<int>(obj.getKeywordType()); break;
