@@ -49,10 +49,11 @@ install:
     - docker build -t shard --build-arg PKG=$PKG --build-arg CC=$CC --build-arg CXX=$CXX .
     - mkdir -p ${TRAVIS_BUILD_DIR}/build
     - ls -la ${TRAVIS_BUILD_DIR}
-    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/build shard cmake -DCMAKE_BUILD_TYPE=release -DSHARD_BUILD_TESTS=On ..
+    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard shard ls -la /opt/shard
+    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard shard cmake -DCMAKE_BUILD_TYPE=release -DSHARD_BUILD_TESTS=On ..
 
 script:
-    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/build shard cmake --build .
-    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/build shard ctest --verbose
+    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard shard cmake --build .
+    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard shard ctest --verbose
 
 # ######################################################################### #
