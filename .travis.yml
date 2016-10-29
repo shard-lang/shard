@@ -14,99 +14,41 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
+language: generic
 sudo: required
-dist: trusty
-os: linux
-
-language: cpp
+services:
+    - docker
 
 matrix:
     include:
         - compiler: gcc
-          addons:
-            apt:
-                sources:
-                    - ubuntu-toolchain-r-test
-                packages:
-                    - g++-4.9
-          env:
-            - CC=gcc-4.9
-            - CXX=g++-4.9
-        - compiler: gcc
-          addons:
-            apt:
-                sources:
-                    - ubuntu-toolchain-r-test
-                packages:
-                    - g++-5
           env:
             - CC=gcc-5
             - CXX=g++-5
-        - compiler: gcc
-          addons:
-            apt:
-                sources:
-                    - ubuntu-toolchain-r-test
-                packages:
-                    - g++-6
-          env:
-            - CC=gcc-6
-            - CXX=g++-6
+            - PKG=g++-5
         - compiler: clang
-          addons:
-            apt:
-                sources:
-                    - ubuntu-toolchain-r-test
-                    - llvm-toolchain-precise-3.6
-                packages:
-                    - clang-3.6
           env:
             - CC=clang-3.6
             - CXX=clang++-3.6
+            - PKG=clang-3.6
         - compiler: clang
-          addons:
-            apt:
-                sources:
-                    - ubuntu-toolchain-r-test
-                    - llvm-toolchain-precise-3.7
-                packages:
-                    - clang-3.7
           env:
             - CC=clang-3.7
             - CXX=clang++-3.7
+            - PKG=clang-3.7
         - compiler: clang
-          addons:
-            apt:
-                sources:
-                    - ubuntu-toolchain-r-test
-                    - llvm-toolchain-precise-3.8
-                packages:
-                    - clang-3.8
           env:
             - CC=clang-3.8
             - CXX=clang++-3.8
-        - compiler: clang
-          addons:
-            apt:
-                sources:
-                    - ubuntu-toolchain-r-test
-                    - llvm-toolchain-precise-3.9
-                packages:
-                    - clang-3.9
-          env:
-            - CC=clang-3.9
-            - CXX=clang++-3.9
+            - PKG=clang-3.8
 
-before_script:
-    - mkdir build
-    - pushd build
-    - cmake -DCMAKE_BUILD_TYPE=release -DSHARD_BUILD_TESTS=On ..
-    - popd
+install:
+    - docker build -t shard --build-arg PKG=$PKG --build-arg CC=$CC --build-arg CXX=$CXX .
+    - mkdir -p ${TRAVIS_BUILD_DIR}/build
+    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/build shard cmake -DCMAKE_BUILD_TYPE=release -DSHARD_BUILD_TESTS=On ..
 
 script:
-    - VERBOSE=1 cmake --build build
-    - pushd build
-    - GTEST_COLOR=1 ctest --verbose
-    - popd
+    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/build shard cmake --build .
+    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/build shard ctest --verbose
 
 # ######################################################################### #
