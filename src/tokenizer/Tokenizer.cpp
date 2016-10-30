@@ -43,29 +43,6 @@ namespace
     }};
 
     /**
-     * @brief returns escaped char value.
-     */
-    static char getEscaped(const char value)
-    {
-        switch (value)
-        {
-            case '"': return '\"';
-            case '\'': return '\'';
-            case '?': return '\?';
-            case '\\': return '\\';
-            case '0': return '\0';
-            case 'a': return '\a';
-            case 'b': return '\b';
-            case 'f': return '\f';
-            case 'n': return '\n';
-            case 'r': return '\r';
-            case 't': return '\t';
-            case 'v': return '\v';
-            default: throw InvalidEscapeSequenceException(m_loc);
-        }
-    }
-
-    /**
      * @brief returns numeric value of character in hexadecimal base.
      */
     static Token::IntType getNumericValue(char value)
@@ -74,7 +51,7 @@ namespace
         {
             return value - 'A' + 10;
         }
-        if (value >= 'a' && value <= 'f')
+        else if (value >= 'a' && value <= 'f')
         {
             return value - 'a' + 10;
         }
@@ -83,6 +60,26 @@ namespace
 }
 
 /* ************************************************************************* */
+
+Token::CharType Tokenizer::getEscaped(const char value)
+{
+    switch (value)
+    {
+        case '"': return '\"';
+        case '\'': return '\'';
+        case '?': return '\?';
+        case '\\': return '\\';
+        case '0': return '\0';
+        case 'a': return '\a';
+        case 'b': return '\b';
+        case 'f': return '\f';
+        case 'n': return '\n';
+        case 'r': return '\r';
+        case 't': return '\t';
+        case 'v': return '\v';
+        default: throw InvalidEscapeSequenceException(m_loc);
+    }
+}
 
 void Tokenizer::tokenizeNumber()
 {

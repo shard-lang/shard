@@ -266,6 +266,11 @@ protected:
         return m_src.empty();
     }
 
+    /**
+     * @brief returns escaped char value.
+     */
+    Token::CharType getEscaped(const char value);
+
 /* ************************************************************************* */
 
 public:

@@ -47,7 +47,7 @@ public:
 
 protected:
 
-    SourceLocation m_start;
+    SourceLocation m_loc;
 
     TokenType m_type;
 
@@ -205,17 +205,17 @@ public:
     /**
      * @brief returns SourceLocation of tokens start.
      */
-    inline SourceLocation getSourceStart() const noexcept
+    inline SourceLocation getLocation() const noexcept
     {
-        return m_start;
+        return m_loc;
     }
 
     /**
      * @brief sets SourceLocation of token.
      */
-    inline void setLocation(SourceLocation start) noexcept
+    inline void setLocation(SourceLocation loc) noexcept
     {
-        m_start = start;
+        m_loc = loc;
     }
 };
 
