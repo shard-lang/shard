@@ -107,7 +107,6 @@ class Tokenizer
 protected:
 
     Source m_src;
-    SourceLocation m_loc;
 
     Token m_current;
 
@@ -121,7 +120,7 @@ public:
     /**
      * @brief constructs Tokenizer which reads from file.
      */
-    explicit Tokenizer(const Path& path): m_src(path), m_loc(SourceLocation(1, 1))
+    explicit Tokenizer(const Path& path): m_src(path)
     {
         tokenize();
     }
@@ -129,7 +128,7 @@ public:
     /**
      * @brief constructs Tokenizer which reads from String.
      */
-    explicit Tokenizer(const String& source): m_src(source), m_loc(SourceLocation(1, 1))
+    explicit Tokenizer(const String& source): m_src(source)
     {
         tokenize();
     }

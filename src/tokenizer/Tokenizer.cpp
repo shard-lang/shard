@@ -77,7 +77,7 @@ Token::CharType Tokenizer::getEscaped(const char value)
         case 'r': return '\r';
         case 't': return '\t';
         case 'v': return '\v';
-        default: throw InvalidEscapeSequenceException(m_loc);
+        default: throw InvalidEscapeSequenceException(m_src.getLocation());
     }
 }
 
@@ -92,7 +92,7 @@ void Tokenizer::tokenizeNumber()
         digitSize = 0;
         if (!isDigit(base))
         {
-            throw ExpectedNumberException(m_loc);
+            throw ExpectedNumberException(m_src.getLocation());
         }
 
         Token::IntType res = 0;
@@ -157,13 +157,13 @@ void Tokenizer::tokenizeString()
     {
         if (empty())
         {
-            throw StringWithoutEndException(m_loc);
+            throw StringWithoutEndException(m_src.getLocation());
         }
         if (match('\\'))
         {
             if (empty())
             {
-                throw StringWithoutEndException(m_loc);
+                throw StringWithoutEndException(m_src.getLocation());
             }
             value += getEscaped(m_src.extract());
         }
@@ -210,20 +210,20 @@ void Tokenizer::tokenizeChar()
             {
                 if (empty())
                 {
-                    throw CharWithoutEndException(m_loc);
+                    throw CharWithoutEndException(m_src.getLocation());
                 }
                 value = getEscaped(m_src.extract());
                 break;
             }
             case '\n':
-            case '\r': throw NewlineInCharLiteralException(m_loc);
-            case char_literal_border: throw EmptyCharLiteralException(m_loc);
+            case '\r': throw NewlineInCharLiteralException(m_src.getLocation());
+            case char_literal_border: throw EmptyCharLiteralException(m_src.getLocation());
             default: break;
         }
     }
     if (!match(char_literal_border))
     {
-        throw CharWithoutEndException(m_loc);
+        throw CharWithoutEndException(m_src.getLocation());
     }
     
     m_current = Token::CharLiteral(value);
@@ -431,7 +431,7 @@ void Tokenizer::tokenizeOperator()
                 default: m_current = Token(TokenType::Greater); return;
             }
         }
-        default: throw UnknownOperatorException(m_loc);
+        default: throw UnknownOperatorException(m_src.getLocation());
     }
 }
 
@@ -439,7 +439,7 @@ void Tokenizer::tokenize()
 {
     skipWhitespace();
 
-    auto loc = m_loc;
+    auto loc = m_src.getLocation();
 
     if (empty())
     {

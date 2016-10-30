@@ -25,6 +25,7 @@
 #include "shard/String.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/UniquePtr.hpp"
+#include "shard/SourceLocation.hpp"
 
 /* ************************************************************************* */
 
@@ -102,6 +103,7 @@ class Source
 protected:
 
     UniquePtr<std::basic_streambuf<ReadMode>> m_sb;
+    SourceLocation m_loc;
 
 /* ************************************************************************* */
 
@@ -116,13 +118,15 @@ public:
                 auto ptr = makeUnique<std::basic_filebuf<ReadMode>>();
                 ptr->open(l_path, std::ios_base::in | std::ios_base::binary);
                 return ptr;
-            }(path)) {}
+            }(path)),
+            m_loc({1, 1}) {}
 
     /**
      * @brief constructs Source with input from string.
      */
     explicit Source (const String& source):
-            m_sb(makeUnique<std::basic_stringbuf<ReadMode>>(source)) {}
+            m_sb(makeUnique<std::basic_stringbuf<ReadMode>>(source)),
+            m_loc({1, 1}) {}
 
 /* ************************************************************************* */    
 
@@ -169,7 +173,15 @@ public:
         m_sb->sbumpc();
     }
 
-    /* ************************************************************************* */
+/* ************************************************************************* */
+
+
+    const SourceLocation& getLocation() const noexcept
+    {
+        return m_loc;
+    }
+
+/* ************************************************************************* */
 
 public:
 
