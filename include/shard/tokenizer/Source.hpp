@@ -49,7 +49,7 @@ class Source; //FWD declaration
 class SourceIterator
 {
 
-protected:
+private:
 
     ViewPtr<Source> m_source;
 
@@ -100,7 +100,7 @@ inline bool operator!=(const SourceIterator& lhs, const SourceIterator& rhs)
 class Source
 {
 
-protected:
+private:
 
     UniquePtr<std::basic_streambuf<ReadMode>> m_sb;
     SourceLocation m_loc;
@@ -130,7 +130,7 @@ public:
 
 /* ************************************************************************* */    
 
-protected:
+private:
 
     inline void incrementLocation() noexcept
     {

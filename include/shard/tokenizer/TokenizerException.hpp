@@ -34,12 +34,12 @@ namespace tokenizer {
 class TokenizerException
 {
 
-protected:
+private:
 
     SourceLocation m_loc;
     static const char m_msg[];
 
-public:
+protected:
 
     explicit TokenizerException(const SourceLocation loc): m_loc(loc) {}
 
@@ -59,7 +59,7 @@ public:
 class ExpectedNumberException : public TokenizerException
 {
 
-protected:
+private:
 
     static constexpr char m_msg[] = "Expected number";
 
@@ -74,7 +74,7 @@ public:
 class UnknownOperatorException : public TokenizerException
 {
 
-protected:
+private:
 
     static constexpr char m_msg[] = "Unknown operator";
 
@@ -89,7 +89,7 @@ public:
 class StringWithoutEndException : public TokenizerException
 {
 
-protected:
+private:
 
     static constexpr char m_msg[] = "Closing character for string not found";
 
@@ -104,7 +104,7 @@ public:
 class CharWithoutEndException : public TokenizerException
 {
     
-protected:
+private:
 
     static constexpr char m_msg[] = "Closing character for char literal not found";
 
@@ -118,7 +118,7 @@ public:
 class EmptyCharLiteralException : public TokenizerException
 {
     
-protected:
+private:
 
     static constexpr char m_msg[] = "Cannot determine char value";
 
@@ -131,7 +131,7 @@ public:
 class NewlineInCharLiteralException : public TokenizerException
 {
     
-protected:
+private:
 
     static constexpr char m_msg[] = "Found newline in char literal";
 
@@ -146,7 +146,7 @@ public:
 class InvalidEscapeSequenceException : public TokenizerException
 {
     
-protected:
+private:
 
     static constexpr char m_msg [] = "Unknown escape sequence";
 

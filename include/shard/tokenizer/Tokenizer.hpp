@@ -48,7 +48,7 @@ class Tokenizer; //FWD declaration
 class TokenizerIterator
 {
 
-protected:
+private:
 
     ViewPtr<Tokenizer> m_tokenizer;
 
@@ -104,10 +104,9 @@ inline bool operator!=(const TokenizerIterator& lhs, const TokenizerIterator& rh
 class Tokenizer
 {
 
-protected:
+private:
 
     Source m_src;
-
     Token m_current;
 
     static constexpr char string_literal_border = '"';
@@ -135,7 +134,7 @@ public:
             
 /* ************************************************************************* */
 
-protected:
+private:
 
     /**
      * @brief returns if current character is between two chars in the ASCII table.
@@ -244,7 +243,7 @@ protected:
 
 /* ************************************************************************* */
 
-protected:
+private:
 
     /**
      * @brief Iterates to next non-whitespace char.
@@ -279,7 +278,7 @@ public:
      */
     void tokenize();
 
-protected:
+private:
 
     /**
      * @brief tokenizes int or float literal.

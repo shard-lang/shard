@@ -45,7 +45,7 @@ public:
     using CharType = char32_t;
     using IntType = long int;
 
-protected:
+private:
 
     SourceLocation m_loc;
 
