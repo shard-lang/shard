@@ -37,20 +37,22 @@ class TokenizerException
 private:
 
     SourceLocation m_loc;
-    static const char m_msg[];
+    const char * m_msg;
 
 protected:
 
-    explicit TokenizerException(const SourceLocation loc): m_loc(loc) {}
+    explicit TokenizerException(const SourceLocation& loc, const char* msg): m_loc(loc), m_msg(msg) {}
+
+public:
 
     const SourceLocation& getLocation() const noexcept
     {
         return m_loc;
     }
 
-    String what() const noexcept
+    String formatMessage() const noexcept
     {
-        return String(m_msg) + " at " + toString(m_loc.getLine()) + ":" + toString(m_loc.getColumn()) + ".";
+        return String(m_msg) + " at " + toString(getLocation().getLine()) + ":" + toString(getLocation().getColumn()) + ".";
     }
 };
 
@@ -61,12 +63,11 @@ class ExpectedNumberException : public TokenizerException
 
 private:
 
-    static constexpr char m_msg[] = "Expected number";
+    static constexpr char const * m_msg = "Expected number";
 
 public:
 
-    explicit ExpectedNumberException(const SourceLocation loc): TokenizerException(loc) {}
-
+    explicit ExpectedNumberException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
 };
 
 /* ************************************************************************* */
@@ -76,12 +77,11 @@ class UnknownOperatorException : public TokenizerException
 
 private:
 
-    static constexpr char m_msg[] = "Unknown operator";
+    static constexpr char const * m_msg = "Unknown operator";
 
 public:
 
-    explicit UnknownOperatorException(const SourceLocation loc): TokenizerException(loc) {}
-
+    explicit UnknownOperatorException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
 };
 
 /* ************************************************************************* */
@@ -91,12 +91,11 @@ class StringWithoutEndException : public TokenizerException
 
 private:
 
-    static constexpr char m_msg[] = "Closing character for string not found";
+    static constexpr char const * m_msg = "Closing character for string not found";
 
 public:
 
-    explicit StringWithoutEndException(const SourceLocation loc): TokenizerException(loc) {}
-
+    explicit StringWithoutEndException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
 };
 
 /* ************************************************************************* */
@@ -106,11 +105,11 @@ class CharWithoutEndException : public TokenizerException
     
 private:
 
-    static constexpr char m_msg[] = "Closing character for char literal not found";
+    static constexpr char const * m_msg = "Closing character for char literal not found";
 
 public:
 
-    explicit CharWithoutEndException(const SourceLocation loc): TokenizerException(loc) {}
+    explicit CharWithoutEndException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
 };
 
 /* ************************************************************************* */
@@ -120,25 +119,25 @@ class EmptyCharLiteralException : public TokenizerException
     
 private:
 
-    static constexpr char m_msg[] = "Cannot determine char value";
+    static constexpr char const * m_msg = "Cannot determine char value";
 
 public:
 
-    explicit EmptyCharLiteralException(const SourceLocation loc): TokenizerException(loc) {}
-
+    explicit EmptyCharLiteralException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
 };
+
+/* ************************************************************************* */
 
 class NewlineInCharLiteralException : public TokenizerException
 {
     
 private:
 
-    static constexpr char m_msg[] = "Found newline in char literal";
+    static constexpr char const * m_msg = "Found newline in char literal";
 
 public:
 
-    explicit NewlineInCharLiteralException(const SourceLocation loc): TokenizerException(loc) {}
-
+    explicit NewlineInCharLiteralException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
 };
 
 /* ************************************************************************* */
@@ -148,12 +147,11 @@ class InvalidEscapeSequenceException : public TokenizerException
     
 private:
 
-    static constexpr char m_msg [] = "Unknown escape sequence";
+    static constexpr char const * m_msg = "Unknown escape sequence";
 
 public:
 
-    explicit InvalidEscapeSequenceException(const SourceLocation loc): TokenizerException(loc) {}
-
+    explicit InvalidEscapeSequenceException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
 };
 
 /* ************************************************************************* */

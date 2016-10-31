@@ -126,7 +126,7 @@ static void test_exception_impl(int line, const String& code, const String& corr
     }
     catch (TokenizerException& ex)
     {
-        ASSERT_EQ(correct, ex.what());
+        ASSERT_EQ(correct, ex.formatMessage());
     }
 }
 
@@ -470,4 +470,13 @@ TEST(Tokenizer, exception)
         "154.+",
         "Expected number at 1:5."
     );
+    test_exception(
+        "154.0ej",
+        "Expected number at 1:7."
+    );
+    test_exception(
+        "154.0e+j",
+        "Expected number at 1:8."
+    );
+    // TODO: přidat testy i ostatních druhů výjimek
 }
