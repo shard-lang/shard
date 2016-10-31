@@ -48,7 +48,7 @@ public:
         return m_loc;
     }
 
-    const String what() const noexcept
+    String what() const noexcept
     {
         return String(m_msg) + " at " + toString(m_loc.getLine()) + ":" + toString(m_loc.getColumn()) + ".";
     }

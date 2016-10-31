@@ -109,9 +109,34 @@ static void test_location_impl(int line, const String& code, const DynamicArray<
     }
 }
 
+/* ************************************************************************* */
+
+static void test_exception_impl(int line, const String& code, const String& correct)
+{
+    SCOPED_TRACE(code);
+
+    try
+    {
+        DynamicArray<SourceLocation> result;
+        result.reserve(correct.size());
+        for (auto&& x : Tokenizer(code))
+        {
+            result.push_back(x.getLocation());
+        }
+    }
+    catch (TokenizerException& ex)
+    {
+        ASSERT_EQ(correct, ex.what());
+    }
+}
+
+/* ************************************************************************* */
 #define test(...) test_impl(__LINE__, __VA_ARGS__)
 #define test_invalid(...) test_invalid_impl(__LINE__, __VA_ARGS__)
 #define test_location(...) test_location_impl(__LINE__, __VA_ARGS__)
+#define test_exception(...) test_exception_impl(__LINE__, __VA_ARGS__)
+
+/* ************************************************************************* */
 
 TEST(Tokenizer, basic)
 {
@@ -435,3 +460,10 @@ TEST(Tokenizer, location)
 
 /* ************************************************************************* */
 
+TEST(Tokenizer, exception)
+{
+    test_exception(
+        "154.+",
+        "Expected number at 1:5."
+    );
+}
