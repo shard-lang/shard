@@ -215,8 +215,7 @@ void Tokenizer::tokenizeChar()
                 value = getEscaped(m_src.extract());
                 break;
             }
-            case '\n':
-            case '\r': throw NewlineInCharLiteralException(m_src.getLocation());
+            case '\n': throw NewlineInCharLiteralException(m_src.getLocation());
             case char_literal_border: throw EmptyCharLiteralException(m_src.getLocation());
             default: break;
         }
@@ -321,7 +320,7 @@ void Tokenizer::tokenizeOperator()
                 {
                     m_src.toss();
                     String buf;
-                    while (!match('\n', '\r'))
+                    while (!empty() && !match('\n'))
                     {
                         buf += m_src.extract();
                     }
@@ -332,7 +331,7 @@ void Tokenizer::tokenizeOperator()
                 {
                     m_src.toss();
                     String buf;
-                    while (true)
+                    while (!empty())
                     {
                         if (is('*'))
                         {

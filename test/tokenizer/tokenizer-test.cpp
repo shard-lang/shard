@@ -27,6 +27,8 @@
 using namespace shard;
 using namespace shard::tokenizer;
 
+/* ************************************************************************* */
+
 static void test_impl(
         int line,
         const String& code,
@@ -68,6 +70,8 @@ static void test_impl(
     }
 }
 
+/* ************************************************************************* */
+
 static void test_invalid_impl(int line, const String& code)
 {
     SCOPED_TRACE(code);
@@ -82,6 +86,8 @@ static void test_invalid_impl(int line, const String& code)
         TokenizerException
     );
 }
+
+/* ************************************************************************* */
 
 static void test_location_impl(int line, const String& code, const DynamicArray<SourceLocation>& correct)
 {
@@ -236,14 +242,16 @@ TEST(Tokenizer, ints)
     );
     test(
         "a3.1415926538+1.4",
-        {Token::Identifier("a3"), Token(TokenType::Period), Token::IntLiteral(1415926538), Token(TokenType::Plus), Token::FloatLiteral(1.4)}
+        {Token::Identifier("a3"), Token(TokenType::Period),
+        Token::IntLiteral(1415926538), Token(TokenType::Plus), Token::FloatLiteral(1.4)}
     );
 }
 TEST(Tokenizer, keywords)
 {
     test(
         "for float null while",
-        {Token::Keyword(KeywordType::For), Token::Keyword(KeywordType::Float), Token::Keyword(KeywordType::Null), Token::Keyword(KeywordType::While)}
+        {Token::Keyword(KeywordType::For), Token::Keyword(KeywordType::Float),
+        Token::Keyword(KeywordType::Null), Token::Keyword(KeywordType::While)}
     );
     test(
         "for (int i = 0; i <= 10; i++)",
@@ -264,7 +272,8 @@ TEST(Tokenizer, keywords)
     );
     test(
         "throw Exception& ex;",
-        {Token::Keyword(KeywordType::Throw), Token::Identifier("Exception"), Token(TokenType::Amp), Token::Identifier("ex"), Token(TokenType::Semicolon)}
+        {Token::Keyword(KeywordType::Throw), Token::Identifier("Exception"),
+        Token(TokenType::Amp), Token::Identifier("ex"), Token(TokenType::Semicolon)}
     );
 }
 TEST(Tokenizer, comments)
@@ -288,6 +297,14 @@ TEST(Tokenizer, comments)
     test(
         "123/*comme*nt\r123*/123",
         {Token::IntLiteral(123), Token::CommentBlock("comme*nt\r123"), Token::IntLiteral(123)}
+    );
+    test(
+        "123/*comme*nt\r123123",
+        {Token::IntLiteral(123), Token::CommentBlock("comme*nt\r123123")}
+    );
+    test(
+        "123//comme*nt",
+        {Token::IntLiteral(123), Token::CommentLine("comme*nt")}
     );
 }
 TEST(Tokenizer, strings_utf)
@@ -385,10 +402,36 @@ TEST(Tokenizer, ints_oct)
         {Token::IntLiteral(0571)}
     );
 }
+
+/* ************************************************************************* */
+
 TEST(Tokenizer, location)
 {
     test_location(
         "0o123456,.\"hhh\"ide",
         {{1, 1}, {1, 9}, {1, 10}, {1, 11}, {1, 16}}
     );
+    test_location(
+        "\n\n,.\"hhh\"ide",
+        {{3, 1}, {3, 2}, {3, 3}, {3, 8}}
+    );
+    test_location(
+        "\n\r\r\n0o123456,.\r\n\"hhh\"ide",
+        {{4, 1}, {4, 9}, {4, 10}, {5, 1}, {5, 6}}
+    );
+    test_location(
+        "0o123456,./*\"hhh\"*/ide",
+        {{1, 1}, {1, 9}, {1, 10}, {1, 11}, {1, 20}}
+    );
+    test_location(
+        "0o12/*34\n\r\n56*/,.\"hhh\"\ride",
+        {{1, 1}, {1, 5}, {3, 5}, {3, 6}, {3, 7}, {4, 1}}
+    );
+    test_location(
+        "0o1\n234//56\n,//.\"hhh\"ide",
+        {{1, 1}, {2, 1}, {2, 4}, {3, 1}, {3, 2}}
+    );
 }
+
+/* ************************************************************************* */
+

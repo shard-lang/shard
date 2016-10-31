@@ -130,6 +130,20 @@ public:
 
 /* ************************************************************************* */    
 
+protected:
+
+    inline void incrementLocation() noexcept
+    {
+        if (get() == '\n')
+        {
+            m_loc.addLine();
+        }
+        else
+        {
+            m_loc.addColumn();
+        }
+    }
+
 public:
 
     /**
@@ -142,39 +156,54 @@ public:
     }
 
     /**
-     * @brief returns current character.
+     * @brief returns current character - replaces platform dependent newline with UNIXs \n.
      */
     inline int get() const
     {
-        return m_sb->sgetc();
+        auto temp = m_sb->sgetc();
+        
+        if (temp == '\r')
+        {
+            if (m_sb->snextc() != '\n')
+            {
+                m_sb->sungetc();
+            }
+            return '\n';
+        }
+
+        return temp;
     }
 
     /**
      * @brief returns current character and moves to next.
      */
-    inline int extract() const
+    inline int extract()
     {
+        incrementLocation();
         return m_sb->sbumpc();
     }
 
     /**
      * @brief moves to next character and returns it.
      */
-    inline int getNext() const
+    inline int getNext()
     {
+        incrementLocation();
         return m_sb->snextc();
     }
 
     /**
      * @brief discards current character and moves to next.
      */
-    inline void toss() const 
+    inline void toss()
     {
+        incrementLocation();
         m_sb->sbumpc();
     }
 
 /* ************************************************************************* */
 
+public:
 
     const SourceLocation& getLocation() const noexcept
     {
