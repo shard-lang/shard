@@ -130,25 +130,6 @@ public:
 
 /* ************************************************************************* */    
 
-private:
-
-    inline void incrementLocation() noexcept
-    {
-        auto temp = get();
-        if (temp == '\n')
-        {
-            m_loc.addLine();
-        }
-        else if (temp >= 0x80 && temp < 0xC0) // UTF8 additional bytes
-        {
-            return;
-        }
-        else
-        {
-            m_loc.addColumn();
-        }
-    }
-
 public:
 
     /**
@@ -233,6 +214,30 @@ public:
     inline SourceIterator end() noexcept
     {
         return SourceIterator(nullptr);
+    }
+
+/* ************************************************************************* */
+
+private:
+
+    /**
+     * @brief increments location indicator.
+     */
+    inline void incrementLocation() noexcept
+    {
+        auto temp = get();
+        if (temp == '\n')
+        {
+            m_loc.addLine();
+        }
+        else if (temp >= 0x80 && temp < 0xC0) // UTF8 additional bytes
+        {
+            return;
+        }
+        else
+        {
+            m_loc.addColumn();
+        }
     }
 };
 

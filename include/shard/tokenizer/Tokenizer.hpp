@@ -134,6 +134,82 @@ public:
             
 /* ************************************************************************* */
 
+public:
+
+    /**
+     * @brief load next token.
+     */
+    void tokenize();
+
+/* ************************************************************************* */
+
+public:
+
+    /**
+     * @brief get current token.
+     */
+    inline const Token& get() const noexcept
+    {
+        return m_current;
+    }
+
+    /**
+     * @brief get current token and move to next.
+     */
+    inline Token extract()
+    {
+        auto tmp = m_current;
+        tokenize();
+        return tmp;
+    }
+
+    /**
+     * @brief move to next token and return it.
+     */
+    inline const Token& getNext()
+    {
+        tokenize();
+        return m_current;
+    }
+
+    /**
+     * @brief discards current token and moves to next.
+     */
+    inline void toss()
+    {
+        tokenize();
+    }
+
+    /**
+     * @brief checks if current token is final EOF type.
+     */
+    inline bool isEof()
+    {
+        return m_current.getType() == TokenType::End;
+    }
+
+/* ************************************************************************* */
+
+public:
+
+    /**
+     * @brief returns tokenizer iterator pointing to currect token.
+     */
+    inline TokenizerIterator begin() noexcept
+    {
+        return TokenizerIterator(this);
+    }
+
+    /**
+     * @brief returns empty tokenizer iterator.
+     */
+    inline TokenizerIterator end() noexcept
+    {
+        return TokenizerIterator(nullptr);
+    }
+
+/* ************************************************************************* */
+
 private:
 
     /**
@@ -180,6 +256,7 @@ private:
             case 16: return isBetween('0', '9') || isBetween('a', 'f') || isBetween('A', 'F');
             case 8: return isBetween('0', '7');
             case 2: return isBetween('0', '1');
+            default: return false;
         }
     }
 
@@ -271,13 +348,6 @@ private:
 
 /* ************************************************************************* */
 
-public:
-
-    /**
-     * @brief load next token.
-     */
-    void tokenize();
-
 private:
 
     /**
@@ -305,72 +375,6 @@ private:
      */
     void tokenizeOperator();
 
-/* ************************************************************************* */
-
-public:
-
-    /**
-     * @brief get current token.
-     */
-    inline const Token& get() const noexcept
-    {
-        return m_current;
-    }
-
-    /**
-     * @brief get current token and move to next.
-     */
-    inline Token extract()
-    {
-        auto tmp = m_current;
-        tokenize();
-        return tmp;
-    }
-
-    /**
-     * @brief move to next token and return it.
-     */
-    inline const Token& getNext()
-    {
-        tokenize();
-        return m_current;
-    }
-
-    /**
-     * @brief discards current token and moves to next.
-     */
-    inline void toss()
-    {
-        tokenize();
-    }
-
-    /**
-     * @brief checks if current token is final EOF type.
-     */
-    inline bool isEof()
-    {
-        return m_current.getType() == TokenType::End;
-    }
-
-/* ************************************************************************* */
-
-public:
-
-    /**
-     * @brief returns tokenizer iterator pointing to currect token.
-     */
-    inline TokenizerIterator begin() noexcept
-    {
-        return TokenizerIterator(this);
-    }
-
-    /**
-     * @brief returns empty tokenizer iterator.
-     */
-    inline TokenizerIterator end() noexcept
-    {
-        return TokenizerIterator(nullptr);
-    }
 };
 
 /* ************************************************************************* */
