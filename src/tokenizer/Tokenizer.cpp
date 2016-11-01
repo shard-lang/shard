@@ -81,6 +81,8 @@ Token::CharType Tokenizer::getEscaped(const char value)
     }
 }
 
+/* ************************************************************************* */
+
 void Tokenizer::tokenizeNumber()
 {
     bool floatFlag = false;
@@ -149,6 +151,8 @@ void Tokenizer::tokenizeNumber()
     m_current = floatFlag ? Token::FloatLiteral(value) : Token::IntLiteral(integer);
 }
 
+/* ************************************************************************* */
+
 void Tokenizer::tokenizeString()
 {
     String value;
@@ -161,11 +165,8 @@ void Tokenizer::tokenizeString()
         }
         if (match('\\'))
         {
-            if (empty())
-            {
-                throw StringWithoutEndException(m_src.getLocation());
-            }
-            value += getEscaped(m_src.extract());
+            value += getEscaped(m_src.get());
+            m_src.toss();
         }
         else
         {
@@ -175,6 +176,8 @@ void Tokenizer::tokenizeString()
     
     m_current = Token::StringLiteral(value);
 }
+
+/* ************************************************************************* */
 
 void Tokenizer::tokenizeChar()
 {
@@ -227,6 +230,8 @@ void Tokenizer::tokenizeChar()
     
     m_current = Token::CharLiteral(value);
 }
+
+/* ************************************************************************* */
 
 void Tokenizer::tokenizeIdentifier() noexcept
 {
@@ -433,6 +438,8 @@ void Tokenizer::tokenizeOperator()
         default: throw UnknownOperatorException(m_src.getLocation());
     }
 }
+
+/* ************************************************************************* */
 
 void Tokenizer::tokenize()
 {

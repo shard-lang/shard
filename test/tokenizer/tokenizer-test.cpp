@@ -472,6 +472,14 @@ TEST(Tokenizer, location)
         "\\\\bla",
         {{1, 1}, {1, 2}, {1, 3}}
     );
+    test_location(
+        "\"\n\rabc\"v",
+        {{1, 1}, {3, 5}}
+    );
+    test_location(
+        String("\"\n\r\t\0\\a\"a", 9),
+        {{1, 1}, {3, 6}}
+    );
 }
 
 /* ************************************************************************* */
@@ -491,20 +499,16 @@ TEST(Tokenizer, exception)
         "Expected number at 1:8."
     );
     test_exception(
-        "\"\n\rabc",
-        "Closing character for string literal not found at 3:4."
-    );
-    test_exception(
-        "\"\n\r\t\0\\a",
-        "Closing character for string literal not found at 3:4."
-    );
-    test_exception(
         "bla\"bla",
         "Closing character for string literal not found at 1:8."
     );
     test_exception(
-        "\"\n\r\t\0\\",
+        "\"\n\rabc",
         "Closing character for string literal not found at 3:4."
+    );
+    test_exception(
+        String("\"\n\r\t\0\\a", 7),
+        "Closing character for string literal not found at 3:5."
     );
     test_exception(
         "bla\"bla",
@@ -531,11 +535,15 @@ TEST(Tokenizer, exception)
         "Unknown escape sequence at 1:3."
     );
     test_exception(
-        "'\\+'",
+        "'\\",
         "Unknown escape sequence at 1:3."
     );
     test_exception(
-        "'\\",
+        "\"\\l\"",
+        "Unknown escape sequence at 1:3."
+    );
+    test_exception(
+        "\"\\",
         "Unknown escape sequence at 1:3."
     );
 }
