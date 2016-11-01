@@ -134,9 +134,14 @@ private:
 
     inline void incrementLocation() noexcept
     {
-        if (get() == '\n')
+        auto temp = get();
+        if (temp == '\n')
         {
             m_loc.addLine();
+        }
+        else if (temp >= 0x80 && temp < 0xC0) // UTF8 additional bytes
+        {
+            return;
         }
         else
         {
