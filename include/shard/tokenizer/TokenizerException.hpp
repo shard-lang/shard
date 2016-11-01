@@ -20,7 +20,6 @@
 
 // Shard
 #include "shard/String.hpp"
-#include "shard/Exception.hpp"
 #include "shard/SourceLocation.hpp"
 
 /* ************************************************************************* */
