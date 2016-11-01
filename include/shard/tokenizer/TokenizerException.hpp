@@ -91,7 +91,7 @@ class StringWithoutEndException : public TokenizerException
 
 private:
 
-    static constexpr char const * m_msg = "Closing character for string not found";
+    static constexpr char const * m_msg = "Closing character for string literal not found";
 
 public:
 
@@ -133,7 +133,7 @@ class NewlineInCharLiteralException : public TokenizerException
     
 private:
 
-    static constexpr char const * m_msg = "Found newline in char literal";
+    static constexpr char const * m_msg = "Newline is not allowed in char literal";
 
 public:
 

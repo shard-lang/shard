@@ -235,6 +235,10 @@ TEST(Tokenizer, chars)
         {Token(TokenType::Plus), Token(TokenType::Minus), Token::CharLiteral('z')}
     );
     test(
+        "'\\\\''\\a'",
+        {Token::CharLiteral('\\'), Token::CharLiteral('\a')}
+    );
+    test(
         "'\\n''\\r''\\0'",
         {Token::CharLiteral('\n'), Token::CharLiteral('\r'), Token::CharLiteral('\0')}
     );
@@ -460,6 +464,14 @@ TEST(Tokenizer, location)
         "\"ččč\"ide",
         {{1, 1}, {1, 6}}
     );
+    test_location(
+        "\'a\'b",
+        {{1, 1}, {1, 4}}
+    );
+    test_location(
+        "\\\\bla",
+        {{1, 1}, {1, 2}, {1, 3}}
+    );
 }
 
 /* ************************************************************************* */
@@ -467,7 +479,7 @@ TEST(Tokenizer, location)
 TEST(Tokenizer, exception)
 {
     test_exception(
-        "154.+",
+        "154.j",
         "Expected number at 1:5."
     );
     test_exception(
@@ -478,5 +490,52 @@ TEST(Tokenizer, exception)
         "154.0e+j",
         "Expected number at 1:8."
     );
-    // TODO: přidat testy i ostatních druhů výjimek
+    test_exception(
+        "\"\n\rabc",
+        "Closing character for string literal not found at 3:4."
+    );
+    test_exception(
+        "\"\n\r\t\0\\a",
+        "Closing character for string literal not found at 3:4."
+    );
+    test_exception(
+        "bla\"bla",
+        "Closing character for string literal not found at 1:8."
+    );
+    test_exception(
+        "\"\n\r\t\0\\",
+        "Closing character for string literal not found at 3:4."
+    );
+    test_exception(
+        "bla\"bla",
+        "Closing character for string literal not found at 1:8."
+    );
+    test_exception(
+        "'ab'",
+        "Closing character for char literal not found at 1:3."
+    );
+    test_exception(
+        "''",
+        "Cannot determine char value at 1:2."
+    );
+    test_exception(
+        "'\n'",
+        "Newline is not allowed in char literal at 1:2."
+    );
+    test_exception(
+        "'\r'",
+        "Newline is not allowed in char literal at 1:2."
+    );
+    test_exception(
+        "'\\l'",
+        "Unknown escape sequence at 1:3."
+    );
+    test_exception(
+        "'\\+'",
+        "Unknown escape sequence at 1:3."
+    );
+    test_exception(
+        "'\\",
+        "Unknown escape sequence at 1:3."
+    );
 }

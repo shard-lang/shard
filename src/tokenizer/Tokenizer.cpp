@@ -178,7 +178,7 @@ void Tokenizer::tokenizeString()
 
 void Tokenizer::tokenizeChar()
 {
-    Token::CharType value = m_src.extract();
+    Token::CharType value = m_src.get();
     if (value >= 0x80)
     {
         char additionalBytes;
@@ -197,6 +197,7 @@ void Tokenizer::tokenizeChar()
             value &= 0x1F;
             additionalBytes = 1;
         }
+        m_src.toss();
         for (char i = 0; i < additionalBytes; ++i)
         {
             value = (value << 6)|(m_src.extract() & 0x3F);
@@ -207,17 +208,16 @@ void Tokenizer::tokenizeChar()
         switch (value)
         {
             case '\\':
-            {
-                if (empty())
-                {
-                    throw CharWithoutEndException(m_src.getLocation());
-                }
-                value = getEscaped(m_src.extract());
+                value = getEscaped(m_src.getNext());
+                m_src.toss();
                 break;
-            }
-            case '\n': throw NewlineInCharLiteralException(m_src.getLocation());
-            case char_literal_border: throw EmptyCharLiteralException(m_src.getLocation());
-            default: break;
+            case '\n':
+                throw NewlineInCharLiteralException(m_src.getLocation());
+            case char_literal_border:
+                throw EmptyCharLiteralException(m_src.getLocation());
+            default: 
+                m_src.toss();
+                break;
         }
     }
     if (!match(char_literal_border))
