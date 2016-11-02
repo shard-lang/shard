@@ -23,6 +23,7 @@
 #include "shard/Assert.hpp"
 #include "shard/String.hpp"
 #include "shard/ViewPtr.hpp"
+#include "shard/SourceLocation.hpp"
 #include "shard/tokenizer/Source.hpp"
 #include "shard/tokenizer/KeywordType.hpp"
 #include "shard/tokenizer/TokenType.hpp"
@@ -41,10 +42,13 @@ class Tokenizer; //FWD declaration
 
 /* ************************************************************************* */
 
+/**
+ * @brief Input iterator from Shard lexical analyzer.
+ */
 class TokenizerIterator
 {
 
-protected:
+private:
 
     ViewPtr<Tokenizer> m_tokenizer;
 
@@ -94,10 +98,13 @@ inline bool operator!=(const TokenizerIterator& lhs, const TokenizerIterator& rh
 
 /* ************************************************************************* */
 
+/**
+ * @brief Shard lexical analyzer.
+ */
 class Tokenizer
 {
 
-protected:
+private:
 
     Source m_src;
     Token m_current;
@@ -114,7 +121,7 @@ public:
      */
     explicit Tokenizer(const Path& path): m_src(path)
     {
-        next();
+        tokenize();
     }
 
     /**
@@ -122,12 +129,88 @@ public:
      */
     explicit Tokenizer(const String& source): m_src(source)
     {
-        next();
+        tokenize();
     }
             
 /* ************************************************************************* */
 
-protected:
+public:
+
+    /**
+     * @brief load next token.
+     */
+    void tokenize();
+
+/* ************************************************************************* */
+
+public:
+
+    /**
+     * @brief get current token.
+     */
+    inline const Token& get() const noexcept
+    {
+        return m_current;
+    }
+
+    /**
+     * @brief get current token and move to next.
+     */
+    inline Token extract()
+    {
+        auto tmp = m_current;
+        tokenize();
+        return tmp;
+    }
+
+    /**
+     * @brief move to next token and return it.
+     */
+    inline const Token& getNext()
+    {
+        tokenize();
+        return m_current;
+    }
+
+    /**
+     * @brief discards current token and moves to next.
+     */
+    inline void toss()
+    {
+        tokenize();
+    }
+
+    /**
+     * @brief checks if current token is final EOF type.
+     */
+    inline bool isEof()
+    {
+        return m_current.getType() == TokenType::End;
+    }
+
+/* ************************************************************************* */
+
+public:
+
+    /**
+     * @brief returns tokenizer iterator pointing to currect token.
+     */
+    inline TokenizerIterator begin() noexcept
+    {
+        return TokenizerIterator(this);
+    }
+
+    /**
+     * @brief returns empty tokenizer iterator.
+     */
+    inline TokenizerIterator end() noexcept
+    {
+        return TokenizerIterator(nullptr);
+    }
+
+/* ************************************************************************* */
+
+private:
 
     /**
      * @brief returns if current character is between two chars in the ASCII table.
@@ -173,6 +256,7 @@ protected:
             case 16: return isBetween('0', '9') || isBetween('a', 'f') || isBetween('A', 'F');
             case 8: return isBetween('0', '7');
             case 2: return isBetween('0', '1');
+            default: return false;
         }
     }
 
@@ -234,33 +318,9 @@ protected:
         return false;
     }
 
-    /**
-     * @brief returns if current sequence of characters at input is equal to given sequence.
-     * If so, skips the sequence, otherwise returns back.
-     */
-    template<typename... Chars>
-    inline bool isSeq(Chars... options) noexcept
-    {
-        const int size = sizeof...(options);
-        const char chars[]{options...};
-        for (int i = 0; i < size; ++i)
-        {
-            if (!is(chars[i]))
-            {
-                for (int j = 0; j < i; ++j)
-                {
-                    m_src.unget();
-                }
-                return false;
-            }
-            m_src.toss();
-        }
-        return true;
-    }
-
 /* ************************************************************************* */
 
-protected:
+private:
 
     /**
      * @brief Iterates to next non-whitespace char.
@@ -281,27 +341,32 @@ protected:
         return m_src.empty();
     }
 
+    /**
+     * @brief returns escaped char value.
+     */
+    Token::CharType getEscaped(const char value);
+
 /* ************************************************************************* */
 
-protected:
+private:
 
     /**
-     * @brief tokenizes tokentype number.
+     * @brief tokenizes int or float literal.
      */
     void tokenizeNumber();
 
     /**
-     * @brief tokenizes string into identifier.
+     * @brief tokenizes identifier or keyword.
      */
     void tokenizeIdentifier() noexcept;
 
     /**
-     * @brief tokenizes string value into keyword, function or identifier.
+     * @brief tokenizes string literal.
      */
     void tokenizeString();
 
     /**
-     * @brief tokenizes string value into keyword, function or identifier.
+     * @brief tokenizes char literal.
      */
     void tokenizeChar();
 
@@ -310,60 +375,6 @@ protected:
      */
     void tokenizeOperator();
 
-/* ************************************************************************* */
-
-public:
-
-    /**
-     * @brief go to next token.
-     */
-    void next();
-
-    /**
-     * @brief get current token.
-     */
-    inline const Token& get() const noexcept
-    {
-        return m_current;
-    }
-
-    /**
-     * @brief get current token an move to next.
-     */
-    inline Token extract()
-    {
-        auto tmp = m_current;
-        next();
-        return tmp;
-    }
-
-    /**
-     * @brief checks if there is non-ending token available.
-     */
-    inline bool isEof()
-    {
-        return m_current.getType() == TokenType::End;
-    }
-
-/* ************************************************************************* */
-
-public:
-
-    /**
-     * @brief returns tokenizer iterator pointing to currect token.
-     */
-    inline TokenizerIterator begin() noexcept
-    {
-        return TokenizerIterator(this);
-    }
-
-    /**
-     * @brief returns tokenizer iterator pointing to token with end.
-     */
-    inline TokenizerIterator end() noexcept
-    {
-        return TokenizerIterator(nullptr);
-    }
 };
 
 /* ************************************************************************* */
@@ -375,7 +386,7 @@ inline const Token& TokenizerIterator::operator*() const
 
 inline TokenizerIterator& TokenizerIterator::operator++()
 {
-    m_tokenizer->next();
+    m_tokenizer->tokenize();
     return *this;
 }
 

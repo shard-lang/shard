@@ -20,7 +20,7 @@
 
 // Shard
 #include "shard/String.hpp"
-#include "shard/Exception.hpp"
+#include "shard/SourceLocation.hpp"
 
 /* ************************************************************************* */
 
@@ -30,75 +30,127 @@ namespace tokenizer {
 
 /* ************************************************************************* */
 
-class TokenizerException : public Exception
+class TokenizerException
 {
+
+private:
+
+    SourceLocation m_loc;
+    const char * m_msg;
+
+protected:
+
+    explicit TokenizerException(const SourceLocation& loc, const char* msg): m_loc(loc), m_msg(msg) {}
+
+public:
+
+    const SourceLocation& getLocation() const noexcept
+    {
+        return m_loc;
+    }
+
+    String formatMessage() const noexcept
+    {
+        return String(m_msg) + " at " + toString(getLocation().getLine()) + ":" + toString(getLocation().getColumn()) + ".";
+    }
 };
 
 /* ************************************************************************* */
 
 class ExpectedNumberException : public TokenizerException
 {
-    const char *what() const noexcept
-    {
-        return "Expected Number.";
-    }
+
+private:
+
+    static constexpr char const * m_msg = "Expected number";
+
+public:
+
+    explicit ExpectedNumberException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
 };
 
 /* ************************************************************************* */
 
 class UnknownOperatorException : public TokenizerException
 {
-    String m_msg;
+
+private:
+
+    static constexpr char const * m_msg = "Unknown operator";
 
 public:
 
-    explicit UnknownOperatorException(const char op)
-            : m_msg(String("Unknown operator (") + op + ")") {}
-
-    const char *what() const noexcept
-    {
-        return m_msg.c_str();
-    }
+    explicit UnknownOperatorException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
 };
 
 /* ************************************************************************* */
 
 class StringWithoutEndException : public TokenizerException
 {
-    const char *what() const noexcept
-    {
-        return "Escape character for string not found.";
-    }
+
+private:
+
+    static constexpr char const * m_msg = "Closing character for string literal not found";
+
+public:
+
+    explicit StringWithoutEndException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
 };
 
 /* ************************************************************************* */
 
 class CharWithoutEndException : public TokenizerException
 {
-    const char *what() const noexcept
-    {
-        return "Escape character for char not found.";
-    }
+    
+private:
+
+    static constexpr char const * m_msg = "Closing character for char literal not found";
+
+public:
+
+    explicit CharWithoutEndException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
 };
 
 /* ************************************************************************* */
 
 class EmptyCharLiteralException : public TokenizerException
 {
-    const char *what() const noexcept
-    {
-        return "Cannot determine char value.";
-    }
+    
+private:
+
+    static constexpr char const * m_msg = "Cannot determine char value";
+
+public:
+
+    explicit EmptyCharLiteralException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
+};
+
+/* ************************************************************************* */
+
+class NewlineInCharLiteralException : public TokenizerException
+{
+    
+private:
+
+    static constexpr char const * m_msg = "Newline is not allowed in char literal";
+
+public:
+
+    explicit NewlineInCharLiteralException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
 };
 
 /* ************************************************************************* */
 
 class InvalidEscapeSequenceException : public TokenizerException
 {
-    const char *what() const noexcept
-    {
-        return "Unknown escape sequence.";
-    }
+    
+private:
+
+    static constexpr char const * m_msg = "Unknown escape sequence";
+
+public:
+
+    explicit InvalidEscapeSequenceException(const SourceLocation& loc): TokenizerException(loc, m_msg) {}
 };
 
 /* ************************************************************************* */

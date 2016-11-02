@@ -25,6 +25,7 @@
 #include "shard/String.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/UniquePtr.hpp"
+#include "shard/SourceLocation.hpp"
 
 /* ************************************************************************* */
 
@@ -42,10 +43,13 @@ class Source; //FWD declaration
 
 /* ************************************************************************* */
 
+/**
+ * @brief Input iterator from Source.
+ */
 class SourceIterator
 {
 
-protected:
+private:
 
     ViewPtr<Source> m_source;
 
@@ -90,12 +94,18 @@ inline bool operator!=(const SourceIterator& lhs, const SourceIterator& rhs)
 
 /* ************************************************************************* */
 
+/**
+ * @brief Streams data from various types of input.
+ */
 class Source
 {
 
-protected:
+private:
 
     UniquePtr<std::basic_streambuf<ReadMode>> m_sb;
+    SourceLocation m_loc;
+
+/* ************************************************************************* */
 
 public:
 
@@ -108,15 +118,17 @@ public:
                 auto ptr = makeUnique<std::basic_filebuf<ReadMode>>();
                 ptr->open(l_path, std::ios_base::in | std::ios_base::binary);
                 return ptr;
-            }(path)) {}
+            }(path)),
+            m_loc({1, 1}) {}
 
     /**
      * @brief constructs Source with input from string.
      */
     explicit Source (const String& source):
-            m_sb(makeUnique<std::basic_stringbuf<ReadMode>>(source)) {}
+            m_sb(makeUnique<std::basic_stringbuf<ReadMode>>(source)),
+            m_loc({1, 1}) {}
 
-/* ************************************************************************* */
+/* ************************************************************************* */    
 
 public:
 
@@ -130,46 +142,61 @@ public:
     }
 
     /**
-     * @brief read current character.
+     * @brief returns current character - replaces platform dependent newline with UNIXs \n.
      */
     inline int get() const
     {
-        return m_sb->sgetc();
+        auto temp = m_sb->sgetc();
+        
+        if (temp == '\r')
+        {
+            if (m_sb->snextc() != '\n')
+            {
+                m_sb->sungetc();
+            }
+            return '\n';
+        }
+
+        return temp;
     }
 
     /**
-     * @brief read current character and move to next.
+     * @brief returns current character and moves to next.
      */
-    inline int extract() const
+    inline int extract()
     {
+        incrementLocation();
         return m_sb->sbumpc();
     }
 
     /**
-     * @brief move to next character and read it.
+     * @brief moves to next character and returns it.
      */
-    inline int getNext() const
+    inline int getNext()
     {
+        incrementLocation();
         return m_sb->snextc();
     }
 
     /**
-     * @brief return to previous character and read it.
+     * @brief discards current character and moves to next.
      */
-    inline int unget() const
+    inline void toss()
     {
-        return m_sb->sungetc();
-    }
-
-    /**
-     * @brief discard current character and move to next.
-     */
-    inline void toss() const
-    {
+        incrementLocation();
         m_sb->sbumpc();
     }
 
-    /* ************************************************************************* */
+/* ************************************************************************* */
+
+public:
+
+    const SourceLocation& getLocation() const noexcept
+    {
+        return m_loc;
+    }
+
+/* ************************************************************************* */
 
 public:
 
@@ -187,6 +214,30 @@ public:
     inline SourceIterator end() noexcept
     {
         return SourceIterator(nullptr);
+    }
+
+/* ************************************************************************* */
+
+private:
+
+    /**
+     * @brief increments location indicator.
+     */
+    inline void incrementLocation() noexcept
+    {
+        auto temp = get();
+        if (temp == '\n')
+        {
+            m_loc.addLine();
+        }
+        else if (temp >= 0x80 && temp < 0xC0) // UTF8 additional bytes
+        {
+            return;
+        }
+        else
+        {
+            m_loc.addColumn();
+        }
     }
 };
 

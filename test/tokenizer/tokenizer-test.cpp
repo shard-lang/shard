@@ -27,12 +27,16 @@
 using namespace shard;
 using namespace shard::tokenizer;
 
+/* ************************************************************************* */
+
 static void test_impl(
         int line,
         const String& code,
         const DynamicArray<Token>& correct)
 {
     SCOPED_TRACE(code);
+
+    // Test using while
 
     Tokenizer tokenizer(code);
     DynamicArray<Token> result;
@@ -49,6 +53,8 @@ static void test_impl(
         ASSERT_EQ(correct[i], result[i]) << result[i];
     }
 
+    // Test using Range-For
+
     DynamicArray<Token> resultIt;
     resultIt.reserve(correct.size());
     for (auto&& x : Tokenizer(code))
@@ -64,6 +70,8 @@ static void test_impl(
     }
 }
 
+/* ************************************************************************* */
+
 static void test_invalid_impl(int line, const String& code)
 {
     SCOPED_TRACE(code);
@@ -73,15 +81,62 @@ static void test_invalid_impl(int line, const String& code)
         Tokenizer tokenizer(code);
         while (!tokenizer.isEof())
         {
-            tokenizer.next();
+            tokenizer.toss();
         },
         TokenizerException
     );
-
 }
 
+/* ************************************************************************* */
+
+static void test_location_impl(int line, const String& code, const DynamicArray<SourceLocation>& correct)
+{
+    SCOPED_TRACE(code);
+
+    DynamicArray<SourceLocation> result;
+    result.reserve(correct.size());
+    for (auto&& x : Tokenizer(code))
+    {
+        result.push_back(x.getLocation());
+    }
+
+    ASSERT_EQ(correct.size(), result.size());
+
+    for (int i = 0; i < correct.size(); ++i)
+    {
+        ASSERT_EQ(correct[i].getLine(), result[i].getLine());
+        ASSERT_EQ(correct[i].getColumn(), result[i].getColumn());
+    }
+}
+
+/* ************************************************************************* */
+
+static void test_exception_impl(int line, const String& code, const String& correct)
+{
+    SCOPED_TRACE(code);
+
+    try
+    {
+        DynamicArray<SourceLocation> result;
+        result.reserve(correct.size());
+        for (auto&& x : Tokenizer(code))
+        {
+            result.push_back(x.getLocation());
+        }
+    }
+    catch (TokenizerException& ex)
+    {
+        ASSERT_EQ(correct, ex.formatMessage());
+    }
+}
+
+/* ************************************************************************* */
 #define test(...) test_impl(__LINE__, __VA_ARGS__)
 #define test_invalid(...) test_invalid_impl(__LINE__, __VA_ARGS__)
+#define test_location(...) test_location_impl(__LINE__, __VA_ARGS__)
+#define test_exception(...) test_exception_impl(__LINE__, __VA_ARGS__)
+
+/* ************************************************************************* */
 
 TEST(Tokenizer, basic)
 {
@@ -93,44 +148,44 @@ TEST(Tokenizer, identifier)
 {
     test(
         ",.-jhdba{}&\\)^/",
-        {Token(TokenType::Comma), Token(TokenType::Period), Token(TokenType::Minus), Token("jhdba"),
+        {Token(TokenType::Comma), Token(TokenType::Period), Token(TokenType::Minus), Token::Identifier("jhdba"),
         Token(TokenType::BraceO), Token(TokenType::BraceC), Token(TokenType::Amp), Token(TokenType::Backslash),
         Token(TokenType::ParenC), Token(TokenType::Caret), Token(TokenType::Slash)}
     );
     test(
         "+   blabla17_fcr8_4",
-        {Token(TokenType::Plus), Token("blabla17_fcr8_4")}
+        {Token(TokenType::Plus), Token::Identifier("blabla17_fcr8_4")}
     );
     test(
         "+ __bla17_8-",
-        {Token(TokenType::Plus), Token("__bla17_8"), Token(TokenType::Minus)}
+        {Token(TokenType::Plus), Token::Identifier("__bla17_8"), Token(TokenType::Minus)}
     );
     test(
         "+ bla17_8_",
-        {Token(TokenType::Plus), Token("bla17_8_")}
+        {Token(TokenType::Plus), Token::Identifier("bla17_8_")}
     );
 }
 TEST(Tokenizer, string)
 {
     test(
         "-\" \"",
-        {Token(TokenType::Minus), Token(TokenType::String, " ")}
+        {Token(TokenType::Minus), Token::StringLiteral(" ")}
     );
     test(
         "-\"teajnd/jansjda\"ide",
-        {Token(TokenType::Minus), Token(TokenType::String, "teajnd/jansjda"), Token("ide")}
+        {Token(TokenType::Minus), Token::StringLiteral("teajnd/jansjda"), Token::Identifier("ide")}
     );
     test(
         String("\"\0\"", 3),
-        {Token(TokenType::String, String("\0", 1))}
+        {Token::StringLiteral(String("\0", 1))}
     );
     test(
         String("\"\n\r\t\0\"", 6),
-        {Token(TokenType::String, String("\n\r\t\0", 4))}
+        {Token::StringLiteral(String("\n\r\t\0", 4))}
     );
     test(
         "\"\n\r\t\\\"\"",
-        {Token(TokenType::String, "\n\r\t\"")}
+        {Token::StringLiteral("\n\r\t\"")}
     );
     test_invalid("\"\n\r\t\0\\");
     test_invalid("bla\"bla");
@@ -139,34 +194,34 @@ TEST(Tokenizer, floats)
 {
     test(
         "3.1415926538",
-        {Token(3.1415926538)}
+        {Token::FloatLiteral(3.1415926538)}
     );
     test(
         "00003.1415926538",
-        {Token(3.1415926538)}
+        {Token::FloatLiteral(3.1415926538)}
     );
     test(
         "3.1415926538+1.4",
-        {Token(3.1415926538), Token(TokenType::Plus), Token(1.4)}
+        {Token::FloatLiteral(3.1415926538), Token(TokenType::Plus), Token::FloatLiteral(1.4)}
     );
     test(
         "a 3.1415926538+",
-        {Token("a"), Token(3.1415926538), Token(TokenType::Plus)}
+        {Token::Identifier("a"), Token::FloatLiteral(3.1415926538), Token(TokenType::Plus)}
     );
     test(
         "a 3.1415926538+1.4",
-        {Token("a"), Token(3.1415926538), Token(TokenType::Plus), Token(1.4)}
+        {Token::Identifier("a"), Token::FloatLiteral(3.1415926538), Token(TokenType::Plus), Token::FloatLiteral(1.4)}
     );
     test(
         "3.1415926538e10",
-        {Token(3.1415926538e10)}
+        {Token::FloatLiteral(3.1415926538e10)}
     );
     test(
         "3.1415926538e-10",
-        {Token(3.1415926538e-10)}
+        {Token::FloatLiteral(3.1415926538e-10)}
     );
     test("3.1415926538e+10",
-        {Token(3.1415926538e+10)}
+        {Token::FloatLiteral(3.1415926538e+10)}
     );
     test_invalid("3.");
     test_invalid("3.1415926538e");
@@ -177,16 +232,21 @@ TEST(Tokenizer, chars)
 {
     test(
         "+-'z'",
-        {Token(TokenType::Plus), Token(TokenType::Minus), Token('z')}
+        {Token(TokenType::Plus), Token(TokenType::Minus), Token::CharLiteral('z')}
+    );
+    test(
+        "'\\\\''\\a'",
+        {Token::CharLiteral('\\'), Token::CharLiteral('\a')}
     );
     test(
         "'\\n''\\r''\\0'",
-        {Token('\n'), Token('\r'), Token('\0')}
+        {Token::CharLiteral('\n'), Token::CharLiteral('\r'), Token::CharLiteral('\0')}
     );
     test(
         "'a'+'b'",
-        {Token('a'), Token(TokenType::Plus), Token('b')}
+        {Token::CharLiteral('a'), Token(TokenType::Plus), Token::CharLiteral('b')}
     );
+    test_invalid("'\n'");
     test_invalid("'abc'");
     test_invalid("'a");
 }
@@ -194,112 +254,124 @@ TEST(Tokenizer, ints)
 {
     test(
         "0",
-        {Token(0l)}
+        {Token::IntLiteral(0)}
     );
     test(
         "0;",
-        {Token(0l), Token(TokenType::Semicolon)}
+        {Token::IntLiteral(0), Token(TokenType::Semicolon)}
     );
     test(
         "a123+123+123a",
-        {Token("a123"), Token(TokenType::Plus), Token(123l), Token(TokenType::Plus), Token(123l), Token("a")}
+        {Token::Identifier("a123"), Token(TokenType::Plus), Token::IntLiteral(123), Token(TokenType::Plus),
+        Token::IntLiteral(123), Token::Identifier("a")}
     );
     test(
         "0000321",
-        {Token(321l)}
+        {Token::IntLiteral(321)}
     );
     test(
         "a3.1415926538+1.4",
-        {Token("a3"), Token(TokenType::Period), Token(1415926538l), Token(TokenType::Plus), Token(1.4)}
+        {Token::Identifier("a3"), Token(TokenType::Period),
+        Token::IntLiteral(1415926538), Token(TokenType::Plus), Token::FloatLiteral(1.4)}
     );
 }
 TEST(Tokenizer, keywords)
 {
     test(
         "for float null while",
-        {Token(KeywordType::For), Token(KeywordType::Float), Token(KeywordType::Null), Token(KeywordType::While)}
+        {Token::Keyword(KeywordType::For), Token::Keyword(KeywordType::Float),
+        Token::Keyword(KeywordType::Null), Token::Keyword(KeywordType::While)}
     );
     test(
         "for (int i = 0; i <= 10; i++)",
-        {Token(KeywordType::For), Token(TokenType::ParenO), Token(KeywordType::Int), Token("i"),
-        Token(TokenType::Equal), Token(0l), Token(TokenType::Semicolon), Token("i"),
-        Token(TokenType::LessEqual), Token(10l), Token(TokenType::Semicolon), Token("i"),
+        {Token::Keyword(KeywordType::For), Token(TokenType::ParenO), Token::Keyword(KeywordType::Int), Token::Identifier("i"),
+        Token(TokenType::Equal), Token::IntLiteral(0), Token(TokenType::Semicolon), Token::Identifier("i"),
+        Token(TokenType::LessEqual), Token::IntLiteral(10), Token(TokenType::Semicolon), Token::Identifier("i"),
         Token(TokenType::PlusPlus), Token(TokenType::ParenC)}
     );
     test(
         "while(true){[]}",
-        {Token(KeywordType::While), Token(TokenType::ParenO), Token(KeywordType::True), Token(TokenType::ParenC),
+        {Token::Keyword(KeywordType::While), Token(TokenType::ParenO), Token::Keyword(KeywordType::True), Token(TokenType::ParenC),
         Token(TokenType::BraceO), Token(TokenType::SquareO), Token(TokenType::SquareC), Token(TokenType::BraceC)}
     );
     test(
         "string a = \"bla\";",
-        {Token(KeywordType::String), Token("a"), Token(TokenType::Equal),
-        Token(TokenType::String, "bla"), Token(TokenType::Semicolon)}
+        {Token::Keyword(KeywordType::String), Token::Identifier("a"), Token(TokenType::Equal),
+        Token::StringLiteral("bla"), Token(TokenType::Semicolon)}
     );
     test(
         "throw Exception& ex;",
-        {Token(KeywordType::Throw), Token("Exception"), Token(TokenType::Amp), Token("ex"), Token(TokenType::Semicolon)}
+        {Token::Keyword(KeywordType::Throw), Token::Identifier("Exception"),
+        Token(TokenType::Amp), Token::Identifier("ex"), Token(TokenType::Semicolon)}
     );
 }
 TEST(Tokenizer, comments)
 {
     test(
         "123//comment\n123",
-        {Token(123l), Token(TokenType::CommentInline, "comment"), Token(123l)}
+        {Token::IntLiteral(123), Token::CommentLine("comment"), Token::IntLiteral(123)}
     );
     test(
         "123/*dadjabj\ndadbhj\rda*/123",
-        {Token(123l), Token(TokenType::CommentBlock, "dadjabj\ndadbhj\rda"), Token(123l)}
+        {Token::IntLiteral(123), Token::CommentBlock("dadjabj\ndadbhj\rda"), Token::IntLiteral(123)}
     );
     test(
         "123//comment\r123",
-        {Token(123l), Token(TokenType::CommentInline, "comment"), Token(123l)}
+        {Token::IntLiteral(123), Token::CommentLine("comment"), Token::IntLiteral(123)}
     );
     test(
         "123//comme/nt\r123",
-        {Token(123l), Token(TokenType::CommentInline, "comme/nt"), Token(123l)}
+        {Token::IntLiteral(123), Token::CommentLine("comme/nt"), Token::IntLiteral(123)}
     );
     test(
         "123/*comme*nt\r123*/123",
-        {Token(123l), Token(TokenType::CommentBlock, "comme*nt\r123"), Token(123l)}
+        {Token::IntLiteral(123), Token::CommentBlock("comme*nt\r123"), Token::IntLiteral(123)}
+    );
+    test(
+        "123/*comme*nt\r123123",
+        {Token::IntLiteral(123), Token::CommentBlock("comme*nt\r123123")}
+    );
+    test(
+        "123//comme*nt",
+        {Token::IntLiteral(123), Token::CommentLine("comme*nt")}
     );
 }
 TEST(Tokenizer, strings_utf)
 {
     test(
         "\"blačššžžý\"",
-        {Token(TokenType::String, "blačššžžý")}
+        {Token::StringLiteral("blačššžžý")}
     );
 }
 TEST(Tokenizer, chars_utf)
 {
     test(
         "'š'",
-        {Token(0x0161)}
+        {Token::CharLiteral(0x0161)}
     );
     test(
         "'č'",
-        {Token(0x010D)}
+        {Token::CharLiteral(0x010D)}
     );
     test(
         "'ř'",
-        {Token(0x0159)}
+        {Token::CharLiteral(0x0159)}
     );
     test(
         "'𠜎'",
-        {Token((int32_t)0x2070e)}
+        {Token::CharLiteral(0x2070e)}
     );
     test(
         "'Ϯ'",
-        {Token(0x03EE)}
+        {Token::CharLiteral(0x03EE)}
     );
     test(
         "'š''𠜎''č''ř''Ϯ'",
-        {Token(0x0161),
-        Token((int32_t)0x2070e),
-        Token(0x010D),
-        Token(0x0159),
-        Token(0x03EE)}
+        {Token::CharLiteral(0x0161),
+        Token::CharLiteral(0x2070e),
+        Token::CharLiteral(0x010D),
+        Token::CharLiteral(0x0159),
+        Token::CharLiteral(0x03EE)}
     );
 }
 TEST(Tokenizer, operators_multichar)
@@ -307,13 +379,13 @@ TEST(Tokenizer, operators_multichar)
     test(
         "&&=||=||&&!=<<<<=>>=",
         {Token(TokenType::AmpAmpEqual), Token(TokenType::PipePipeEqual), Token(TokenType::PipePipe),
-        Token(TokenType::AmpAmp), Token(TokenType::EMarkEqual), Token(TokenType::LessLess),
+        Token(TokenType::AmpAmp), Token(TokenType::ExclaimEqual), Token(TokenType::LessLess),
         Token(TokenType::LessLessEqual), Token(TokenType::GreaterGreaterEqual)}
     );
     test(
         "&&=||=||&&!=<<<<=>>=&&&",
         {Token(TokenType::AmpAmpEqual), Token(TokenType::PipePipeEqual), Token(TokenType::PipePipe),
-        Token(TokenType::AmpAmp), Token(TokenType::EMarkEqual), Token(TokenType::LessLess),
+        Token(TokenType::AmpAmp), Token(TokenType::ExclaimEqual), Token(TokenType::LessLess),
         Token(TokenType::LessLessEqual), Token(TokenType::GreaterGreaterEqual),
         Token(TokenType::AmpAmp), Token(TokenType::Amp)}
     );
@@ -322,40 +394,156 @@ TEST(Tokenizer, ints_bin)
 {
     test(
         "0b1111",
-        {Token(15l)}
+        {Token::IntLiteral(0b1111)}
     );
     test(
         "0B0",
-        {Token(0l)}
+        {Token::IntLiteral(0b0)}
     );
     test(
         "0b10111011011011",
-        {Token(11995l)}
+        {Token::IntLiteral(0b10111011011011)}
     );
 }
 TEST(Tokenizer, ints_hex)
 {
     test(
         "0XFF",
-        {Token(255l)}
+        {Token::IntLiteral(255)}
     );
     test(
         "0x00FF",
-        {Token(255l)}
+        {Token::IntLiteral(255)}
     );
 }
 TEST(Tokenizer, ints_oct)
 {
     test(
         "0o123456",
-        {Token(42798l)}
+        {Token::IntLiteral(0123456)}
     );
     test(
         "0000321",
-        {Token(321l)}
+        {Token::IntLiteral(321)}
     );
     test(
         "0O571",
-        {Token(377l)}
+        {Token::IntLiteral(0571)}
+    );
+}
+
+/* ************************************************************************* */
+
+TEST(Tokenizer, location)
+{
+    test_location(
+        "0o123456,.\"hhh\"ide",
+        {{1, 1}, {1, 9}, {1, 10}, {1, 11}, {1, 16}}
+    );
+    test_location(
+        "\n\n,.\"hhh\"ide",
+        {{3, 1}, {3, 2}, {3, 3}, {3, 8}}
+    );
+    test_location(
+        "\n\r\r\n0o123456,.\r\n\"hhh\"ide",
+        {{4, 1}, {4, 9}, {4, 10}, {5, 1}, {5, 6}}
+    );
+    test_location(
+        "0o123456,./*\"hhh\"*/ide",
+        {{1, 1}, {1, 9}, {1, 10}, {1, 11}, {1, 20}}
+    );
+    test_location(
+        "0o12/*34\n\r\n56*/,.\"hhh\"\ride",
+        {{1, 1}, {1, 5}, {3, 5}, {3, 6}, {3, 7}, {4, 1}}
+    );
+    test_location(
+        "0o1\n234//56\n,//.\"hhh\"ide",
+        {{1, 1}, {2, 1}, {2, 4}, {3, 1}, {3, 2}}
+    );
+    test_location(
+        "\"ččč\"ide",
+        {{1, 1}, {1, 6}}
+    );
+    test_location(
+        "\'a\'b",
+        {{1, 1}, {1, 4}}
+    );
+    test_location(
+        "\\\\bla",
+        {{1, 1}, {1, 2}, {1, 3}}
+    );
+    test_location(
+        "\"\n\rabc\"v",
+        {{1, 1}, {3, 5}}
+    );
+    test_location(
+        String("\"\n\r\t\0\\a\"a", 9),
+        {{1, 1}, {3, 6}}
+    );
+}
+
+/* ************************************************************************* */
+
+TEST(Tokenizer, exception)
+{
+    test_exception(
+        "154.j",
+        "Expected number at 1:5."
+    );
+    test_exception(
+        "154.0ej",
+        "Expected number at 1:7."
+    );
+    test_exception(
+        "154.0e+j",
+        "Expected number at 1:8."
+    );
+    test_exception(
+        "bla\"bla",
+        "Closing character for string literal not found at 1:8."
+    );
+    test_exception(
+        "\"\n\rabc",
+        "Closing character for string literal not found at 3:4."
+    );
+    test_exception(
+        String("\"\n\r\t\0\\a", 7),
+        "Closing character for string literal not found at 3:5."
+    );
+    test_exception(
+        "bla\"bla",
+        "Closing character for string literal not found at 1:8."
+    );
+    test_exception(
+        "'ab'",
+        "Closing character for char literal not found at 1:3."
+    );
+    test_exception(
+        "''",
+        "Cannot determine char value at 1:2."
+    );
+    test_exception(
+        "'\n'",
+        "Newline is not allowed in char literal at 1:2."
+    );
+    test_exception(
+        "'\r'",
+        "Newline is not allowed in char literal at 1:2."
+    );
+    test_exception(
+        "'\\l'",
+        "Unknown escape sequence at 1:3."
+    );
+    test_exception(
+        "'\\",
+        "Unknown escape sequence at 1:3."
+    );
+    test_exception(
+        "\"\\l\"",
+        "Unknown escape sequence at 1:3."
+    );
+    test_exception(
+        "\"\\",
+        "Unknown escape sequence at 1:3."
     );
 }

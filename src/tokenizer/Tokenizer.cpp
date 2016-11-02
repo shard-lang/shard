@@ -43,29 +43,6 @@ namespace
     }};
 
     /**
-     * @brief returns escaped char value.
-     */
-    static char getEscaped(const char value)
-    {
-        switch (value)
-        {
-            case '"': return '"';
-            case '\'': return '\'';
-            case '?': return '\?';
-            case '\\': return '\\';
-            case '0': return '\0';
-            case 'a': return '\a';
-            case 'b': return '\b';
-            case 'f': return '\f';
-            case 'n': return '\n';
-            case 'r': return '\r';
-            case 't': return '\t';
-            case 'v': return '\v';
-            default: throw InvalidEscapeSequenceException();
-        }
-    }
-
-    /**
      * @brief returns numeric value of character in hexadecimal base.
      */
     static Token::IntType getNumericValue(char value)
@@ -74,11 +51,33 @@ namespace
         {
             return value - 'A' + 10;
         }
-        if (value >= 'a' && value <= 'f')
+        else if (value >= 'a' && value <= 'f')
         {
             return value - 'a' + 10;
         }
         return value - '0';
+    }
+}
+
+/* ************************************************************************* */
+
+Token::CharType Tokenizer::getEscaped(const char value)
+{
+    switch (value)
+    {
+        case '"': return '\"';
+        case '\'': return '\'';
+        case '?': return '\?';
+        case '\\': return '\\';
+        case '0': return '\0';
+        case 'a': return '\a';
+        case 'b': return '\b';
+        case 'f': return '\f';
+        case 'n': return '\n';
+        case 'r': return '\r';
+        case 't': return '\t';
+        case 'v': return '\v';
+        default: throw InvalidEscapeSequenceException(m_src.getLocation());
     }
 }
 
@@ -95,7 +94,7 @@ void Tokenizer::tokenizeNumber()
         digitSize = 0;
         if (!isDigit(base))
         {
-            throw ExpectedNumberException();
+            throw ExpectedNumberException(m_src.getLocation());
         }
 
         Token::IntType res = 0;
@@ -115,11 +114,11 @@ void Tokenizer::tokenizeNumber()
         switch(m_src.get())
         {
             case 'x':
-            case 'X': base = 16; m_src.toss(); m_current = Token(readNumber()); return;
+            case 'X': base = 16; m_src.toss(); m_current = Token::IntLiteral(readNumber()); return;
             case 'o':
-            case 'O': base = 8; m_src.toss(); m_current = Token(readNumber()); return;
+            case 'O': base = 8; m_src.toss(); m_current = Token::IntLiteral(readNumber()); return;
             case 'b':
-            case 'B': base = 2; m_src.toss(); m_current = Token(readNumber()); return;
+            case 'B': base = 2; m_src.toss(); m_current = Token::IntLiteral(readNumber()); return;
             default: break;
         }
     }
@@ -149,8 +148,10 @@ void Tokenizer::tokenizeNumber()
 
     Token::FloatType value = (static_cast<Token::FloatType>(integer) + decimal) * exp;
 
-    m_current = floatFlag ? Token(value) : Token(integer);
+    m_current = floatFlag ? Token::FloatLiteral(value) : Token::IntLiteral(integer);
 }
+
+/* ************************************************************************* */
 
 void Tokenizer::tokenizeString()
 {
@@ -160,15 +161,12 @@ void Tokenizer::tokenizeString()
     {
         if (empty())
         {
-            throw StringWithoutEndException();
+            throw StringWithoutEndException(m_src.getLocation());
         }
         if (match('\\'))
         {
-            if (empty())
-            {
-                throw StringWithoutEndException();
-            }
-            value += getEscaped(m_src.extract());
+            value += getEscaped(m_src.get());
+            m_src.toss();
         }
         else
         {
@@ -176,12 +174,14 @@ void Tokenizer::tokenizeString()
         }
     }
     
-    m_current = Token(TokenType::String, value);
+    m_current = Token::StringLiteral(value);
 }
+
+/* ************************************************************************* */
 
 void Tokenizer::tokenizeChar()
 {
-    Token::CharType value = m_src.extract();
+    Token::CharType value = m_src.get();
     if (value >= 0x80)
     {
         char additionalBytes;
@@ -200,6 +200,7 @@ void Tokenizer::tokenizeChar()
             value &= 0x1F;
             additionalBytes = 1;
         }
+        m_src.toss();
         for (char i = 0; i < additionalBytes; ++i)
         {
             value = (value << 6)|(m_src.extract() & 0x3F);
@@ -210,28 +211,27 @@ void Tokenizer::tokenizeChar()
         switch (value)
         {
             case '\\':
-            {
-                if (empty())
-                {
-                    throw CharWithoutEndException();
-                }
-                value = getEscaped(m_src.extract());
+                value = getEscaped(m_src.getNext());
+                m_src.toss();
                 break;
-            }
+            case '\n':
+                throw NewlineInCharLiteralException(m_src.getLocation());
             case char_literal_border:
-            {
-                throw EmptyCharLiteralException();
-            }
-            default: break;
+                throw EmptyCharLiteralException(m_src.getLocation());
+            default: 
+                m_src.toss();
+                break;
         }
     }
     if (!match(char_literal_border))
     {
-        throw CharWithoutEndException();
+        throw CharWithoutEndException(m_src.getLocation());
     }
     
-    m_current = Token(value);
+    m_current = Token::CharLiteral(value);
 }
+
+/* ************************************************************************* */
 
 void Tokenizer::tokenizeIdentifier() noexcept
 {
@@ -248,17 +248,17 @@ void Tokenizer::tokenizeIdentifier() noexcept
     );
     if (search != g_keywordMap.end())
     {
-        m_current = Token(search->second);
+        m_current = Token::Keyword(search->second);
     }
     else
     {
-        m_current = Token(value);
+        m_current = Token::Identifier(value);
     }
 }
 
 void Tokenizer::tokenizeOperator()
 {
-    switch (char local = m_src.extract())
+    switch (m_src.extract())
     {
         case '.': m_current = Token(TokenType::Period); return;
         case ',': m_current = Token(TokenType::Comma); return;
@@ -270,7 +270,7 @@ void Tokenizer::tokenizeOperator()
         case ']': m_current = Token(TokenType::SquareC); return;
         case '(': m_current = Token(TokenType::ParenO); return;
         case ')': m_current = Token(TokenType::ParenC); return;
-        case '?': m_current = Token(TokenType::QMark); return;
+        case '?': m_current = Token(TokenType::Question); return;
         case '~': m_current = Token(TokenType::Tilde); return;
         case '#': m_current = Token(TokenType::Hash); return;
         case '\\': m_current = Token(TokenType::Backslash); return;
@@ -286,8 +286,8 @@ void Tokenizer::tokenizeOperator()
         {
             switch (m_src.get())
             {
-                case '=': m_current = Token(TokenType::EMarkEqual); m_src.toss(); return;
-                default: m_current = Token(TokenType::EMark); return;
+                case '=': m_current = Token(TokenType::ExclaimEqual); m_src.toss(); return;
+                default: m_current = Token(TokenType::Exclaim); return;
             }
         }
         case '+':
@@ -325,22 +325,31 @@ void Tokenizer::tokenizeOperator()
                 {
                     m_src.toss();
                     String buf;
-                    while (!match('\n', '\r'))
+                    while (!empty() && !match('\n'))
                     {
                         buf += m_src.extract();
                     }
-                    m_current = Token(TokenType::CommentInline, buf);
+                    m_current = Token::CommentLine(buf);
                     return;
                 }
                 case '*':
                 {
                     m_src.toss();
                     String buf;
-                    while (!isSeq('*', '/'))
+                    while (!empty())
                     {
+                        if (is('*'))
+                        {
+                            if (m_src.getNext() == '/')
+                            {
+                                m_src.toss();
+                                break;
+                            }
+                            buf += '*';
+                        }
                         buf += m_src.extract();
                     }
-                    m_current = Token(TokenType::CommentBlock, buf);
+                    m_current = Token::CommentBlock(buf);
                     return;
                 }
                 default: m_current = Token(TokenType::Slash); return;
@@ -426,13 +435,17 @@ void Tokenizer::tokenizeOperator()
                 default: m_current = Token(TokenType::Greater); return;
             }
         }
-        default: throw UnknownOperatorException(local);
+        default: throw UnknownOperatorException(m_src.getLocation());
     }
 }
 
-void Tokenizer::next()
+/* ************************************************************************* */
+
+void Tokenizer::tokenize()
 {
     skipWhitespace();
+
+    auto loc = m_src.getLocation();
 
     if (empty())
     {
@@ -458,6 +471,8 @@ void Tokenizer::next()
     {
         tokenizeOperator();
     }
+
+    m_current.setLocation(loc);
 }
 
 /* ************************************************************************* */
