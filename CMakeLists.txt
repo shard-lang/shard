@@ -22,6 +22,10 @@ option(SHARD_BUILD_TESTS "Build unit tests" Off)
 option(SHARD_BUILD_TOKENIZER "Build tokenizer" On)
 option(SHARD_BUILD_AST "Build AST" On)
 
+if (SHARD_BUILD_TESTS AND CMAKE_COMPILER_IS_GNUCXX)
+    option(SHARD_COVERAGE "Enable code coverage generation" Off)
+endif ()
+
 # ************************************************************************* #
 
 set(CURRENT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -43,6 +47,11 @@ function (add_shard_library NAME)
     target_include_directories(${NAME}
         PUBLIC ${CURRENT_DIR}/include
     )
+
+    if (SHARD_BUILD_TESTS AND CMAKE_COMPILER_IS_GNUCXX AND SHARD_COVERAGE)
+        target_compile_options(${NAME} PRIVATE --coverage)
+        target_link_libraries(${NAME} PRIVATE --coverage)
+    endif ()
 endfunction ()
 
 # ************************************************************************* #
@@ -74,9 +83,14 @@ if (SHARD_BUILD_TESTS)
         )
 
         target_link_libraries(${NAME}
-            ${ARG_LIBRARIES}
-            gtest_main
+            PRIVATE ${ARG_LIBRARIES}
+            PRIVATE gtest_main
         )
+
+        if (CMAKE_COMPILER_IS_GNUCXX AND SHARD_COVERAGE)
+            target_compile_options(${NAME} PRIVATE --coverage)
+            target_link_libraries(${NAME} PRIVATE --coverage)
+        endif ()
 
         add_test(${NAME} ${NAME})
     endfunction ()
@@ -99,6 +113,28 @@ if (SHARD_BUILD_TESTS)
 
     # Add shard tests
     add_subdirectory(test)
+
+    find_program(LCOV lcov)
+    find_program(GENHTML genhtml)
+
+    # Add custom target for gcov
+    add_custom_target(shard-coverage
+        # Cleanup lcov
+        ${LCOV} --directory . --zerocounters
+
+        # Run tests
+        COMMAND ctest
+
+        # Capturing lcov counters and generating report
+        COMMAND ${LCOV} --directory . --capture --output-file coverage0.info
+        COMMAND ${LCOV} -r coverage0.info 'vendor/*' 'test/*' '/usr/*' --output-file coverage.info
+        COMMAND ${GENHTML} -o coverage coverage.info
+        COMMAND ${CMAKE_COMMAND} -E remove coverage.info
+
+        DEPENDS core_test
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Resetting code coverage counters to zero.\nProcessing code coverage counters and generating report."
+    )
 endif ()
 
 # ************************************************************************* #
