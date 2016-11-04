@@ -92,23 +92,6 @@ static void test_impl(
 
 /* ************************************************************************* */
 
-static void test_invalid_impl(int line, const String& code)
-{
-    SCOPED_TRACE(code);
-
-    ASSERT_THROW
-    (
-        Tokenizer tokenizer(code);
-        while (!tokenizer.isEof())
-        {
-            tokenizer.toss();
-        },
-        TokenizerException
-    );
-}
-
-/* ************************************************************************* */
-
 static void test_location_impl(int line, const String& code, const DynamicArray<SourceLocation>& correct)
 {
     SCOPED_TRACE(code);
@@ -207,8 +190,10 @@ TEST(Tokenizer, string)
         "\"\n\r\t\\\"\"",
         {Token::StringLiteral("\n\r\t\"")}
     );
-    test_invalid("\"\n\r\t\0\\");
-    test_invalid("bla\"bla");
+    test(
+        "\"\\'\\?\\b\\f\\t\\v\"",
+        {Token::StringLiteral("\'\?\b\f\t\v")}
+    );
 }
 TEST(Tokenizer, floats)
 {
@@ -243,10 +228,6 @@ TEST(Tokenizer, floats)
     test("3.1415926538e+10",
         {Token::FloatLiteral(3.1415926538e+10)}
     );
-    test_invalid("3.");
-    test_invalid("3.1415926538e");
-    test_invalid("3.1415926538e-");
-    test_invalid("3.1415926538e+");
 }
 TEST(Tokenizer, chars)
 {
@@ -266,9 +247,6 @@ TEST(Tokenizer, chars)
         "'a'+'b'",
         {Token::CharLiteral('a'), Token(TokenType::Plus), Token::CharLiteral('b')}
     );
-    test_invalid("'\n'");
-    test_invalid("'abc'");
-    test_invalid("'a");
 }
 TEST(Tokenizer, ints)
 {
@@ -378,6 +356,10 @@ TEST(Tokenizer, chars_utf)
         {Token::CharLiteral(0x0159)}
     );
     test(
+        "'ग'",
+        {Token::CharLiteral(0x0917)}
+    );
+    test(
         "'𠜎'",
         {Token::CharLiteral(0x2070e)}
     );
@@ -394,7 +376,7 @@ TEST(Tokenizer, chars_utf)
         Token::CharLiteral(0x03EE)}
     );
 }
-TEST(Tokenizer, operators_multichar)
+TEST(Tokenizer, operators)
 {
     test(
         "&&=||=||&&!=<<<<=>>=",
@@ -403,11 +385,19 @@ TEST(Tokenizer, operators_multichar)
         Token(TokenType::LessLessEqual), Token(TokenType::GreaterGreaterEqual)}
     );
     test(
-        "&&=||=||&&!=<<<<=>>=&&&",
+        "&&=||=||&&!=<<<<=>>=>>&&&>=",
         {Token(TokenType::AmpAmpEqual), Token(TokenType::PipePipeEqual), Token(TokenType::PipePipe),
         Token(TokenType::AmpAmp), Token(TokenType::ExclaimEqual), Token(TokenType::LessLess),
-        Token(TokenType::LessLessEqual), Token(TokenType::GreaterGreaterEqual),
-        Token(TokenType::AmpAmp), Token(TokenType::Amp)}
+        Token(TokenType::LessLessEqual), Token(TokenType::GreaterGreaterEqual), Token(TokenType::GreaterGreater),
+        Token(TokenType::AmpAmp), Token(TokenType::Amp), Token(TokenType::GreaterEqual)}
+    );
+    test(
+        ":?~#==!+=---=**=/=^=%%=&=|=|<>",
+        {Token(TokenType::Colon), Token(TokenType::Question), Token(TokenType::Tilde), Token(TokenType::Hash),
+        Token(TokenType::EqualEqual), Token(TokenType::Exclaim), Token(TokenType::PlusEqual), Token(TokenType::MinusMinus),
+        Token(TokenType::MinusEqual), Token(TokenType::Star), Token(TokenType::StarEqual), Token(TokenType::SlashEqual),
+        Token(TokenType::CaretEqual), Token(TokenType::Percent), Token(TokenType::PercentEqual), Token(TokenType::AmpEqual),
+        Token(TokenType::PipeEqual), Token(TokenType::Pipe), Token(TokenType::Less), Token(TokenType::Greater)}
     );
 }
 TEST(Tokenizer, ints_bin)
@@ -434,6 +424,14 @@ TEST(Tokenizer, ints_hex)
     test(
         "0x00FF",
         {Token::IntLiteral(255)}
+    );
+    test(
+        "0Xaa",
+        {Token::IntLiteral(170)}
+    );
+    test(
+        "0x00aa",
+        {Token::IntLiteral(170)}
     );
 }
 TEST(Tokenizer, ints_oct)
@@ -565,5 +563,9 @@ TEST(Tokenizer, exception)
     test_exception(
         "\"\\",
         "Unknown escape sequence at 1:3."
+    );
+    test_exception(
+        "$",
+        "Unknown operator at 1:1."
     );
 }
