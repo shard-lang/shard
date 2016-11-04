@@ -20,7 +20,6 @@
 
 #include <cmath>
 #include <limits>
-#include <ostream>
 
 // Shard
 #include "shard/String.hpp"
