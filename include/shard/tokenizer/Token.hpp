@@ -254,24 +254,6 @@ inline bool operator!=(const Token& lhs, const Token& rhs)
     return !(lhs == rhs);
 }
 
-inline std::ostream& operator<<(std::ostream& os, const Token& obj)
-{
-    os << "TokenType: " << static_cast<int>(obj.getType()) << ", TokenValue: ";
-    switch (obj.getType())
-    {
-        case TokenType::CommentBlock:
-        case TokenType::CommentLine:
-        case TokenType::Identifier: 
-        case TokenType::String: os << obj.getStringValue(); break;
-        case TokenType::Keyword: os << static_cast<int>(obj.getKeywordType()); break;
-        case TokenType::Float: os << obj.getFloatValue(); break;
-        case TokenType::Char: os << obj.getCharValue(); break;
-        case TokenType::Int: os << obj.getIntValue(); break;
-        default: break;
-    }
-    return os;
-}
-
 /* ************************************************************************* */
 
 }
