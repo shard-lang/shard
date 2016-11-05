@@ -32,25 +32,58 @@ using namespace shard::tokenizer;
 /* ************************************************************************* */
 
 namespace shard {
+inline namespace v1 {
 namespace tokenizer {
-    std::ostream& operator<<(std::ostream& os, const Token& obj)
+
+/* ************************************************************************* */
+
+std::ostream& operator<<(std::ostream& os, const Token& obj) noexcept
+{
+    os << "TokenType: ";
+
+    switch (obj.getType())
     {
-        os << "TokenType: " << static_cast<int>(obj.getType()) << ", TokenValue: ";
-        switch (obj.getType())
-        {
-            case TokenType::CommentBlock:
-            case TokenType::CommentLine:
-            case TokenType::Identifier: 
-            case TokenType::String: os << obj.getStringValue(); break;
-            case TokenType::Keyword: os << static_cast<int>(obj.getKeywordType()); break;
-            case TokenType::Float: os << obj.getFloatValue(); break;
-            case TokenType::Char: os << obj.getCharValue(); break;
-            case TokenType::Int: os << obj.getIntValue(); break;
-            default: os << "---";
-        }
-        return os;
+#define TOKEN(name)                  \
+    case tokenizer::TokenType::name: \
+        os << "\"" #name "\"";       \
+        break;
+#include "shard/tokenizer/Token.def"
     }
-}}
+
+    os << ", TokenValue: ";
+
+    switch (obj.getType())
+    {
+        case TokenType::CommentBlock:
+        case TokenType::CommentLine:
+        case TokenType::Identifier:
+        case TokenType::String:
+            return os << obj.getStringValue();
+        case TokenType::Keyword:
+        {
+            switch (obj.getKeywordType())
+            {
+#define KEYWORD(name, str)  \
+    case KeywordType::name: \
+        return os << "\"" #str "\"";
+#include "shard/tokenizer/Token.def"
+            }
+            break;
+        }
+        case TokenType::Float:
+            return os << obj.getFloatValue();
+        case TokenType::Char:
+            return os << obj.getCharValue();
+        case TokenType::Int:
+            return os << obj.getIntValue();
+        default:
+            return os << "---";
+    }
+}
+
+/* ************************************************************************* */
+
+}}}
 
 /* ************************************************************************* */
 
