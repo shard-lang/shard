@@ -22,6 +22,9 @@
 #include "shard/UniquePtr.hpp"
 #include "shard/tokenizer/Tokenizer.hpp"
 #include "shard/ast/Module.hpp"
+#include "shard/ast/Stmt.hpp"
+#include "shard/ast/Expr.hpp"
+#include "shard/ast/Decl.hpp"
 
 /* ************************************************************************* */
 
@@ -37,7 +40,7 @@ using namespace ast;
 class Parser
 {
 
-protected:
+private:
 
 	Tokenizer m_tokenizer;
 
@@ -59,8 +62,29 @@ public:
 
 public:
 
-	UniquePtr<Module> parseFile();
+	UniquePtr<Module> parseModule();
 
+private:
+
+    UniquePtr<Stmt> parseStmt();
+
+    UniquePtr<IfStmt> parseIfStmt();
+    UniquePtr<ForStmt> parseForStmt();
+    UniquePtr<WhileStmt> parseWhileStmt();
+    UniquePtr<SwitchStmt> parseSwitchStmt();
+    UniquePtr<DoWhileStmt> parseDoWhileStmt();
+    UniquePtr<CompoundStmt> parseCompoundStmt();
+
+    UniquePtr<Decl> parseDecl();
+
+    UniquePtr<Module> parseVariableDecl();
+    UniquePtr<Module> parseFunctionDecl();
+    UniquePtr<Module> parseClassDecl();
+
+    UniquePtr<Expr> parseExpr();
+
+    UniquePtr<Module> parseConditionalExpr();
+    UniquePtr<Module> parseAssignmentExpr();
 
 };
 

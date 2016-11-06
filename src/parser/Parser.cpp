@@ -18,7 +18,10 @@
 
 /* ************************************************************************* */
 
-
+#include "shard/ast/Module.hpp"
+#include "shard/ast/Stmt.hpp"
+#include "shard/ast/Expr.hpp"
+#include "shard/ast/Decl.hpp"
 
 /* ************************************************************************* */
 
