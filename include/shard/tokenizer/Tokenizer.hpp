@@ -180,6 +180,10 @@ public:
         tokenize();
     }
 
+/* ************************************************************************* */
+
+public:
+
     /**
      * @brief checks if current token is final EOF type.
      */
@@ -211,6 +215,31 @@ public:
 /* ************************************************************************* */
 
 private:
+
+    /**
+     * @brief returns if current character is tested character.
+     */
+    inline bool is(char value) noexcept
+    {
+        return !empty() && m_src.get() == value;
+    }
+
+    /**
+     * @brief returns if current character is one of tested characters.
+     */
+    template<typename... Chars>
+    inline bool is(Chars... options) noexcept
+    {
+        char chars[] {options...};
+        for (const char option : chars)
+        {
+            if (is(option))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * @brief returns if current character is between two chars in the ASCII table.
@@ -262,31 +291,6 @@ private:
 
     /**
      * @brief returns if current character is tested character.
-     */
-    inline bool is(char value) noexcept
-    {
-        return !empty() && m_src.get() == value;
-    }
-
-    /**
-     * @brief returns if current character is one of tested characters.
-     */
-    template<typename... Chars>
-    inline bool is(char a, Chars... options) noexcept
-    {
-        char chars[]{a, options...};
-        for (const char option : chars)
-        {
-            if (is(option))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @brief returns if current character is tested character.
      * If so, moves to next character.
      */
     inline bool match(char value) noexcept
@@ -306,7 +310,7 @@ private:
     template<typename... Chars>
     inline bool match(Chars... options) noexcept
     {
-        const char chars[]{options...};
+        const char chars[] {options...};
         for (const char option : chars)
         {
             if (is(option))
