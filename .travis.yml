@@ -22,6 +22,11 @@ group: edge
 services:
     - docker
 
+branches:
+    except:
+        - tokenizer-devel
+        - parser-devel
+
 matrix:
     include:
         - compiler: gcc
