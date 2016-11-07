@@ -21,6 +21,7 @@
 // Shard
 #include "shard/UniquePtr.hpp"
 #include "shard/tokenizer/Tokenizer.hpp"
+#include "shard/tokenizer/TokenType.hpp"
 #include "shard/ast/Module.hpp"
 #include "shard/ast/Stmt.hpp"
 #include "shard/ast/Expr.hpp"
@@ -37,6 +38,9 @@ using namespace ast;
 
 /* ************************************************************************* */
 
+/**
+ * @brief Shard syntax analyzer.
+ */
 class Parser
 {
 
@@ -62,29 +66,189 @@ public:
 
 public:
 
+    /**
+     * @brief initiates syntax analysis on given source.
+     */
 	UniquePtr<Module> parseModule();
+
+/* ************************************************************************* */
 
 private:
 
+    /**
+     * @brief parse statement.
+     */
     UniquePtr<Stmt> parseStmt();
 
+    /**
+     * @brief parse If statement.
+     */
     UniquePtr<IfStmt> parseIfStmt();
+    
+    /**
+     * @brief parse For statement.
+     */
     UniquePtr<ForStmt> parseForStmt();
+    
+    /**
+     * @brief parse While statement.
+     */
     UniquePtr<WhileStmt> parseWhileStmt();
+    
+    /**
+     * @brief parse Switch statement.
+     */
     UniquePtr<SwitchStmt> parseSwitchStmt();
+    
+    /**
+     * @brief parse Do-While statement.
+     */
     UniquePtr<DoWhileStmt> parseDoWhileStmt();
+    
+    /**
+     * @brief parse Compound statement.
+     */
     UniquePtr<CompoundStmt> parseCompoundStmt();
 
+/* ************************************************************************* */
+
+private:
+
+    /**
+     * @brief parse declaration.
+     */
     UniquePtr<Decl> parseDecl();
 
-    UniquePtr<Module> parseVariableDecl();
-    UniquePtr<Module> parseFunctionDecl();
-    UniquePtr<Module> parseClassDecl();
+    /**
+     * @brief parse Variable declaration.
+     */
+    UniquePtr<VariableDecl> parseVariableDecl();
+    
+    /**
+     * @brief parse Function declaration.
+     */
+    UniquePtr<FunctionDecl> parseFunctionDecl();
+    
+    /**
+     * @brief parse Class declaration.
+     */
+    UniquePtr<ClassDecl> parseClassDecl();
 
+/* ************************************************************************* */
+
+private:
+
+    /**
+     * @brief parse expression.
+     */
     UniquePtr<Expr> parseExpr();
 
-    UniquePtr<Module> parseConditionalExpr();
-    UniquePtr<Module> parseAssignmentExpr();
+    /**
+     * @brief parse conditional expression.
+     */
+    UniquePtr<Expr> parseConditionalExpr();
+
+    /**
+     * @brief parse assignment expression.
+     */
+    UniquePtr<Expr> parseAssignmentExpr();
+
+    /**
+     * @brief parse relational expression.
+     */
+    UniquePtr<Expr> parseRelationalExpr();
+
+    /**
+     * @brief parse additive expression.
+     */
+    UniquePtr<Expr> parseAdditiveExpr();
+
+    /**
+     * @brief parse multiplicative expression.
+     */
+    UniquePtr<Expr> parseMultiplicativeExpr();
+
+    /**
+     * @brief parse prefix unary expression.
+     */
+    UniquePtr<Expr> parsePrefixUnaryExpr();
+
+    /**
+     * @brief parse postfix unary expression.
+     */
+    UniquePtr<Expr> parsePostfixUnaryExpr();
+
+    /**
+     * @brief parse primary expression.
+     */
+    UniquePtr<Expr> parsePrimaryExpr();
+
+    /**
+     * @brief parse parenthesis expression.
+     */
+    UniquePtr<Expr> parseParenExpr();
+
+/* ************************************************************************* */
+
+private:
+
+    /*
+     * @brief returns if current TokenType is tested TokenTypeType.
+     */
+    inline bool is(TokenType type) noexcept
+    {
+        return m_tokenizer.get().getType() == type;
+    }
+
+    /**
+     * @brief returns if current TokenType is one of tested TokenTypes.
+     */
+    template<typename... Types>
+    inline bool is(Types... options) noexcept
+    {
+        TokenType types[] {options...};
+        for (const TokenType option : types)
+        {
+            if (is(option))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @brief returns if current TokenType is tested TokenType.
+     * If so, moves to next token.
+     */
+    inline bool match(TokenType type) noexcept
+    {
+        if (is(type))
+        {
+            m_tokenizer.toss();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @brief returns if current TokenType is one of tested TokenTypes.
+     * If so, moves to next token.
+     */
+    template<typename... Types>
+    inline bool match(Types... options) noexcept
+    {
+        TokenType types[] {options...};
+        for (const TokenType option : types)
+        {
+            if (is(option))
+            {
+                m_tokenizer.toss();
+                return true;
+            }
+        }
+        return false;
+    }
 
 };
 

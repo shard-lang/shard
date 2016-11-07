@@ -18,6 +18,9 @@
 
 /* ************************************************************************* */
 
+#include "shard/UniquePtr.hpp"
+#include "shard/tokenizer/Tokenizer.hpp"
+#include "shard/tokenizer/TokenType.hpp"
 #include "shard/ast/Module.hpp"
 #include "shard/ast/Stmt.hpp"
 #include "shard/ast/Expr.hpp"
@@ -31,7 +34,141 @@ namespace parser {
 
 /* ************************************************************************* */
 
+UniquePtr<Module> Parser::parseModule()
+{
 
+}
+
+UniquePtr<Stmt> Parser::parseStmt()
+{
+
+}
+
+UniquePtr<IfStmt> Parser::parseIfStmt()
+{
+
+}
+
+UniquePtr<ForStmt> Parser::parseForStmt()
+{
+
+}
+
+UniquePtr<WhileStmt> Parser::parseWhileStmt()
+{
+
+}
+
+UniquePtr<SwitchStmt> Parser::parseSwitchStmt()
+{
+
+}
+
+UniquePtr<DoWhileStmt> Parser::parseDoWhileStmt()
+{
+
+}
+
+UniquePtr<CompoundStmt> Parser::parseCompoundStmt()
+{
+
+}
+
+UniquePtr<Decl> Parser::parseDecl()
+{
+
+}
+
+UniquePtr<VariableDecl> Parser::parseVariableDecl()
+{
+
+}
+
+UniquePtr<FunctionDecl> Parser::parseFunctionDecl()
+{
+
+}
+
+UniquePtr<ClassDecl> Parser::parseClassDecl()
+{
+
+}
+
+UniquePtr<Expr> Parser::parseExpr()
+{
+
+}
+
+UniquePtr<Expr> Parser::parseConditionalExpr()
+{
+
+}
+
+UniquePtr<Expr> Parser::parseAssignmentExpr()
+{
+
+}
+
+UniquePtr<Expr> parseRelationalExpr()
+{
+
+}
+
+UniquePtr<Expr> parseAdditiveExpr()
+{
+
+}
+
+UniquePtr<Expr> parseMultiplicativeExpr()
+{
+
+}
+
+UniquePtr<Expr> parsePrefixUnaryExpr()
+{
+
+}
+
+UniquePtr<Expr> parsePostfixUnaryExpr()
+{
+
+}
+
+UniquePtr<Expr> parsePrimaryExpr()
+{
+	switch (m_tokenizer.get().getType())
+	{
+		case TokenType::Identifier: return makeUnique<IdentifierExpr>(m_tokenizer.get().getStringValue());
+		case TokenType::String:     return makeUnique<StringLiteralExpr>(m_tokenizer.get().getStringValue());
+		case TokenType::Float: 	    return makeUnique<FloatLiteralExpr>(m_tokenizer.get().getFloatValue());
+		case TokenType::Char: 	    return makeUnique<CharLiteralExpr>(m_tokenizer.get().getCharValue());
+		case TokenType::Int: 	    return makeUnique<IntLiteralExpr>(m_tokenizer.get().getIntValue());
+		case TokenType::ParenO:	    return parseParenExpr();
+		case TokenType::Keyword:
+		{	
+			switch (m_tokenizer.get().getKeywordType())
+			{
+				case KeywordType::Null:	    return makeUnique<NullLiteralExpr>();
+				case KeywordType::True:	    return makeUnique<BoolLiteralExpr>(true);
+				case KeywordType::False:    return makeUnique<BoolLiteralExpr>(false);
+				default: break;
+			}
+		}
+		default: throw ExpectedPrimaryExprException();
+	}
+}
+
+UniquePtr<Expr> parseParenExpr()
+{
+	auto temp = parseExpr();
+
+	if (match(TokenType::ParenC))
+	{
+		return makeUnique<ParenExpr>(std::move(temp));
+	}
+
+	throw ExpectedClosingParenException();
+}
 
 /* ************************************************************************* */
 
