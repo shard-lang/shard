@@ -25,6 +25,7 @@
 #include "shard/ast/Stmt.hpp"
 #include "shard/ast/Expr.hpp"
 #include "shard/ast/Decl.hpp"
+#include "shard/parser/ParserException.hpp"
 
 /* ************************************************************************* */
 
@@ -89,7 +90,7 @@ UniquePtr<FunctionDecl> Parser::parseFunctionDecl()
 
 }
 
-UniquePtr<ClassDecl> Parser::parseClassDecl()
+UniquePtr<Decl> Parser::parseClassDecl()
 {
 
 }
@@ -109,32 +110,50 @@ UniquePtr<Expr> Parser::parseAssignmentExpr()
 
 }
 
-UniquePtr<Expr> parseRelationalExpr()
+UniquePtr<Expr> Parser::parseRelationalExpr()
 {
 
 }
 
-UniquePtr<Expr> parseAdditiveExpr()
+UniquePtr<Expr> Parser::parseAdditiveExpr()
 {
 
 }
 
-UniquePtr<Expr> parseMultiplicativeExpr()
+UniquePtr<Expr> Parser::parseMultiplicativeExpr()
 {
 
 }
 
-UniquePtr<Expr> parsePrefixUnaryExpr()
+UniquePtr<Expr> Parser::parsePrefixUnaryExpr()
 {
-
+	switch (m_tokenizer.get().getType())
+	{
+		case TokenType::PlusPlus:
+		case TokenType::MinusMinus:
+		case TokenType::Plus:
+		case TokenType::Minus:
+		case TokenType::Exclaim:
+		default: return parsePostfixUnaryExpr();
+	}
 }
 
-UniquePtr<Expr> parsePostfixUnaryExpr()
+UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
 {
+	auto temp = parsePrimaryExpr();
 
+	switch (m_tokenizer.get().getType())
+	{
+		case TokenType::PlusPlus:	return makeUnique<PostfixUnaryExpr>(PostfixUnaryExpr::Operator::Increment, std::move(temp));
+		case TokenType::MinusMinus:	return makeUnique<PostfixUnaryExpr>(PostfixUnaryExpr::Operator::Decrement, std::move(temp));
+		case TokenType::Period:
+		case TokenType::ParenO:
+
+		default: return std::move(temp);
+	}
 }
 
-UniquePtr<Expr> parsePrimaryExpr()
+UniquePtr<Expr> Parser::parsePrimaryExpr()
 {
 	switch (m_tokenizer.get().getType())
 	{
@@ -158,7 +177,7 @@ UniquePtr<Expr> parsePrimaryExpr()
 	}
 }
 
-UniquePtr<Expr> parseParenExpr()
+UniquePtr<Expr> Parser::parseParenExpr()
 {
 	auto temp = parseExpr();
 

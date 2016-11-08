@@ -20,7 +20,7 @@
 
 // Shard
 #include "shard/String.hpp"
-#include "shard/Exception.hpp"
+#include "shard/SourceLocation.hpp"
 
 /* ************************************************************************* */
 
@@ -30,8 +30,51 @@ namespace parser {
 
 /* ************************************************************************* */
 
-class ParserException : public Exception
+class ParserException
 {
+
+private:
+
+    const char * m_msg;
+
+protected:
+
+    explicit ParserException(const char* msg): m_msg(msg) {}
+
+public:
+
+    String formatMessage() const noexcept
+    {
+        return String(m_msg);
+    }
+};
+
+/* ************************************************************************* */
+
+class ExpectedPrimaryExprException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected primary expression";
+
+public:
+
+    explicit ExpectedPrimaryExprException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
+class ExpectedClosingParenException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected closing parenthesis";
+
+public:
+
+    explicit ExpectedClosingParenException(): ParserException(m_msg) {}
 };
 
 /* ************************************************************************* */

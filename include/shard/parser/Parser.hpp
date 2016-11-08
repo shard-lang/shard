@@ -132,7 +132,8 @@ private:
     /**
      * @brief parse Class declaration.
      */
-    UniquePtr<ClassDecl> parseClassDecl();
+    //TODO: change return type to ClassDecl
+    UniquePtr<Decl> parseClassDecl();
 
 /* ************************************************************************* */
 
