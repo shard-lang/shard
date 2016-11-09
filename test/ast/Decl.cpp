@@ -35,22 +35,13 @@ TEST(VariableDecl, construction)
 {
     {
         // int foo;
-        DeclContext ctx;
-        const VariableDecl decl(&ctx, "foo", {&TYPE_BUILTIN_INT});
+        const VariableDecl decl(nullptr, "foo", {&TYPE_BUILTIN_INT});
 
         EXPECT_EQ(DeclKind::Variable, decl.getKind());
         EXPECT_TRUE(NamedDecl::is(decl));
         EXPECT_TRUE(VariableDecl::is(decl));
         EXPECT_EQ("foo", decl.getName());
         EXPECT_EQ(&TYPE_BUILTIN_INT, decl.getType());
-
-        // Find declaration
-        auto dcl = ctx.findDeclaration("foo");
-        ASSERT_TRUE(dcl);
-        EXPECT_TRUE(NamedDecl::is(dcl));
-        EXPECT_TRUE(VariableDecl::is(dcl));
-        EXPECT_EQ("foo", dcl->getName());
-        EXPECT_EQ(&decl, dcl);
     }
 
     {
@@ -73,22 +64,43 @@ TEST(FunctionDecl, construction)
 {
     {
         // int foo() {}
-        DeclContext ctx;
-        const FunctionDecl decl(&ctx, "foo", {&TYPE_BUILTIN_INT}, {}, makeUnique<CompoundStmt>());
+        const FunctionDecl decl(nullptr, "foo", TypeInfo{&TYPE_BUILTIN_INT}, makeUnique<CompoundStmt>());
 
         EXPECT_EQ(DeclKind::Function, decl.getKind());
         EXPECT_TRUE(NamedDecl::is(decl));
         EXPECT_TRUE(FunctionDecl::is(decl));
         EXPECT_EQ("foo", decl.getName());
         EXPECT_EQ(&TYPE_BUILTIN_INT, decl.getRetType());
+    }
+}
 
-        // Find declaration
-        auto dcl = ctx.findDeclaration("foo");
-        ASSERT_TRUE(dcl);
-        EXPECT_TRUE(NamedDecl::is(dcl));
-        EXPECT_TRUE(FunctionDecl::is(dcl));
-        EXPECT_EQ("foo", dcl->getName());
-        EXPECT_EQ(&decl, dcl);
+/* ************************************************************************ */
+
+TEST(ClassDecl, construction)
+{
+    {
+        // class Foo {}
+        const ClassDecl decl(nullptr, "Foo");
+
+        EXPECT_EQ(DeclKind::Class, decl.getKind());
+        EXPECT_TRUE(NamedDecl::is(decl));
+        EXPECT_TRUE(ClassDecl::is(decl));
+        EXPECT_EQ("Foo", decl.getName());
+    }
+}
+
+/* ************************************************************************ */
+
+TEST(ClassDecl, declarations)
+{
+    {
+        // class Point { int x; int y; }
+        ClassDecl decl(nullptr, "Point");
+
+        decl.createDeclaration<VariableDecl>("x", TypeInfo{&TYPE_BUILTIN_INT});
+        decl.createDeclaration<VariableDecl>("y", TypeInfo{&TYPE_BUILTIN_INT});
+
+        EXPECT_EQ(2, decl.getDeclarations().size());
     }
 }
 

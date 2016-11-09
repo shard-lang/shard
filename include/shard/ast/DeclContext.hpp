@@ -21,6 +21,7 @@
 // Shard
 #include "shard/utility.hpp"
 #include "shard/ViewPtr.hpp"
+#include "shard/UniquePtr.hpp"
 #include "shard/StringView.hpp"
 #include "shard/DynamicArray.hpp"
 
@@ -53,13 +54,16 @@ public:
 
     /**
      * @brief Constructor.
+     * @param decl   Declarations.
      * @param parent Optional parent context.
      */
-    explicit DeclContext(ViewPtr<DeclContext> parent = nullptr) noexcept
-        : m_parent(parent)
-    {
-        // Nothing to do
-    }
+    explicit DeclContext(ViewPtr<DeclContext> parent = nullptr) noexcept;
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~DeclContext();
 
 
 // Public Accessors & Mutators
@@ -80,19 +84,51 @@ public:
      * @brief Returns registered declarations.
      * @return Declarations.
      */
-    const DynamicArray<ViewPtr<Decl>>& getDeclarations() const noexcept
+    const DynamicArray<UniquePtr<Decl>>& getDeclarations() const noexcept
     {
         return m_declarations;
     }
 
 
     /**
+     * @brief Returns registered declarations with given type.
+     * @tparam DeclType Required declaration type.
+     * @return Declarations.
+     */
+    template<typename DeclType>
+    DynamicArray<ViewPtr<DeclType>> getDeclarations() const noexcept
+    {
+        DynamicArray<ViewPtr<DeclType>> result;
+
+        for (const auto& decl : getDeclarations())
+        {
+            if (DeclType::is(makeView(decl)))
+                result.push_back(DeclType::cast(makeView(decl)));
+        }
+
+        return result;
+    }
+
+
+    /**
      * @brief Add declaration.
      * @param decl Declaration to add.
+     * @return Added declaration
      */
-    void addDeclaration(ViewPtr<Decl> decl)
+    Decl& addDeclaration(UniquePtr<Decl> decl);
+
+
+    /**
+     * @brief Add declaration.
+     * @param args Construction arguments.
+     * @return Created declaration.
+     */
+    template<typename DeclType, typename... Args>
+    DeclType& createDeclaration(Args&&... args)
     {
-        m_declarations.push_back(moveValue(decl));
+        return static_cast<DeclType&>(
+            addDeclaration(makeUnique<DeclType>(makeView(this), forwardValue<Args>(args)...))
+        );
     }
 
 
@@ -126,7 +162,7 @@ private:
     ViewPtr<DeclContext> m_parent;
 
     /// Declarations
-    DynamicArray<ViewPtr<Decl>> m_declarations;
+    DynamicArray<UniquePtr<Decl>> m_declarations;
 
 };
 

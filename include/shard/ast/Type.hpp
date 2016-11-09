@@ -137,6 +137,16 @@ public:
     }
 
 
+    /**
+     * @brief Change base type.
+     * @param type
+     */
+    void setType(ViewPtr<const Type> type) noexcept
+    {
+        m_type = type;
+    }
+
+
 // Private Data Members
 private:
 

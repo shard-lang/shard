@@ -36,19 +36,12 @@ Decl::Decl(ViewPtr<DeclContext> context, DeclKind kind, SourceRange range) noexc
     , m_context(context)
     , m_kind(kind)
 {
-    // Register declaration
-    if (m_context)
-        m_context->addDeclaration(this);
+    // Nothing to do
 }
 
 /* ************************************************************************* */
 
-Decl::~Decl()
-{
-    // Unregister declaration
-    if (m_context)
-        m_context->removeDeclaration(this);
-}
+Decl::~Decl() = default;
 
 /* ************************************************************************* */
 
@@ -76,20 +69,38 @@ VariableDecl::~VariableDecl() = default;
 /* ************************************************************************* */
 
 FunctionDecl::FunctionDecl(ViewPtr<DeclContext> context, String name,
-    TypeInfo retType, DynamicArray<UniquePtr<VariableDecl>> params,
-    UniquePtr<CompoundStmt> bodyStmt, SourceRange range
+    TypeInfo retType, UniquePtr<CompoundStmt> bodyStmt,
+    DynamicArray<UniquePtr<VariableDecl>> params, SourceRange range
 ) noexcept
     : NamedDecl(context, DeclKind::Function, moveValue(name), moveValue(range))
+    , DeclContext(context)
     , m_retTypeInfo(moveValue(retType))
-    , m_parameters(moveValue(params))
     , m_bodyStmt(moveValue(bodyStmt))
 {
     SHARD_ASSERT(m_bodyStmt);
+
+    // Add parameters
+    for (auto&& param : params)
+        addDeclaration(moveValue(param));
 }
 
 /* ************************************************************************* */
 
 FunctionDecl::~FunctionDecl() = default;
+
+/* ************************************************************************* */
+
+ClassDecl::ClassDecl(ViewPtr<DeclContext> context, String name, DynamicArray<UniquePtr<Decl>> decls, SourceRange range) noexcept
+    : NamedDecl(context, DeclKind::Class, moveValue(name), moveValue(range))
+    , DeclContext(context)
+{
+    for (auto&& decl : decls)
+        addDeclaration(moveValue(decl));
+}
+
+/* ************************************************************************* */
+
+ClassDecl::~ClassDecl() = default;
 
 /* ************************************************************************* */
 

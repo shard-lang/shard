@@ -32,10 +32,32 @@ namespace ast {
 
 /* ************************************************************************* */
 
+DeclContext::DeclContext(ViewPtr<DeclContext> parent) noexcept
+    : m_parent(parent)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+DeclContext::~DeclContext() = default;
+
+/* ************************************************************************* */
+
+Decl& DeclContext::addDeclaration(UniquePtr<Decl> decl)
+{
+    m_declarations.push_back(moveValue(decl));
+    return *m_declarations.back();
+}
+
+/* ************************************************************************* */
+
 void DeclContext::removeDeclaration(ViewPtr<Decl> decl)
 {
     m_declarations.erase(
-        std::remove(m_declarations.begin(), m_declarations.end(), decl),
+        std::remove_if(m_declarations.begin(), m_declarations.end(), [decl] (const auto& ptr) {
+            return makeView(ptr) == decl;
+        }),
         m_declarations.end()
     );
 }
@@ -45,15 +67,15 @@ void DeclContext::removeDeclaration(ViewPtr<Decl> decl)
 ViewPtr<NamedDecl> DeclContext::findDeclaration(StringView name) const noexcept
 {
     auto it = std::find_if(m_declarations.begin(), m_declarations.end(), [&name] (const auto& ptr) {
-        if (NamedDecl::is(ptr))
-            return NamedDecl::cast(ptr)->getName() == name;
+        if (NamedDecl::is(makeView(ptr)))
+            return NamedDecl::cast(makeView(ptr))->getName() == name;
         else
             return false;
     });
 
     // Found
     if (it != m_declarations.end())
-        return NamedDecl::cast(*it);
+        return NamedDecl::cast(makeView(*it));
 
     // Try parent
     if (m_parent)

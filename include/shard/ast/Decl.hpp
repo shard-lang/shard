@@ -27,6 +27,7 @@
 #include "shard/DynamicArray.hpp"
 #include "shard/ast/utility.hpp"
 #include "shard/ast/Type.hpp"
+#include "shard/ast/DeclContext.hpp"
 
 /* ************************************************************************* */
 
@@ -36,7 +37,6 @@ namespace ast {
 
 /* ************************************************************************* */
 
-class DeclContext;
 class CompoundStmt;
 class Expr;
 
@@ -247,6 +247,16 @@ public:
 
 
     /**
+     * @brief Change type information.
+     * @param info Variable type information.
+     */
+    void setTypeInfo(TypeInfo info) noexcept
+    {
+        m_typeInfo = moveValue(info);
+    }
+
+
+    /**
      * @brief Return type.
      * @return Variable type.
      */
@@ -257,12 +267,42 @@ public:
 
 
     /**
+     * @brief Change variable type.
+     * @param type New variable type.
+     */
+    void setType(ViewPtr<const Type> type) noexcept
+    {
+        m_typeInfo.setType(type);
+    }
+
+
+    /**
      * @brief Returns initializer expression.
      * @return Expression.
      */
     ViewPtr<const Expr> getInitExpr() const noexcept
     {
-        return m_initExpr.get();
+        return makeView(m_initExpr);
+    }
+
+
+    /**
+     * @brief Returns initializer expression.
+     * @return Expression.
+     */
+    ViewPtr<Expr> getInitExpr() noexcept
+    {
+        return makeView(m_initExpr);
+    }
+
+
+    /**
+     * @brief Change initializer expression.
+     * @param expr New initializer expression.
+     */
+    void setInitExpr(UniquePtr<Expr> expr) noexcept
+    {
+        m_initExpr = moveValue(expr);
     }
 
 
@@ -282,7 +322,6 @@ private:
 
     /// Initializer expression.
     UniquePtr<Expr> m_initExpr;
-
 };
 
 /* ************************************************************************* */
@@ -293,6 +332,7 @@ private:
 class FunctionDecl final
     : public NamedDecl
     , private DeclHelper<DeclKind::Function, FunctionDecl>
+    , public DeclContext
 {
 
 // Public Ctors & Dtors
@@ -304,12 +344,13 @@ public:
      * @param context  Declaration context.
      * @param name     Function name.
      * @param retType  Return type information.
-     * @param params   Function parameters.
      * @param bodyStmt Function body.
+     * @param params   Function parameters.
      * @param range    Source range.
      */
     explicit FunctionDecl(ViewPtr<DeclContext> context, String name, TypeInfo retType,
-        DynamicArray<UniquePtr<VariableDecl>> params, UniquePtr<CompoundStmt> bodyStmt, SourceRange range = {}) noexcept;
+        UniquePtr<CompoundStmt> bodyStmt, DynamicArray<UniquePtr<VariableDecl>> params = {},
+        SourceRange range = {}) noexcept;
 
 
     /**
@@ -346,9 +387,9 @@ public:
      * @brief Returns function parameters.
      * @return Expression.
      */
-    const DynamicArray<UniquePtr<VariableDecl>>& getParameters() const noexcept
+    DynamicArray<ViewPtr<VariableDecl>> getParameters() const noexcept
     {
-        return m_parameters;
+        return getDeclarations<VariableDecl>();
     }
 
 
@@ -376,11 +417,48 @@ private:
     /// Return type information.
     TypeInfo m_retTypeInfo;
 
-    /// Parameters.
-    DynamicArray<UniquePtr<VariableDecl>> m_parameters;
-
     /// Function body.
     UniquePtr<CompoundStmt> m_bodyStmt;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief Class declaration.
+ */
+class ClassDecl final
+    : public NamedDecl
+    , private DeclHelper<DeclKind::Class, ClassDecl>
+    , public DeclContext
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param context  Declaration context.
+     * @param name     Class name.
+     * @param decls    Declarations.
+     * @param range    Source range.
+     */
+    explicit ClassDecl(ViewPtr<DeclContext> context, String name, DynamicArray<UniquePtr<Decl>> decls = {}, SourceRange range = {}) noexcept;
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~ClassDecl();
+
+
+// Public Operations
+public:
+
+
+    using DeclHelper<DeclKind::Class, ClassDecl>::is;
+    using DeclHelper<DeclKind::Class, ClassDecl>::cast;
 
 };
 
