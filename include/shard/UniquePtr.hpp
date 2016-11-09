@@ -51,6 +51,24 @@ UniquePtr<T> makeUnique(Args&&... args)
 
 /* ************************************************************************* */
 
+template<typename T>
+class ViewPtr;
+
+/* ************************************************************************* */
+
+/**
+ * @brief Create view from unique pointer.
+ * @param ptr Unique pointer.
+ * @return View pointer.
+ */
+template<typename T>
+ViewPtr<T> makeView(const UniquePtr<T>& ptr) noexcept
+{
+    return ViewPtr<T>(ptr.get());
+}
+
+/* ************************************************************************* */
+
 }
 }
 
