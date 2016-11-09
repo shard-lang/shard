@@ -31,7 +31,7 @@ namespace ast {
 
 /* ************************************************************************* */
 
-Decl::Decl(ViewPtr<DeclContext> context, DeclKind kind, SourceRange range) noexcept
+Decl::Decl(ViewPtr<DeclContext> context, DeclKind kind, SourceRange range)
     : LocationInfo(moveValue(range))
     , m_context(context)
     , m_kind(kind)
@@ -45,7 +45,7 @@ Decl::~Decl() = default;
 
 /* ************************************************************************* */
 
-NamedDecl::NamedDecl(ViewPtr<DeclContext> context, DeclKind kind, String name, SourceRange range) noexcept
+NamedDecl::NamedDecl(ViewPtr<DeclContext> context, DeclKind kind, String name, SourceRange range)
     : Decl(context, kind, moveValue(range))
     , m_name(moveValue(name))
 {
@@ -54,7 +54,7 @@ NamedDecl::NamedDecl(ViewPtr<DeclContext> context, DeclKind kind, String name, S
 
 /* ************************************************************************* */
 
-VariableDecl::VariableDecl(ViewPtr<DeclContext> context, String name, TypeInfo type, UniquePtr<Expr> initExpr, SourceRange range) noexcept
+VariableDecl::VariableDecl(ViewPtr<DeclContext> context, String name, TypeInfo type, UniquePtr<Expr> initExpr, SourceRange range)
     : NamedDecl(context, DeclKind::Variable, moveValue(name), moveValue(range))
     , m_typeInfo(moveValue(type))
     , m_initExpr(moveValue(initExpr))
@@ -65,6 +65,13 @@ VariableDecl::VariableDecl(ViewPtr<DeclContext> context, String name, TypeInfo t
 /* ************************************************************************* */
 
 VariableDecl::~VariableDecl() = default;
+
+/* ************************************************************************* */
+
+void VariableDecl::setInitExpr(UniquePtr<Expr> expr) noexcept
+{
+    m_initExpr = moveValue(expr);
+}
 
 /* ************************************************************************* */
 
@@ -80,8 +87,7 @@ FunctionDecl::FunctionDecl(ViewPtr<DeclContext> context, String name,
     SHARD_ASSERT(m_bodyStmt);
 
     // Add parameters
-    for (auto&& param : params)
-        addDeclaration(moveValue(param));
+    addDeclarations(moveValue(params));
 }
 
 /* ************************************************************************* */
@@ -90,17 +96,36 @@ FunctionDecl::~FunctionDecl() = default;
 
 /* ************************************************************************* */
 
+void FunctionDecl::setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept
+{
+    m_bodyStmt = moveValue(stmt);
+}
+
+/* ************************************************************************* */
+
 ClassDecl::ClassDecl(ViewPtr<DeclContext> context, String name, DynamicArray<UniquePtr<Decl>> decls, SourceRange range) noexcept
     : NamedDecl(context, DeclKind::Class, moveValue(name), moveValue(range))
     , DeclContext(context)
 {
-    for (auto&& decl : decls)
-        addDeclaration(moveValue(decl));
+    addDeclarations(moveValue(decls));
 }
 
 /* ************************************************************************* */
 
 ClassDecl::~ClassDecl() = default;
+
+/* ************************************************************************* */
+
+NamespaceDecl::NamespaceDecl(ViewPtr<DeclContext> context, String name, DynamicArray<UniquePtr<Decl>> decls, SourceRange range) noexcept
+    : NamedDecl(context, DeclKind::Namespace, moveValue(name), moveValue(range))
+    , DeclContext(context)
+{
+    addDeclarations(moveValue(decls));
+}
+
+/* ************************************************************************* */
+
+NamespaceDecl::~NamespaceDecl() = default;
 
 /* ************************************************************************* */
 

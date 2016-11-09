@@ -47,11 +47,12 @@ class Expr;
  */
 enum class DeclKind
 {
-    Variable = 1,
-    Function = 2,
-    Class = 3,
+    Variable    = 1,
+    Function    = 2,
+    Class       = 3,
+    Namespace   = 4,
     Named_First = Variable,
-    Named_Last = Class
+    Named_Last  = Namespace
 };
 
 /* ************************************************************************* */
@@ -72,7 +73,7 @@ public:
      * @param context Declaration context.
      * @param range   Source range.
      */
-    explicit Decl(ViewPtr<DeclContext> context, DeclKind type, SourceRange range) noexcept;
+    explicit Decl(ViewPtr<DeclContext> context, DeclKind type, SourceRange range);
 
 
     /**
@@ -113,7 +114,6 @@ private:
 
     /// Declaration type.
     DeclKind m_kind;
-
 };
 
 /* ************************************************************************* */
@@ -168,7 +168,7 @@ public:
      * @param name    Declaration name.
      * @param range   Source range.
      */
-    explicit NamedDecl(ViewPtr<DeclContext> context, DeclKind kind, String name, SourceRange range = {}) noexcept;
+    explicit NamedDecl(ViewPtr<DeclContext> context, DeclKind kind, String name, SourceRange range = {});
 
 
 // Public Accessors & Mutators
@@ -179,9 +179,19 @@ public:
      * @brief Returns declaration name.
      * @return
      */
-    StringView getName() const noexcept
+    const String& getName() const noexcept
     {
         return m_name;
+    }
+
+
+    /**
+     * @brief Change declaration name.
+     * @param name New declaration name.
+     */
+    void setName(String name) noexcept
+    {
+        m_name = moveValue(name);
     }
 
 
@@ -198,7 +208,6 @@ private:
 
     /// Declaration name.
     String m_name;
-
 };
 
 /* ************************************************************************* */
@@ -217,13 +226,13 @@ public:
 
     /**
      * @brief Constructor.
-     * @param context Declaration context.
-     * @param name    Variable name.
-     * @param type    Type info.
-     * @param init    Initializer expression.
-     * @param range   Source range.
+     * @param context  Declaration context.
+     * @param name     Variable name.
+     * @param type     Type info.
+     * @param initExpr Initializer expression.
+     * @param range    Source range.
      */
-    explicit VariableDecl(ViewPtr<DeclContext> context, String name, TypeInfo type, UniquePtr<Expr> initExpr = nullptr, SourceRange range = {}) noexcept;
+    explicit VariableDecl(ViewPtr<DeclContext> context, String name, TypeInfo type, UniquePtr<Expr> initExpr = nullptr, SourceRange range = {});
 
 
     /**
@@ -300,10 +309,7 @@ public:
      * @brief Change initializer expression.
      * @param expr New initializer expression.
      */
-    void setInitExpr(UniquePtr<Expr> expr) noexcept
-    {
-        m_initExpr = moveValue(expr);
-    }
+    void setInitExpr(UniquePtr<Expr> expr) noexcept;
 
 
 // Public Operations
@@ -374,6 +380,16 @@ public:
 
 
     /**
+     * @brief Change return type information.
+     * @param info New return type information.
+     */
+    void setRetTypeInfo(TypeInfo info) noexcept
+    {
+        m_retTypeInfo = moveValue(info);
+    }
+
+
+    /**
      * @brief Return return type.
      * @return Return type.
      */
@@ -384,8 +400,18 @@ public:
 
 
     /**
+     * @brief Change return type.
+     * @param type New return type.
+     */
+    void setRetType(ViewPtr<const Type> type) noexcept
+    {
+        m_retTypeInfo.setType(type);
+    }
+
+
+    /**
      * @brief Returns function parameters.
-     * @return Expression.
+     * @return A list of function parameters.
      */
     DynamicArray<ViewPtr<VariableDecl>> getParameters() const noexcept
     {
@@ -399,8 +425,25 @@ public:
      */
     ViewPtr<const CompoundStmt> getBodyStmt() const noexcept
     {
-        return m_bodyStmt.get();
+        return makeView(m_bodyStmt);
     }
+
+
+    /**
+     * @brief Returns pointer to function body.
+     * @return Body statement.
+     */
+    ViewPtr<CompoundStmt> getBodyStmt() noexcept
+    {
+        return makeView(m_bodyStmt);
+    }
+
+
+    /**
+     * @brief Change function body.
+     * @param stmt Body statement.
+     */
+    void setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept;
 
 
 // Public Operations
@@ -419,7 +462,6 @@ private:
 
     /// Function body.
     UniquePtr<CompoundStmt> m_bodyStmt;
-
 };
 
 /* ************************************************************************* */
@@ -459,6 +501,46 @@ public:
 
     using DeclHelper<DeclKind::Class, ClassDecl>::is;
     using DeclHelper<DeclKind::Class, ClassDecl>::cast;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief Namespace declaration.
+ */
+class NamespaceDecl final
+    : public NamedDecl
+    , private DeclHelper<DeclKind::Namespace, NamespaceDecl>
+    , public DeclContext
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param context  Declaration context.
+     * @param name     Class name.
+     * @param decls    Declarations.
+     * @param range    Source range.
+     */
+    explicit NamespaceDecl(ViewPtr<DeclContext> context, String name, DynamicArray<UniquePtr<Decl>> decls = {}, SourceRange range = {}) noexcept;
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~NamespaceDecl();
+
+
+// Public Operations
+public:
+
+
+    using DeclHelper<DeclKind::Namespace, NamespaceDecl>::is;
+    using DeclHelper<DeclKind::Namespace, NamespaceDecl>::cast;
 
 };
 

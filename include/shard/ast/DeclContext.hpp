@@ -119,6 +119,18 @@ public:
 
 
     /**
+     * @brief Add a list of declarations.
+     * @param decls Declarations to add.
+     */
+    template<typename DeclType>
+    void addDeclarations(DynamicArray<UniquePtr<DeclType>> decls)
+    {
+        for (auto&& decl : decls)
+            addDeclaration(moveValue(decl));
+    }
+
+
+    /**
      * @brief Add declaration.
      * @param args Construction arguments.
      * @return Created declaration.

@@ -52,10 +52,43 @@ TEST(VariableDecl, construction)
         EXPECT_TRUE(VariableDecl::is(decl));
         EXPECT_EQ("foo2", decl.getName());
         EXPECT_EQ(&TYPE_BUILTIN_STRING, decl.getType());
-        ASSERT_TRUE(decl.getInitExpr());
+        ASSERT_NE(nullptr, decl.getInitExpr());
         ASSERT_TRUE(StringLiteralExpr::is(decl.getInitExpr()));
         EXPECT_EQ("bar", StringLiteralExpr::cast(decl.getInitExpr())->getValue());
     }
+}
+
+/* ************************************************************************ */
+
+TEST(VariableDecl, modify)
+{
+    // int foo;
+    VariableDecl decl(nullptr, "foo", {&TYPE_BUILTIN_INT});
+
+    EXPECT_EQ(DeclKind::Variable, decl.getKind());
+    EXPECT_TRUE(NamedDecl::is(decl));
+    EXPECT_TRUE(VariableDecl::is(decl));
+    EXPECT_EQ("foo", decl.getName());
+    EXPECT_EQ(&TYPE_BUILTIN_INT, decl.getType());
+    ASSERT_EQ(nullptr, decl.getInitExpr());
+
+    // int foo2;
+    decl.setName("foo2");
+    EXPECT_EQ("foo2", decl.getName());
+
+    // float foo2;
+    decl.setTypeInfo({&TYPE_BUILTIN_FLOAT});
+    EXPECT_EQ(&TYPE_BUILTIN_FLOAT, decl.getType());
+
+    // string foo2;
+    decl.setType(&TYPE_BUILTIN_STRING);
+    EXPECT_EQ(&TYPE_BUILTIN_STRING, decl.getType());
+
+    // string foo2 = "Hello";
+    decl.setInitExpr(makeUnique<StringLiteralExpr>("Hello"));
+    ASSERT_NE(nullptr, decl.getInitExpr());
+    ASSERT_TRUE(StringLiteralExpr::is(decl.getInitExpr()));
+    EXPECT_EQ("Hello", StringLiteralExpr::cast(decl.getInitExpr())->getValue());
 }
 
 /* ************************************************************************ */
@@ -101,6 +134,22 @@ TEST(ClassDecl, declarations)
         decl.createDeclaration<VariableDecl>("y", TypeInfo{&TYPE_BUILTIN_INT});
 
         EXPECT_EQ(2, decl.getDeclarations().size());
+    }
+}
+
+/* ************************************************************************ */
+
+TEST(NamespaceDecl, construction)
+{
+    {
+        // namespace foo {}
+        // namespace foo:
+        const NamespaceDecl decl(nullptr, "foo");
+
+        EXPECT_EQ(DeclKind::Namespace, decl.getKind());
+        EXPECT_TRUE(NamedDecl::is(decl));
+        EXPECT_TRUE(NamespaceDecl::is(decl));
+        EXPECT_EQ("foo", decl.getName());
     }
 }
 

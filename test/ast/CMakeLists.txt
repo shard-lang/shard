@@ -20,6 +20,7 @@ add_shard_test(shard-ast_test
         ExprTest.cpp
         DeclTest.cpp
         StmtTest.cpp
+        DeclContextTest.cpp
     LIBRARIES
         shard-ast
 )
