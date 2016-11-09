@@ -16,10 +16,10 @@
 
 add_shard_test(shard-ast_test
     SOURCES
-        Type.cpp
-        Expr.cpp
-        Decl.cpp
-        Stmt.cpp
+        TypeTest.cpp
+        ExprTest.cpp
+        DeclTest.cpp
+        StmtTest.cpp
     LIBRARIES
         shard-ast
 )
