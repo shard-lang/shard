@@ -145,16 +145,6 @@ private:
     UniquePtr<Expr> parseExpr();
 
     /**
-     * @brief parse conditional expression.
-     */
-    UniquePtr<Expr> parseConditionalExpr();
-
-    /**
-     * @brief parse assignment expression.
-     */
-    UniquePtr<Expr> parseAssignmentExpr();
-
-    /**
      * @brief parse relational expression.
      */
     UniquePtr<Expr> parseRelationalExpr();

@@ -97,32 +97,80 @@ UniquePtr<Decl> Parser::parseClassDecl()
 
 UniquePtr<Expr> Parser::parseExpr()
 {
+	auto temp = parseRelationalExpr();
 
-}
+	if (IdentifierExpr::is(*temp))
+	{
+		switch (m_tokenizer.get().getType())
+		{
+			case TokenType::Equal:
+			case TokenType::PlusEqual:
+			case TokenType::MinusEqual:
+			case TokenType::StarEqual:
+			case TokenType::SlashEqual:
+			case TokenType::PercentEqual:
 
-UniquePtr<Expr> Parser::parseConditionalExpr()
-{
+			default: break;
+		}
+	}
 
-}
+	if (!match(TokenType::Question))
+	{
+		return temp;
+	}
 
-UniquePtr<Expr> Parser::parseAssignmentExpr()
-{
+	auto trueExpr = parseExpr();
 
+	if (!match(TokenType::Colon))
+	{
+		throw ExpectedColonException();
+	}
+
+	return makeUnique<TernaryExpr>(std::move(temp), std::move(trueExpr), std::move(parseExpr()));
 }
 
 UniquePtr<Expr> Parser::parseRelationalExpr()
 {
+	auto temp = parseAdditiveExpr();
 
+	switch (m_tokenizer.get().getType())
+	{
+		case TokenType::EqualEqual:
+		case TokenType::ExclaimEqual:
+		case TokenType::Less:
+		case TokenType::Greater:
+		case TokenType::LessEqual:
+		case TokenType::GreaterEqual:
+
+		default: return std::move(temp);
+	}
 }
 
 UniquePtr<Expr> Parser::parseAdditiveExpr()
 {
+	auto temp = parseMultiplicativeExpr();
 
+	switch (m_tokenizer.get().getType())
+	{
+		case TokenType::Plus:
+		case TokenType::Minus:
+
+		default: return std::move(temp);
+	}
 }
 
 UniquePtr<Expr> Parser::parseMultiplicativeExpr()
 {
+	auto temp = parsePrefixUnaryExpr();
 
+	switch (m_tokenizer.get().getType())
+	{
+		case TokenType::Star:
+		case TokenType::Slash:
+		case TokenType::Percent:
+
+		default: return std::move(temp);
+	}
 }
 
 UniquePtr<Expr> Parser::parsePrefixUnaryExpr()
@@ -134,6 +182,7 @@ UniquePtr<Expr> Parser::parsePrefixUnaryExpr()
 		case TokenType::Plus:
 		case TokenType::Minus:
 		case TokenType::Exclaim:
+
 		default: return parsePostfixUnaryExpr();
 	}
 }
@@ -173,6 +222,7 @@ UniquePtr<Expr> Parser::parsePrimaryExpr()
 				default: break;
 			}
 		}
+
 		default: throw ExpectedPrimaryExprException();
 	}
 }
