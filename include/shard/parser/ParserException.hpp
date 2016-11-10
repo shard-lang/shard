@@ -79,6 +79,20 @@ public:
 
 /* ************************************************************************* */
 
+class ExpectedColonException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected colon for ternary expression";
+
+public:
+
+    explicit ExpectedColonException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
 }
 }
 }

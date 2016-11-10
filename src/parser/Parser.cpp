@@ -105,7 +105,7 @@ UniquePtr<Expr> Parser::parseExpr()
 
 		if (!match(TokenType::Colon))
 		{
-			throw ExcpectedColonException();
+			throw ExpectedColonException();
 		}
 
 		return makeUnique<TernaryExpr>(std::move(temp), std::move(trueExpr), parseExpr());
