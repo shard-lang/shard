@@ -90,7 +90,7 @@ UniquePtr<FunctionDecl> Parser::parseFunctionDecl()
 
 }
 
-UniquePtr<Decl> Parser::parseClassDecl()
+UniquePtr<ClassDecl> Parser::parseClassDecl()
 {
 
 }
@@ -99,34 +99,31 @@ UniquePtr<Expr> Parser::parseExpr()
 {
 	auto temp = parseRelationalExpr();
 
-	if (IdentifierExpr::is(*temp))
+	if (match(TokenType::Question))
 	{
-		switch (m_tokenizer.get().getType())
+		auto trueExpr = parseExpr();
+
+		if (!match(TokenType::Colon))
 		{
-			case TokenType::Equal:
-			case TokenType::PlusEqual:
-			case TokenType::MinusEqual:
-			case TokenType::StarEqual:
-			case TokenType::SlashEqual:
-			case TokenType::PercentEqual:
-
-			default: break;
+			throw ExcpectedColonException();
 		}
+
+		return makeUnique<TernaryExpr>(std::move(temp), std::move(trueExpr), parseExpr());
 	}
 
-	if (!match(TokenType::Question))
+	switch (m_tokenizer.get().getType())
 	{
-		return temp;
+		case TokenType::Equal:
+		case TokenType::PlusEqual:
+		case TokenType::MinusEqual:
+		case TokenType::StarEqual:
+		case TokenType::SlashEqual:
+		case TokenType::PercentEqual:
+		{
+
+		}
+		default: return std::move(temp);
 	}
-
-	auto trueExpr = parseExpr();
-
-	if (!match(TokenType::Colon))
-	{
-		throw ExpectedColonException();
-	}
-
-	return makeUnique<TernaryExpr>(std::move(temp), std::move(trueExpr), std::move(parseExpr()));
 }
 
 UniquePtr<Expr> Parser::parseRelationalExpr()
