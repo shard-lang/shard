@@ -1,0 +1,251 @@
+/* ************************************************************************* */
+/* This file is part of Shard.                                               */
+/*                                                                           */
+/* Shard is free software: you can redistribute it and/or modify             */
+/* it under the terms of the GNU Affero General Public License as            */
+/* published by the Free Software Foundation.                                */
+/*                                                                           */
+/* This program is distributed in the hope that it will be useful,           */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of            */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              */
+/* GNU Affero General Public License for more details.                       */
+/*                                                                           */
+/* You should have received a copy of the GNU Affero General Public License  */
+/* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
+/* ************************************************************************* */
+
+#pragma once
+
+/* ************************************************************************* */
+
+// Shard
+#include "shard/UniquePtr.hpp"
+#include "shard/tokenizer/Tokenizer.hpp"
+#include "shard/tokenizer/TokenType.hpp"
+#include "shard/ast/Module.hpp"
+#include "shard/ast/Stmt.hpp"
+#include "shard/ast/Expr.hpp"
+#include "shard/ast/Decl.hpp"
+
+/* ************************************************************************* */
+
+namespace shard {
+inline namespace v1 {
+namespace parser {
+
+using namespace tokenizer;
+using namespace ast;
+
+/* ************************************************************************* */
+
+/**
+ * @brief Shard syntax analyzer.
+ */
+class Parser
+{
+
+private:
+
+	Tokenizer m_tokenizer;
+
+/* ************************************************************************* */
+
+public:
+
+    /**
+     * @brief constructs Parser which reads from file.
+     */
+    explicit Parser(const Path& path): m_tokenizer(path){}
+
+    /**
+     * @brief constructs Parser which reads from String.
+     */
+    explicit Parser(const String& source): m_tokenizer(source){}
+
+/* ************************************************************************* */
+
+public:
+
+    /**
+     * @brief initiates syntax analysis on given source.
+     */
+	UniquePtr<Module> parseModule();
+
+/* ************************************************************************* */
+
+private:
+
+    /**
+     * @brief parse statement.
+     */
+    UniquePtr<Stmt> parseStmt();
+
+    /**
+     * @brief parse If statement.
+     */
+    UniquePtr<IfStmt> parseIfStmt();
+    
+    /**
+     * @brief parse For statement.
+     */
+    UniquePtr<ForStmt> parseForStmt();
+    
+    /**
+     * @brief parse While statement.
+     */
+    UniquePtr<WhileStmt> parseWhileStmt();
+    
+    /**
+     * @brief parse Switch statement.
+     */
+    UniquePtr<SwitchStmt> parseSwitchStmt();
+    
+    /**
+     * @brief parse Do-While statement.
+     */
+    UniquePtr<DoWhileStmt> parseDoWhileStmt();
+    
+    /**
+     * @brief parse Compound statement.
+     */
+    UniquePtr<CompoundStmt> parseCompoundStmt();
+
+/* ************************************************************************* */
+
+private:
+
+    /**
+     * @brief parse declaration.
+     */
+    UniquePtr<Decl> parseDecl();
+
+    /**
+     * @brief parse Variable declaration.
+     */
+    UniquePtr<VariableDecl> parseVariableDecl();
+    
+    /**
+     * @brief parse Function declaration.
+     */
+    UniquePtr<FunctionDecl> parseFunctionDecl();
+    
+    /**
+     * @brief parse Class declaration.
+     */
+    UniquePtr<ClassDecl> parseClassDecl();
+
+/* ************************************************************************* */
+
+private:
+
+    /**
+     * @brief parse expression.
+     */
+    UniquePtr<Expr> parseExpr();
+
+    /**
+     * @brief parse relational expression.
+     */
+    UniquePtr<Expr> parseRelationalExpr();
+
+    /**
+     * @brief parse additive expression.
+     */
+    UniquePtr<Expr> parseAdditiveExpr();
+
+    /**
+     * @brief parse multiplicative expression.
+     */
+    UniquePtr<Expr> parseMultiplicativeExpr();
+
+    /**
+     * @brief parse prefix unary expression.
+     */
+    UniquePtr<Expr> parsePrefixUnaryExpr();
+
+    /**
+     * @brief parse postfix unary expression.
+     */
+    UniquePtr<Expr> parsePostfixUnaryExpr();
+
+    /**
+     * @brief parse primary expression.
+     */
+    UniquePtr<Expr> parsePrimaryExpr();
+
+    /**
+     * @brief parse parenthesis expression.
+     */
+    UniquePtr<Expr> parseParenExpr();
+
+/* ************************************************************************* */
+
+private:
+
+    /*
+     * @brief returns if current TokenType is tested TokenTypeType.
+     */
+    inline bool is(TokenType type) noexcept
+    {
+        return m_tokenizer.get().getType() == type;
+    }
+
+    /**
+     * @brief returns if current TokenType is one of tested TokenTypes.
+     */
+    template<typename... Types>
+    inline bool is(Types... options) noexcept
+    {
+        TokenType types[] {options...};
+        for (const TokenType option : types)
+        {
+            if (is(option))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @brief returns if current TokenType is tested TokenType.
+     * If so, moves to next token.
+     */
+    inline bool match(TokenType type) noexcept
+    {
+        if (is(type))
+        {
+            m_tokenizer.toss();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @brief returns if current TokenType is one of tested TokenTypes.
+     * If so, moves to next token.
+     */
+    template<typename... Types>
+    inline bool match(Types... options) noexcept
+    {
+        TokenType types[] {options...};
+        for (const TokenType option : types)
+        {
+            if (is(option))
+            {
+                m_tokenizer.toss();
+                return true;
+            }
+        }
+        return false;
+    }
+
+};
+
+/* ************************************************************************* */
+
+}
+}
+}
+
+/* ************************************************************************* */
