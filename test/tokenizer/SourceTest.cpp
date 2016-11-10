@@ -105,10 +105,10 @@ TEST(Source, empty)
 }
 TEST(Source, file_basic)
 {
-    test_file("source-test-file_basic.txt",
+    test_file("SourceTest-file_basic.txt",
     {'\n', '\r', 'a', '\n', '{', '}', ' ', ' ', ' ', 'b', '\t', 'a'});
 }
 TEST(Source, file_empty)
 {
-    test_file("source-test-file_empty.txt", {});
+    test_file("SourceTest-file_empty.txt", {});
 }
