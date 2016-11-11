@@ -220,17 +220,19 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
 
 UniquePtr<Expr> Parser::parsePrimaryExpr()
 {
-	switch (m_tokenizer.get().getType())
+	auto token = m_tokenizer.extract();
+
+	switch (token.getType())
 	{
-		case TokenType::Identifier: return makeUnique<IdentifierExpr>(m_tokenizer.get().getStringValue());
-		case TokenType::String:     return makeUnique<StringLiteralExpr>(m_tokenizer.get().getStringValue());
-		case TokenType::Float: 	    return makeUnique<FloatLiteralExpr>(m_tokenizer.get().getFloatValue());
-		case TokenType::Char: 	    return makeUnique<CharLiteralExpr>(m_tokenizer.get().getCharValue());
-		case TokenType::Int: 	    return makeUnique<IntLiteralExpr>(m_tokenizer.get().getIntValue());
+		case TokenType::Identifier: return makeUnique<IdentifierExpr>(token.getStringValue());
+		case TokenType::String:     return makeUnique<StringLiteralExpr>(token.getStringValue());
+		case TokenType::Float: 	    return makeUnique<FloatLiteralExpr>(token.getFloatValue());
+		case TokenType::Char: 	    return makeUnique<CharLiteralExpr>(token.getCharValue());
+		case TokenType::Int: 	    return makeUnique<IntLiteralExpr>(token.getIntValue());
 		case TokenType::ParenO:	    return parseParenExpr();
 		case TokenType::Keyword:
 		{	
-			switch (m_tokenizer.get().getKeywordType())
+			switch (token.getKeywordType())
 			{
 				case KeywordType::Null:	    return makeUnique<NullLiteralExpr>();
 				case KeywordType::True:	    return makeUnique<BoolLiteralExpr>(true);
