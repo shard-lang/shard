@@ -27,6 +27,7 @@
 #include "shard/SourceRange.hpp"
 #include "shard/UniquePtr.hpp"
 #include "shard/ViewPtr.hpp"
+#include "shard/DynamicArray.hpp"
 #include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
@@ -46,22 +47,25 @@ class Decl;
  */
 enum class ExprKind
 {
-    NullLiteral = 1,
-    BoolLiteral = 2,
-    IntLiteral = 3,
-    FloatLiteral = 4,
-    CharLiteral = 5,
-    StringLiteral = 6,
-    Literal_First = NullLiteral,
-    Literal_Last = StringLiteral,
+    NullLiteral,
+    BoolLiteral,
+    IntLiteral,
+    FloatLiteral,
+    CharLiteral,
+    StringLiteral,
+    Binary,
+    PrefixUnary,
+    PostfixUnary,
+    Ternary,
+    Paren,
+    Identifier,
+    FunctionCall,
+    MemberAccess,
+    Subscript,
+    Literal_First       = NullLiteral,
+    Literal_Last        = StringLiteral,
     NumberLiteral_First = IntLiteral,
-    NumberLiteral_Last = FloatLiteral,
-    Binary = 7,
-    PrefixUnary = 8,
-    PostfixUnary = 9,
-    Ternary = 10,
-    Paren = 11,
-    Identifier = 12
+    NumberLiteral_Last  = FloatLiteral,
 };
 
 /* ************************************************************************* */
@@ -81,7 +85,7 @@ public:
      * @param kind  Expression kind.
      * @param range Source range.
      */
-    Expr(ExprKind kind, SourceRange range) noexcept;
+    explicit Expr(ExprKind kind, SourceRange range);
 
 
     /**
@@ -187,11 +191,7 @@ public:
      * @brief Constructor.
      * @param range Location in source.
      */
-    explicit NullLiteralExpr(SourceRange range = {}) noexcept
-        : LiteralExpr(ExprKind::NullLiteral, range)
-    {
-        // Nothing to do
-    }
+    explicit NullLiteralExpr(SourceRange range = {});
 
 
 // Public Operations
@@ -230,12 +230,7 @@ public:
      * @param value Value.
      * @param range Location in source.
      */
-    explicit BoolLiteralExpr(ValueType value, SourceRange range = {}) noexcept
-        : LiteralExpr(ExprKind::BoolLiteral, range)
-        , m_value(value)
-    {
-        // Nothing to do
-    }
+    explicit BoolLiteralExpr(ValueType value, SourceRange range = {});
 
 
 // Public Accessors & Mutators
@@ -249,6 +244,16 @@ public:
     ValueType getValue() const noexcept
     {
         return m_value;
+    }
+
+
+    /**
+     * @brief Change literal value.
+     * @param value The new literal value.
+     */
+    void setValue(ValueType value) noexcept
+    {
+        m_value = value;
     }
 
 
@@ -322,12 +327,7 @@ public:
      * @param value Value.
      * @param range Location in source.
      */
-    explicit IntLiteralExpr(ValueType value, SourceRange range = {}) noexcept
-        : NumberLiteralExpr(ExprKind::IntLiteral, range)
-        , m_value(value)
-    {
-        // Nothing to do
-    }
+    explicit IntLiteralExpr(ValueType value, SourceRange range = {});
 
 
 // Public Accessors & Mutators
@@ -341,6 +341,16 @@ public:
     ValueType getValue() const noexcept
     {
         return m_value;
+    }
+
+
+    /**
+     * @brief Change literal value.
+     * @param value The new literal value.
+     */
+    void setValue(ValueType value) noexcept
+    {
+        m_value = value;
     }
 
 
@@ -387,12 +397,7 @@ public:
      * @param value Value.
      * @param range Location in source.
      */
-    explicit FloatLiteralExpr(ValueType value, SourceRange range = {}) noexcept
-        : NumberLiteralExpr(ExprKind::FloatLiteral, range)
-        , m_value(value)
-    {
-        // Nothing to do
-    }
+    explicit FloatLiteralExpr(ValueType value, SourceRange range = {});
 
 
 // Public Accessors & Mutators
@@ -406,6 +411,16 @@ public:
     ValueType getValue() const noexcept
     {
         return m_value;
+    }
+
+
+    /**
+     * @brief Change literal value.
+     * @param value The new literal value.
+     */
+    void setValue(ValueType value) noexcept
+    {
+        m_value = value;
     }
 
 
@@ -452,12 +467,7 @@ public:
      * @param value Value.
      * @param range Location in source.
      */
-    explicit CharLiteralExpr(ValueType value, SourceRange range = {}) noexcept
-        : LiteralExpr(ExprKind::CharLiteral, range)
-        , m_value(value)
-    {
-        // Nothing to do
-    }
+    explicit CharLiteralExpr(ValueType value, SourceRange range = {});
 
 
 // Public Accessors & Mutators
@@ -471,6 +481,16 @@ public:
     ValueType getValue() const noexcept
     {
         return m_value;
+    }
+
+
+    /**
+     * @brief Change literal value.
+     * @param value The new literal value.
+     */
+    void setValue(ValueType value) noexcept
+    {
+        m_value = value;
     }
 
 
@@ -517,12 +537,7 @@ public:
      * @param range Location in source.
      * @param value Value.
      */
-    explicit StringLiteralExpr(ValueType value, SourceRange range = {}) noexcept
-        : LiteralExpr(ExprKind::StringLiteral, range)
-        , m_value(moveValue(value))
-    {
-        // Nothing to do
-    }
+    explicit StringLiteralExpr(ValueType value, SourceRange range = {});
 
 
 // Public Accessors & Mutators
@@ -536,6 +551,16 @@ public:
     const ValueType& getValue() const noexcept
     {
         return m_value;
+    }
+
+
+    /**
+     * @brief Change literal value.
+     * @param value The new literal value.
+     */
+    void setValue(ValueType value) noexcept
+    {
+        m_value = moveValue(value);
     }
 
 
@@ -599,38 +624,11 @@ public:
      * @param op    Operator type.
      * @param range Location in source.
      */
-    explicit BinaryExpr(Operator op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, SourceRange range = {}) noexcept
-        : Expr(ExprKind::Binary, range)
-        , m_operator(op)
-        , m_lhs(moveValue(lhs))
-        , m_rhs(moveValue(rhs))
-    {
-        // Nothing to do
-    }
+    explicit BinaryExpr(Operator op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, SourceRange range = {});
 
 
 // Public Accessors & Mutators
 public:
-
-
-    /**
-     * @brief Returns left operand.
-     * @return Left operand.
-     */
-    ViewPtr<const Expr> getLeftOperand() const noexcept
-    {
-        return m_lhs.get();
-    }
-
-
-    /**
-     * @brief Returns right operand.
-     * @return Right operand.
-     */
-    ViewPtr<const Expr> getRightOperand() const noexcept
-    {
-        return m_rhs.get();
-    }
 
 
     /**
@@ -640,6 +638,76 @@ public:
     Operator getOperator() const noexcept
     {
         return m_operator;
+    }
+
+
+    /**
+     * @brief Change operator.
+     * @param op The new operator.
+     */
+    void setOperator(Operator op) noexcept
+    {
+        m_operator = op;
+    }
+
+
+    /**
+     * @brief Returns left operand.
+     * @return Left operand.
+     */
+    ViewPtr<const Expr> getLeftOperand() const noexcept
+    {
+        return makeView(m_lhs);
+    }
+
+
+    /**
+     * @brief Returns left operand.
+     * @return Left operand.
+     */
+    ViewPtr<Expr> getLeftOperand() noexcept
+    {
+        return makeView(m_lhs);
+    }
+
+
+    /**
+     * @brief Change left operand.
+     * @param lhs The left operand.
+     */
+    void setLeftOperand(UniquePtr<Expr> lhs) noexcept
+    {
+        m_lhs = moveValue(lhs);
+    }
+
+
+    /**
+     * @brief Returns right operand.
+     * @return Right operand.
+     */
+    ViewPtr<const Expr> getRightOperand() const noexcept
+    {
+        return makeView(m_rhs);
+    }
+
+
+    /**
+     * @brief Returns right operand.
+     * @return Right operand.
+     */
+    ViewPtr<Expr> getRightOperand() noexcept
+    {
+        return makeView(m_rhs);
+    }
+
+
+    /**
+     * @brief Change left operand.
+     * @param rhs The left operand.
+     */
+    void setRightOperand(UniquePtr<Expr> rhs) noexcept
+    {
+        m_rhs = moveValue(rhs);
     }
 
 
@@ -701,27 +769,11 @@ public:
      * @param expr  Operand.
      * @param range Location in source.
      */
-    explicit PrefixUnaryExpr(Operator op, UniquePtr<Expr> expr, SourceRange range = {}) noexcept
-        : Expr(ExprKind::PrefixUnary, range)
-        , m_operator(op)
-        , m_expr(moveValue(expr))
-    {
-        // Nothing to do
-    }
+    explicit PrefixUnaryExpr(Operator op, UniquePtr<Expr> expr, SourceRange range = {});
 
 
 // Public Accessors & Mutators
 public:
-
-
-    /**
-     * @brief Returns operand.
-     * @return Operand.
-     */
-    ViewPtr<const Expr> getOperand() const noexcept
-    {
-        return m_expr.get();
-    }
 
 
     /**
@@ -731,6 +783,46 @@ public:
     Operator getOperator() const noexcept
     {
         return m_operator;
+    }
+
+
+    /**
+     * @brief Change operator.
+     * @param op The new operator.
+     */
+    void setOperator(Operator op) noexcept
+    {
+        m_operator = op;
+    }
+
+
+    /**
+     * @brief Returns operand.
+     * @return Operand.
+     */
+    ViewPtr<const Expr> getOperand() const noexcept
+    {
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief Returns operand.
+     * @return Operand.
+     */
+    ViewPtr<Expr> getOperand() noexcept
+    {
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief Change operand.
+     * @param expr The new operand.
+     */
+    void setOperand(UniquePtr<Expr> expr) noexcept
+    {
+        m_expr = moveValue(expr);
     }
 
 
@@ -786,27 +878,11 @@ public:
      * @param op    Operator type.
      * @param range Location in source.
      */
-    explicit PostfixUnaryExpr(Operator op, UniquePtr<Expr> expr, SourceRange range = {}) noexcept
-        : Expr(ExprKind::PostfixUnary, range)
-        , m_operator(op)
-        , m_expr(moveValue(expr))
-    {
-        // Nothing to do
-    }
+    explicit PostfixUnaryExpr(Operator op, UniquePtr<Expr> expr, SourceRange range = {});
 
 
 // Public Accessors & Mutators
 public:
-
-
-    /**
-     * @brief Returns operand.
-     * @return Operand.
-     */
-    ViewPtr<const Expr> getOperand() const noexcept
-    {
-        return m_expr.get();
-    }
 
 
     /**
@@ -816,6 +892,46 @@ public:
     Operator getOperator() const noexcept
     {
         return m_operator;
+    }
+
+
+    /**
+     * @brief Change operator.
+     * @param op The new operator.
+     */
+    void setOperator(Operator op) noexcept
+    {
+        m_operator = op;
+    }
+
+
+    /**
+     * @brief Returns operand.
+     * @return Operand.
+     */
+    ViewPtr<const Expr> getOperand() const noexcept
+    {
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief Returns operand.
+     * @return Operand.
+     */
+    ViewPtr<Expr> getOperand() noexcept
+    {
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief Change operand.
+     * @param expr The new operand.
+     */
+    void setOperand(UniquePtr<Expr> expr) noexcept
+    {
+        m_expr = moveValue(expr);
     }
 
 
@@ -859,14 +975,7 @@ public:
      * @param falseExpr Right operand.
      * @param range     Location in source.
      */
-    explicit TernaryExpr(UniquePtr<Expr> condExpr, UniquePtr<Expr> trueExpr, UniquePtr<Expr> falseExpr, SourceRange range = {}) noexcept
-        : Expr(ExprKind::Ternary, range)
-        , m_condExpr(moveValue(condExpr))
-        , m_trueExpr(moveValue(trueExpr))
-        , m_falseExpr(moveValue(falseExpr))
-    {
-        // Nothing to do
-    }
+    explicit TernaryExpr(UniquePtr<Expr> condExpr, UniquePtr<Expr> trueExpr, UniquePtr<Expr> falseExpr, SourceRange range = {});
 
 
 // Public Accessors & Mutators
@@ -879,7 +988,27 @@ public:
      */
     ViewPtr<const Expr> getCondExpr() const noexcept
     {
-        return m_condExpr.get();
+        return makeView(m_condExpr);
+    }
+
+
+    /**
+     * @brief Returns condition expression.
+     * @return Condition expression.
+     */
+    ViewPtr<Expr> getCondExpr() noexcept
+    {
+        return makeView(m_condExpr);
+    }
+
+
+    /**
+     * @brief Change condition expression.
+     * @param expr The new expression.
+     */
+    void setCondExpr(UniquePtr<Expr> expr) noexcept
+    {
+        m_condExpr = moveValue(expr);
     }
 
 
@@ -889,7 +1018,27 @@ public:
      */
     ViewPtr<const Expr> getTrueExpr() const noexcept
     {
-        return m_trueExpr.get();
+        return makeView(m_trueExpr);
+    }
+
+
+    /**
+     * @brief Returns true expression.
+     * @return True expression.
+     */
+    ViewPtr<Expr> getTrueExpr() noexcept
+    {
+        return makeView(m_trueExpr);
+    }
+
+
+    /**
+     * @brief Change true branch expression.
+     * @param expr The new expression.
+     */
+    void setTrueExpr(UniquePtr<Expr> expr) noexcept
+    {
+        m_trueExpr = moveValue(expr);
     }
 
 
@@ -899,7 +1048,27 @@ public:
      */
     ViewPtr<const Expr> getFalseExpr() const noexcept
     {
-        return m_falseExpr.get();
+        return makeView(m_falseExpr);
+    }
+
+
+    /**
+     * @brief Returns false expression.
+     * @return False expression.
+     */
+    ViewPtr<Expr> getFalseExpr() noexcept
+    {
+        return makeView(m_falseExpr);
+    }
+
+
+    /**
+     * @brief Change false branch expression.
+     * @param expr The new expression.
+     */
+    void setFalseExpr(UniquePtr<Expr> expr) noexcept
+    {
+        m_falseExpr = moveValue(expr);
     }
 
 
@@ -944,12 +1113,7 @@ public:
      * @param expr  Inner expression.
      * @param range Location in source.
      */
-    explicit ParenExpr(UniquePtr<Expr> expr, SourceRange range = {}) noexcept
-        : Expr(ExprKind::Paren, range)
-        , m_expr(moveValue(expr))
-    {
-        SHARD_ASSERT(m_expr);
-    }
+    explicit ParenExpr(UniquePtr<Expr> expr, SourceRange range = {});
 
 
 // Public Accessors & Mutators
@@ -962,7 +1126,27 @@ public:
      */
     ViewPtr<const Expr> getExpr() const noexcept
     {
-        return m_expr.get();
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief Returns inner expression.
+     * @return Inner expression.
+     */
+    ViewPtr<Expr> getExpr() noexcept
+    {
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief Change expression.
+     * @param expr The new expression.
+     */
+    void setExpr(UniquePtr<Expr> expr) noexcept
+    {
+        m_expr = moveValue(expr);
     }
 
 
@@ -1003,12 +1187,7 @@ public:
      * @param range Location in source.
      * @param name  Identifier name.
      */
-    explicit IdentifierExpr(String name, SourceRange range = {}) noexcept
-        : Expr(ExprKind::Identifier, range)
-        , m_name(moveValue(name))
-    {
-        SHARD_ASSERT(!m_name.empty());
-    }
+    explicit IdentifierExpr(String name, SourceRange range = {});
 
 
 // Public Accessors & Mutators
@@ -1025,6 +1204,16 @@ public:
     }
 
 
+    /**
+     * @brief Change identifier name.
+     * @param name The new identifier name.
+     */
+    void setName(String name) noexcept
+    {
+        m_name = moveValue(name);
+    }
+
+
 // Public Operations
 public:
 
@@ -1038,6 +1227,317 @@ private:
 
     /// Identifier name.
     String m_name;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief Member access expression.
+ */
+class MemberAccessExpr final
+    : public Expr
+    , private ExprHelper<ExprKind::MemberAccess, MemberAccessExpr>
+{
+
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param expr  Left expression.
+     * @param name  Identifier name.
+     * @param range Location in source.
+     */
+    explicit MemberAccessExpr(UniquePtr<Expr> expr, String name, SourceRange range = {});
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief Returns left expression.
+     * @return The left expression.
+     */
+    ViewPtr<const Expr> getExpr() const noexcept
+    {
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief Returns left expression.
+     * @return The left expression.
+     */
+    ViewPtr<Expr> getExpr() noexcept
+    {
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief Change expression.
+     * @param expr The new expression.
+     */
+    void setExpr(UniquePtr<Expr> expr) noexcept
+    {
+        m_expr = moveValue(expr);
+    }
+
+
+    /**
+     * @brief Returns identifier name.
+     * @return Identifier name.
+     */
+    const String& getName() const noexcept
+    {
+        return m_name;
+    }
+
+
+    /**
+     * @brief Change identifier name.
+     * @param name The new identifier name.
+     */
+    void setName(String name) noexcept
+    {
+        m_name = moveValue(name);
+    }
+
+
+// Public Operations
+public:
+
+
+    using ExprHelper<ExprKind::MemberAccess, MemberAccessExpr>::is;
+    using ExprHelper<ExprKind::MemberAccess, MemberAccessExpr>::cast;
+
+
+// Private Data Members
+private:
+
+    /// Left expression.
+    UniquePtr<Expr> m_expr;
+
+    /// Identifier name.
+    String m_name;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief Function call expression.
+ */
+class FunctionCallExpr final
+    : public Expr
+    , private ExprHelper<ExprKind::FunctionCall, FunctionCallExpr>
+{
+
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param expr  Callee expression.
+     * @param args  Call arguments.
+     * @param range Location in source.
+     */
+    explicit FunctionCallExpr(UniquePtr<Expr> expr, DynamicArray<UniquePtr<Expr>> args, SourceRange range = {});
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief Returns callee expression.
+     * @return The callee expression.
+     */
+    ViewPtr<const Expr> getExpr() const noexcept
+    {
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief Returns callee expression.
+     * @return The callee expression.
+     */
+    ViewPtr<Expr> getExpr() noexcept
+    {
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief Change expression.
+     * @param expr The new expression.
+     */
+    void setExpr(UniquePtr<Expr> expr) noexcept
+    {
+        m_expr = moveValue(expr);
+    }
+
+
+    /**
+     * @brief Returns call arguments.
+     * @return The call arguments.
+     */
+    const DynamicArray<UniquePtr<Expr>>& getArguments() const noexcept
+    {
+        return m_arguments;
+    }
+
+
+    /**
+     * @brief Returns call arguments.
+     * @return The call arguments.
+     */
+    DynamicArray<UniquePtr<Expr>>& getArguments() noexcept
+    {
+        return m_arguments;
+    }
+
+
+    /**
+     * @brief Change call arguments.
+     * @param args The call arguments.
+     */
+    void setArguments(DynamicArray<UniquePtr<Expr>> args) noexcept
+    {
+        m_arguments = moveValue(args);
+    }
+
+
+// Public Operations
+public:
+
+
+    using ExprHelper<ExprKind::FunctionCall, FunctionCallExpr>::is;
+    using ExprHelper<ExprKind::FunctionCall, FunctionCallExpr>::cast;
+
+
+// Private Data Members
+private:
+
+    /// Callee expression.
+    UniquePtr<Expr> m_expr;
+
+    /// Call arguments.
+    DynamicArray<UniquePtr<Expr>> m_arguments;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief Subscript expression.
+ */
+class SubscriptExpr final
+    : public Expr
+    , private ExprHelper<ExprKind::Subscript, SubscriptExpr>
+{
+
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     * @param expr  Callee expression.
+     * @param args  Call arguments.
+     * @param range Location in source.
+     */
+    explicit SubscriptExpr(UniquePtr<Expr> expr, DynamicArray<UniquePtr<Expr>> args, SourceRange range = {});
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief Returns callee expression.
+     * @return The callee expression.
+     */
+    ViewPtr<const Expr> getExpr() const noexcept
+    {
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief Returns callee expression.
+     * @return The callee expression.
+     */
+    ViewPtr<Expr> getExpr() noexcept
+    {
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief Change expression.
+     * @param expr The new expression.
+     */
+    void setExpr(UniquePtr<Expr> expr) noexcept
+    {
+        m_expr = moveValue(expr);
+    }
+
+
+    /**
+     * @brief Returns call arguments.
+     * @return The call arguments.
+     */
+    const DynamicArray<UniquePtr<Expr>>& getArguments() const noexcept
+    {
+        return m_arguments;
+    }
+
+
+    /**
+     * @brief Returns call arguments.
+     * @return The call arguments.
+     */
+    DynamicArray<UniquePtr<Expr>>& getArguments() noexcept
+    {
+        return m_arguments;
+    }
+
+
+    /**
+     * @brief Change call arguments.
+     * @param args The call arguments.
+     */
+    void setArguments(DynamicArray<UniquePtr<Expr>> args) noexcept
+    {
+        m_arguments = moveValue(args);
+    }
+
+
+// Public Operations
+public:
+
+
+    using ExprHelper<ExprKind::Subscript, SubscriptExpr>::is;
+    using ExprHelper<ExprKind::Subscript, SubscriptExpr>::cast;
+
+
+// Private Data Members
+private:
+
+    /// Callee expression.
+    UniquePtr<Expr> m_expr;
+
+    /// Call arguments.
+    DynamicArray<UniquePtr<Expr>> m_arguments;
 
 };
 
