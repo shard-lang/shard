@@ -175,10 +175,20 @@ UniquePtr<Expr> Parser::parsePrefixUnaryExpr()
 	switch (m_tokenizer.get().getType())
 	{
 		case TokenType::PlusPlus:
-		case TokenType::MinusMinus:
-		case TokenType::Plus:
+			m_tokenizer.toss();
+			return makeUnique<PrefixUnaryExpr>(PrefixUnaryExpr::Operator::Increment, parsePrefixUnaryExpr());
+		case TokenType::MinusMinus:	
+			m_tokenizer.toss();
+			return makeUnique<PrefixUnaryExpr>(PrefixUnaryExpr::Operator::Decrement, parsePrefixUnaryExpr());
+		case TokenType::Plus:		
+			m_tokenizer.toss();
+			return makeUnique<PrefixUnaryExpr>(PrefixUnaryExpr::Operator::Plus, parsePrefixUnaryExpr());
 		case TokenType::Minus:
+			m_tokenizer.toss();
+			return makeUnique<PrefixUnaryExpr>(PrefixUnaryExpr::Operator::Minus, parsePrefixUnaryExpr());
 		case TokenType::Exclaim:
+			m_tokenizer.toss();
+			return makeUnique<PrefixUnaryExpr>(PrefixUnaryExpr::Operator::Negate, parsePrefixUnaryExpr());
 
 		default: return parsePostfixUnaryExpr();
 	}
@@ -188,14 +198,23 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
 {
 	auto temp = parsePrimaryExpr();
 
-	switch (m_tokenizer.get().getType())
+	while (true)
 	{
-		case TokenType::PlusPlus:	return makeUnique<PostfixUnaryExpr>(PostfixUnaryExpr::Operator::Increment, std::move(temp));
-		case TokenType::MinusMinus:	return makeUnique<PostfixUnaryExpr>(PostfixUnaryExpr::Operator::Decrement, std::move(temp));
-		case TokenType::Period:
-		case TokenType::ParenO:
+		switch (m_tokenizer.get().getType())
+		{
+			case TokenType::PlusPlus:
+				temp = makeUnique<PostfixUnaryExpr>(PostfixUnaryExpr::Operator::Increment, std::move(temp));
+				break;
+			case TokenType::MinusMinus:
+				temp = makeUnique<PostfixUnaryExpr>(PostfixUnaryExpr::Operator::Decrement, std::move(temp));
+				break;
+			case TokenType::Period:		
+			case TokenType::ParenO:		
+			case TokenType::SquareO:	
 
-		default: return std::move(temp);
+			default: return std::move(temp);
+		}
+		m_tokenizer.toss();
 	}
 }
 
