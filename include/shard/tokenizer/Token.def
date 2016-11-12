@@ -95,9 +95,12 @@ PUNCTUATOR(GreaterGreaterEqual, ">>=")
 /* ************************************************************************* */
 
 KEYWORD(Class,      "class")
+KEYWORD(Namespace,  "namespace")
+
 KEYWORD(Public,     "public")
 KEYWORD(Protected,  "protected")
 KEYWORD(Private,    "private")
+
 KEYWORD(Var,        "var")
 KEYWORD(Auto,       "auto")
 KEYWORD(Int,        "int")
@@ -105,9 +108,11 @@ KEYWORD(Char,       "char")
 KEYWORD(Bool,       "bool")
 KEYWORD(Float,      "float")
 KEYWORD(String,     "string")
+
 KEYWORD(Null,       "null")
 KEYWORD(True,       "true")
 KEYWORD(False,      "false")
+
 KEYWORD(If,         "if")
 KEYWORD(Else,       "else")
 KEYWORD(Do,         "do")
