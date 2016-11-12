@@ -574,14 +574,14 @@ public:
      */
     enum class Operator
     {
-        Equals,
-        NotEquals,
+        Equal,
+        NotEqual,
         Less,
-        LessEquals,
+        LessEqual,
         Greater,
-        GreaterEquals,
+        GreaterEqual,
         Add,
-        Substract,
+        Subtract,
         Multiply,
         Divide,
         Modulo
