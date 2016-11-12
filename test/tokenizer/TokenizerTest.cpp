@@ -99,7 +99,7 @@ static void test_impl(
     Tokenizer tokenizer(code);
     DynamicArray<Token> result;
     result.reserve(correct.size());
-    while (!tokenizer.isEof())
+    while (!tokenizer.empty())
     {
         result.push_back(tokenizer.extract());
     }

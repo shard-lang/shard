@@ -187,7 +187,7 @@ public:
     /**
      * @brief checks if current token is final EOF type.
      */
-    inline bool isEof()
+    inline bool empty()
     {
         return m_current.getType() == TokenType::End;
     }
@@ -221,7 +221,7 @@ private:
      */
     inline bool is(char value) noexcept
     {
-        return !empty() && m_src.get() == value;
+        return !m_src.empty() && m_src.get() == value;
     }
 
     /**
@@ -246,7 +246,7 @@ private:
      */
     inline bool isBetween(char value1, char value2) noexcept
     {
-        return !empty() && (m_src.get() >= value1) && (m_src.get() <= value2);
+        return !m_src.empty() && (m_src.get() >= value1) && (m_src.get() <= value2);
     }
 
     /**
@@ -335,14 +335,6 @@ private:
         {
             m_src.toss();
         }
-    }
-
-    /**
-     * @brief chcecks if source is empty.
-     */
-    inline bool empty()
-    {
-        return m_src.empty();
     }
 
     /**
