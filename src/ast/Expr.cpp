@@ -17,11 +17,18 @@
 // Declaration
 #include "shard/ast/Expr.hpp"
 
+// Shard
+#include "shard/Assert.hpp"
+
 /* ************************************************************************* */
 
 namespace shard {
 inline namespace v1 {
 namespace ast {
+
+/* ************************************************************************* */
+
+Expr::~Expr() = default;
 
 /* ************************************************************************* */
 
@@ -34,7 +41,146 @@ Expr::Expr(ExprKind kind, SourceRange range) noexcept
 
 /* ************************************************************************* */
 
-Expr::~Expr() = default;
+NullLiteralExpr::NullLiteralExpr(SourceRange range) noexcept
+    : LiteralExpr(ExprKind::NullLiteral, range)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+BoolLiteralExpr::BoolLiteralExpr(ValueType value, SourceRange range) noexcept
+    : LiteralExpr(ExprKind::BoolLiteral, range)
+    , m_value(value)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+IntLiteralExpr::IntLiteralExpr(ValueType value, SourceRange range) noexcept
+    : NumberLiteralExpr(ExprKind::IntLiteral, range)
+    , m_value(value)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+FloatLiteralExpr::FloatLiteralExpr(ValueType value, SourceRange range) noexcept
+    : NumberLiteralExpr(ExprKind::FloatLiteral, range)
+    , m_value(value)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+CharLiteralExpr::CharLiteralExpr(ValueType value, SourceRange range) noexcept
+    : LiteralExpr(ExprKind::CharLiteral, range)
+    , m_value(value)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+StringLiteralExpr::StringLiteralExpr(ValueType value, SourceRange range)
+    : LiteralExpr(ExprKind::StringLiteral, range)
+    , m_value(moveValue(value))
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+BinaryExpr::BinaryExpr(Operator op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, SourceRange range)
+    : Expr(ExprKind::Binary, range)
+    , m_operator(op)
+    , m_lhs(moveValue(lhs))
+    , m_rhs(moveValue(rhs))
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+PrefixUnaryExpr::PrefixUnaryExpr(Operator op, UniquePtr<Expr> expr, SourceRange range)
+    : Expr(ExprKind::PrefixUnary, range)
+    , m_operator(op)
+    , m_expr(moveValue(expr))
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+PostfixUnaryExpr::PostfixUnaryExpr(Operator op, UniquePtr<Expr> expr, SourceRange range)
+    : Expr(ExprKind::PostfixUnary, range)
+    , m_operator(op)
+    , m_expr(moveValue(expr))
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+TernaryExpr::TernaryExpr(UniquePtr<Expr> condExpr, UniquePtr<Expr> trueExpr, UniquePtr<Expr> falseExpr, SourceRange range)
+    : Expr(ExprKind::Ternary, range)
+    , m_condExpr(moveValue(condExpr))
+    , m_trueExpr(moveValue(trueExpr))
+    , m_falseExpr(moveValue(falseExpr))
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+ParenExpr::ParenExpr(UniquePtr<Expr> expr, SourceRange range)
+    : Expr(ExprKind::Paren, range)
+    , m_expr(moveValue(expr))
+{
+    SHARD_ASSERT(m_expr);
+}
+
+/* ************************************************************************* */
+
+IdentifierExpr::IdentifierExpr(String name, SourceRange range)
+    : Expr(ExprKind::Identifier, range)
+    , m_name(moveValue(name))
+{
+    SHARD_ASSERT(!m_name.empty());
+}
+
+/* ************************************************************************* */
+
+MemberAccessExpr::MemberAccessExpr(UniquePtr<Expr> expr, String name, SourceRange range)
+    : Expr(ExprKind::MemberAccess, range)
+    , m_expr(moveValue(expr))
+    , m_name(moveValue(name))
+{
+    SHARD_ASSERT(!m_name.empty());
+}
+
+/* ************************************************************************* */
+
+FunctionCallExpr::FunctionCallExpr(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
+    : Expr(ExprKind::FunctionCall, range)
+    , m_expr(moveValue(expr))
+    , m_arguments(moveValue(args))
+{
+    SHARD_ASSERT(m_expr);
+}
+
+/* ************************************************************************* */
+
+SubscriptExpr::SubscriptExpr(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
+    : Expr(ExprKind::Subscript, range)
+    , m_expr(moveValue(expr))
+    , m_arguments(moveValue(args))
+{
+    SHARD_ASSERT(m_expr);
+}
 
 /* ************************************************************************* */
 
