@@ -17,6 +17,9 @@
 // Declaration
 #include "shard/ast/Expr.hpp"
 
+// Shard
+#include "shard/Assert.hpp"
+
 /* ************************************************************************* */
 
 namespace shard {
@@ -25,7 +28,11 @@ namespace ast {
 
 /* ************************************************************************* */
 
-Expr::Expr(ExprKind kind, SourceRange range)
+Expr::~Expr() = default;
+
+/* ************************************************************************* */
+
+Expr::Expr(ExprKind kind, SourceRange range) noexcept
     : LocationInfo(range)
     , m_kind(kind)
 {
@@ -34,11 +41,7 @@ Expr::Expr(ExprKind kind, SourceRange range)
 
 /* ************************************************************************* */
 
-Expr::~Expr() = default;
-
-/* ************************************************************************* */
-
-NullLiteralExpr::NullLiteralExpr(SourceRange range)
+NullLiteralExpr::NullLiteralExpr(SourceRange range) noexcept
     : LiteralExpr(ExprKind::NullLiteral, range)
 {
     // Nothing to do
@@ -46,7 +49,7 @@ NullLiteralExpr::NullLiteralExpr(SourceRange range)
 
 /* ************************************************************************* */
 
-BoolLiteralExpr::BoolLiteralExpr(ValueType value, SourceRange range)
+BoolLiteralExpr::BoolLiteralExpr(ValueType value, SourceRange range) noexcept
     : LiteralExpr(ExprKind::BoolLiteral, range)
     , m_value(value)
 {
@@ -55,7 +58,7 @@ BoolLiteralExpr::BoolLiteralExpr(ValueType value, SourceRange range)
 
 /* ************************************************************************* */
 
-IntLiteralExpr::IntLiteralExpr(ValueType value, SourceRange range)
+IntLiteralExpr::IntLiteralExpr(ValueType value, SourceRange range) noexcept
     : NumberLiteralExpr(ExprKind::IntLiteral, range)
     , m_value(value)
 {
@@ -64,7 +67,7 @@ IntLiteralExpr::IntLiteralExpr(ValueType value, SourceRange range)
 
 /* ************************************************************************* */
 
-FloatLiteralExpr::FloatLiteralExpr(ValueType value, SourceRange range)
+FloatLiteralExpr::FloatLiteralExpr(ValueType value, SourceRange range) noexcept
     : NumberLiteralExpr(ExprKind::FloatLiteral, range)
     , m_value(value)
 {
@@ -73,7 +76,7 @@ FloatLiteralExpr::FloatLiteralExpr(ValueType value, SourceRange range)
 
 /* ************************************************************************* */
 
-CharLiteralExpr::CharLiteralExpr(ValueType value, SourceRange range)
+CharLiteralExpr::CharLiteralExpr(ValueType value, SourceRange range) noexcept
     : LiteralExpr(ExprKind::CharLiteral, range)
     , m_value(value)
 {
@@ -152,7 +155,7 @@ IdentifierExpr::IdentifierExpr(String name, SourceRange range)
 /* ************************************************************************* */
 
 MemberAccessExpr::MemberAccessExpr(UniquePtr<Expr> expr, String name, SourceRange range)
-    : Expr(ExprKind::Identifier, range)
+    : Expr(ExprKind::MemberAccess, range)
     , m_expr(moveValue(expr))
     , m_name(moveValue(name))
 {
@@ -161,7 +164,7 @@ MemberAccessExpr::MemberAccessExpr(UniquePtr<Expr> expr, String name, SourceRang
 
 /* ************************************************************************* */
 
-FunctionCallExpr::FunctionCallExpr(UniquePtr<Expr> expr, DynamicArray<UniquePtr<Expr>> args, SourceRange range)
+FunctionCallExpr::FunctionCallExpr(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
     : Expr(ExprKind::FunctionCall, range)
     , m_expr(moveValue(expr))
     , m_arguments(moveValue(args))
@@ -171,7 +174,7 @@ FunctionCallExpr::FunctionCallExpr(UniquePtr<Expr> expr, DynamicArray<UniquePtr<
 
 /* ************************************************************************* */
 
-SubscriptExpr::SubscriptExpr(UniquePtr<Expr> expr, DynamicArray<UniquePtr<Expr>> args, SourceRange range)
+SubscriptExpr::SubscriptExpr(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
     : Expr(ExprKind::Subscript, range)
     , m_expr(moveValue(expr))
     , m_arguments(moveValue(args))
