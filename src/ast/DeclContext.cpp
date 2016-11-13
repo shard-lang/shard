@@ -52,6 +52,13 @@ Decl& DeclContext::addDeclaration(UniquePtr<Decl> decl)
 
 /* ************************************************************************* */
 
+void DeclContext::removeDeclarations()
+{
+    m_declarations.clear();
+}
+
+/* ************************************************************************* */
+
 void DeclContext::removeDeclaration(ViewPtr<Decl> decl)
 {
     m_declarations.erase(

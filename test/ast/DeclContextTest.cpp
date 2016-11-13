@@ -49,10 +49,10 @@ TEST(DeclContext, declarations)
     DeclContext ctx2(makeView(&ctx));
 
     // int foo;
-    ctx.createDeclaration<VariableDecl>("foo", TypeInfo{&TYPE_BUILTIN_INT});
+    ctx.createDeclaration<VariableDecl>(TypeInfo{&TYPE_BUILTIN_INT}, "foo");
 
     // int bar;
-    ctx2.createDeclaration<VariableDecl>("bar", TypeInfo{&TYPE_BUILTIN_INT});
+    ctx2.createDeclaration<VariableDecl>(TypeInfo{&TYPE_BUILTIN_INT}, "bar");
 
     EXPECT_EQ(1, ctx.getDeclarations().size());
     EXPECT_EQ(1, ctx2.getDeclarations().size());

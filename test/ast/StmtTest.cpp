@@ -57,7 +57,7 @@ TEST(DeclStmt, construction)
 {
     {
         // int foo;
-        const DeclStmt stmt(makeUnique<VariableDecl>(nullptr, "foo", TypeInfo{&TYPE_BUILTIN_INT}));
+        const DeclStmt stmt(makeUnique<VariableDecl>(nullptr, TypeInfo{&TYPE_BUILTIN_INT}, "foo"));
 
         EXPECT_EQ(StmtKind::Decl, stmt.getKind());
         EXPECT_TRUE(DeclStmt::is(stmt));

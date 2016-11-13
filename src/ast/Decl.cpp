@@ -31,9 +31,8 @@ namespace ast {
 
 /* ************************************************************************* */
 
-Decl::Decl(ViewPtr<DeclContext> context, DeclKind kind, SourceRange range)
+Decl::Decl(ViewPtr<DeclContext> context, DeclKind kind, SourceRange range) noexcept
     : LocationInfo(moveValue(range))
-    , m_context(context)
     , m_kind(kind)
 {
     // Nothing to do
@@ -45,7 +44,8 @@ Decl::~Decl() = default;
 
 /* ************************************************************************* */
 
-NamedDecl::NamedDecl(ViewPtr<DeclContext> context, DeclKind kind, String name, SourceRange range)
+NamedDecl::NamedDecl(ViewPtr<DeclContext> context, DeclKind kind, String name,
+    SourceRange range) noexcept
     : Decl(context, kind, moveValue(range))
     , m_name(moveValue(name))
 {
@@ -54,10 +54,22 @@ NamedDecl::NamedDecl(ViewPtr<DeclContext> context, DeclKind kind, String name, S
 
 /* ************************************************************************* */
 
-VariableDecl::VariableDecl(ViewPtr<DeclContext> context, String name, TypeInfo type, UniquePtr<Expr> initExpr, SourceRange range)
+VariableDecl::VariableDecl(ViewPtr<DeclContext> context, TypeInfo type,
+    String name, UniquePtr<Expr> initExpr, SourceRange range) noexcept
     : NamedDecl(context, DeclKind::Variable, moveValue(name), moveValue(range))
     , m_typeInfo(moveValue(type))
     , m_initExpr(moveValue(initExpr))
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+VariableDecl::VariableDecl(ViewPtr<DeclContext> context,
+    ViewPtr<const Type> type, String name, UniquePtr<Expr> initExpr,
+    SourceRange range) noexcept
+    : VariableDecl(context, TypeInfo{type}, moveValue(name),
+          moveValue(initExpr), moveValue(range))
 {
     // Nothing to do
 }
@@ -75,10 +87,9 @@ void VariableDecl::setInitExpr(UniquePtr<Expr> expr) noexcept
 
 /* ************************************************************************* */
 
-FunctionDecl::FunctionDecl(ViewPtr<DeclContext> context, String name,
-    TypeInfo retType, UniquePtr<CompoundStmt> bodyStmt,
-    DynamicArray<UniquePtr<VariableDecl>> params, SourceRange range
-) noexcept
+FunctionDecl::FunctionDecl(ViewPtr<DeclContext> context, TypeInfo retType,
+    String name, PtrDynamicArray<VariableDecl> params,
+    UniquePtr<CompoundStmt> bodyStmt, SourceRange range) noexcept
     : NamedDecl(context, DeclKind::Function, moveValue(name), moveValue(range))
     , DeclContext(context)
     , m_retTypeInfo(moveValue(retType))
@@ -98,12 +109,22 @@ FunctionDecl::~FunctionDecl() = default;
 
 void FunctionDecl::setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept
 {
+    SHARD_ASSERT(stmt);
     m_bodyStmt = moveValue(stmt);
 }
 
 /* ************************************************************************* */
 
-ClassDecl::ClassDecl(ViewPtr<DeclContext> context, String name, DynamicArray<UniquePtr<Decl>> decls, SourceRange range) noexcept
+void FunctionDecl::setParameters(PtrDynamicArray<VariableDecl> params) noexcept
+{
+    removeDeclarations();
+    addDeclarations(moveValue(params));
+}
+
+/* ************************************************************************* */
+
+ClassDecl::ClassDecl(ViewPtr<DeclContext> context, String name,
+    PtrDynamicArray<Decl> decls, SourceRange range) noexcept
     : NamedDecl(context, DeclKind::Class, moveValue(name), moveValue(range))
     , DeclContext(context)
 {
@@ -116,16 +137,16 @@ ClassDecl::~ClassDecl() = default;
 
 /* ************************************************************************* */
 
-NamespaceDecl::NamespaceDecl(ViewPtr<DeclContext> context, String name, DynamicArray<UniquePtr<Decl>> decls, SourceRange range) noexcept
-    : NamedDecl(context, DeclKind::Namespace, moveValue(name), moveValue(range))
-    , DeclContext(context)
-{
-    addDeclarations(moveValue(decls));
-}
+// NamespaceDecl::NamespaceDecl(ViewPtr<DeclContext> context, String name, PtrDynamicArray<Decl> decls, SourceRange range) noexcept
+//     : NamedDecl(context, DeclKind::Namespace, moveValue(name), moveValue(range))
+//     , DeclContext(context)
+// {
+//     addDeclarations(moveValue(decls));
+// }
 
 /* ************************************************************************* */
 
-NamespaceDecl::~NamespaceDecl() = default;
+// NamespaceDecl::~NamespaceDecl() = default;
 
 /* ************************************************************************* */
 
