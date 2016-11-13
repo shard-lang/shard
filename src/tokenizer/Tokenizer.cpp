@@ -159,7 +159,7 @@ void Tokenizer::tokenizeString()
 
     while (!match(string_literal_border))
     {
-        if (empty())
+        if (m_src.empty())
         {
             throw StringWithoutEndException(m_src.getLocation());
         }
@@ -325,7 +325,7 @@ void Tokenizer::tokenizeOperator()
                 {
                     m_src.toss();
                     String buf;
-                    while (!empty() && !match('\n'))
+                    while (!m_src.empty() && !match('\n'))
                     {
                         buf += m_src.extract();
                     }
@@ -336,7 +336,7 @@ void Tokenizer::tokenizeOperator()
                 {
                     m_src.toss();
                     String buf;
-                    while (!empty())
+                    while (!m_src.empty())
                     {
                         if (is('*'))
                         {
@@ -447,7 +447,7 @@ void Tokenizer::tokenize()
 
     auto loc = m_src.getLocation();
 
-    if (empty())
+    if (m_src.empty())
     {
         m_current = Token(TokenType::End);
     }

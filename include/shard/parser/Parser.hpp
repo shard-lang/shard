@@ -119,21 +119,6 @@ private:
      */
     UniquePtr<Decl> parseDecl();
 
-    /**
-     * @brief parse Variable declaration.
-     */
-    UniquePtr<VariableDecl> parseVariableDecl();
-    
-    /**
-     * @brief parse Function declaration.
-     */
-    UniquePtr<FunctionDecl> parseFunctionDecl();
-    
-    /**
-     * @brief parse Class declaration.
-     */
-    UniquePtr<ClassDecl> parseClassDecl();
-
 /* ************************************************************************* */
 
 private:
@@ -183,18 +168,26 @@ private:
 private:
 
     /*
-     * @brief returns if current TokenType is tested TokenTypeType.
+     * @brief returns if current TokenType is tested TokenType.
      */
-    inline bool is(TokenType type) noexcept
+    inline bool is(TokenType type) const noexcept
     {
         return m_tokenizer.get().getType() == type;
+    }
+
+    /*
+     * @brief returns if current TokenType is tested TokenType.
+     */
+    inline bool is(KeywordType type) const noexcept
+    {
+        return is(TokenType::Keyword) && m_tokenizer.get().getKeywordType() == type;
     }
 
     /**
      * @brief returns if current TokenType is one of tested TokenTypes.
      */
     template<typename... Types>
-    inline bool is(Types... options) noexcept
+    inline bool is(Types... options) const noexcept
     {
         TokenType types[] {options...};
         for (const TokenType option : types)

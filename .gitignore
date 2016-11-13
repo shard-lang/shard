@@ -1,7 +1,11 @@
 /build*
-/.codelite
+
 /.idea
 /.clang
 
+/.codelite
 shard.project
 shard.workspace
+
+shard.sublime-project
+shard.sublime-workspace

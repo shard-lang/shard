@@ -93,6 +93,20 @@ public:
 
 /* ************************************************************************* */
 
+class ExpectedDeclException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected declaration";
+
+public:
+
+    explicit ExpectedDeclException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
 }
 }
 }
