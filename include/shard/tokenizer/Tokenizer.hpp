@@ -270,7 +270,7 @@ private:
      */
     inline bool isIdentifier() noexcept
     {
-        return isBetween('a', 'z') || isBetween('A', 'Z') || isDigit() || is('_');
+        return isLetter() || isDigit() || is('_');
     }
 
     /**

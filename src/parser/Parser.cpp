@@ -37,7 +37,14 @@ namespace parser {
 
 UniquePtr<Module> Parser::parseModule()
 {
+    auto module = makeUnique<Module>();
 
+    while (!m_tokenizer.empty())
+    {
+        module->addDeclaration(parseDecl());
+    }
+
+    return std::move(module);
 }
 
 UniquePtr<Stmt> Parser::parseStmt()
@@ -77,22 +84,15 @@ UniquePtr<CompoundStmt> Parser::parseCompoundStmt()
 
 UniquePtr<Decl> Parser::parseDecl()
 {
+    if (is(KeywordType::Class))
+    {
 
-}
+    }
 
-UniquePtr<VariableDecl> Parser::parseVariableDecl()
-{
+    
 
-}
 
-UniquePtr<FunctionDecl> Parser::parseFunctionDecl()
-{
-
-}
-
-UniquePtr<ClassDecl> Parser::parseClassDecl()
-{
-
+    throw ExpectedDeclException();
 }
 
 UniquePtr<Expr> Parser::parseExpr()

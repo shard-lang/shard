@@ -119,21 +119,6 @@ private:
      */
     UniquePtr<Decl> parseDecl();
 
-    /**
-     * @brief parse Variable declaration.
-     */
-    UniquePtr<VariableDecl> parseVariableDecl();
-    
-    /**
-     * @brief parse Function declaration.
-     */
-    UniquePtr<FunctionDecl> parseFunctionDecl();
-    
-    /**
-     * @brief parse Class declaration.
-     */
-    UniquePtr<ClassDecl> parseClassDecl();
-
 /* ************************************************************************* */
 
 private:

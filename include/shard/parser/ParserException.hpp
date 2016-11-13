@@ -93,7 +93,7 @@ public:
 
 /* ************************************************************************* */
 
-class ExpectedDeclarationException : public ParserException
+class ExpectedDeclException : public ParserException
 {
 
 private:
@@ -102,7 +102,7 @@ private:
 
 public:
 
-    explicit ExpectedDeclarationException(): ParserException(m_msg) {}
+    explicit ExpectedDeclException(): ParserException(m_msg) {}
 };
 
 /* ************************************************************************* */
