@@ -18,8 +18,9 @@
 
 /* ************************************************************************* */
 
-// C++
-#include <vector>
+// Shard
+#include "shard/UniquePtr.hpp"
+#include "shard/DynamicArray.hpp"
 
 /* ************************************************************************* */
 
@@ -29,12 +30,12 @@ inline namespace v1 {
 /* ************************************************************************* */
 
 /**
- * @brief      Free storage allocated dynamic array.
+ * @brief      Free storage allocated dynamic array of unique pointers.
  * @tparam     T          Element type.
  * @tparam     Allocator  Allocator type.
  */
 template<typename T, typename Allocator = std::allocator<T>>
-using DynamicArray = std::vector<T, Allocator>;
+using PtrDynamicArray = DynamicArray<UniquePtr<T>, Allocator>;
 
 /* ************************************************************************* */
 
