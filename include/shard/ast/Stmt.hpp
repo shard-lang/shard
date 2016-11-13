@@ -116,8 +116,8 @@ private:
  */
 template<StmtKind KIND, typename T>
 struct StmtHelper
-    : public TypeHelper<StmtKind, KIND, Stmt>
-    , public CastHelper<Stmt, T>
+    : public KindTester<StmtKind, KIND, Stmt>
+    , public KindCaster<Stmt, T>
 {
     // Nothing to do
 };

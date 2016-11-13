@@ -125,8 +125,8 @@ private:
  */
 template<ExprKind KIND, typename T>
 struct ExprHelper
-    : public TypeHelper<ExprKind, KIND, Expr>
-    , public CastHelper<Expr, T>
+    : public KindTester<ExprKind, KIND, Expr>
+    , public KindCaster<Expr, T>
 {
     // Nothing to do
 };
@@ -141,8 +141,8 @@ struct ExprHelper
  */
 template<ExprKind KIND1, ExprKind KIND2, typename T>
 struct ExprRangeHelper
-    : public TypeRangeHelper<ExprKind, KIND1, KIND2, Expr>
-    , public CastHelper<Expr, T>
+    : public KindRangeTester<ExprKind, KIND1, KIND2, Expr>
+    , public KindCaster<Expr, T>
 {
     // Nothing to do
 };

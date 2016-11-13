@@ -125,8 +125,8 @@ private:
  */
 template<DeclKind KIND, typename T>
 struct DeclHelper
-    : public TypeHelper<DeclKind, KIND, Decl>
-    , public CastHelper<Decl, T>
+    : public KindTester<DeclKind, KIND, Decl>
+    , public KindCaster<Decl, T>
 {
     // Nothing to do
 };
@@ -141,8 +141,8 @@ struct DeclHelper
  */
 template<DeclKind KIND1, DeclKind KIND2, typename T>
 struct DeclRangeHelper
-    : public TypeRangeHelper<DeclKind, KIND1, KIND2, Decl>
-    , public CastHelper<Decl, T>
+    : public KindRangeTester<DeclKind, KIND1, KIND2, Decl>
+    , public KindCaster<Decl, T>
 {
     // Nothing to do
 };

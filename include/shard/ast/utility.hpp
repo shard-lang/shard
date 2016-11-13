@@ -21,6 +21,7 @@
 // Shard
 #include "shard/Assert.hpp"
 #include "shard/ViewPtr.hpp"
+#include "shard/UniquePtr.hpp"
 #include "shard/utility.hpp"
 #include "shard/SourceLocation.hpp"
 #include "shard/SourceRange.hpp"
@@ -106,7 +107,7 @@ private:
  * @tparam ChildT Child type.
  */
 template<typename BaseT, typename ChildT>
-class CastHelper
+class KindCaster
 {
 
 // Public Operations
@@ -160,6 +161,30 @@ public:
         return ViewPtr<const ChildT>(static_cast<const ChildT*>(value.get()));
     }
 
+
+    /**
+     * @brief Cast base type to specified subclass.
+     * @param value Value to cast.
+     * @return Casted value.
+     */
+    static ViewPtr<ChildT> cast(const UniquePtr<BaseT>& value) noexcept
+    {
+        SHARD_ASSERT(ChildT::is(value));
+        return ViewPtr<ChildT>(static_cast<ChildT*>(value.get()));
+    }
+
+
+    /**
+     * @brief Cast base type to specified subclass.
+     * @param value Value to cast.
+     * @return Casted value.
+     */
+    static ViewPtr<const ChildT> cast(const UniquePtr<const BaseT>& value) noexcept
+    {
+        SHARD_ASSERT(ChildT::is(value));
+        return ViewPtr<const ChildT>(static_cast<const ChildT*>(value.get()));
+    }
+
 };
 
 /* ************************************************************************* */
@@ -171,7 +196,7 @@ public:
  * @tparam BaseT Base type.
  */
 template<typename EnumT, EnumT KIND, typename BaseT>
-class TypeHelper
+class KindTester
 {
 
 
@@ -201,6 +226,30 @@ public:
         return is(*value);
     }
 
+
+    /**
+     * @brief Check if given object match this class requirements.
+     * @param value Value to test.
+     * @return
+     */
+    static bool is(const UniquePtr<BaseT>& value) noexcept
+    {
+        SHARD_ASSERT(value);
+        return is(*value);
+    }
+
+
+    /**
+     * @brief Check if given object match this class requirements.
+     * @param value Value to test.
+     * @return
+     */
+    static bool is(const UniquePtr<const BaseT>& value) noexcept
+    {
+        SHARD_ASSERT(value);
+        return is(*value);
+    }
+
 };
 
 /* ************************************************************************* */
@@ -213,7 +262,7 @@ public:
  * @tparam BaseT Base type.
  */
 template<typename EnumT, EnumT KIND1, EnumT KIND2, typename BaseT>
-class TypeRangeHelper
+class KindRangeTester
 {
 
 
@@ -241,6 +290,18 @@ public:
      * @return
      */
     static bool is(ViewPtr<BaseT> value) noexcept
+    {
+        SHARD_ASSERT(value);
+        return is(*value);
+    }
+
+
+    /**
+     * @brief Check if given object match this class requirements.
+     * @param value Value to test.
+     * @return
+     */
+    static bool is(const UniquePtr<BaseT>& value) noexcept
     {
         SHARD_ASSERT(value);
         return is(*value);
