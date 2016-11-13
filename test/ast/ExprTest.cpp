@@ -384,7 +384,7 @@ TEST(BinaryExpr, base)
 {
     {
         // 5 + 2
-        const BinaryExpr expr(BinaryExpr::Operator::Add, makeUnique<IntLiteralExpr>(5), makeUnique<IntLiteralExpr>(2));
+        const BinaryExpr expr(BinaryExpr::Operator::Add, IntLiteralExpr::make(5), IntLiteralExpr::make(2));
 
         EXPECT_EQ(ExprKind::Binary, expr.getKind());
         EXPECT_TRUE(BinaryExpr::is(expr));
@@ -400,7 +400,7 @@ TEST(BinaryExpr, base)
 
     {
         // 10 * 4.0
-        const BinaryExpr expr(BinaryExpr::Operator::Multiply, makeUnique<IntLiteralExpr>(10), makeUnique<FloatLiteralExpr>(4.0));
+        const BinaryExpr expr(BinaryExpr::Operator::Multiply, IntLiteralExpr::make(10), FloatLiteralExpr::make(4.0));
 
         EXPECT_EQ(ExprKind::Binary, expr.getKind());
         EXPECT_TRUE(BinaryExpr::is(expr));
@@ -416,7 +416,7 @@ TEST(BinaryExpr, base)
 
     {
         // 10 * 4.0
-        BinaryExpr expr(BinaryExpr::Operator::Multiply, makeUnique<IntLiteralExpr>(10), makeUnique<FloatLiteralExpr>(4.0));
+        BinaryExpr expr(BinaryExpr::Operator::Multiply, IntLiteralExpr::make(10), FloatLiteralExpr::make(4.0));
 
         EXPECT_EQ(ExprKind::Binary, expr.getKind());
         EXPECT_TRUE(BinaryExpr::is(expr));
@@ -450,7 +450,7 @@ TEST(BinaryExpr, base)
         EXPECT_FLOAT_EQ(4.0, FloatLiteralExpr::cast(expr.getRightOperand())->getValue());
 
         // 1.0 - 4.0
-        expr.setLeftOperand(makeUnique<FloatLiteralExpr>(1.0));
+        expr.setLeftOperand(FloatLiteralExpr::make(1.0));
         EXPECT_EQ(BinaryExpr::Operator::Subtract, expr.getOperator());
         ASSERT_TRUE(expr.getLeftOperand());
         ASSERT_TRUE(expr.getRightOperand());
@@ -459,7 +459,7 @@ TEST(BinaryExpr, base)
         EXPECT_FLOAT_EQ(1.0, FloatLiteralExpr::cast(expr.getLeftOperand())->getValue());
         EXPECT_FLOAT_EQ(4.0, FloatLiteralExpr::cast(expr.getRightOperand())->getValue());
 
-        expr.setRightOperand(makeUnique<FloatLiteralExpr>(50.3));
+        expr.setRightOperand(FloatLiteralExpr::make(50.3));
         EXPECT_EQ(BinaryExpr::Operator::Subtract, expr.getOperator());
         ASSERT_TRUE(expr.getLeftOperand());
         ASSERT_TRUE(expr.getRightOperand());
@@ -476,7 +476,7 @@ TEST(PrefixUnaryExpr, base)
 {
     {
         // !true
-        const PrefixUnaryExpr expr(PrefixUnaryExpr::Operator::Negate, makeUnique<BoolLiteralExpr>(true));
+        const PrefixUnaryExpr expr(PrefixUnaryExpr::Operator::Negate, BoolLiteralExpr::make(true));
 
         EXPECT_EQ(ExprKind::PrefixUnary, expr.getKind());
         EXPECT_TRUE(PrefixUnaryExpr::is(expr));
@@ -488,7 +488,7 @@ TEST(PrefixUnaryExpr, base)
 
     {
         // -10
-        const PrefixUnaryExpr expr(PrefixUnaryExpr::Operator::Minus, makeUnique<IntLiteralExpr>(10));
+        const PrefixUnaryExpr expr(PrefixUnaryExpr::Operator::Minus, IntLiteralExpr::make(10));
 
         EXPECT_EQ(ExprKind::PrefixUnary, expr.getKind());
         EXPECT_TRUE(PrefixUnaryExpr::is(expr));
@@ -500,7 +500,7 @@ TEST(PrefixUnaryExpr, base)
 
     {
         // -10
-        PrefixUnaryExpr expr(PrefixUnaryExpr::Operator::Minus, makeUnique<IntLiteralExpr>(0));
+        PrefixUnaryExpr expr(PrefixUnaryExpr::Operator::Minus, IntLiteralExpr::make(0));
 
         EXPECT_EQ(ExprKind::PrefixUnary, expr.getKind());
         EXPECT_TRUE(PrefixUnaryExpr::is(expr));
@@ -519,7 +519,7 @@ TEST(PrefixUnaryExpr, base)
         EXPECT_EQ(0, IntLiteralExpr::cast(expr.getOperand())->getValue());
 
         // !true
-        expr.setOperand(makeUnique<BoolLiteralExpr>(true));
+        expr.setOperand(BoolLiteralExpr::make(true));
         EXPECT_EQ(ExprKind::PrefixUnary, expr.getKind());
         EXPECT_TRUE(PrefixUnaryExpr::is(expr));
         EXPECT_EQ(PrefixUnaryExpr::Operator::Negate, expr.getOperator());
@@ -535,7 +535,7 @@ TEST(PostfixUnaryExpr, base)
 {
     {
         // 5++
-        const PostfixUnaryExpr expr(PostfixUnaryExpr::Operator::Increment, makeUnique<IntLiteralExpr>(5));
+        const PostfixUnaryExpr expr(PostfixUnaryExpr::Operator::Increment, IntLiteralExpr::make(5));
 
         EXPECT_EQ(ExprKind::PostfixUnary, expr.getKind());
         EXPECT_TRUE(PostfixUnaryExpr::is(expr));
@@ -547,7 +547,7 @@ TEST(PostfixUnaryExpr, base)
 
     {
         // true--
-        const PostfixUnaryExpr expr(PostfixUnaryExpr::Operator::Decrement, makeUnique<BoolLiteralExpr>(true));
+        const PostfixUnaryExpr expr(PostfixUnaryExpr::Operator::Decrement, BoolLiteralExpr::make(true));
 
         EXPECT_EQ(ExprKind::PostfixUnary, expr.getKind());
         EXPECT_TRUE(PostfixUnaryExpr::is(expr));
@@ -559,7 +559,7 @@ TEST(PostfixUnaryExpr, base)
 
     {
         // i--
-        PostfixUnaryExpr expr(PostfixUnaryExpr::Operator::Decrement, makeUnique<IdentifierExpr>("i"));
+        PostfixUnaryExpr expr(PostfixUnaryExpr::Operator::Decrement, IdentifierExpr::make("i"));
 
         EXPECT_EQ(ExprKind::PostfixUnary, expr.getKind());
         EXPECT_TRUE(PostfixUnaryExpr::is(expr));
@@ -578,7 +578,7 @@ TEST(PostfixUnaryExpr, base)
         EXPECT_EQ("i", IdentifierExpr::cast(expr.getOperand())->getName());
 
         // "i"++
-        expr.setOperand(makeUnique<StringLiteralExpr>("i"));
+        expr.setOperand(StringLiteralExpr::make("i"));
         EXPECT_EQ(ExprKind::PostfixUnary, expr.getKind());
         EXPECT_TRUE(PostfixUnaryExpr::is(expr));
         EXPECT_EQ(PostfixUnaryExpr::Operator::Increment, expr.getOperator());
@@ -594,7 +594,7 @@ TEST(TernaryExpr, base)
 {
     {
         // true ? 1 : 2
-        const TernaryExpr expr(makeUnique<BoolLiteralExpr>(true), makeUnique<IntLiteralExpr>(1), makeUnique<IntLiteralExpr>(2));
+        const TernaryExpr expr(BoolLiteralExpr::make(true), IntLiteralExpr::make(1), IntLiteralExpr::make(2));
 
         EXPECT_EQ(ExprKind::Ternary, expr.getKind());
         EXPECT_TRUE(TernaryExpr::is(expr));
@@ -611,7 +611,7 @@ TEST(TernaryExpr, base)
 
     {
         // true ? 1 : 2
-        TernaryExpr expr(makeUnique<BoolLiteralExpr>(true), makeUnique<IntLiteralExpr>(1), makeUnique<IntLiteralExpr>(2));
+        TernaryExpr expr(BoolLiteralExpr::make(true), IntLiteralExpr::make(1), IntLiteralExpr::make(2));
 
         EXPECT_EQ(ExprKind::Ternary, expr.getKind());
         EXPECT_TRUE(TernaryExpr::is(expr));
@@ -626,7 +626,7 @@ TEST(TernaryExpr, base)
         EXPECT_EQ(2, IntLiteralExpr::cast(expr.getFalseExpr())->getValue());
 
         // cond ? 1 : 2
-        expr.setCondExpr(makeUnique<IdentifierExpr>("cond"));
+        expr.setCondExpr(IdentifierExpr::make("cond"));
         EXPECT_TRUE(TernaryExpr::is(expr));
         ASSERT_TRUE(expr.getCondExpr());
         ASSERT_TRUE(expr.getTrueExpr());
@@ -639,7 +639,7 @@ TEST(TernaryExpr, base)
         EXPECT_EQ(2, IntLiteralExpr::cast(expr.getFalseExpr())->getValue());
 
         // cond ? true : 2
-        expr.setTrueExpr(makeUnique<BoolLiteralExpr>(true));
+        expr.setTrueExpr(BoolLiteralExpr::make(true));
         EXPECT_TRUE(TernaryExpr::is(expr));
         ASSERT_TRUE(expr.getCondExpr());
         ASSERT_TRUE(expr.getTrueExpr());
@@ -652,7 +652,7 @@ TEST(TernaryExpr, base)
         EXPECT_EQ(2, IntLiteralExpr::cast(expr.getFalseExpr())->getValue());
 
         // cond ? true : false
-        expr.setFalseExpr(makeUnique<BoolLiteralExpr>(false));
+        expr.setFalseExpr(BoolLiteralExpr::make(false));
         EXPECT_TRUE(TernaryExpr::is(expr));
         ASSERT_TRUE(expr.getCondExpr());
         ASSERT_TRUE(expr.getTrueExpr());
@@ -672,7 +672,7 @@ TEST(ParenExpr, base)
 {
     {
         // (5)
-        const ParenExpr expr(makeUnique<IntLiteralExpr>(5));
+        const ParenExpr expr(IntLiteralExpr::make(5));
 
         EXPECT_EQ(ExprKind::Paren, expr.getKind());
         EXPECT_TRUE(ParenExpr::is(expr));
@@ -683,7 +683,7 @@ TEST(ParenExpr, base)
 
     {
         // ((true))
-        const ParenExpr expr(makeUnique<ParenExpr>(makeUnique<BoolLiteralExpr>(true)));
+        const ParenExpr expr(ParenExpr::make(BoolLiteralExpr::make(true)));
 
         EXPECT_EQ(ExprKind::Paren, expr.getKind());
         EXPECT_TRUE(ParenExpr::is(expr));
@@ -696,7 +696,7 @@ TEST(ParenExpr, base)
 
     {
         // (5)
-        ParenExpr expr(makeUnique<IntLiteralExpr>(5));
+        ParenExpr expr(IntLiteralExpr::make(5));
 
         EXPECT_EQ(ExprKind::Paren, expr.getKind());
         EXPECT_TRUE(ParenExpr::is(expr));
@@ -705,7 +705,7 @@ TEST(ParenExpr, base)
         EXPECT_EQ(5, IntLiteralExpr::cast(expr.getExpr())->getValue());
 
         // (true)
-        expr.setExpr(makeUnique<BoolLiteralExpr>(true));
+        expr.setExpr(BoolLiteralExpr::make(true));
         EXPECT_EQ(ExprKind::Paren, expr.getKind());
         EXPECT_TRUE(ParenExpr::is(expr));
         ASSERT_TRUE(expr.getExpr());
@@ -757,7 +757,7 @@ TEST(MemberAccessExpr, base)
 {
     {
         // obj.x
-        const MemberAccessExpr expr(makeUnique<IdentifierExpr>("obj"), "x");
+        const MemberAccessExpr expr(IdentifierExpr::make("obj"), "x");
 
         EXPECT_EQ(ExprKind::MemberAccess, expr.getKind());
         EXPECT_TRUE(MemberAccessExpr::is(expr));
@@ -769,7 +769,7 @@ TEST(MemberAccessExpr, base)
 
     {
         // obj.x
-        MemberAccessExpr expr(makeUnique<IdentifierExpr>("obj"), "x");
+        MemberAccessExpr expr(IdentifierExpr::make("obj"), "x");
 
         EXPECT_EQ(ExprKind::MemberAccess, expr.getKind());
         EXPECT_TRUE(MemberAccessExpr::is(expr));
@@ -779,7 +779,7 @@ TEST(MemberAccessExpr, base)
         EXPECT_EQ("x", expr.getName());
 
         // (obj).x
-        expr.setExpr(makeUnique<ParenExpr>(makeUnique<IdentifierExpr>("obj")));
+        expr.setExpr(ParenExpr::make(IdentifierExpr::make("obj")));
         EXPECT_TRUE(MemberAccessExpr::is(expr));
         ASSERT_TRUE(expr.getExpr());
         ASSERT_TRUE(ParenExpr::is(expr.getExpr()));
@@ -800,7 +800,7 @@ TEST(FunctionCallExpr, base)
 {
     {
         // obj()
-        const FunctionCallExpr expr(makeUnique<IdentifierExpr>("obj"), {});
+        const FunctionCallExpr expr(IdentifierExpr::make("obj"), {});
 
         EXPECT_EQ(ExprKind::FunctionCall, expr.getKind());
         EXPECT_TRUE(FunctionCallExpr::is(expr));
@@ -812,7 +812,7 @@ TEST(FunctionCallExpr, base)
 
     {
         // obj()
-        FunctionCallExpr expr(makeUnique<IdentifierExpr>("obj"), {});
+        FunctionCallExpr expr(IdentifierExpr::make("obj"), {});
 
         EXPECT_EQ(ExprKind::FunctionCall, expr.getKind());
         EXPECT_TRUE(FunctionCallExpr::is(expr));
@@ -822,7 +822,7 @@ TEST(FunctionCallExpr, base)
         EXPECT_TRUE(expr.getArguments().empty());
 
         // val()
-        expr.setExpr(makeUnique<IdentifierExpr>("val"));
+        expr.setExpr(IdentifierExpr::make("val"));
         EXPECT_TRUE(FunctionCallExpr::is(expr));
         ASSERT_TRUE(expr.getExpr());
         ASSERT_TRUE(IdentifierExpr::is(expr.getExpr()));
@@ -831,8 +831,8 @@ TEST(FunctionCallExpr, base)
 
         // val(x, y)
         PtrDynamicArray<Expr> args;
-        args.push_back(makeUnique<IdentifierExpr>("x"));
-        args.push_back(makeUnique<IdentifierExpr>("y"));
+        args.push_back(IdentifierExpr::make("x"));
+        args.push_back(IdentifierExpr::make("y"));
 
         expr.setArguments(moveValue(args));
         ASSERT_TRUE(expr.getExpr());
@@ -853,7 +853,7 @@ TEST(SubscriptExpr, base)
 {
     {
         // obj[]
-        const SubscriptExpr expr(makeUnique<IdentifierExpr>("obj"), {});
+        const SubscriptExpr expr(IdentifierExpr::make("obj"), {});
 
         EXPECT_EQ(ExprKind::Subscript, expr.getKind());
         EXPECT_TRUE(SubscriptExpr::is(expr));
@@ -865,7 +865,7 @@ TEST(SubscriptExpr, base)
 
     {
         // obj[]
-        SubscriptExpr expr(makeUnique<IdentifierExpr>("obj"), {});
+        SubscriptExpr expr(IdentifierExpr::make("obj"), {});
 
         EXPECT_EQ(ExprKind::Subscript, expr.getKind());
         EXPECT_TRUE(SubscriptExpr::is(expr));
@@ -875,7 +875,7 @@ TEST(SubscriptExpr, base)
         EXPECT_TRUE(expr.getArguments().empty());
 
         // val[]
-        expr.setExpr(makeUnique<IdentifierExpr>("val"));
+        expr.setExpr(IdentifierExpr::make("val"));
         EXPECT_TRUE(SubscriptExpr::is(expr));
         ASSERT_TRUE(expr.getExpr());
         ASSERT_TRUE(IdentifierExpr::is(expr.getExpr()));
@@ -884,8 +884,8 @@ TEST(SubscriptExpr, base)
 
         // val[x, y]
         PtrDynamicArray<Expr> args;
-        args.push_back(makeUnique<IdentifierExpr>("x"));
-        args.push_back(makeUnique<IdentifierExpr>("y"));
+        args.push_back(IdentifierExpr::make("x"));
+        args.push_back(IdentifierExpr::make("y"));
 
         expr.setArguments(moveValue(args));
         ASSERT_TRUE(expr.getExpr());
@@ -904,7 +904,7 @@ TEST(SubscriptExpr, base)
 
 TEST(Expr, vtable)
 {
-    UniquePtr<Expr> expr = makeUnique<IdentifierExpr>("variable");
+    UniquePtr<Expr> expr = IdentifierExpr::make("variable");
 
     EXPECT_EQ(ExprKind::Identifier, expr->getKind());
     EXPECT_TRUE(IdentifierExpr::is(expr));

@@ -134,6 +134,7 @@ template<ExprKind KIND, typename T>
 struct ExprHelper
     : public KindTester<ExprKind, KIND, Expr>
     , public KindCaster<Expr, T>
+    , public KindMaker<T>
 {
     // Nothing to do
 };
@@ -150,6 +151,7 @@ template<ExprKind KIND1, ExprKind KIND2, typename T>
 struct ExprRangeHelper
     : public KindRangeTester<ExprKind, KIND1, KIND2, Expr>
     , public KindCaster<Expr, T>
+    , public KindMaker<T>
 {
     // Nothing to do
 };
@@ -173,6 +175,7 @@ public:
 
     using ExprRangeHelper<ExprKind::Literal_First, ExprKind::Literal_Last, LiteralExpr>::is;
     using ExprRangeHelper<ExprKind::Literal_First, ExprKind::Literal_Last, LiteralExpr>::cast;
+    using ExprRangeHelper<ExprKind::Literal_First, ExprKind::Literal_Last, LiteralExpr>::make;
 
 
 // Protected Ctors & Dtors
@@ -213,6 +216,7 @@ public:
 
     using ExprHelper<ExprKind::NullLiteral, NullLiteralExpr>::is;
     using ExprHelper<ExprKind::NullLiteral, NullLiteralExpr>::cast;
+    using ExprHelper<ExprKind::NullLiteral, NullLiteralExpr>::make;
 
 };
 
@@ -283,6 +287,7 @@ public:
 
     using ExprHelper<ExprKind::BoolLiteral, BoolLiteralExpr>::is;
     using ExprHelper<ExprKind::BoolLiteral, BoolLiteralExpr>::cast;
+    using ExprHelper<ExprKind::BoolLiteral, BoolLiteralExpr>::make;
 
 
 // Private Data Members
@@ -309,6 +314,7 @@ public:
 
     using ExprRangeHelper<ExprKind::NumberLiteral_First, ExprKind::NumberLiteral_Last, NumberLiteralExpr>::is;
     using ExprRangeHelper<ExprKind::NumberLiteral_First, ExprKind::NumberLiteral_Last, NumberLiteralExpr>::cast;
+    using ExprRangeHelper<ExprKind::NumberLiteral_First, ExprKind::NumberLiteral_Last, NumberLiteralExpr>::make;
 
 
 // Protected Ctors & Dtors
@@ -386,6 +392,7 @@ public:
 
     using ExprHelper<ExprKind::IntLiteral, IntLiteralExpr>::is;
     using ExprHelper<ExprKind::IntLiteral, IntLiteralExpr>::cast;
+    using ExprHelper<ExprKind::IntLiteral, IntLiteralExpr>::make;
 
 
 // Private Data Members
@@ -463,6 +470,7 @@ public:
 
     using ExprHelper<ExprKind::FloatLiteral, FloatLiteralExpr>::is;
     using ExprHelper<ExprKind::FloatLiteral, FloatLiteralExpr>::cast;
+    using ExprHelper<ExprKind::FloatLiteral, FloatLiteralExpr>::make;
 
 
 // Private Data Members
@@ -540,6 +548,7 @@ public:
 
     using ExprHelper<ExprKind::CharLiteral, CharLiteralExpr>::is;
     using ExprHelper<ExprKind::CharLiteral, CharLiteralExpr>::cast;
+    using ExprHelper<ExprKind::CharLiteral, CharLiteralExpr>::make;
 
 
 // Private Data Members
@@ -617,6 +626,7 @@ public:
 
     using ExprHelper<ExprKind::StringLiteral, StringLiteralExpr>::is;
     using ExprHelper<ExprKind::StringLiteral, StringLiteralExpr>::cast;
+    using ExprHelper<ExprKind::StringLiteral, StringLiteralExpr>::make;
 
 
 // Private Data Members
@@ -780,6 +790,7 @@ public:
 
     using ExprHelper<ExprKind::Binary, BinaryExpr>::is;
     using ExprHelper<ExprKind::Binary, BinaryExpr>::cast;
+    using ExprHelper<ExprKind::Binary, BinaryExpr>::make;
 
 
 // Private Data Members
@@ -906,6 +917,7 @@ public:
 
     using ExprHelper<ExprKind::PrefixUnary, PrefixUnaryExpr>::is;
     using ExprHelper<ExprKind::PrefixUnary, PrefixUnaryExpr>::cast;
+    using ExprHelper<ExprKind::PrefixUnary, PrefixUnaryExpr>::make;
 
 
 // Private Data Members
@@ -1020,6 +1032,7 @@ public:
 
     using ExprHelper<ExprKind::PostfixUnary, PostfixUnaryExpr>::is;
     using ExprHelper<ExprKind::PostfixUnary, PostfixUnaryExpr>::cast;
+    using ExprHelper<ExprKind::PostfixUnary, PostfixUnaryExpr>::make;
 
 
 // Private Data Members
@@ -1173,6 +1186,7 @@ public:
 
     using ExprHelper<ExprKind::Ternary, TernaryExpr>::is;
     using ExprHelper<ExprKind::Ternary, TernaryExpr>::cast;
+    using ExprHelper<ExprKind::Ternary, TernaryExpr>::make;
 
 
 // Private Data Members
@@ -1258,6 +1272,7 @@ public:
 
     using ExprHelper<ExprKind::Paren, ParenExpr>::is;
     using ExprHelper<ExprKind::Paren, ParenExpr>::cast;
+    using ExprHelper<ExprKind::Paren, ParenExpr>::make;
 
 
 // Private Data Members
@@ -1326,6 +1341,7 @@ public:
 
     using ExprHelper<ExprKind::Identifier, IdentifierExpr>::is;
     using ExprHelper<ExprKind::Identifier, IdentifierExpr>::cast;
+    using ExprHelper<ExprKind::Identifier, IdentifierExpr>::make;
 
 
 // Private Data Members
@@ -1430,6 +1446,7 @@ public:
 
     using ExprHelper<ExprKind::MemberAccess, MemberAccessExpr>::is;
     using ExprHelper<ExprKind::MemberAccess, MemberAccessExpr>::cast;
+    using ExprHelper<ExprKind::MemberAccess, MemberAccessExpr>::make;
 
 
 // Private Data Members
@@ -1548,6 +1565,7 @@ public:
 
     using ExprHelper<ExprKind::FunctionCall, FunctionCallExpr>::is;
     using ExprHelper<ExprKind::FunctionCall, FunctionCallExpr>::cast;
+    using ExprHelper<ExprKind::FunctionCall, FunctionCallExpr>::make;
 
 
 // Private Data Members
@@ -1665,6 +1683,7 @@ public:
 
     using ExprHelper<ExprKind::Subscript, SubscriptExpr>::is;
     using ExprHelper<ExprKind::Subscript, SubscriptExpr>::cast;
+    using ExprHelper<ExprKind::Subscript, SubscriptExpr>::make;
 
 
 // Private Data Members

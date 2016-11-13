@@ -311,6 +311,39 @@ public:
 
 /* ************************************************************************* */
 
+/**
+ * @brief      Helper class for making instances of given object.
+ *
+ * @tparam     T     Kind object type.
+ */
+template<typename T>
+class KindMaker
+{
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief      Construct object.
+     *
+     * @param      args  Construction arguments.
+     *
+     * @tparam     Args  Construction argument types.
+     *
+     * @return     Created unique pointer.
+     */
+    template<typename... Args>
+    static UniquePtr<T> make(Args&&... args)
+    {
+        // TODO: custom allocator
+        return makeUnique<T>(forwardValue<Args>(args)...);
+    }
+
+};
+
+/* ************************************************************************* */
+
 }
 }
 }
