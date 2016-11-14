@@ -186,7 +186,7 @@ private:
     }
 
     /*
-     * @brief returns if current TokenType is tested TokenType.
+     * @brief returns if current TokenType is Keyword with tested KeywordType.
      */
     inline bool is(KeywordType type) const noexcept
     {
@@ -215,6 +215,20 @@ private:
      * If so, moves to next token.
      */
     inline bool match(TokenType type) noexcept
+    {
+        if (is(type))
+        {
+            m_tokenizer.toss();
+            return true;
+        }
+        return false;
+    }
+
+    /*
+     * @brief returns if current TokenType is Keyword with tested KeywordType.
+     * If so, moves to next token.
+     */
+    inline bool match(KeywordType type) noexcept
     {
         if (is(type))
         {

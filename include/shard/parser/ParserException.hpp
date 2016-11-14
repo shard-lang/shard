@@ -79,6 +79,20 @@ public:
 
 /* ************************************************************************* */
 
+class ExpectedParenException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected opening parenthesis";
+
+public:
+
+    explicit ExpectedParenException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
 class ExpectedClosingParenException : public ParserException
 {
 
@@ -93,6 +107,20 @@ public:
 
 /* ************************************************************************* */
 
+class ExpectedSquareException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected opening square";
+
+public:
+
+    explicit ExpectedSquareException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
 class ExpectedClosingSquareException : public ParserException
 {
 
@@ -103,6 +131,20 @@ private:
 public:
 
     explicit ExpectedClosingSquareException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
+class ExpectedBraceException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected opening brace";
+
+public:
+
+    explicit ExpectedBraceException(): ParserException(m_msg) {}
 };
 
 /* ************************************************************************* */
