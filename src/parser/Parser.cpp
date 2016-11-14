@@ -19,6 +19,7 @@
 /* ************************************************************************* */
 
 #include "shard/UniquePtr.hpp"
+#include "shard/PtrDynamicArray.hpp"
 #include "shard/tokenizer/Tokenizer.hpp"
 #include "shard/tokenizer/TokenType.hpp"
 #include "shard/ast/Module.hpp"
@@ -93,6 +94,19 @@ UniquePtr<Decl> Parser::parseDecl()
 
 
     throw ExpectedDeclException();
+}
+
+PtrDynamicArray<Expr> Parser::parseParameters()
+{
+	PtrDynamicArray<Expr> temp;
+
+	do
+	{
+		temp.push_back(parseExpr());
+	}
+	while (is(TokenType::Comma));
+
+	return std::move(temp);
 }
 
 UniquePtr<Expr> Parser::parseExpr()
@@ -245,13 +259,28 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
                 temp = makeUnique<PostfixUnaryExpr>(PostfixUnaryExpr::Operator::Decrement, std::move(temp));
                 break;
             case TokenType::Period:
-                // TODO
+                m_tokenizer.toss();
+                if (!is(TokenType::Identifier))
+                {
+                	throw ExpectedIdentifierException();
+                }
+                temp = makeUnique<MemberAccessExpr>(std::move(temp), m_tokenizer.get().getStringValue());
                 break;
             case TokenType::ParenO:
-                // TODO
+            	m_tokenizer.toss();
+                temp = makeUnique<FunctionCallExpr>(std::move(temp), parseParameters());
+                if (!is(TokenType::ParenC))
+                {
+                	throw ExpectedClosingParenException();
+                }
                 break;      
             case TokenType::SquareO:
-                // TODO
+            	m_tokenizer.toss();
+                temp = makeUnique<SubscriptExpr>(std::move(temp), parseParameters());
+                if (!is(TokenType::SquareC))
+                {
+                	throw ExpectedClosingSquareException();
+                }
                 break;  
 
             default:

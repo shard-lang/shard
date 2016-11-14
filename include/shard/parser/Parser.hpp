@@ -20,6 +20,7 @@
 
 // Shard
 #include "shard/UniquePtr.hpp"
+#include "shard/PtrDynamicArray.hpp"
 #include "shard/tokenizer/Tokenizer.hpp"
 #include "shard/tokenizer/TokenType.hpp"
 #include "shard/ast/Module.hpp"
@@ -118,6 +119,15 @@ private:
      * @brief parse declaration.
      */
     UniquePtr<Decl> parseDecl();
+
+/* ************************************************************************* */
+
+private:
+
+    /**
+     * @brief parse parameter pack.
+     */
+    PtrDynamicArray<Expr> parseParameters();
 
 /* ************************************************************************* */
 

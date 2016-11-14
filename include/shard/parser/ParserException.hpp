@@ -65,6 +65,20 @@ public:
 
 /* ************************************************************************* */
 
+class ExpectedIdentifierException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected identifier";
+
+public:
+
+    explicit ExpectedIdentifierException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
 class ExpectedClosingParenException : public ParserException
 {
 
@@ -75,6 +89,34 @@ private:
 public:
 
     explicit ExpectedClosingParenException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
+class ExpectedClosingSquareException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected closing square";
+
+public:
+
+    explicit ExpectedClosingSquareException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
+class ExpectedClosingBraceException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected closing brace";
+
+public:
+
+    explicit ExpectedClosingBraceException(): ParserException(m_msg) {}
 };
 
 /* ************************************************************************* */
