@@ -19,8 +19,7 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
-#include "shard/DynamicArray.hpp"
+#include "shard/PtrDynamicArray.hpp"
 
 /* ************************************************************************* */
 
@@ -35,42 +34,22 @@ class Stmt;
 /* ************************************************************************* */
 
 /**
- * @brief Statements container.
+ * @brief      Statements container.
+ *
+ * @details    A container for statements. Cannot be used directly the only way
+ *             is by inheriting it.
  */
 class StmtContainer
 {
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Default constructor.
-     */
-    StmtContainer() noexcept;
-
-
-    /**
-     * @brief Constructor.
-     * @param stmts A list of statements.
-     * @param range Source range.
-     */
-    explicit StmtContainer(DynamicArray<UniquePtr<Stmt>> stmts) noexcept;
-
-
-    /**
-     * @brief Destructor.
-     */
-    ~StmtContainer();
-
 
 // Public Accessors & Mutators
 public:
 
 
     /**
-     * @brief Checks if the container has no elements.
-     * @return
+     * @brief      Checks if the container has no elements.
+     *
+     * @return     True if empty, False otherwise.
      */
     bool isEmpty() const noexcept
     {
@@ -79,8 +58,9 @@ public:
 
 
     /**
-     * @brief Returns the number of elements in the container.
-     * @return
+     * @brief      Returns the number of elements in the container.
+     *
+     * @return     The number of statements.
      */
     int getCount() const noexcept
     {
@@ -89,25 +69,39 @@ public:
 
 
     /**
-     * @brief Returns inner statements.
-     * @return A list of statements.
+     * @brief      Returns inner statements.
+     *
+     * @return     A list of statements.
      */
-    const DynamicArray<UniquePtr<Stmt>>& getStatements() const noexcept
+    PtrDynamicArray<Stmt>& getStatements() noexcept
     {
         return m_statements;
     }
 
 
     /**
-     * @brief Adds a statement.
-     * @param stmt New statement.
+     * @brief      Returns inner statements.
+     *
+     * @return     A list of statements.
+     */
+    const PtrDynamicArray<Stmt>& getStatements() const noexcept
+    {
+        return m_statements;
+    }
+
+
+    /**
+     * @brief      Adds a statement.
+     *
+     * @param      stmt  New statement.
      */
     void addStatement(UniquePtr<Stmt> stmt) noexcept;
 
 
     /**
-     * @brief Returns an iterator to the first element of the container.
-     * @return Iterator to the first element.
+     * @brief      Returns an iterator to the first element of the container.
+     *
+     * @return     Iterator to the first element.
      */
     auto begin() noexcept
     {
@@ -116,8 +110,9 @@ public:
 
 
     /**
-     * @brief Returns an iterator to the first element of the container.
-     * @return Iterator to the first element.
+     * @brief      Returns an iterator to the first element of the container.
+     *
+     * @return     Iterator to the first element.
      */
     auto begin() const noexcept
     {
@@ -126,8 +121,9 @@ public:
 
 
     /**
-     * @brief Returns an iterator to the first element of the container.
-     * @return Iterator to the first element.
+     * @brief      Returns an iterator to the first element of the container.
+     *
+     * @return     Iterator to the first element.
      */
     auto cbegin() const noexcept
     {
@@ -136,8 +132,10 @@ public:
 
 
     /**
-     * @brief Returns an iterator to the element following the last element of the container.
-     * @return Iterator to the element following the last element.
+     * @brief      Returns an iterator to the element following the last element
+     *             of the container.
+     *
+     * @return     Iterator to the element following the last element.
      */
     auto end() noexcept
     {
@@ -146,8 +144,10 @@ public:
 
 
     /**
-     * @brief Returns an iterator to the element following the last element of the container.
-     * @return Iterator to the element following the last element.
+     * @brief      Returns an iterator to the element following the last element
+     *             of the container.
+     *
+     * @return     Iterator to the element following the last element.
      */
     auto end() const noexcept
     {
@@ -156,8 +156,10 @@ public:
 
 
     /**
-     * @brief Returns an iterator to the element following the last element of the container.
-     * @return Iterator to the element following the last element.
+     * @brief      Returns an iterator to the element following the last element
+     *             of the container.
+     *
+     * @return     Iterator to the element following the last element.
      */
     auto cend() const noexcept
     {
@@ -165,11 +167,37 @@ public:
     }
 
 
+// Protected Ctors & Dtors
+protected:
+
+
+    /**
+     * @brief      Default constructor.
+     */
+    StmtContainer() noexcept;
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      stmts  A list of statements.
+     * @param      range  Source range.
+     */
+    explicit StmtContainer(PtrDynamicArray<Stmt> stmts) noexcept;
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~StmtContainer();
+
+
+
 // Private Data Members
 private:
 
     /// List of statements.
-    DynamicArray<UniquePtr<Stmt>> m_statements;
+    PtrDynamicArray<Stmt> m_statements;
 
 };
 

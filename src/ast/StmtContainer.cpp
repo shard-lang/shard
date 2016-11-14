@@ -34,7 +34,11 @@ StmtContainer::StmtContainer() noexcept = default;
 
 /* ************************************************************************* */
 
-StmtContainer::StmtContainer(DynamicArray<UniquePtr<Stmt>> stmts) noexcept
+StmtContainer::~StmtContainer() = default;
+
+/* ************************************************************************* */
+
+StmtContainer::StmtContainer(PtrDynamicArray<Stmt> stmts) noexcept
     : m_statements(moveValue(stmts))
 {
     // Nothing to do
@@ -46,10 +50,6 @@ void StmtContainer::addStatement(UniquePtr<Stmt> stmt) noexcept
 {
     m_statements.push_back(moveValue(stmt));
 }
-
-/* ************************************************************************* */
-
-StmtContainer::~StmtContainer() = default;
 
 /* ************************************************************************* */
 

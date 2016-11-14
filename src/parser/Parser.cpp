@@ -277,22 +277,22 @@ UniquePtr<Expr> Parser::parseRelationalExpr()
     {
         case TokenType::EqualEqual:
             m_tokenizer.toss();
-            return makeUnique<BinaryExpr>(BinaryExpr::Operator::Equal, std::move(temp), parseExpr());
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::EQ, std::move(temp), parseExpr());
         case TokenType::ExclaimEqual:
             m_tokenizer.toss();
-            return makeUnique<BinaryExpr>(BinaryExpr::Operator::NotEqual, std::move(temp), parseExpr());
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::NE, std::move(temp), parseExpr());
         case TokenType::Less:
             m_tokenizer.toss();
-            return makeUnique<BinaryExpr>(BinaryExpr::Operator::Less, std::move(temp), parseExpr());
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::LT, std::move(temp), parseExpr());
         case TokenType::Greater:
             m_tokenizer.toss();
-            return makeUnique<BinaryExpr>(BinaryExpr::Operator::Greater, std::move(temp), parseExpr());
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::GT, std::move(temp), parseExpr());
         case TokenType::LessEqual:
             m_tokenizer.toss();
-            return makeUnique<BinaryExpr>(BinaryExpr::Operator::LessEqual, std::move(temp), parseExpr());
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::LE, std::move(temp), parseExpr());
         case TokenType::GreaterEqual:
             m_tokenizer.toss();
-            return makeUnique<BinaryExpr>(BinaryExpr::Operator::GreaterEqual, std::move(temp), parseExpr());
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::GE, std::move(temp), parseExpr());
 
         default: return std::move(temp);
     }
@@ -308,10 +308,10 @@ UniquePtr<Expr> Parser::parseAdditiveExpr()
     {
         case TokenType::Plus:
             m_tokenizer.toss();
-            return makeUnique<BinaryExpr>(BinaryExpr::Operator::Add, std::move(temp), parseExpr());
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Add, std::move(temp), parseExpr());
         case TokenType::Minus:
             m_tokenizer.toss();
-            return makeUnique<BinaryExpr>(BinaryExpr::Operator::Subtract, std::move(temp), parseExpr());
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Sub, std::move(temp), parseExpr());
 
         default:
             return std::move(temp);
@@ -328,13 +328,13 @@ UniquePtr<Expr> Parser::parseMultiplicativeExpr()
     {
         case TokenType::Star:
             m_tokenizer.toss();
-            return makeUnique<BinaryExpr>(BinaryExpr::Operator::Multiply, std::move(temp), parseExpr());
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Mul, std::move(temp), parseExpr());
         case TokenType::Slash:
             m_tokenizer.toss();
-            return makeUnique<BinaryExpr>(BinaryExpr::Operator::Divide, std::move(temp), parseExpr());
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Div, std::move(temp), parseExpr());
         case TokenType::Percent:
             m_tokenizer.toss();
-            return makeUnique<BinaryExpr>(BinaryExpr::Operator::Modulo, std::move(temp), parseExpr());
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Rem, std::move(temp), parseExpr());
 
         default:
             return std::move(temp);
@@ -349,19 +349,19 @@ UniquePtr<Expr> Parser::parsePrefixUnaryExpr()
     {
         case TokenType::PlusPlus:
             m_tokenizer.toss();
-            return makeUnique<PrefixUnaryExpr>(PrefixUnaryExpr::Operator::Increment, parsePrefixUnaryExpr());
+            return makeUnique<UnaryExpr>(UnaryExpr::OpKind::PreInc, parsePrefixUnaryExpr());
         case TokenType::MinusMinus: 
             m_tokenizer.toss();
-            return makeUnique<PrefixUnaryExpr>(PrefixUnaryExpr::Operator::Decrement, parsePrefixUnaryExpr());
+            return makeUnique<UnaryExpr>(UnaryExpr::OpKind::PreDec, parsePrefixUnaryExpr());
         case TokenType::Plus:       
             m_tokenizer.toss();
-            return makeUnique<PrefixUnaryExpr>(PrefixUnaryExpr::Operator::Plus, parsePrefixUnaryExpr());
+            return makeUnique<UnaryExpr>(UnaryExpr::OpKind::Plus, parsePrefixUnaryExpr());
         case TokenType::Minus:
             m_tokenizer.toss();
-            return makeUnique<PrefixUnaryExpr>(PrefixUnaryExpr::Operator::Minus, parsePrefixUnaryExpr());
+            return makeUnique<UnaryExpr>(UnaryExpr::OpKind::Minus, parsePrefixUnaryExpr());
         case TokenType::Exclaim:
             m_tokenizer.toss();
-            return makeUnique<PrefixUnaryExpr>(PrefixUnaryExpr::Operator::Negate, parsePrefixUnaryExpr());
+            return makeUnique<UnaryExpr>(UnaryExpr::OpKind::Not, parsePrefixUnaryExpr());
 
         default:
             return parsePostfixUnaryExpr();
@@ -379,10 +379,10 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
         switch (m_tokenizer.get().getType())
         {
             case TokenType::PlusPlus:
-                temp = makeUnique<PostfixUnaryExpr>(PostfixUnaryExpr::Operator::Increment, std::move(temp));
+                temp = makeUnique<UnaryExpr>(UnaryExpr::OpKind::PostInc, std::move(temp));
                 break;
             case TokenType::MinusMinus:
-                temp = makeUnique<PostfixUnaryExpr>(PostfixUnaryExpr::Operator::Decrement, std::move(temp));
+                temp = makeUnique<UnaryExpr>(UnaryExpr::OpKind::PostDec, std::move(temp));
                 break;
             case TokenType::Period:
                 m_tokenizer.toss();

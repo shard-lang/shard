@@ -49,8 +49,7 @@ enum class ExprKind
     CharLiteral,
     StringLiteral,
     Binary,
-    PrefixUnary,
-    PostfixUnary,
+    Unary,
     Ternary,
     Paren,
     Identifier,
@@ -657,21 +656,36 @@ public:
 
 
     /**
-     * @brief      Binary expression operator.
+     * @brief      Binary expression operation kind.
      */
-    enum class Operator
+    enum class OpKind
     {
-        Equal,
-        NotEqual,
-        Less,
-        LessEqual,
-        Greater,
-        GreaterEqual,
+        //  Equality operators
+        EQ,
+        NE,
+
+        // Relational operators
+        LT,
+        LE,
+        GT,
+        GE,
+
+        // Additive operators
         Add,
-        Subtract,
-        Multiply,
-        Divide,
-        Modulo
+        Sub,
+
+        // Multiplicative operators
+        Mul,
+        Div,
+        Rem,
+
+        // Assignment operators
+        Assign,
+        MulAssign,
+        DivAssign,
+        RemAssign,
+        AddAssign,
+        SubAssign
     };
 
 
@@ -682,12 +696,12 @@ public:
     /**
      * @brief      Constructor.
      *
-     * @param      op     Operator type.
+     * @param      op     Operation kind.
      * @param      lhs    Left operand expression.
      * @param      rhs    Right operand expression.
      * @param      range  Location in source.
      */
-    explicit BinaryExpr(Operator op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, SourceRange range = {});
+    explicit BinaryExpr(OpKind op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, SourceRange range = {});
 
 
 // Public Accessors & Mutators
@@ -695,55 +709,55 @@ public:
 
 
     /**
-     * @brief      Returns operator.
+     * @brief      Returns operation kind.
      *
-     * @return     Operator.
+     * @return     Operation kind.
      */
-    Operator getOperator() const noexcept
+    OpKind getOpKind() const noexcept
     {
         return m_operator;
     }
 
 
     /**
-     * @brief      Change operator.
+     * @brief      Change operation kind.
      *
-     * @param      op    The new operator.
+     * @param      op    The new operation kind.
      */
-    void setOperator(Operator op) noexcept
+    void setOpKind(OpKind op) noexcept
     {
         m_operator = op;
     }
 
 
     /**
-     * @brief      Returns left operand.
+     * @brief      Returns LHS expression.
      *
-     * @return     Left operand.
+     * @return     LHS expression.
      */
-    ViewPtr<const Expr> getLeftOperand() const noexcept
+    ViewPtr<const Expr> getLhs() const noexcept
     {
         return makeView(m_lhs);
     }
 
 
     /**
-     * @brief      Returns left operand.
+     * @brief      Returns LHS expression.
      *
-     * @return     Left operand.
+     * @return     LHS expression.
      */
-    ViewPtr<Expr> getLeftOperand() noexcept
+    ViewPtr<Expr> getLhs() noexcept
     {
         return makeView(m_lhs);
     }
 
 
     /**
-     * @brief      Change left operand.
+     * @brief      Change LHS expression.
      *
-     * @param      lhs   The left operand.
+     * @param      lhs   The LHS expression.
      */
-    void setLeftOperand(UniquePtr<Expr> lhs) noexcept
+    void setLhs(UniquePtr<Expr> lhs) noexcept
     {
         SHARD_ASSERT(lhs);
         m_lhs = moveValue(lhs);
@@ -751,33 +765,33 @@ public:
 
 
     /**
-     * @brief      Returns right operand.
+     * @brief      Returns RHS expression.
      *
-     * @return     Right operand.
+     * @return     RHS expression.
      */
-    ViewPtr<const Expr> getRightOperand() const noexcept
+    ViewPtr<const Expr> getRhs() const noexcept
     {
         return makeView(m_rhs);
     }
 
 
     /**
-     * @brief      Returns right operand.
+     * @brief      Returns RHS expression.
      *
-     * @return     Right operand.
+     * @return     RHS expression.
      */
-    ViewPtr<Expr> getRightOperand() noexcept
+    ViewPtr<Expr> getRhs() noexcept
     {
         return makeView(m_rhs);
     }
 
 
     /**
-     * @brief      Change left operand.
+     * @brief      Change RHS expression.
      *
-     * @param      rhs   The left operand.
+     * @param      rhs   The RHS expression.
      */
-    void setRightOperand(UniquePtr<Expr> rhs) noexcept
+    void setRhs(UniquePtr<Expr> rhs) noexcept
     {
         SHARD_ASSERT(rhs);
         m_rhs = moveValue(rhs);
@@ -796,28 +810,29 @@ public:
 // Private Data Members
 private:
 
-    /// Operator.
-    Operator m_operator;
+    /// Operation kind.
+    OpKind m_operator;
 
-    /// Left operand.
+    /// LHS expression.
     UniquePtr<Expr> m_lhs;
 
-    /// Right operand.
+    /// RHS expression.
     UniquePtr<Expr> m_rhs;
 };
 
 /* ************************************************************************* */
 
 /**
- * @brief      Prefix unary expression.
+ * @brief      Unary expression.
  *
- * @details    This expression is used for single prefix expressions to which an
- *             operation is applied like negation, increment or decrement. In
- *             the source it can be identified as: `<op><expr>`.
+ * @details    This expression is used for single prefix or postfix expressions
+ *             to which an operation is applied like negation, increment or
+ *             decrement. In the source it can be identified as: `<op><expr>` or
+ *             `<expr><op>`.
  */
-class PrefixUnaryExpr final
+class UnaryExpr final
     : public Expr
-    , private ExprHelper<ExprKind::PrefixUnary, PrefixUnaryExpr>
+    , private ExprHelper<ExprKind::Unary, UnaryExpr>
 {
 
 // Public Enums
@@ -825,15 +840,17 @@ public:
 
 
     /**
-     * @brief      Binary expression operator.
+     * @brief      Unary operation kind.
      */
-    enum class Operator
+    enum class OpKind
     {
-        Increment,
-        Decrement,
+        PostInc,
+        PostDec,
+        PreInc,
+        PreDec,
         Plus,
         Minus,
-        Negate
+        Not
     };
 
 
@@ -844,11 +861,11 @@ public:
     /**
      * @brief      Constructor.
      *
-     * @param      op     Operator type.
+     * @param      op     Operation kind.
      * @param      expr   Operand expression.
      * @param      range  Location in source.
      */
-    explicit PrefixUnaryExpr(Operator op, UniquePtr<Expr> expr, SourceRange range = {});
+    explicit UnaryExpr(OpKind op, UniquePtr<Expr> expr, SourceRange range = {});
 
 
 // Public Accessors & Mutators
@@ -856,55 +873,55 @@ public:
 
 
     /**
-     * @brief      Returns operator.
+     * @brief      Returns operation kind.
      *
-     * @return     Operator.
+     * @return     Operation kind.
      */
-    Operator getOperator() const noexcept
+    OpKind getOpKind() const noexcept
     {
         return m_operator;
     }
 
 
     /**
-     * @brief      Change operator.
+     * @brief      Change operation kind.
      *
-     * @param      op    The new operator.
+     * @param      op    The new operation kind.
      */
-    void setOperator(Operator op) noexcept
+    void setOpKind(OpKind op) noexcept
     {
         m_operator = op;
     }
 
 
     /**
-     * @brief      Returns operand.
+     * @brief      Returns subexpression.
      *
-     * @return     Operand.
+     * @return     Subexpression.
      */
-    ViewPtr<const Expr> getOperand() const noexcept
+    ViewPtr<const Expr> getExpr() const noexcept
     {
         return makeView(m_expr);
     }
 
 
     /**
-     * @brief      Returns operand.
+     * @brief      Returns subexpression.
      *
-     * @return     Operand.
+     * @return     Subexpression.
      */
-    ViewPtr<Expr> getOperand() noexcept
+    ViewPtr<Expr> getExpr() noexcept
     {
         return makeView(m_expr);
     }
 
 
     /**
-     * @brief      Change operand.
+     * @brief      Change subexpression.
      *
-     * @param      expr  The new operand.
+     * @param      expr  The new subexpression.
      */
-    void setOperand(UniquePtr<Expr> expr) noexcept
+    void setExpr(UniquePtr<Expr> expr) noexcept
     {
         SHARD_ASSERT(expr);
         m_expr = moveValue(expr);
@@ -915,135 +932,19 @@ public:
 public:
 
 
-    using ExprHelper<ExprKind::PrefixUnary, PrefixUnaryExpr>::is;
-    using ExprHelper<ExprKind::PrefixUnary, PrefixUnaryExpr>::cast;
-    using ExprHelper<ExprKind::PrefixUnary, PrefixUnaryExpr>::make;
+    using ExprHelper<ExprKind::Unary, UnaryExpr>::is;
+    using ExprHelper<ExprKind::Unary, UnaryExpr>::cast;
+    using ExprHelper<ExprKind::Unary, UnaryExpr>::make;
 
 
 // Private Data Members
 private:
 
-    /// Operator.
-    Operator m_operator;
+    /// OpKind.
+    OpKind m_operator;
 
     /// Operand.
     UniquePtr<Expr> m_expr;
-};
-
-/* ************************************************************************* */
-
-/**
- * @brief      Postfix unary expression.
- *
- * @details    This expression is used for single postfix expressions to which
- *             an operation is applied like negation, increment or decrement. In
- *             the source it can be identified as: `<expr><op>`.
- */
-class PostfixUnaryExpr final
-    : public Expr
-    , private ExprHelper<ExprKind::PostfixUnary, PostfixUnaryExpr>
-{
-
-// Public Enums
-public:
-
-
-    /**
-     * @brief      Binary expression operator.
-     */
-    enum class Operator
-    {
-        Increment,
-        Decrement
-    };
-
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      op     Operator type.
-     * @param      expr   Operand.
-     * @param      range  Location in source.
-     */
-    explicit PostfixUnaryExpr(Operator op, UniquePtr<Expr> expr, SourceRange range = {});
-
-
-// Public Accessors & Mutators
-public:
-
-
-    /**
-     * @brief Returns operator.
-     * @return Operator.
-     */
-    Operator getOperator() const noexcept
-    {
-        return m_operator;
-    }
-
-
-    /**
-     * @brief Change operator.
-     * @param op The new operator.
-     */
-    void setOperator(Operator op) noexcept
-    {
-        m_operator = op;
-    }
-
-
-    /**
-     * @brief Returns operand.
-     * @return Operand.
-     */
-    ViewPtr<const Expr> getOperand() const noexcept
-    {
-        return makeView(m_expr);
-    }
-
-
-    /**
-     * @brief Returns operand.
-     * @return Operand.
-     */
-    ViewPtr<Expr> getOperand() noexcept
-    {
-        return makeView(m_expr);
-    }
-
-
-    /**
-     * @brief Change operand.
-     * @param expr The new operand.
-     */
-    void setOperand(UniquePtr<Expr> expr) noexcept
-    {
-        m_expr = moveValue(expr);
-    }
-
-
-// Public Operations
-public:
-
-
-    using ExprHelper<ExprKind::PostfixUnary, PostfixUnaryExpr>::is;
-    using ExprHelper<ExprKind::PostfixUnary, PostfixUnaryExpr>::cast;
-    using ExprHelper<ExprKind::PostfixUnary, PostfixUnaryExpr>::make;
-
-
-// Private Data Members
-private:
-
-    /// Operator.
-    Operator m_operator;
-
-    /// Operand.
-    UniquePtr<Expr> m_expr;
-
 };
 
 /* ************************************************************************* */

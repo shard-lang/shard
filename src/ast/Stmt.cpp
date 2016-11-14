@@ -30,6 +30,10 @@ namespace ast {
 
 /* ************************************************************************* */
 
+Stmt::~Stmt() = default;
+
+/* ************************************************************************* */
+
 Stmt::Stmt(StmtKind kind, SourceRange range) noexcept
     : LocationInfo(moveValue(range))
     , m_kind(kind)
@@ -39,15 +43,23 @@ Stmt::Stmt(StmtKind kind, SourceRange range) noexcept
 
 /* ************************************************************************* */
 
-Stmt::~Stmt() = default;
-
-/* ************************************************************************* */
-
 ExprStmt::ExprStmt(UniquePtr<Expr> expr, SourceRange range) noexcept
     : Stmt(StmtKind::Expr, moveValue(range))
     , m_expr(moveValue(expr))
 {
     // Nothing to do
+}
+
+/* ************************************************************************* */
+
+ExprStmt::~ExprStmt() = default;
+
+/* ************************************************************************* */
+
+void ExprStmt::setExpr(UniquePtr<Expr> expr) noexcept
+{
+    SHARD_ASSERT(expr);
+    m_expr = moveValue(expr);
 }
 
 /* ************************************************************************* */
@@ -61,7 +73,19 @@ DeclStmt::DeclStmt(UniquePtr<Decl> decl, SourceRange range) noexcept
 
 /* ************************************************************************* */
 
-CompoundStmt::CompoundStmt(DynamicArray<UniquePtr<Stmt>> stmts, SourceRange range) noexcept
+DeclStmt::~DeclStmt() = default;
+
+/* ************************************************************************* */
+
+void DeclStmt::setDecl(UniquePtr<Decl> decl) noexcept
+{
+    SHARD_ASSERT(decl);
+    m_decl = moveValue(decl);
+}
+
+/* ************************************************************************* */
+
+CompoundStmt::CompoundStmt(PtrDynamicArray<Stmt> stmts, SourceRange range) noexcept
     : Stmt(StmtKind::Compound, moveValue(range))
     , StmtContainer(moveValue(stmts))
 {
@@ -82,6 +106,33 @@ IfStmt::IfStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stm
 
 /* ************************************************************************* */
 
+IfStmt::~IfStmt() = default;
+
+/* ************************************************************************* */
+
+void IfStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
+{
+    SHARD_ASSERT(expr);
+    m_condExpr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+void IfStmt::setThenStmt(UniquePtr<Stmt> stmt) noexcept
+{
+    SHARD_ASSERT(stmt);
+    m_thenStmt = moveValue(stmt);
+}
+
+/* ************************************************************************* */
+
+void IfStmt::setElseStmt(UniquePtr<Stmt> stmt) noexcept
+{
+    m_elseStmt = moveValue(stmt);
+}
+
+/* ************************************************************************* */
+
 WhileStmt::WhileStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range) noexcept
     : Stmt(StmtKind::While, moveValue(range))
     , m_condExpr(moveValue(condExpr))
@@ -93,6 +144,26 @@ WhileStmt::WhileStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceR
 
 /* ************************************************************************* */
 
+WhileStmt::~WhileStmt() = default;
+
+/* ************************************************************************* */
+
+void WhileStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
+{
+    SHARD_ASSERT(expr);
+    m_condExpr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+void WhileStmt::setBodyStmt(UniquePtr<Stmt> stmt) noexcept
+{
+    SHARD_ASSERT(stmt);
+    m_bodyStmt = moveValue(stmt);
+}
+
+/* ************************************************************************* */
+
 DoWhileStmt::DoWhileStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range) noexcept
     : Stmt(StmtKind::DoWhile, moveValue(range))
     , m_condExpr(moveValue(condExpr))
@@ -100,6 +171,26 @@ DoWhileStmt::DoWhileStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyS
 {
     SHARD_ASSERT(m_condExpr);
     SHARD_ASSERT(m_bodyStmt);
+}
+
+/* ************************************************************************* */
+
+DoWhileStmt::~DoWhileStmt() = default;
+
+/* ************************************************************************* */
+
+void DoWhileStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
+{
+    SHARD_ASSERT(expr);
+    m_condExpr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+void DoWhileStmt::setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept
+{
+    SHARD_ASSERT(stmt);
+    m_bodyStmt = moveValue(stmt);
 }
 
 /* ************************************************************************* */
@@ -117,6 +208,42 @@ ForStmt::ForStmt(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<E
 
 /* ************************************************************************* */
 
+ForStmt::~ForStmt() = default;
+
+/* ************************************************************************* */
+
+void ForStmt::setInitStmt(UniquePtr<Stmt> stmt) noexcept
+{
+    SHARD_ASSERT(stmt);
+    m_initStmt = moveValue(stmt);
+}
+
+/* ************************************************************************* */
+
+void ForStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
+{
+    SHARD_ASSERT(expr);
+    m_condExpr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+void ForStmt::setIncExpr(UniquePtr<Expr> expr) noexcept
+{
+    SHARD_ASSERT(expr);
+    m_incExpr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+void ForStmt::setBodyStmt(UniquePtr<Stmt> stmt) noexcept
+{
+    SHARD_ASSERT(stmt);
+    m_bodyStmt = moveValue(stmt);
+}
+
+/* ************************************************************************* */
+
 SwitchStmt::SwitchStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range) noexcept
     : Stmt(StmtKind::Switch, moveValue(range))
     , m_condExpr(moveValue(condExpr))
@@ -124,6 +251,26 @@ SwitchStmt::SwitchStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStm
 {
     SHARD_ASSERT(m_condExpr);
     SHARD_ASSERT(m_bodyStmt);
+}
+
+/* ************************************************************************* */
+
+SwitchStmt::~SwitchStmt() = default;
+
+/* ************************************************************************* */
+
+void SwitchStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
+{
+    SHARD_ASSERT(expr);
+    m_condExpr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+void SwitchStmt::setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept
+{
+    SHARD_ASSERT(stmt);
+    m_bodyStmt = moveValue(stmt);
 }
 
 /* ************************************************************************* */
@@ -138,11 +285,43 @@ CaseStmt::CaseStmt(UniquePtr<Expr> expr, UniquePtr<Stmt> bodyStmt, SourceRange r
 
 /* ************************************************************************* */
 
+CaseStmt::~CaseStmt() = default;
+
+/* ************************************************************************* */
+
+void CaseStmt::setExpr(UniquePtr<Expr> expr) noexcept
+{
+    SHARD_ASSERT(expr);
+    m_expr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+void CaseStmt::setBodyStmt(UniquePtr<Stmt> stmt) noexcept
+{
+    SHARD_ASSERT(stmt);
+    m_bodyStmt = moveValue(stmt);
+}
+
+/* ************************************************************************* */
+
 DefaultStmt::DefaultStmt(UniquePtr<Stmt> bodyStmt, SourceRange range) noexcept
     : Stmt(StmtKind::Default, moveValue(range))
     , m_bodyStmt(moveValue(bodyStmt))
 {
     // Nothing to do
+}
+
+/* ************************************************************************* */
+
+DefaultStmt::~DefaultStmt() = default;
+
+/* ************************************************************************* */
+
+void DefaultStmt::setBodyStmt(UniquePtr<Stmt> stmt) noexcept
+{
+    SHARD_ASSERT(stmt);
+    m_bodyStmt = moveValue(stmt);
 }
 
 /* ************************************************************************* */
@@ -168,6 +347,17 @@ ReturnStmt::ReturnStmt(UniquePtr<Expr> resExpr, SourceRange range) noexcept
     , m_resExpr(moveValue(resExpr))
 {
     // Nothing to do
+}
+
+/* ************************************************************************* */
+
+ReturnStmt::~ReturnStmt() = default;
+
+/* ************************************************************************* */
+
+void ReturnStmt::setResExpr(UniquePtr<Expr> expr) noexcept
+{
+    m_resExpr = moveValue(expr);
 }
 
 /* ************************************************************************* */

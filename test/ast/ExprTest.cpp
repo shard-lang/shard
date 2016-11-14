@@ -384,207 +384,172 @@ TEST(BinaryExpr, base)
 {
     {
         // 5 + 2
-        const BinaryExpr expr(BinaryExpr::Operator::Add, IntLiteralExpr::make(5), IntLiteralExpr::make(2));
+        const BinaryExpr expr(BinaryExpr::OpKind::Add, IntLiteralExpr::make(5), IntLiteralExpr::make(2));
 
         EXPECT_EQ(ExprKind::Binary, expr.getKind());
         EXPECT_TRUE(BinaryExpr::is(expr));
         EXPECT_FALSE(LiteralExpr::is(expr));
-        EXPECT_EQ(BinaryExpr::Operator::Add, expr.getOperator());
-        ASSERT_TRUE(expr.getLeftOperand());
-        ASSERT_TRUE(expr.getRightOperand());
-        ASSERT_TRUE(IntLiteralExpr::is(expr.getLeftOperand()));
-        ASSERT_TRUE(IntLiteralExpr::is(expr.getRightOperand()));
-        EXPECT_EQ(5, IntLiteralExpr::cast(expr.getLeftOperand())->getValue());
-        EXPECT_EQ(2, IntLiteralExpr::cast(expr.getRightOperand())->getValue());
+        EXPECT_EQ(BinaryExpr::OpKind::Add, expr.getOpKind());
+        ASSERT_TRUE(expr.getLhs());
+        ASSERT_TRUE(expr.getRhs());
+        ASSERT_TRUE(IntLiteralExpr::is(expr.getLhs()));
+        ASSERT_TRUE(IntLiteralExpr::is(expr.getRhs()));
+        EXPECT_EQ(5, IntLiteralExpr::cast(expr.getLhs())->getValue());
+        EXPECT_EQ(2, IntLiteralExpr::cast(expr.getRhs())->getValue());
     }
 
     {
         // 10 * 4.0
-        const BinaryExpr expr(BinaryExpr::Operator::Multiply, IntLiteralExpr::make(10), FloatLiteralExpr::make(4.0));
+        const BinaryExpr expr(BinaryExpr::OpKind::Mul, IntLiteralExpr::make(10), FloatLiteralExpr::make(4.0));
 
         EXPECT_EQ(ExprKind::Binary, expr.getKind());
         EXPECT_TRUE(BinaryExpr::is(expr));
         EXPECT_FALSE(LiteralExpr::is(expr));
-        EXPECT_EQ(BinaryExpr::Operator::Multiply, expr.getOperator());
-        ASSERT_TRUE(expr.getLeftOperand());
-        ASSERT_TRUE(expr.getRightOperand());
-        ASSERT_TRUE(IntLiteralExpr::is(expr.getLeftOperand()));
-        ASSERT_TRUE(FloatLiteralExpr::is(expr.getRightOperand()));
-        EXPECT_EQ(10, IntLiteralExpr::cast(expr.getLeftOperand())->getValue());
-        EXPECT_FLOAT_EQ(4.0, FloatLiteralExpr::cast(expr.getRightOperand())->getValue());
+        EXPECT_EQ(BinaryExpr::OpKind::Mul, expr.getOpKind());
+        ASSERT_TRUE(expr.getLhs());
+        ASSERT_TRUE(expr.getRhs());
+        ASSERT_TRUE(IntLiteralExpr::is(expr.getLhs()));
+        ASSERT_TRUE(FloatLiteralExpr::is(expr.getRhs()));
+        EXPECT_EQ(10, IntLiteralExpr::cast(expr.getLhs())->getValue());
+        EXPECT_FLOAT_EQ(4.0, FloatLiteralExpr::cast(expr.getRhs())->getValue());
     }
 
     {
         // 10 * 4.0
-        BinaryExpr expr(BinaryExpr::Operator::Multiply, IntLiteralExpr::make(10), FloatLiteralExpr::make(4.0));
+        BinaryExpr expr(BinaryExpr::OpKind::Mul, IntLiteralExpr::make(10), FloatLiteralExpr::make(4.0));
 
         EXPECT_EQ(ExprKind::Binary, expr.getKind());
         EXPECT_TRUE(BinaryExpr::is(expr));
         EXPECT_FALSE(LiteralExpr::is(expr));
-        EXPECT_EQ(BinaryExpr::Operator::Multiply, expr.getOperator());
-        ASSERT_TRUE(expr.getLeftOperand());
-        ASSERT_TRUE(expr.getRightOperand());
-        ASSERT_TRUE(IntLiteralExpr::is(expr.getLeftOperand()));
-        ASSERT_TRUE(FloatLiteralExpr::is(expr.getRightOperand()));
-        EXPECT_EQ(10, IntLiteralExpr::cast(expr.getLeftOperand())->getValue());
-        EXPECT_FLOAT_EQ(4.0, FloatLiteralExpr::cast(expr.getRightOperand())->getValue());
+        EXPECT_EQ(BinaryExpr::OpKind::Mul, expr.getOpKind());
+        ASSERT_TRUE(expr.getLhs());
+        ASSERT_TRUE(expr.getRhs());
+        ASSERT_TRUE(IntLiteralExpr::is(expr.getLhs()));
+        ASSERT_TRUE(FloatLiteralExpr::is(expr.getRhs()));
+        EXPECT_EQ(10, IntLiteralExpr::cast(expr.getLhs())->getValue());
+        EXPECT_FLOAT_EQ(4.0, FloatLiteralExpr::cast(expr.getRhs())->getValue());
 
         // 10 + 4.0
-        expr.setOperator(BinaryExpr::Operator::Add);
-        EXPECT_EQ(BinaryExpr::Operator::Add, expr.getOperator());
-        ASSERT_TRUE(expr.getLeftOperand());
-        ASSERT_TRUE(expr.getRightOperand());
-        ASSERT_TRUE(IntLiteralExpr::is(expr.getLeftOperand()));
-        ASSERT_TRUE(FloatLiteralExpr::is(expr.getRightOperand()));
-        EXPECT_EQ(10, IntLiteralExpr::cast(expr.getLeftOperand())->getValue());
-        EXPECT_FLOAT_EQ(4.0, FloatLiteralExpr::cast(expr.getRightOperand())->getValue());
+        expr.setOpKind(BinaryExpr::OpKind::Add);
+        EXPECT_EQ(BinaryExpr::OpKind::Add, expr.getOpKind());
+        ASSERT_TRUE(expr.getLhs());
+        ASSERT_TRUE(expr.getRhs());
+        ASSERT_TRUE(IntLiteralExpr::is(expr.getLhs()));
+        ASSERT_TRUE(FloatLiteralExpr::is(expr.getRhs()));
+        EXPECT_EQ(10, IntLiteralExpr::cast(expr.getLhs())->getValue());
+        EXPECT_FLOAT_EQ(4.0, FloatLiteralExpr::cast(expr.getRhs())->getValue());
 
         // 10 - 4.0
-        expr.setOperator(BinaryExpr::Operator::Subtract);
-        EXPECT_EQ(BinaryExpr::Operator::Subtract, expr.getOperator());
-        ASSERT_TRUE(expr.getLeftOperand());
-        ASSERT_TRUE(expr.getRightOperand());
-        ASSERT_TRUE(IntLiteralExpr::is(expr.getLeftOperand()));
-        ASSERT_TRUE(FloatLiteralExpr::is(expr.getRightOperand()));
-        EXPECT_EQ(10, IntLiteralExpr::cast(expr.getLeftOperand())->getValue());
-        EXPECT_FLOAT_EQ(4.0, FloatLiteralExpr::cast(expr.getRightOperand())->getValue());
+        expr.setOpKind(BinaryExpr::OpKind::Sub);
+        EXPECT_EQ(BinaryExpr::OpKind::Sub, expr.getOpKind());
+        ASSERT_TRUE(expr.getLhs());
+        ASSERT_TRUE(expr.getRhs());
+        ASSERT_TRUE(IntLiteralExpr::is(expr.getLhs()));
+        ASSERT_TRUE(FloatLiteralExpr::is(expr.getRhs()));
+        EXPECT_EQ(10, IntLiteralExpr::cast(expr.getLhs())->getValue());
+        EXPECT_FLOAT_EQ(4.0, FloatLiteralExpr::cast(expr.getRhs())->getValue());
 
         // 1.0 - 4.0
-        expr.setLeftOperand(FloatLiteralExpr::make(1.0));
-        EXPECT_EQ(BinaryExpr::Operator::Subtract, expr.getOperator());
-        ASSERT_TRUE(expr.getLeftOperand());
-        ASSERT_TRUE(expr.getRightOperand());
-        ASSERT_TRUE(FloatLiteralExpr::is(expr.getLeftOperand()));
-        ASSERT_TRUE(FloatLiteralExpr::is(expr.getRightOperand()));
-        EXPECT_FLOAT_EQ(1.0, FloatLiteralExpr::cast(expr.getLeftOperand())->getValue());
-        EXPECT_FLOAT_EQ(4.0, FloatLiteralExpr::cast(expr.getRightOperand())->getValue());
+        expr.setLhs(FloatLiteralExpr::make(1.0));
+        EXPECT_EQ(BinaryExpr::OpKind::Sub, expr.getOpKind());
+        ASSERT_TRUE(expr.getLhs());
+        ASSERT_TRUE(expr.getRhs());
+        ASSERT_TRUE(FloatLiteralExpr::is(expr.getLhs()));
+        ASSERT_TRUE(FloatLiteralExpr::is(expr.getRhs()));
+        EXPECT_FLOAT_EQ(1.0, FloatLiteralExpr::cast(expr.getLhs())->getValue());
+        EXPECT_FLOAT_EQ(4.0, FloatLiteralExpr::cast(expr.getRhs())->getValue());
 
-        expr.setRightOperand(FloatLiteralExpr::make(50.3));
-        EXPECT_EQ(BinaryExpr::Operator::Subtract, expr.getOperator());
-        ASSERT_TRUE(expr.getLeftOperand());
-        ASSERT_TRUE(expr.getRightOperand());
-        ASSERT_TRUE(FloatLiteralExpr::is(expr.getLeftOperand()));
-        ASSERT_TRUE(FloatLiteralExpr::is(expr.getRightOperand()));
-        EXPECT_FLOAT_EQ(1.0, FloatLiteralExpr::cast(expr.getLeftOperand())->getValue());
-        EXPECT_FLOAT_EQ(50.3, FloatLiteralExpr::cast(expr.getRightOperand())->getValue());
+        expr.setRhs(FloatLiteralExpr::make(50.3));
+        EXPECT_EQ(BinaryExpr::OpKind::Sub, expr.getOpKind());
+        ASSERT_TRUE(expr.getLhs());
+        ASSERT_TRUE(expr.getRhs());
+        ASSERT_TRUE(FloatLiteralExpr::is(expr.getLhs()));
+        ASSERT_TRUE(FloatLiteralExpr::is(expr.getRhs()));
+        EXPECT_FLOAT_EQ(1.0, FloatLiteralExpr::cast(expr.getLhs())->getValue());
+        EXPECT_FLOAT_EQ(50.3, FloatLiteralExpr::cast(expr.getRhs())->getValue());
     }
 }
 
 /* ************************************************************************ */
 
-TEST(PrefixUnaryExpr, base)
+TEST(UnaryExpr, base)
 {
     {
         // !true
-        const PrefixUnaryExpr expr(PrefixUnaryExpr::Operator::Negate, BoolLiteralExpr::make(true));
+        const UnaryExpr expr(UnaryExpr::OpKind::Not, BoolLiteralExpr::make(true));
 
-        EXPECT_EQ(ExprKind::PrefixUnary, expr.getKind());
-        EXPECT_TRUE(PrefixUnaryExpr::is(expr));
-        EXPECT_EQ(PrefixUnaryExpr::Operator::Negate, expr.getOperator());
-        ASSERT_TRUE(expr.getOperand());
-        ASSERT_TRUE(BoolLiteralExpr::is(expr.getOperand()));
-        EXPECT_TRUE(BoolLiteralExpr::cast(expr.getOperand())->getValue());
+        EXPECT_EQ(ExprKind::Unary, expr.getKind());
+        EXPECT_TRUE(UnaryExpr::is(expr));
+        EXPECT_EQ(UnaryExpr::OpKind::Not, expr.getOpKind());
+        ASSERT_TRUE(expr.getExpr());
+        ASSERT_TRUE(BoolLiteralExpr::is(expr.getExpr()));
+        EXPECT_TRUE(BoolLiteralExpr::cast(expr.getExpr())->getValue());
     }
 
     {
         // -10
-        const PrefixUnaryExpr expr(PrefixUnaryExpr::Operator::Minus, IntLiteralExpr::make(10));
+        const UnaryExpr expr(UnaryExpr::OpKind::Minus, IntLiteralExpr::make(10));
 
-        EXPECT_EQ(ExprKind::PrefixUnary, expr.getKind());
-        EXPECT_TRUE(PrefixUnaryExpr::is(expr));
-        EXPECT_EQ(PrefixUnaryExpr::Operator::Minus, expr.getOperator());
-        ASSERT_TRUE(expr.getOperand());
-        ASSERT_TRUE(IntLiteralExpr::is(expr.getOperand()));
-        EXPECT_EQ(10, IntLiteralExpr::cast(expr.getOperand())->getValue());
+        EXPECT_EQ(ExprKind::Unary, expr.getKind());
+        EXPECT_TRUE(UnaryExpr::is(expr));
+        EXPECT_EQ(UnaryExpr::OpKind::Minus, expr.getOpKind());
+        ASSERT_TRUE(expr.getExpr());
+        ASSERT_TRUE(IntLiteralExpr::is(expr.getExpr()));
+        EXPECT_EQ(10, IntLiteralExpr::cast(expr.getExpr())->getValue());
     }
 
-    {
-        // -10
-        PrefixUnaryExpr expr(PrefixUnaryExpr::Operator::Minus, IntLiteralExpr::make(0));
-
-        EXPECT_EQ(ExprKind::PrefixUnary, expr.getKind());
-        EXPECT_TRUE(PrefixUnaryExpr::is(expr));
-        EXPECT_EQ(PrefixUnaryExpr::Operator::Minus, expr.getOperator());
-        ASSERT_TRUE(expr.getOperand());
-        ASSERT_TRUE(IntLiteralExpr::is(expr.getOperand()));
-        EXPECT_EQ(0, IntLiteralExpr::cast(expr.getOperand())->getValue());
-
-        // !0
-        expr.setOperator(PrefixUnaryExpr::Operator::Negate);
-        EXPECT_EQ(ExprKind::PrefixUnary, expr.getKind());
-        EXPECT_TRUE(PrefixUnaryExpr::is(expr));
-        EXPECT_EQ(PrefixUnaryExpr::Operator::Negate, expr.getOperator());
-        ASSERT_TRUE(expr.getOperand());
-        ASSERT_TRUE(IntLiteralExpr::is(expr.getOperand()));
-        EXPECT_EQ(0, IntLiteralExpr::cast(expr.getOperand())->getValue());
-
-        // !true
-        expr.setOperand(BoolLiteralExpr::make(true));
-        EXPECT_EQ(ExprKind::PrefixUnary, expr.getKind());
-        EXPECT_TRUE(PrefixUnaryExpr::is(expr));
-        EXPECT_EQ(PrefixUnaryExpr::Operator::Negate, expr.getOperator());
-        ASSERT_TRUE(expr.getOperand());
-        ASSERT_TRUE(BoolLiteralExpr::is(expr.getOperand()));
-        EXPECT_TRUE(BoolLiteralExpr::cast(expr.getOperand())->getValue());
-    }
-}
-
-/* ************************************************************************ */
-
-TEST(PostfixUnaryExpr, base)
-{
     {
         // 5++
-        const PostfixUnaryExpr expr(PostfixUnaryExpr::Operator::Increment, IntLiteralExpr::make(5));
+        const UnaryExpr expr(UnaryExpr::OpKind::PostInc, IntLiteralExpr::make(5));
 
-        EXPECT_EQ(ExprKind::PostfixUnary, expr.getKind());
-        EXPECT_TRUE(PostfixUnaryExpr::is(expr));
-        EXPECT_EQ(PostfixUnaryExpr::Operator::Increment, expr.getOperator());
-        ASSERT_TRUE(expr.getOperand());
-        ASSERT_TRUE(IntLiteralExpr::is(expr.getOperand()));
-        EXPECT_EQ(5, IntLiteralExpr::cast(expr.getOperand())->getValue());
+        EXPECT_EQ(ExprKind::Unary, expr.getKind());
+        EXPECT_TRUE(UnaryExpr::is(expr));
+        EXPECT_EQ(UnaryExpr::OpKind::PostInc, expr.getOpKind());
+        ASSERT_TRUE(expr.getExpr());
+        ASSERT_TRUE(IntLiteralExpr::is(expr.getExpr()));
+        EXPECT_EQ(5, IntLiteralExpr::cast(expr.getExpr())->getValue());
     }
 
     {
         // true--
-        const PostfixUnaryExpr expr(PostfixUnaryExpr::Operator::Decrement, BoolLiteralExpr::make(true));
+        const UnaryExpr expr(UnaryExpr::OpKind::PostDec, BoolLiteralExpr::make(true));
 
-        EXPECT_EQ(ExprKind::PostfixUnary, expr.getKind());
-        EXPECT_TRUE(PostfixUnaryExpr::is(expr));
-        EXPECT_EQ(PostfixUnaryExpr::Operator::Decrement, expr.getOperator());
-        ASSERT_TRUE(expr.getOperand());
-        ASSERT_TRUE(BoolLiteralExpr::is(expr.getOperand()));
-        EXPECT_TRUE(BoolLiteralExpr::cast(expr.getOperand())->getValue());
+        EXPECT_EQ(ExprKind::Unary, expr.getKind());
+        EXPECT_TRUE(UnaryExpr::is(expr));
+        EXPECT_EQ(UnaryExpr::OpKind::PostDec, expr.getOpKind());
+        ASSERT_TRUE(expr.getExpr());
+        ASSERT_TRUE(BoolLiteralExpr::is(expr.getExpr()));
+        EXPECT_TRUE(BoolLiteralExpr::cast(expr.getExpr())->getValue());
     }
 
     {
-        // i--
-        PostfixUnaryExpr expr(PostfixUnaryExpr::Operator::Decrement, IdentifierExpr::make("i"));
+        // -10
+        UnaryExpr expr(UnaryExpr::OpKind::Minus, IntLiteralExpr::make(0));
 
-        EXPECT_EQ(ExprKind::PostfixUnary, expr.getKind());
-        EXPECT_TRUE(PostfixUnaryExpr::is(expr));
-        EXPECT_EQ(PostfixUnaryExpr::Operator::Decrement, expr.getOperator());
-        ASSERT_TRUE(expr.getOperand());
-        ASSERT_TRUE(IdentifierExpr::is(expr.getOperand()));
-        EXPECT_EQ("i", IdentifierExpr::cast(expr.getOperand())->getName());
+        EXPECT_EQ(ExprKind::Unary, expr.getKind());
+        EXPECT_TRUE(UnaryExpr::is(expr));
+        EXPECT_EQ(UnaryExpr::OpKind::Minus, expr.getOpKind());
+        ASSERT_TRUE(expr.getExpr());
+        ASSERT_TRUE(IntLiteralExpr::is(expr.getExpr()));
+        EXPECT_EQ(0, IntLiteralExpr::cast(expr.getExpr())->getValue());
 
-        // i++
-        expr.setOperator(PostfixUnaryExpr::Operator::Increment);
-        EXPECT_EQ(ExprKind::PostfixUnary, expr.getKind());
-        EXPECT_TRUE(PostfixUnaryExpr::is(expr));
-        EXPECT_EQ(PostfixUnaryExpr::Operator::Increment, expr.getOperator());
-        ASSERT_TRUE(expr.getOperand());
-        ASSERT_TRUE(IdentifierExpr::is(expr.getOperand()));
-        EXPECT_EQ("i", IdentifierExpr::cast(expr.getOperand())->getName());
+        // !0
+        expr.setOpKind(UnaryExpr::OpKind::Not);
+        EXPECT_EQ(ExprKind::Unary, expr.getKind());
+        EXPECT_TRUE(UnaryExpr::is(expr));
+        EXPECT_EQ(UnaryExpr::OpKind::Not, expr.getOpKind());
+        ASSERT_TRUE(expr.getExpr());
+        ASSERT_TRUE(IntLiteralExpr::is(expr.getExpr()));
+        EXPECT_EQ(0, IntLiteralExpr::cast(expr.getExpr())->getValue());
 
-        // "i"++
-        expr.setOperand(StringLiteralExpr::make("i"));
-        EXPECT_EQ(ExprKind::PostfixUnary, expr.getKind());
-        EXPECT_TRUE(PostfixUnaryExpr::is(expr));
-        EXPECT_EQ(PostfixUnaryExpr::Operator::Increment, expr.getOperator());
-        ASSERT_TRUE(expr.getOperand());
-        ASSERT_TRUE(StringLiteralExpr::is(expr.getOperand()));
-        EXPECT_EQ("i", StringLiteralExpr::cast(expr.getOperand())->getValue());
+        // !true
+        expr.setExpr(BoolLiteralExpr::make(true));
+        EXPECT_EQ(ExprKind::Unary, expr.getKind());
+        EXPECT_TRUE(UnaryExpr::is(expr));
+        EXPECT_EQ(UnaryExpr::OpKind::Not, expr.getOpKind());
+        ASSERT_TRUE(expr.getExpr());
+        ASSERT_TRUE(BoolLiteralExpr::is(expr.getExpr()));
+        EXPECT_TRUE(BoolLiteralExpr::cast(expr.getExpr())->getValue());
     }
 }
 

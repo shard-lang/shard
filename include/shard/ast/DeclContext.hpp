@@ -23,7 +23,7 @@
 #include "shard/ViewPtr.hpp"
 #include "shard/UniquePtr.hpp"
 #include "shard/StringView.hpp"
-#include "shard/DynamicArray.hpp"
+#include "shard/PtrDynamicArray.hpp"
 
 /* ************************************************************************* */
 
@@ -40,10 +40,10 @@ class Type;
 /* ************************************************************************* */
 
 /**
- * @brief Declaration context.
+ * @brief      Declaration context.
  *
- * It represents declaration context/scope which can be global scope,
- * function scope, class scope or compound statement.
+ * @details    It represents declaration context/scope which can be global
+ *             scope, function scope, class scope or compound statement.
  */
 class DeclContext
 {
@@ -53,9 +53,9 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param decl   Declarations.
-     * @param parent Optional parent context.
+     * @brief      Constructor.
+     *
+     * @param      parent  Optional parent context.
      */
     explicit DeclContext(ViewPtr<DeclContext> parent = nullptr) noexcept;
 
@@ -123,7 +123,7 @@ public:
      * @param decls Declarations to add.
      */
     template<typename DeclType>
-    void addDeclarations(DynamicArray<UniquePtr<DeclType>> decls)
+    void addDeclarations(PtrDynamicArray<DeclType> decls)
     {
         for (auto&& decl : decls)
             addDeclaration(moveValue(decl));
@@ -142,6 +142,12 @@ public:
             addDeclaration(makeUnique<DeclType>(makeView(this), forwardValue<Args>(args)...))
         );
     }
+
+
+    /**
+     * @brief Remove all declarations.
+     */
+    void removeDeclarations();
 
 
     /**
