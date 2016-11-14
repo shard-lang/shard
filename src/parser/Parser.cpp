@@ -354,22 +354,22 @@ UniquePtr<Expr> Parser::parseExpr()
     {
         case TokenType::Equal:
             m_tokenizer.toss();
-            // TODO
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Assign, std::move(temp), parseExpr());
         case TokenType::PlusEqual:
             m_tokenizer.toss();
-            // TODO
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::AddAssign, std::move(temp), parseExpr());
         case TokenType::MinusEqual:
             m_tokenizer.toss();
-            // TODO
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::SubAssign, std::move(temp), parseExpr());
         case TokenType::StarEqual:
             m_tokenizer.toss();
-            // TODO
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::MulAssign, std::move(temp), parseExpr());
         case TokenType::SlashEqual:
             m_tokenizer.toss();
-            // TODO
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::DivAssign, std::move(temp), parseExpr());
         case TokenType::PercentEqual:
             m_tokenizer.toss();
-            // TODO
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::RemAssign, std::move(temp), parseExpr());
 
         default:
             return std::move(temp);
@@ -555,7 +555,7 @@ UniquePtr<Expr> Parser::parsePrimaryExpr()
             }
 
         default:
-            throw ExpectedPrimaryExprException();
+            throw ExpectedExprException();
     }
 }
 
