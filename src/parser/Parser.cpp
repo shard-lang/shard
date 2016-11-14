@@ -142,7 +142,6 @@ UniquePtr<ForStmt> Parser::parseForStmt()
     auto init = parseStmt();
 
     UniquePtr<Expr> cond = nullptr;
-    UniquePtr<Expr> incr = nullptr;
 
     if (!is(TokenType::Semicolon))
     {
@@ -153,6 +152,8 @@ UniquePtr<ForStmt> Parser::parseForStmt()
             throw ExpectedSemicolonException();
         }
     }
+
+    UniquePtr<Expr> incr = nullptr;
 
     if (!is(TokenType::ParenC))
     {
@@ -190,21 +191,115 @@ UniquePtr<WhileStmt> Parser::parseWhileStmt()
 
 UniquePtr<SwitchStmt> Parser::parseSwitchStmt()
 {
+    if (!match(TokenType::ParenO))
+    {
+        throw ExpectedParenException();
+    }
 
+    auto cond = parseExpr();
+
+    if (!match(TokenType::ParenC))
+    {
+        throw ExpectedClosingParenException();
+    }
+
+    if (!match(TokenType::BraceO))
+    {
+        throw ExpectedBraceException();
+    }
+
+    auto body = makeUnique<CompoundStmt>(parseCaseList());
+
+    if (!match(TokenType::BraceC))
+    {
+        throw ExpectedClosingBraceException();
+    }
+
+    return makeUnique<SwitchStmt>(std::move(cond), std::move(body));
+}
+
+PtrDynamicArray<Stmt> Parser::parseCaseList()
+{
+    PtrDynamicArray<Stmt> temp;
+
+    while (true)
+    {
+        if (match(KeywordType::Case))
+        {
+            if (!match(TokenType::Colon))
+            {
+                throw ExpectedColonException();
+            }
+
+            auto cond = parseExpr();
+            temp.push_back(makeUnique<CaseStmt>(std::move(cond), parseStmt()));
+            continue;
+        }
+        else if (match(KeywordType::Default))
+        {
+            if (!match(TokenType::Colon))
+            {
+                throw ExpectedColonException();
+            }
+
+            temp.push_back(makeUnique<DefaultStmt>(parseStmt()));
+            continue;
+        }
+
+        break;
+    }
+
+    return std::move(temp);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<DoWhileStmt> Parser::parseDoWhileStmt()
 {
+    if (!match(TokenType::BraceO))
+    {
+        throw ExpectedWhileException();
+    }
 
+    auto body = parseCompoundStmt();
+
+    if (!match(KeywordType::While))
+    {
+        throw ExpectedWhileException();
+    }
+
+    if (!match(TokenType::ParenO))
+    {
+        throw ExpectedParenException();
+    }
+
+    auto cond = parseExpr();
+
+    if (!match(TokenType::ParenC))
+    {
+        throw ExpectedClosingParenException();
+    }
+
+    if (!match(TokenType::Semicolon))
+    {
+        throw ExpectedSemicolonException();
+    }
+
+    return makeUnique<DoWhileStmt>(std::move(cond), std::move(body));
 }
 
 /* ************************************************************************* */
 
 UniquePtr<CompoundStmt> Parser::parseCompoundStmt()
 {
+    PtrDynamicArray<Stmt> temp;
 
+    while (!match(TokenType::BraceC))
+    {
+        temp.push_back(parseStmt());
+    }
+
+    return makeUnique<CompoundStmt>(std::move(temp));
 }
 
 /* ************************************************************************* */
@@ -232,7 +327,7 @@ PtrDynamicArray<Expr> Parser::parseParameters()
     {
         temp.push_back(parseExpr());
     }
-    while (is(TokenType::Comma));
+    while (match(TokenType::Comma));
 
     return std::move(temp);
 }

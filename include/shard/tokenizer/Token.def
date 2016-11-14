@@ -126,6 +126,8 @@ KEYWORD(Return,     "return")
 KEYWORD(Break,      "break")
 KEYWORD(Continue,   "continue")
 KEYWORD(Throw,      "throw")
+KEYWORD(Case,       "case")
+KEYWORD(Default,    "default")
 
 /* ************************************************************************* */
 

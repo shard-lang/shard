@@ -65,6 +65,20 @@ public:
 
 /* ************************************************************************* */
 
+class ExpectedWhileException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected keyword while";
+
+public:
+
+    explicit ExpectedWhileException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
 class ExpectedIdentifierException : public ParserException
 {
 
