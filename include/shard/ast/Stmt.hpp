@@ -21,6 +21,7 @@
 // Shard
 #include "shard/utility.hpp"
 #include "shard/UniquePtr.hpp"
+#include "shard/PtrDynamicArray.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/DynamicArray.hpp"
 #include "shard/ast/utility.hpp"
@@ -246,7 +247,7 @@ public:
      * @param stmts A list of statements.
      * @param range Source range.
      */
-    explicit CompoundStmt(DynamicArray<UniquePtr<Stmt>> stmts = {}, SourceRange range = {}) noexcept;
+    explicit CompoundStmt(PtrDynamicArray<Stmt>> stmts = {}, SourceRange range = {}) noexcept;
 
 
 // Public Operations
