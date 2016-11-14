@@ -147,6 +147,82 @@ TEST(CompoundStmt, base)
 
 /* ************************************************************************ */
 
+TEST(CompoundStmt, parent)
+{
+    {
+        PtrDynamicArray<Stmt> stmts;
+        stmts.push_back(ExprStmt::make());
+        stmts.push_back(ExprStmt::make(IntLiteralExpr::make(789)));
+
+        // { ; 789; }
+        const CompoundStmt stmt(moveValue(stmts));
+
+        EXPECT_FALSE(stmt.isEmpty());
+        EXPECT_EQ(2, stmt.getCount());
+        EXPECT_EQ(2, stmt.getStatements().size());
+
+        int count = 0;
+
+        // begin/end
+        for (auto it = stmt.begin(); it != stmt.end(); ++it)
+        {
+            ++count;
+        }
+
+        EXPECT_EQ(2, count);
+
+        count = 0;
+
+        // begin/end
+        for (auto it = stmt.cbegin(); it != stmt.cend(); ++it)
+        {
+            ++count;
+        }
+
+        EXPECT_EQ(2, count);
+    }
+
+    {
+        PtrDynamicArray<Stmt> stmts;
+        stmts.push_back(ExprStmt::make());
+        stmts.push_back(ExprStmt::make(IntLiteralExpr::make(789)));
+
+        // { ; 789; }
+        CompoundStmt stmt(moveValue(stmts));
+
+        EXPECT_FALSE(stmt.isEmpty());
+        EXPECT_EQ(2, stmt.getCount());
+        EXPECT_EQ(2, stmt.getStatements().size());
+
+        int count = 0;
+
+        // begin/end
+        for (auto it = stmt.begin(); it != stmt.end(); ++it)
+        {
+            ++count;
+        }
+
+        EXPECT_EQ(2, count);
+
+        count = 0;
+
+        // begin/end
+        for (auto it = stmt.cbegin(); it != stmt.cend(); ++it)
+        {
+            ++count;
+        }
+
+        EXPECT_EQ(2, count);
+
+        stmt.addStatement(ExprStmt::make());
+        EXPECT_FALSE(stmt.isEmpty());
+        EXPECT_EQ(3, stmt.getCount());
+        EXPECT_EQ(3, stmt.getStatements().size());
+    }
+}
+
+/* ************************************************************************ */
+
 TEST(IfStmt, base)
 {
     {
