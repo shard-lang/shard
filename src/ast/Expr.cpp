@@ -94,7 +94,7 @@ StringLiteralExpr::StringLiteralExpr(ValueType value, SourceRange range)
 
 /* ************************************************************************* */
 
-BinaryExpr::BinaryExpr(Operator op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, SourceRange range)
+BinaryExpr::BinaryExpr(OpKind op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, SourceRange range)
     : Expr(ExprKind::Binary, range)
     , m_operator(op)
     , m_lhs(moveValue(lhs))
@@ -105,18 +105,8 @@ BinaryExpr::BinaryExpr(Operator op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, So
 
 /* ************************************************************************* */
 
-PrefixUnaryExpr::PrefixUnaryExpr(Operator op, UniquePtr<Expr> expr, SourceRange range)
-    : Expr(ExprKind::PrefixUnary, range)
-    , m_operator(op)
-    , m_expr(moveValue(expr))
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-PostfixUnaryExpr::PostfixUnaryExpr(Operator op, UniquePtr<Expr> expr, SourceRange range)
-    : Expr(ExprKind::PostfixUnary, range)
+UnaryExpr::UnaryExpr(OpKind op, UniquePtr<Expr> expr, SourceRange range)
+    : Expr(ExprKind::Unary, range)
     , m_operator(op)
     , m_expr(moveValue(expr))
 {

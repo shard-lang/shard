@@ -190,8 +190,8 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
 
 	switch (m_tokenizer.get().getType())
 	{
-		case TokenType::PlusPlus:	return makeUnique<PostfixUnaryExpr>(PostfixUnaryExpr::Operator::Increment, std::move(temp));
-		case TokenType::MinusMinus:	return makeUnique<PostfixUnaryExpr>(PostfixUnaryExpr::Operator::Decrement, std::move(temp));
+		case TokenType::PlusPlus:	return makeUnique<UnaryExpr>(UnaryExpr::OpKind::PostInc, std::move(temp));
+		case TokenType::MinusMinus:	return makeUnique<UnaryExpr>(UnaryExpr::OpKind::PostDec, std::move(temp));
 		case TokenType::Period:
 		case TokenType::ParenO:
 
