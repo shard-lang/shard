@@ -22,7 +22,7 @@
 #include "shard/utility.hpp"
 #include "shard/UniquePtr.hpp"
 #include "shard/ViewPtr.hpp"
-#include "shard/DynamicArray.hpp"
+#include "shard/PtrDynamicArray.hpp"
 #include "shard/ast/utility.hpp"
 #include "shard/ast/StmtContainer.hpp"
 
@@ -40,7 +40,7 @@ class Decl;
 /* ************************************************************************* */
 
 /**
- * @brief Statement kind.
+ * @brief      Statement kind.
  */
 enum class StmtKind
 {
@@ -62,21 +62,13 @@ enum class StmtKind
 /* ************************************************************************* */
 
 /**
- * @brief Base statement class.
+ * @brief      Base statement class.
  */
 class Stmt : public LocationInfo
 {
 
 // Public Ctors & Dtors
 public:
-
-
-    /**
-     * @brief Constructor.
-     * @param kind  Statement kind.
-     * @param range Source range.
-     */
-    Stmt(StmtKind kind, SourceRange range) noexcept;
 
 
     /**
@@ -99,6 +91,19 @@ public:
     }
 
 
+// Protected Ctors & Dtors
+protected:
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      kind   Statement kind.
+     * @param      range  Source range.
+     */
+    explicit Stmt(StmtKind kind, SourceRange range) noexcept;
+
+
 // Private Data Members
 private:
 
@@ -118,6 +123,7 @@ template<StmtKind KIND, typename T>
 struct StmtHelper
     : public KindTester<StmtKind, KIND, Stmt>
     , public KindCaster<Stmt, T>
+    , public KindMaker<T>
 {
     // Nothing to do
 };
@@ -125,7 +131,10 @@ struct StmtHelper
 /* ************************************************************************* */
 
 /**
- * @brief Expression statement.
+ * @brief      Expression statement.
+ *
+ * @details    In the source it represents: `;` or `<expr>;`. When the `expr` is
+ *             `nullptr` it's an empty statement.
  */
 class ExprStmt final
     : public Stmt
@@ -137,11 +146,18 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param expr  Expression.
-     * @param range Source range.
+     * @brief      Constructor.
+     *
+     * @param      expr   Expression.
+     * @param      range  Source range.
      */
     explicit ExprStmt(UniquePtr<Expr> expr = nullptr, SourceRange range = {}) noexcept;
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~ExprStmt();
 
 
 // Public Accessors & Mutators
@@ -149,13 +165,33 @@ public:
 
 
     /**
-     * @brief Returns expression.
-     * @return Expression.
+     * @brief      Returns expression.
+     *
+     * @return     Expression.
+     */
+    ViewPtr<Expr> getExpr() noexcept
+    {
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief      Returns expression.
+     *
+     * @return     Expression.
      */
     ViewPtr<const Expr> getExpr() const noexcept
     {
-        return m_expr.get();
+        return makeView(m_expr);
     }
+
+
+    /**
+     * @brief      Change the expression.
+     *
+     * @param      expr  The new expression.
+     */
+    void setExpr(UniquePtr<Expr> expr) noexcept;
 
 
 // Public Operations
@@ -164,6 +200,7 @@ public:
 
     using StmtHelper<StmtKind::Expr, ExprStmt>::is;
     using StmtHelper<StmtKind::Expr, ExprStmt>::cast;
+    using StmtHelper<StmtKind::Expr, ExprStmt>::make;
 
 
 // Private Data Members
@@ -177,7 +214,10 @@ private:
 /* ************************************************************************* */
 
 /**
- * @brief Declaration statement.
+ * @brief      Declaration statement.
+ *
+ * @details    Statement which declares a variable. In the source it appears as:
+ *             `<decl>;`.
  */
 class DeclStmt final
     : public Stmt
@@ -189,11 +229,18 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param decl  Declaration.
-     * @param range Source range.
+     * @brief      Constructor.
+     *
+     * @param      decl   Declaration.
+     * @param      range  Source range.
      */
     explicit DeclStmt(UniquePtr<Decl> decl, SourceRange range = {}) noexcept;
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~DeclStmt();
 
 
 // Public Accessors & Mutators
@@ -201,13 +248,33 @@ public:
 
 
     /**
-     * @brief Returns declaration.
-     * @return Declaration.
+     * @brief      Returns declaration.
+     *
+     * @return     Declaration.
+     */
+    ViewPtr<Decl> getDecl() noexcept
+    {
+        return makeView(m_decl);
+    }
+
+
+    /**
+     * @brief      Returns declaration.
+     *
+     * @return     Declaration.
      */
     ViewPtr<const Decl> getDecl() const noexcept
     {
-        return m_decl.get();
+        return makeView(m_decl);
     }
+
+
+    /**
+     * @brief      Change declaration.
+     *
+     * @param      decl  The new declaration.
+     */
+    void setDecl(UniquePtr<Decl> decl) noexcept;
 
 
 // Public Operations
@@ -216,6 +283,7 @@ public:
 
     using StmtHelper<StmtKind::Decl, DeclStmt>::is;
     using StmtHelper<StmtKind::Decl, DeclStmt>::cast;
+    using StmtHelper<StmtKind::Decl, DeclStmt>::make;
 
 
 // Private Data Members
@@ -229,9 +297,12 @@ private:
 /* ************************************************************************* */
 
 /**
- * @brief Compound statement.
+ * @brief      Compound statement.
+ *
+ * @details    It's a container for other statements. In the source is looks
+ *             like this: `{ <stmts> }`.
  */
-class CompoundStmt
+class CompoundStmt final
     : public Stmt
     , private StmtHelper<StmtKind::Compound, CompoundStmt>
     , public StmtContainer
@@ -242,11 +313,12 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param stmts A list of statements.
-     * @param range Source range.
+     * @brief      Constructor.
+     *
+     * @param      stmts  A list of statements.
+     * @param      range  Source range.
      */
-    explicit CompoundStmt(DynamicArray<UniquePtr<Stmt>> stmts = {}, SourceRange range = {}) noexcept;
+    explicit CompoundStmt(PtrDynamicArray<Stmt> stmts = {}, SourceRange range = {}) noexcept;
 
 
 // Public Operations
@@ -255,15 +327,19 @@ public:
 
     using StmtHelper<StmtKind::Compound, CompoundStmt>::is;
     using StmtHelper<StmtKind::Compound, CompoundStmt>::cast;
+    using StmtHelper<StmtKind::Compound, CompoundStmt>::make;
 
 };
 
 /* ************************************************************************* */
 
 /**
- * @brief If branch statement.
+ * @brief      If branch statement.
+ *
+ * @details    In the source it appears as: `if (<condExpr>) <thenStmt>` or `if
+ *             (<condExpr>) <thenStmt> else <elseStmt>`.
  */
-class IfStmt
+class IfStmt final
     : public Stmt
     , private StmtHelper<StmtKind::If, IfStmt>
 {
@@ -273,13 +349,20 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param condExpr Condition expression.
-     * @param thenStmt Then branch statement.
-     * @param elseStmt Else branch statement.
-     * @param range    Source range.
+     * @brief      Constructor.
+     *
+     * @param      condExpr  Condition expression.
+     * @param      thenStmt  Then branch statement.
+     * @param      elseStmt  Else branch statement.
+     * @param      range     Source range.
      */
     explicit IfStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stmt> elseStmt = nullptr, SourceRange range = {}) noexcept;
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~IfStmt();
 
 
 // Public Accessors & Mutators
@@ -287,33 +370,93 @@ public:
 
 
     /**
-     * @brief Return condition expression.
-     * @return Condition expression.
+     * @brief      Return condition expression.
+     *
+     * @return     Condition expression.
+     */
+    ViewPtr<Expr> getCondExpr() noexcept
+    {
+        return makeView(m_condExpr);
+    }
+
+
+    /**
+     * @brief      Return condition expression.
+     *
+     * @return     Condition expression.
      */
     ViewPtr<const Expr> getCondExpr() const noexcept
     {
-        return m_condExpr.get();
+        return makeView(m_condExpr);
     }
 
 
     /**
-     * @brief Return then branch statement.
-     * @return Then branch statement.
+     * @brief      Change condition expression.
+     *
+     * @param      expr  The new condition expression.
+     */
+    void setCondExpr(UniquePtr<Expr> expr) noexcept;
+
+
+    /**
+     * @brief      Return then branch statement.
+     *
+     * @return     Then branch statement.
+     */
+    ViewPtr<Stmt> getThenStmt() noexcept
+    {
+        return makeView(m_thenStmt);
+    }
+
+
+    /**
+     * @brief      Return then branch statement.
+     *
+     * @return     Then branch statement.
      */
     ViewPtr<const Stmt> getThenStmt() const noexcept
     {
-        return m_thenStmt.get();
+        return makeView(m_thenStmt);
     }
 
 
     /**
-     * @brief Return else branch statement.
-     * @return Else branch statement.
+     * @brief      Change then branch statement.
+     *
+     * @param      stmt  The new then branch statement.
+     */
+    void setThenStmt(UniquePtr<Stmt> stmt) noexcept;
+
+
+    /**
+     * @brief      Return else branch statement.
+     *
+     * @return     Else branch statement.
+     */
+    ViewPtr<Stmt> getElseStmt() noexcept
+    {
+        return makeView(m_elseStmt);
+    }
+
+
+    /**
+     * @brief      Return else branch statement.
+     *
+     * @return     Else branch statement.
      */
     ViewPtr<const Stmt> getElseStmt() const noexcept
     {
-        return m_elseStmt.get();
+        return makeView(m_elseStmt);
     }
+
+
+    /**
+     * @brief      Change else branch statement.
+     *
+     * @param      stmt  The new else branch statement.
+     */
+    void setElseStmt(UniquePtr<Stmt> stmt) noexcept;
 
 
 // Public Operations
@@ -322,6 +465,7 @@ public:
 
     using StmtHelper<StmtKind::If, IfStmt>::is;
     using StmtHelper<StmtKind::If, IfStmt>::cast;
+    using StmtHelper<StmtKind::If, IfStmt>::make;
 
 
 // Private Data Members
@@ -341,9 +485,11 @@ private:
 /* ************************************************************************* */
 
 /**
- * @brief While loop statement.
+ * @brief      While loop statement.
+ *
+ * @details    In the source it appears as: `while (<condExpr>) <bodyStmt>`.
  */
-class WhileStmt
+class WhileStmt final
     : public Stmt
     , private StmtHelper<StmtKind::While, WhileStmt>
 {
@@ -353,12 +499,19 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param condExpr  Condition expression.
-     * @param bodyStmt  Body statement.
-     * @param range     Source range.
+     * @brief      Constructor.
+     *
+     * @param      condExpr  Condition expression.
+     * @param      bodyStmt  Body statement.
+     * @param      range     Source range.
      */
     explicit WhileStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range = {}) noexcept;
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~WhileStmt();
 
 
 // Public Accessors & Mutators
@@ -366,23 +519,63 @@ public:
 
 
     /**
-     * @brief Returns condition expression.
-     * @return Expression.
+     * @brief      Returns condition expression.
+     *
+     * @return     Expression.
      */
-    ViewPtr<const Expr> getCondExpr() const noexcept
+    ViewPtr<Expr> getCondExpr() noexcept
     {
-        return m_condExpr.get();
+        return makeView(m_condExpr);
     }
 
 
     /**
-     * @brief Returns body statement.
-     * @return Body statement.
+     * @brief      Returns condition expression.
+     *
+     * @return     Expression.
+     */
+    ViewPtr<const Expr> getCondExpr() const noexcept
+    {
+        return makeView(m_condExpr);
+    }
+
+
+    /**
+     * @brief      Change condition expression.
+     *
+     * @param      expr  The new condition expression.
+     */
+    void setCondExpr(UniquePtr<Expr> expr) noexcept;
+
+
+    /**
+     * @brief      Returns body statement.
+     *
+     * @return     Body statement.
+     */
+    ViewPtr<Stmt> getBodyStmt() noexcept
+    {
+        return makeView(m_bodyStmt);
+    }
+
+
+    /**
+     * @brief      Returns body statement.
+     *
+     * @return     Body statement.
      */
     ViewPtr<const Stmt> getBodyStmt() const noexcept
     {
-        return m_bodyStmt.get();
+        return makeView(m_bodyStmt);
     }
+
+
+    /**
+     * @brief      Change body statement.
+     *
+     * @param      stmt  The new body statement.
+     */
+    void setBodyStmt(UniquePtr<Stmt> stmt) noexcept;
 
 
 // Public Operations
@@ -391,6 +584,7 @@ public:
 
     using StmtHelper<StmtKind::While, WhileStmt>::is;
     using StmtHelper<StmtKind::While, WhileStmt>::cast;
+    using StmtHelper<StmtKind::While, WhileStmt>::make;
 
 
 // Private Data Members
@@ -407,9 +601,11 @@ private:
 /* ************************************************************************* */
 
 /**
- * @brief Do-while loop statement.
+ * @brief      Do-while loop statement.
+ *
+ * @details    In the source it appears as: `do <bodyStmt> while (<condExpr>);`.
  */
-class DoWhileStmt
+class DoWhileStmt final
     : public Stmt
     , private StmtHelper<StmtKind::DoWhile, DoWhileStmt>
 {
@@ -419,12 +615,19 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param condExpr Condition expression.
-     * @param bodyStmt Body statement.
-     * @param range    Source range.
+     * @brief      Constructor.
+     *
+     * @param      condExpr  Condition expression.
+     * @param      bodyStmt  Body statement.
+     * @param      range     Source range.
      */
     explicit DoWhileStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range = {}) noexcept;
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~DoWhileStmt();
 
 
 // Public Accessors & Mutators
@@ -432,23 +635,63 @@ public:
 
 
     /**
-     * @brief Returns condition expression.
-     * @return Expression.
+     * @brief      Returns condition expression.
+     *
+     * @return     Expression.
      */
-    ViewPtr<const Expr> getCondExpr() const noexcept
+    ViewPtr<Expr> getCondExpr() noexcept
     {
-        return m_condExpr.get();
+        return makeView(m_condExpr);
     }
 
 
     /**
-     * @brief Returns body statement.
-     * @return Body statement.
+     * @brief      Returns condition expression.
+     *
+     * @return     Expression.
+     */
+    ViewPtr<const Expr> getCondExpr() const noexcept
+    {
+        return makeView(m_condExpr);
+    }
+
+
+    /**
+     * @brief      Change condition expression.
+     *
+     * @param      expr  The new condition expression.
+     */
+    void setCondExpr(UniquePtr<Expr> expr) noexcept;
+
+
+    /**
+     * @brief      Returns body statement.
+     *
+     * @return     Body statement.
+     */
+    ViewPtr<CompoundStmt> getBodyStmt() noexcept
+    {
+        return makeView(m_bodyStmt);
+    }
+
+
+    /**
+     * @brief      Returns body statement.
+     *
+     * @return     Body statement.
      */
     ViewPtr<const CompoundStmt> getBodyStmt() const noexcept
     {
-        return m_bodyStmt.get();
+        return makeView(m_bodyStmt);
     }
+
+
+    /**
+     * @brief      Change body statement.
+     *
+     * @param      stmt  The new body statement.
+     */
+    void setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept;
 
 
 // Public Operations
@@ -457,6 +700,7 @@ public:
 
     using StmtHelper<StmtKind::DoWhile, DoWhileStmt>::is;
     using StmtHelper<StmtKind::DoWhile, DoWhileStmt>::cast;
+    using StmtHelper<StmtKind::DoWhile, DoWhileStmt>::make;
 
 
 // Private Data Members
@@ -473,9 +717,12 @@ private:
 /* ************************************************************************* */
 
 /**
- * @brief For loop statement.
+ * @brief      For loop statement.
+ *
+ * @details    In the source it appears as: `for (<initStmt> <condExpr> ;
+ *             <incExpr>) <bodyStmt>`.
  */
-class ForStmt
+class ForStmt final
     : public Stmt
     , private StmtHelper<StmtKind::For, ForStmt>
 {
@@ -485,14 +732,21 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param initStmt Initialization statement.
-     * @param condExpr Test expression.
-     * @param incExpr  Increment statement.
-     * @param bodyStmt Body statement.
-     * @param range    Source range.
+     * @brief      Constructor.
+     *
+     * @param      initStmt  Initialization statement.
+     * @param      condExpr  Test expression.
+     * @param      incExpr   Increment statement.
+     * @param      bodyStmt  Body statement.
+     * @param      range     Source range.
      */
     explicit ForStmt(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<Expr> incExpr, UniquePtr<Stmt> bodyStmt, SourceRange range = {}) noexcept;
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~ForStmt();
 
 
 // Public Accessors & Mutators
@@ -500,43 +754,123 @@ public:
 
 
     /**
-     * @brief Returns initialization statement.
-     * @return Initialization statement.
+     * @brief      Returns initialization statement.
+     *
+     * @return     Initialization statement.
+     */
+    ViewPtr<Stmt> getInitStmt() noexcept
+    {
+        return makeView(m_initStmt);
+    }
+
+
+    /**
+     * @brief      Returns initialization statement.
+     *
+     * @return     Initialization statement.
      */
     ViewPtr<const Stmt> getInitStmt() const noexcept
     {
-        return m_initStmt.get();
+        return makeView(m_initStmt);
     }
 
 
     /**
-     * @brief Returns condition epxression.
-     * @return Condition epxression.
+     * @brief      Change initialization statement.
+     *
+     * @param      stmt  THe new initialization statement.
+     */
+    void setInitStmt(UniquePtr<Stmt> stmt) noexcept;
+
+
+    /**
+     * @brief      Returns condition epxression.
+     *
+     * @return     Condition epxression.
+     */
+    ViewPtr<Expr> getCondExpr() noexcept
+    {
+        return makeView(m_condExpr);
+    }
+
+
+    /**
+     * @brief      Returns condition epxression.
+     *
+     * @return     Condition epxression.
      */
     ViewPtr<const Expr> getCondExpr() const noexcept
     {
-        return m_condExpr.get();
+        return makeView(m_condExpr);
     }
 
 
     /**
-     * @brief Returns increment expression.
-     * @return Increment expression.
+     * @brief      Change condition epxression.
+     *
+     * @param      expr  The new condition epxression.
+     */
+    void setCondExpr(UniquePtr<Expr> expr) noexcept;
+
+
+    /**
+     * @brief      Returns increment expression.
+     *
+     * @return     Increment expression.
+     */
+    ViewPtr<Expr> getIncExpr() noexcept
+    {
+        return makeView(m_incExpr);
+    }
+
+
+    /**
+     * @brief      Returns increment expression.
+     *
+     * @return     Increment expression.
      */
     ViewPtr<const Expr> getIncExpr() const noexcept
     {
-        return m_incExpr.get();
+        return makeView(m_incExpr);
     }
 
 
     /**
-     * @brief Returns body statement.
-     * @return Body statement.
+     * @brief      Change increment expression.
+     *
+     * @param      expr  The new increment expression.
+     */
+    void setIncExpr(UniquePtr<Expr> expr) noexcept;
+
+
+    /**
+     * @brief      Returns body statement.
+     *
+     * @return     Body statement.
+     */
+    ViewPtr<Stmt> getBodyStmt() noexcept
+    {
+        return makeView(m_bodyStmt);
+    }
+
+
+    /**
+     * @brief      Returns body statement.
+     *
+     * @return     Body statement.
      */
     ViewPtr<const Stmt> getBodyStmt() const noexcept
     {
-        return m_bodyStmt.get();
+        return makeView(m_bodyStmt);
     }
+
+
+    /**
+     * @brief      Change body statement.
+     *
+     * @param      stmt  The new body statement.
+     */
+    void setBodyStmt(UniquePtr<Stmt> stmt) noexcept;
 
 
 // Public Operations
@@ -545,6 +879,7 @@ public:
 
     using StmtHelper<StmtKind::For, ForStmt>::is;
     using StmtHelper<StmtKind::For, ForStmt>::cast;
+    using StmtHelper<StmtKind::For, ForStmt>::make;
 
 
 // Private Data Members
@@ -567,9 +902,11 @@ private:
 /* ************************************************************************* */
 
 /**
- * @brief Switch branch statement.
+ * @brief      Switch branch statement.
+ *
+ * @details    In the source it appears as: `switch (<condExpr>) <bodyStmt>`.
  */
-class SwitchStmt
+class SwitchStmt final
     : public Stmt
     , private StmtHelper<StmtKind::Switch, SwitchStmt>
 {
@@ -579,12 +916,19 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param condExpr Condition expression.
-     * @param bodyStmt Body statement.
-     * @param range    Source range.
+     * @brief      Constructor.
+     *
+     * @param      condExpr  Condition expression.
+     * @param      bodyStmt  Body statement.
+     * @param      range     Source range.
      */
     explicit SwitchStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range = {}) noexcept;
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~SwitchStmt();
 
 
 // Public Accessors & Mutators
@@ -592,23 +936,63 @@ public:
 
 
     /**
-     * @brief Returns condition expression.
-     * @return Condition expression.
+     * @brief      Returns condition expression.
+     *
+     * @return     Condition expression.
      */
-    ViewPtr<const Expr> getCondExpr() const noexcept
+    ViewPtr<Expr> getCondExpr() noexcept
     {
-        return m_condExpr.get();
+        return makeView(m_condExpr);
     }
 
 
     /**
-     * @brief Returns body statement.
-     * @return Body statement.
+     * @brief      Returns condition expression.
+     *
+     * @return     Condition expression.
+     */
+    ViewPtr<const Expr> getCondExpr() const noexcept
+    {
+        return makeView(m_condExpr);
+    }
+
+
+    /**
+     * @brief      Change condition epxression.
+     *
+     * @param      expr  The new condition epxression.
+     */
+    void setCondExpr(UniquePtr<Expr> expr) noexcept;
+
+
+    /**
+     * @brief      Returns body statement.
+     *
+     * @return     Body statement.
+     */
+    ViewPtr<CompoundStmt> getBodyStmt() noexcept
+    {
+        return makeView(m_bodyStmt);
+    }
+
+
+    /**
+     * @brief      Returns body statement.
+     *
+     * @return     Body statement.
      */
     ViewPtr<const CompoundStmt> getBodyStmt() const noexcept
     {
-        return m_bodyStmt.get();
+        return makeView(m_bodyStmt);
     }
+
+
+    /**
+     * @brief      Change body statement.
+     *
+     * @param      stmt  The new body statement.
+     */
+    void setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept;
 
 
 // Public Operations
@@ -617,6 +1001,7 @@ public:
 
     using StmtHelper<StmtKind::Switch, SwitchStmt>::is;
     using StmtHelper<StmtKind::Switch, SwitchStmt>::cast;
+    using StmtHelper<StmtKind::Switch, SwitchStmt>::make;
 
 
 // Private Data Members
@@ -633,9 +1018,11 @@ private:
 /* ************************************************************************* */
 
 /**
- * @brief Case statement.
+ * @brief      Case statement.
+ *
+ * @details    In the source it appears as: `case <expr>: <bodyStmt>`.
  */
-class CaseStmt
+class CaseStmt final
     : public Stmt
     , private StmtHelper<StmtKind::Case, CaseStmt>
 {
@@ -645,12 +1032,20 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param expr  Test expression.
-     * @param stmt  Body statement.
-     * @param range Source range.
+     * @brief      Constructor.
+     *
+     * @param      expr      Test expression.
+     * @param      bodyStmt  The body statement
+     * @param      range     Source range.
+     * @param      stmt  Body statement.
      */
     explicit CaseStmt(UniquePtr<Expr> expr, UniquePtr<Stmt> bodyStmt, SourceRange range = {}) noexcept;
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~CaseStmt();
 
 
 // Public Accessors & Mutators
@@ -658,23 +1053,63 @@ public:
 
 
     /**
-     * @brief Returns condition expression.
-     * @return Condition expression.
+     * @brief      Returns condition expression.
+     *
+     * @return     Condition expression.
      */
-    ViewPtr<const Expr> getExpr() const noexcept
+    ViewPtr<Expr> getExpr() noexcept
     {
-        return m_expr.get();
+        return makeView(m_expr);
     }
 
 
     /**
-     * @brief Returns body statement.
-     * @return Body statement.
+     * @brief      Returns condition expression.
+     *
+     * @return     Condition expression.
+     */
+    ViewPtr<const Expr> getExpr() const noexcept
+    {
+        return makeView(m_expr);
+    }
+
+
+    /**
+     * @brief      Change epxression.
+     *
+     * @param      expr  The new epxression.
+     */
+    void setExpr(UniquePtr<Expr> expr) noexcept;
+
+
+    /**
+     * @brief      Returns body statement.
+     *
+     * @return     Body statement.
+     */
+    ViewPtr<Stmt> getBodyStmt() noexcept
+    {
+        return makeView(m_bodyStmt);
+    }
+
+
+    /**
+     * @brief      Returns body statement.
+     *
+     * @return     Body statement.
      */
     ViewPtr<const Stmt> getBodyStmt() const noexcept
     {
-        return m_bodyStmt.get();
+        return makeView(m_bodyStmt);
     }
+
+
+    /**
+     * @brief      Change body statement.
+     *
+     * @param      stmt  The new body statement.
+     */
+    void setBodyStmt(UniquePtr<Stmt> stmt) noexcept;
 
 
 // Public Operations
@@ -683,6 +1118,7 @@ public:
 
     using StmtHelper<StmtKind::Case, CaseStmt>::is;
     using StmtHelper<StmtKind::Case, CaseStmt>::cast;
+    using StmtHelper<StmtKind::Case, CaseStmt>::make;
 
 
 // Private Data Members
@@ -699,9 +1135,11 @@ private:
 /* ************************************************************************* */
 
 /**
- * @brief Default statement.
+ * @brief      Default statement.
+ *
+ * @details    In the source it appears as: `default: <bodyStmt>`.
  */
-class DefaultStmt
+class DefaultStmt final
     : public Stmt
     , private StmtHelper<StmtKind::Default, DefaultStmt>
 {
@@ -711,11 +1149,18 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param bodyStmt Body statement.
-     * @param range    Source range.
+     * @brief      Constructor.
+     *
+     * @param      bodyStmt  Body statement.
+     * @param      range     Source range.
      */
     explicit DefaultStmt(UniquePtr<Stmt> bodyStmt, SourceRange range = {}) noexcept;
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~DefaultStmt();
 
 
 // Public Accessors & Mutators
@@ -723,13 +1168,33 @@ public:
 
 
     /**
-     * @brief Returns body statement.
-     * @return Body statement.
+     * @brief      Returns body statement.
+     *
+     * @return     Body statement.
+     */
+    ViewPtr<Stmt> getBodyStmt() noexcept
+    {
+        return makeView(m_bodyStmt);
+    }
+
+
+    /**
+     * @brief      Returns body statement.
+     *
+     * @return     Body statement.
      */
     ViewPtr<const Stmt> getBodyStmt() const noexcept
     {
-        return m_bodyStmt.get();
+        return makeView(m_bodyStmt);
     }
+
+
+    /**
+     * @brief      Change body statement.
+     *
+     * @param      stmt  The new body statement.
+     */
+    void setBodyStmt(UniquePtr<Stmt> stmt) noexcept;
 
 
 // Public Operations
@@ -738,6 +1203,7 @@ public:
 
     using StmtHelper<StmtKind::Default, DefaultStmt>::is;
     using StmtHelper<StmtKind::Default, DefaultStmt>::cast;
+    using StmtHelper<StmtKind::Default, DefaultStmt>::make;
 
 
 // Private Data Members
@@ -751,9 +1217,11 @@ private:
 /* ************************************************************************* */
 
 /**
- * @brief Continue statement.
+ * @brief      Continue statement.
+ *
+ * @details    In the source it appears as: `continue;`.
  */
-class ContinueStmt
+class ContinueStmt final
     : public Stmt
     , private StmtHelper<StmtKind::Continue, ContinueStmt>
 {
@@ -763,8 +1231,9 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param range Source range.
+     * @brief      Constructor.
+     *
+     * @param      range  Source range.
      */
     explicit ContinueStmt(SourceRange range = {}) noexcept;
 
@@ -775,15 +1244,18 @@ public:
 
     using StmtHelper<StmtKind::Continue, ContinueStmt>::is;
     using StmtHelper<StmtKind::Continue, ContinueStmt>::cast;
+    using StmtHelper<StmtKind::Continue, ContinueStmt>::make;
 
 };
 
 /* ************************************************************************* */
 
 /**
- * @brief Break statement.
+ * @brief      Break statement.
+ *
+ * @details    In the source it appears as: `break;`.
  */
-class BreakStmt
+class BreakStmt final
     : public Stmt
     , private StmtHelper<StmtKind::Break, BreakStmt>
 {
@@ -793,8 +1265,9 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param range Source range.
+     * @brief      Constructor.
+     *
+     * @param      range  Source range.
      */
     explicit BreakStmt(SourceRange range = {}) noexcept;
 
@@ -805,6 +1278,7 @@ public:
 
     using StmtHelper<StmtKind::Break, BreakStmt>::is;
     using StmtHelper<StmtKind::Break, BreakStmt>::cast;
+    using StmtHelper<StmtKind::Break, BreakStmt>::make;
 
 };
 
@@ -812,8 +1286,10 @@ public:
 
 /**
  * @brief Return statement.
+ *
+ * @details    In the source it appears as: `return <resExpr>;` or `return;`.
  */
-class ReturnStmt
+class ReturnStmt final
     : public Stmt
     , private StmtHelper<StmtKind::Return, ReturnStmt>
 {
@@ -823,11 +1299,18 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param resExpr Result expression.
-     * @param range   Source range.
+     * @brief      Constructor.
+     *
+     * @param      resExpr  Result expression.
+     * @param      range    Source range.
      */
     explicit ReturnStmt(UniquePtr<Expr> resExpr = nullptr, SourceRange range = {}) noexcept;
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~ReturnStmt();
 
 
 // Public Accessors & Mutators
@@ -835,13 +1318,33 @@ public:
 
 
     /**
-     * @brief Returns result expression.
-     * @return Result expression.
+     * @brief      Returns result expression.
+     *
+     * @return     Result expression.
+     */
+    ViewPtr<Expr> getResExpr() noexcept
+    {
+        return makeView(m_resExpr);
+    }
+
+
+    /**
+     * @brief      Returns result expression.
+     *
+     * @return     Result expression.
      */
     ViewPtr<const Expr> getResExpr() const noexcept
     {
-        return m_resExpr.get();
+        return makeView(m_resExpr);
     }
+
+
+    /**
+     * @brief      Change result epxression.
+     *
+     * @param      expr  The new result expression.
+     */
+    void setResExpr(UniquePtr<Expr> expr) noexcept;
 
 
 // Public Operations
@@ -850,6 +1353,7 @@ public:
 
     using StmtHelper<StmtKind::Return, ReturnStmt>::is;
     using StmtHelper<StmtKind::Return, ReturnStmt>::cast;
+    using StmtHelper<StmtKind::Return, ReturnStmt>::make;
 
 
 // Private Data Members
