@@ -117,9 +117,14 @@ KEYWORD(If,         "if")
 KEYWORD(Else,       "else")
 KEYWORD(Do,         "do")
 KEYWORD(While,      "while")
+KEYWORD(Switch,     "switch")
 KEYWORD(For,        "for")
 KEYWORD(Try,        "try")
 KEYWORD(Catch,      "catch")
+
+KEYWORD(Return,     "return")
+KEYWORD(Break,      "break")
+KEYWORD(Continue,   "continue")
 KEYWORD(Throw,      "throw")
 
 /* ************************************************************************* */

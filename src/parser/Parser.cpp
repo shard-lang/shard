@@ -19,6 +19,7 @@
 /* ************************************************************************* */
 
 #include "shard/UniquePtr.hpp"
+#include "shard/PtrDynamicArray.hpp"
 #include "shard/tokenizer/Tokenizer.hpp"
 #include "shard/tokenizer/TokenType.hpp"
 #include "shard/ast/Module.hpp"
@@ -47,40 +48,152 @@ UniquePtr<Module> Parser::parseModule()
     return std::move(module);
 }
 
+/* ************************************************************************* */
+
 UniquePtr<Stmt> Parser::parseStmt()
 {
+	switch (m_tokenizer.get().getType())
+	{
+		case TokenType::Semicolon:
+			return nullptr;
+		case TokenType::BraceO:
+			return parseCompoundStmt();
+		case TokenType::Keyword:
+			switch (m_tokenizer.get().getKeywordType())
+			{
+				case KeywordType::Return:
+					m_tokenizer.toss();
+					return makeUnique<ReturnStmt>(parseExpr());
+				case KeywordType::Break:
+					m_tokenizer.toss();
+					return makeUnique<BreakStmt>();
+				case KeywordType::Continue:	
+					m_tokenizer.toss();
+					return makeUnique<ContinueStmt>();
+				case KeywordType::Throw: 
+					m_tokenizer.toss();
+					// TODO
+				case KeywordType::If:
+					m_tokenizer.toss();
+					return parseIfStmt();
+				case KeywordType::Do: 
+					m_tokenizer.toss();
+					return parseDoWhileStmt();
+				case KeywordType::For: 
+					m_tokenizer.toss();
+					return parseForStmt();
+				case KeywordType::While: 
+					m_tokenizer.toss();
+					return parseWhileStmt();
+				case KeywordType::Switch:
+					m_tokenizer.toss();
+					return parseSwitchStmt();
+				case KeywordType::Try: 
+					m_tokenizer.toss();
+					// TODO
+			}
+		case TokenType::Identifier:
+			break;
 
+		default:
+			return makeUnique<ExprStmt>(parseExpr());
+	}
 }
+
+/* ************************************************************************* */
 
 UniquePtr<IfStmt> Parser::parseIfStmt()
 {
+	if (!match(TokenType::ParenO))
+	{
+		throw ExpectedParenException();
+	}
 
+	auto cond = parseExpr();
+
+	if (!match(TokenType::ParenC))
+	{
+		throw ExpectedClosingParenException();
+	}
+
+	auto thanStmt = parseStmt();
+
+	UniquePtr<Stmt> elseStmt = nullptr;
+
+	if (match(KeywordType::Else))
+	{
+		elseStmt = parseStmt();
+	}
+
+	return makeUnique<IfStmt>(std::move(cond), std::move(thanStmt), std::move(elseStmt));
 }
+
+/* ************************************************************************* */
 
 UniquePtr<ForStmt> Parser::parseForStmt()
 {
+	if (!match(TokenType::ParenO))
+	{
+		throw ExpectedParenException();
+	}
 
+	auto init = parseStmt();
+
+	UniquePtr<Expr> cond = nullptr;
+	UniquePtr<Expr> incr = nullptr;
+
+	if (!is(TokenType::Semicolon))
+	{
+		cond = parseExpr();
+
+		if (!match(TokenType::Semicolon))
+		{
+			throw ExpectedSemicolonException();
+		}
+	}
+
+	if (!is(TokenType::ParenC))
+	{
+		incr = parseExpr();
+
+		if (!match(TokenType::ParenC))
+		{
+			throw ExpectedClosingParenException();
+		}
+	}
+
+	return makeUnique<ForStmt>(std::move(init), std::move(cond), std::move(incr), parseStmt());
 }
+
+/* ************************************************************************* */
 
 UniquePtr<WhileStmt> Parser::parseWhileStmt()
 {
 
 }
 
+/* ************************************************************************* */
+
 UniquePtr<SwitchStmt> Parser::parseSwitchStmt()
 {
 
 }
+
+/* ************************************************************************* */
 
 UniquePtr<DoWhileStmt> Parser::parseDoWhileStmt()
 {
 
 }
 
+/* ************************************************************************* */
+
 UniquePtr<CompoundStmt> Parser::parseCompoundStmt()
 {
 
 }
+
+/* ************************************************************************* */
 
 UniquePtr<Decl> Parser::parseDecl()
 {
@@ -94,6 +207,23 @@ UniquePtr<Decl> Parser::parseDecl()
 
     throw ExpectedDeclException();
 }
+
+/* ************************************************************************* */
+
+PtrDynamicArray<Expr> Parser::parseParameters()
+{
+	PtrDynamicArray<Expr> temp;
+
+	do
+	{
+		temp.push_back(parseExpr());
+	}
+	while (is(TokenType::Comma));
+
+	return std::move(temp);
+}
+
+/* ************************************************************************* */
 
 UniquePtr<Expr> Parser::parseExpr()
 {
@@ -137,6 +267,8 @@ UniquePtr<Expr> Parser::parseExpr()
     }
 }
 
+/* ************************************************************************* */
+
 UniquePtr<Expr> Parser::parseRelationalExpr()
 {
     auto temp = parseAdditiveExpr();
@@ -166,6 +298,8 @@ UniquePtr<Expr> Parser::parseRelationalExpr()
     }
 }
 
+/* ************************************************************************* */
+
 UniquePtr<Expr> Parser::parseAdditiveExpr()
 {
     auto temp = parseMultiplicativeExpr();
@@ -183,6 +317,8 @@ UniquePtr<Expr> Parser::parseAdditiveExpr()
             return std::move(temp);
     }
 }
+
+/* ************************************************************************* */
 
 UniquePtr<Expr> Parser::parseMultiplicativeExpr()
 {
@@ -204,6 +340,8 @@ UniquePtr<Expr> Parser::parseMultiplicativeExpr()
             return std::move(temp);
     }
 }
+
+/* ************************************************************************* */
 
 UniquePtr<Expr> Parser::parsePrefixUnaryExpr()
 {
@@ -230,6 +368,8 @@ UniquePtr<Expr> Parser::parsePrefixUnaryExpr()
     }
 }
 
+/* ************************************************************************* */
+
 UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
 {
     auto temp = parsePrimaryExpr();
@@ -245,13 +385,28 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
                 temp = makeUnique<PostfixUnaryExpr>(PostfixUnaryExpr::Operator::Decrement, std::move(temp));
                 break;
             case TokenType::Period:
-                // TODO
+                m_tokenizer.toss();
+                if (!is(TokenType::Identifier))
+                {
+                	throw ExpectedIdentifierException();
+                }
+                temp = makeUnique<MemberAccessExpr>(std::move(temp), m_tokenizer.get().getStringValue());
                 break;
             case TokenType::ParenO:
-                // TODO
+            	m_tokenizer.toss();
+                temp = makeUnique<FunctionCallExpr>(std::move(temp), parseParameters());
+                if (!is(TokenType::ParenC))
+                {
+                	throw ExpectedClosingParenException();
+                }
                 break;      
             case TokenType::SquareO:
-                // TODO
+            	m_tokenizer.toss();
+                temp = makeUnique<SubscriptExpr>(std::move(temp), parseParameters());
+                if (!is(TokenType::SquareC))
+                {
+                	throw ExpectedClosingSquareException();
+                }
                 break;  
 
             default:
@@ -260,6 +415,8 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
         m_tokenizer.toss();
     }
 }
+
+/* ************************************************************************* */
 
 UniquePtr<Expr> Parser::parsePrimaryExpr()
 {
@@ -292,6 +449,8 @@ UniquePtr<Expr> Parser::parsePrimaryExpr()
             throw ExpectedPrimaryExprException();
     }
 }
+
+/* ************************************************************************* */
 
 UniquePtr<Expr> Parser::parseParenExpr()
 {

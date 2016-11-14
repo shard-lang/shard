@@ -65,6 +65,34 @@ public:
 
 /* ************************************************************************* */
 
+class ExpectedIdentifierException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected identifier";
+
+public:
+
+    explicit ExpectedIdentifierException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
+class ExpectedParenException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected opening parenthesis";
+
+public:
+
+    explicit ExpectedParenException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
 class ExpectedClosingParenException : public ParserException
 {
 
@@ -79,6 +107,62 @@ public:
 
 /* ************************************************************************* */
 
+class ExpectedSquareException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected opening square";
+
+public:
+
+    explicit ExpectedSquareException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
+class ExpectedClosingSquareException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected closing square";
+
+public:
+
+    explicit ExpectedClosingSquareException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
+class ExpectedBraceException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected opening brace";
+
+public:
+
+    explicit ExpectedBraceException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
+class ExpectedClosingBraceException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected closing brace";
+
+public:
+
+    explicit ExpectedClosingBraceException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
 class ExpectedColonException : public ParserException
 {
 
@@ -89,6 +173,20 @@ private:
 public:
 
     explicit ExpectedColonException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
+class ExpectedSemicolonException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected semicolon";
+
+public:
+
+    explicit ExpectedSemicolonException(): ParserException(m_msg) {}
 };
 
 /* ************************************************************************* */

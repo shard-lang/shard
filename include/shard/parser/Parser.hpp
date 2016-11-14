@@ -20,6 +20,7 @@
 
 // Shard
 #include "shard/UniquePtr.hpp"
+#include "shard/PtrDynamicArray.hpp"
 #include "shard/tokenizer/Tokenizer.hpp"
 #include "shard/tokenizer/TokenType.hpp"
 #include "shard/ast/Module.hpp"
@@ -124,6 +125,15 @@ private:
 private:
 
     /**
+     * @brief parse parameter pack.
+     */
+    PtrDynamicArray<Expr> parseParameters();
+
+/* ************************************************************************* */
+
+private:
+
+    /**
      * @brief parse expression.
      */
     UniquePtr<Expr> parseExpr();
@@ -176,7 +186,7 @@ private:
     }
 
     /*
-     * @brief returns if current TokenType is tested TokenType.
+     * @brief returns if current TokenType is Keyword with tested KeywordType.
      */
     inline bool is(KeywordType type) const noexcept
     {
@@ -205,6 +215,20 @@ private:
      * If so, moves to next token.
      */
     inline bool match(TokenType type) noexcept
+    {
+        if (is(type))
+        {
+            m_tokenizer.toss();
+            return true;
+        }
+        return false;
+    }
+
+    /*
+     * @brief returns if current TokenType is Keyword with tested KeywordType.
+     * If so, moves to next token.
+     */
+    inline bool match(KeywordType type) noexcept
     {
         if (is(type))
         {
