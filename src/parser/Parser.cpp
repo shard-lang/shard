@@ -48,40 +48,76 @@ UniquePtr<Module> Parser::parseModule()
     return std::move(module);
 }
 
+/* ************************************************************************* */
+
 UniquePtr<Stmt> Parser::parseStmt()
 {
+	switch (m_tokenizer.get().getType())
+	{
+		case TokenType::BraceO: return parseCompoundStmt();
+		case TokenType::Keyword:
+			switch (m_tokenizer.get().getKeywordType())
+			{
+				case KeywordType::Return: return makeUnique<ReturnStmt>(parseExpr());
+				case KeywordType::Break: return makeUnique<BreakStmt>();
+				case KeywordType::Continue: return makeUnique<ContinueStmt>();
+				case KeywordType::Throw: // TODO
+				case KeywordType::If: return parseIfStmt();
+				case KeywordType::Do: return parseDoWhileStmt();
+				case KeywordType::For: return parseForStmt();
+				case KeywordType::While: return parseWhileStmt();
+				case KeywordType::Switch: return parseSwitchStmt();
+			}
+		case TokenType::Identifier: break;
 
+		default:
+			return makeUnique<ExprStmt>(parseExpr());
+	}
 }
+
+/* ************************************************************************* */
 
 UniquePtr<IfStmt> Parser::parseIfStmt()
 {
 
 }
 
+/* ************************************************************************* */
+
 UniquePtr<ForStmt> Parser::parseForStmt()
 {
 
 }
+
+/* ************************************************************************* */
 
 UniquePtr<WhileStmt> Parser::parseWhileStmt()
 {
 
 }
 
+/* ************************************************************************* */
+
 UniquePtr<SwitchStmt> Parser::parseSwitchStmt()
 {
 
 }
+
+/* ************************************************************************* */
 
 UniquePtr<DoWhileStmt> Parser::parseDoWhileStmt()
 {
 
 }
 
+/* ************************************************************************* */
+
 UniquePtr<CompoundStmt> Parser::parseCompoundStmt()
 {
 
 }
+
+/* ************************************************************************* */
 
 UniquePtr<Decl> Parser::parseDecl()
 {
@@ -96,6 +132,8 @@ UniquePtr<Decl> Parser::parseDecl()
     throw ExpectedDeclException();
 }
 
+/* ************************************************************************* */
+
 PtrDynamicArray<Expr> Parser::parseParameters()
 {
 	PtrDynamicArray<Expr> temp;
@@ -108,6 +146,8 @@ PtrDynamicArray<Expr> Parser::parseParameters()
 
 	return std::move(temp);
 }
+
+/* ************************************************************************* */
 
 UniquePtr<Expr> Parser::parseExpr()
 {
@@ -151,6 +191,8 @@ UniquePtr<Expr> Parser::parseExpr()
     }
 }
 
+/* ************************************************************************* */
+
 UniquePtr<Expr> Parser::parseRelationalExpr()
 {
     auto temp = parseAdditiveExpr();
@@ -180,6 +222,8 @@ UniquePtr<Expr> Parser::parseRelationalExpr()
     }
 }
 
+/* ************************************************************************* */
+
 UniquePtr<Expr> Parser::parseAdditiveExpr()
 {
     auto temp = parseMultiplicativeExpr();
@@ -197,6 +241,8 @@ UniquePtr<Expr> Parser::parseAdditiveExpr()
             return std::move(temp);
     }
 }
+
+/* ************************************************************************* */
 
 UniquePtr<Expr> Parser::parseMultiplicativeExpr()
 {
@@ -218,6 +264,8 @@ UniquePtr<Expr> Parser::parseMultiplicativeExpr()
             return std::move(temp);
     }
 }
+
+/* ************************************************************************* */
 
 UniquePtr<Expr> Parser::parsePrefixUnaryExpr()
 {
@@ -243,6 +291,8 @@ UniquePtr<Expr> Parser::parsePrefixUnaryExpr()
             return parsePostfixUnaryExpr();
     }
 }
+
+/* ************************************************************************* */
 
 UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
 {
@@ -290,6 +340,8 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
     }
 }
 
+/* ************************************************************************* */
+
 UniquePtr<Expr> Parser::parsePrimaryExpr()
 {
     auto token = m_tokenizer.extract();
@@ -321,6 +373,8 @@ UniquePtr<Expr> Parser::parsePrimaryExpr()
             throw ExpectedPrimaryExprException();
     }
 }
+
+/* ************************************************************************* */
 
 UniquePtr<Expr> Parser::parseParenExpr()
 {

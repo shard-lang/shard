@@ -135,6 +135,20 @@ public:
 
 /* ************************************************************************* */
 
+class ExpectedSemicolonException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected semicolon";
+
+public:
+
+    explicit ExpectedSemicolonException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
 class ExpectedDeclException : public ParserException
 {
 
