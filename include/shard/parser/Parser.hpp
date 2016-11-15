@@ -100,6 +100,11 @@ private:
      * @brief parse Switch statement.
      */
     UniquePtr<SwitchStmt> parseSwitchStmt();
+
+    /**
+     * @brief parse case list.
+     */
+    PtrDynamicArray<Stmt> parseCaseList();
     
     /**
      * @brief parse Do-While statement.
@@ -110,6 +115,11 @@ private:
      * @brief parse Compound statement.
      */
     UniquePtr<CompoundStmt> parseCompoundStmt();
+
+    /**
+     * @brief parse TryCatch statement.
+     */
+    UniquePtr<CompoundStmt> parseTryCatchStmt();
 
 /* ************************************************************************* */
 

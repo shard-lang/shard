@@ -51,16 +51,16 @@ public:
 
 /* ************************************************************************* */
 
-class ExpectedPrimaryExprException : public ParserException
+class ExpectedWhileException : public ParserException
 {
 
 private:
 
-    static constexpr char const * m_msg = "Expected primary expression";
+    static constexpr char const * m_msg = "Expected keyword while";
 
 public:
 
-    explicit ExpectedPrimaryExprException(): ParserException(m_msg) {}
+    explicit ExpectedWhileException(): ParserException(m_msg) {}
 };
 
 /* ************************************************************************* */
@@ -201,6 +201,34 @@ private:
 public:
 
     explicit ExpectedDeclException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
+class ExpectedExprException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected expression";
+
+public:
+
+    explicit ExpectedExprException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
+class ExpectedStmtException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Expected statement";
+
+public:
+
+    explicit ExpectedStmtException(): ParserException(m_msg) {}
 };
 
 /* ************************************************************************* */

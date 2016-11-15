@@ -18,14 +18,6 @@
 
 /* ************************************************************************* */
 
-#include "shard/UniquePtr.hpp"
-#include "shard/PtrDynamicArray.hpp"
-#include "shard/tokenizer/Tokenizer.hpp"
-#include "shard/tokenizer/TokenType.hpp"
-#include "shard/ast/Module.hpp"
-#include "shard/ast/Stmt.hpp"
-#include "shard/ast/Expr.hpp"
-#include "shard/ast/Decl.hpp"
 #include "shard/parser/ParserException.hpp"
 
 /* ************************************************************************* */
@@ -90,16 +82,32 @@ UniquePtr<Stmt> Parser::parseStmt()
                 case KeywordType::Switch:
                     m_tokenizer.toss();
                     return parseSwitchStmt();
-                case KeywordType::Try: 
+                case KeywordType::Try:
                     m_tokenizer.toss();
+                    return parseTryCatchStmt();
+                case KeywordType::Auto:
+                case KeywordType::Var:
+                case KeywordType::Int:
+                case KeywordType::Bool:
+                case KeywordType::Char:
+                case KeywordType::Float:
+                case KeywordType::String:
+                    break; // TODO
+
+                default:
                     // TODO
+                    throw ExpectedStmtException();
             }
         case TokenType::Identifier:
+            // TODO
             break;
 
         default:
             return makeUnique<ExprStmt>(parseExpr());
     }
+
+    // TODO
+    return nullptr;
 }
 
 /* ************************************************************************* */
@@ -142,7 +150,6 @@ UniquePtr<ForStmt> Parser::parseForStmt()
     auto init = parseStmt();
 
     UniquePtr<Expr> cond = nullptr;
-    UniquePtr<Expr> incr = nullptr;
 
     if (!is(TokenType::Semicolon))
     {
@@ -153,6 +160,8 @@ UniquePtr<ForStmt> Parser::parseForStmt()
             throw ExpectedSemicolonException();
         }
     }
+
+    UniquePtr<Expr> incr = nullptr;
 
     if (!is(TokenType::ParenC))
     {
@@ -190,21 +199,125 @@ UniquePtr<WhileStmt> Parser::parseWhileStmt()
 
 UniquePtr<SwitchStmt> Parser::parseSwitchStmt()
 {
+    if (!match(TokenType::ParenO))
+    {
+        throw ExpectedParenException();
+    }
 
+    auto cond = parseExpr();
+
+    if (!match(TokenType::ParenC))
+    {
+        throw ExpectedClosingParenException();
+    }
+
+    if (!match(TokenType::BraceO))
+    {
+        throw ExpectedBraceException();
+    }
+
+    auto body = makeUnique<CompoundStmt>(parseCaseList());
+
+    if (!match(TokenType::BraceC))
+    {
+        throw ExpectedClosingBraceException();
+    }
+
+    return makeUnique<SwitchStmt>(std::move(cond), std::move(body));
+}
+
+/* ************************************************************************* */
+
+PtrDynamicArray<Stmt> Parser::parseCaseList()
+{
+    PtrDynamicArray<Stmt> temp;
+
+    while (true)
+    {
+        if (match(KeywordType::Case))
+        {
+            if (!match(TokenType::Colon))
+            {
+                throw ExpectedColonException();
+            }
+
+            auto cond = parseExpr();
+            temp.push_back(makeUnique<CaseStmt>(std::move(cond), parseStmt()));
+            continue;
+        }
+        else if (match(KeywordType::Default))
+        {
+            if (!match(TokenType::Colon))
+            {
+                throw ExpectedColonException();
+            }
+
+            temp.push_back(makeUnique<DefaultStmt>(parseStmt()));
+            continue;
+        }
+
+        break;
+    }
+
+    return std::move(temp);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<DoWhileStmt> Parser::parseDoWhileStmt()
 {
+    if (!match(TokenType::BraceO))
+    {
+        throw ExpectedWhileException();
+    }
 
+    auto body = parseCompoundStmt();
+
+    if (!match(KeywordType::While))
+    {
+        throw ExpectedWhileException();
+    }
+
+    if (!match(TokenType::ParenO))
+    {
+        throw ExpectedParenException();
+    }
+
+    auto cond = parseExpr();
+
+    if (!match(TokenType::ParenC))
+    {
+        throw ExpectedClosingParenException();
+    }
+
+    if (!match(TokenType::Semicolon))
+    {
+        throw ExpectedSemicolonException();
+    }
+
+    return makeUnique<DoWhileStmt>(std::move(cond), std::move(body));
 }
 
 /* ************************************************************************* */
 
 UniquePtr<CompoundStmt> Parser::parseCompoundStmt()
 {
+    PtrDynamicArray<Stmt> temp;
 
+    while (!match(TokenType::BraceC))
+    {
+        temp.push_back(parseStmt());
+    }
+
+    return makeUnique<CompoundStmt>(std::move(temp));
+}
+
+/* ************************************************************************* */
+
+UniquePtr<CompoundStmt> Parser::parseTryCatchStmt()
+{
+    // TODO
+    return nullptr;
 }
 
 /* ************************************************************************* */
@@ -232,7 +345,7 @@ PtrDynamicArray<Expr> Parser::parseParameters()
     {
         temp.push_back(parseExpr());
     }
-    while (is(TokenType::Comma));
+    while (match(TokenType::Comma));
 
     return std::move(temp);
 }
@@ -259,22 +372,22 @@ UniquePtr<Expr> Parser::parseExpr()
     {
         case TokenType::Equal:
             m_tokenizer.toss();
-            // TODO
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Assign, std::move(temp), parseExpr());
         case TokenType::PlusEqual:
             m_tokenizer.toss();
-            // TODO
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::AddAssign, std::move(temp), parseExpr());
         case TokenType::MinusEqual:
             m_tokenizer.toss();
-            // TODO
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::SubAssign, std::move(temp), parseExpr());
         case TokenType::StarEqual:
             m_tokenizer.toss();
-            // TODO
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::MulAssign, std::move(temp), parseExpr());
         case TokenType::SlashEqual:
             m_tokenizer.toss();
-            // TODO
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::DivAssign, std::move(temp), parseExpr());
         case TokenType::PercentEqual:
             m_tokenizer.toss();
-            // TODO
+            return makeUnique<BinaryExpr>(BinaryExpr::OpKind::RemAssign, std::move(temp), parseExpr());
 
         default:
             return std::move(temp);
@@ -460,7 +573,7 @@ UniquePtr<Expr> Parser::parsePrimaryExpr()
             }
 
         default:
-            throw ExpectedPrimaryExprException();
+            throw ExpectedExprException();
     }
 }
 

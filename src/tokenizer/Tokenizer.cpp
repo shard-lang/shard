@@ -184,7 +184,7 @@ void Tokenizer::tokenizeChar()
     Token::CharType value = m_src.get();
     if (value >= 0x80)
     {
-        char additionalBytes;
+        char additionalBytes = 0;
         if (value >= 0xF0)
         {
             value &= 0x07;

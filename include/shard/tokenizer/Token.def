@@ -108,6 +108,7 @@ KEYWORD(Char,       "char")
 KEYWORD(Bool,       "bool")
 KEYWORD(Float,      "float")
 KEYWORD(String,     "string")
+KEYWORD(Void,       "void")
 
 KEYWORD(Null,       "null")
 KEYWORD(True,       "true")
@@ -126,6 +127,8 @@ KEYWORD(Return,     "return")
 KEYWORD(Break,      "break")
 KEYWORD(Continue,   "continue")
 KEYWORD(Throw,      "throw")
+KEYWORD(Case,       "case")
+KEYWORD(Default,    "default")
 
 /* ************************************************************************* */
 
