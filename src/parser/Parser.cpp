@@ -82,16 +82,32 @@ UniquePtr<Stmt> Parser::parseStmt()
                 case KeywordType::Switch:
                     m_tokenizer.toss();
                     return parseSwitchStmt();
-                case KeywordType::Try: 
+                case KeywordType::Try:
                     m_tokenizer.toss();
+                    return parseTryCatchStmt();
+                case KeywordType::Auto:
+                case KeywordType::Var:
+                case KeywordType::Int:
+                case KeywordType::Bool:
+                case KeywordType::Char:
+                case KeywordType::Float:
+                case KeywordType::String:
+                    break; // TODO
+
+                default:
                     // TODO
+                    throw ExpectedStmtException();
             }
         case TokenType::Identifier:
+            // TODO
             break;
 
         default:
             return makeUnique<ExprStmt>(parseExpr());
     }
+
+    // TODO
+    return nullptr;
 }
 
 /* ************************************************************************* */
@@ -210,6 +226,8 @@ UniquePtr<SwitchStmt> Parser::parseSwitchStmt()
     return makeUnique<SwitchStmt>(std::move(cond), std::move(body));
 }
 
+/* ************************************************************************* */
+
 PtrDynamicArray<Stmt> Parser::parseCaseList()
 {
     PtrDynamicArray<Stmt> temp;
@@ -292,6 +310,14 @@ UniquePtr<CompoundStmt> Parser::parseCompoundStmt()
     }
 
     return makeUnique<CompoundStmt>(std::move(temp));
+}
+
+/* ************************************************************************* */
+
+UniquePtr<CompoundStmt> Parser::parseTryCatchStmt()
+{
+    // TODO
+    return nullptr;
 }
 
 /* ************************************************************************* */

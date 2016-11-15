@@ -116,6 +116,11 @@ private:
      */
     UniquePtr<CompoundStmt> parseCompoundStmt();
 
+    /**
+     * @brief parse TryCatch statement.
+     */
+    UniquePtr<CompoundStmt> parseTryCatchStmt();
+
 /* ************************************************************************* */
 
 private:
