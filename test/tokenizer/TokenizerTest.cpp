@@ -172,6 +172,7 @@ static void test_exception_impl(int line, const String& code, const String& corr
 }
 
 /* ************************************************************************* */
+
 #define test(...) test_impl(__LINE__, __VA_ARGS__)
 #define test_invalid(...) test_invalid_impl(__LINE__, __VA_ARGS__)
 #define test_location(...) test_location_impl(__LINE__, __VA_ARGS__)

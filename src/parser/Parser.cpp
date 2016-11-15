@@ -328,8 +328,8 @@ UniquePtr<Decl> Parser::parseDecl()
     {
 
     }
-
-    
+    m_tokenizer.toss();
+    return nullptr;
 
 
     throw ExpectedDeclException();

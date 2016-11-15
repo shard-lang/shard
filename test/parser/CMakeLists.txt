@@ -14,27 +14,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-# Core test
-add_shard_test(core_test
+add_shard_test(shard-parser_test
     SOURCES
-        SourceLocation.cpp
-        ViewPtr.cpp
+        ParserTest.cpp
     LIBRARIES
-        shard-core
+        shard-parser
+        shard-tokenizer
+        shard-ast
 )
-
-# ************************************************************************* #
-
-if (SHARD_BUILD_TOKENIZER)
-    add_subdirectory(tokenizer)
-endif ()
-
-if (SHARD_BUILD_AST)
-    add_subdirectory(ast)
-endif ()
-
-if (SHARD_BUILD_PARSER)
-    add_subdirectory(parser)
-endif ()
 
 # ************************************************************************* #
