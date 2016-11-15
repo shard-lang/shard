@@ -108,6 +108,7 @@ KEYWORD(Char,       "char")
 KEYWORD(Bool,       "bool")
 KEYWORD(Float,      "float")
 KEYWORD(String,     "string")
+KEYWORD(Void,       "void")
 
 KEYWORD(Null,       "null")
 KEYWORD(True,       "true")

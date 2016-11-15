@@ -35,6 +35,7 @@ const Type TYPE_BUILTIN_FLOAT(TypeKind::Float);
 const Type TYPE_BUILTIN_CHAR(TypeKind::Char);
 const Type TYPE_BUILTIN_STRING(TypeKind::String);
 const Type TYPE_BUILTIN_VAR(TypeKind::Var);
+const Type TYPE_BUILTIN_BOOL(TypeKind::Bool);
 
 /* ************************************************************************* */
 

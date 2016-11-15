@@ -39,7 +39,8 @@ enum class TypeKind
     Float,
     Char,
     String,
-    Var
+    Var,
+    Bool
 };
 
 /* ************************************************************************* */
@@ -164,6 +165,7 @@ extern const Type TYPE_BUILTIN_FLOAT;
 extern const Type TYPE_BUILTIN_CHAR;
 extern const Type TYPE_BUILTIN_STRING;
 extern const Type TYPE_BUILTIN_VAR;
+extern const Type TYPE_BUILTIN_BOOL;
 
 /* ************************************************************************* */
 
