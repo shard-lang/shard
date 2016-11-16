@@ -130,6 +130,41 @@ private:
      */
     UniquePtr<Decl> parseDecl();
 
+    /**
+     * @brief parse variable declaration of type auto.
+     */
+    UniquePtr<VariableDecl> parseVariableDeclAuto();
+
+    /**
+     * @brief parse variable declaration of type var.
+     */
+    UniquePtr<VariableDecl> parseVariableDeclVar();
+
+    /**
+     * @brief parse variable declaration of type int.
+     */
+    UniquePtr<VariableDecl> parseVariableDeclInt();
+
+    /**
+     * @brief parse variable declaration of type char.
+     */
+    UniquePtr<VariableDecl> parseVariableDeclChar();
+
+    /**
+     * @brief parse variable declaration of type bool.
+     */
+    UniquePtr<VariableDecl> parseVariableDeclBool();
+
+    /**
+     * @brief parse variable declaration of type float.
+     */
+    UniquePtr<VariableDecl> parseVariableDeclFloat();
+
+    /**
+     * @brief parse variable declaration of type string.
+     */
+    UniquePtr<VariableDecl> parseVariableDeclString();
+
 /* ************************************************************************* */
 
 private:

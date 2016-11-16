@@ -44,6 +44,8 @@ UniquePtr<Module> Parser::parseModule()
 
 UniquePtr<Stmt> Parser::parseStmt()
 {
+    UniquePtr<Stmt> temp;
+
     switch (m_tokenizer.get().getType())
     {
         case TokenType::Semicolon:
@@ -57,22 +59,27 @@ UniquePtr<Stmt> Parser::parseStmt()
             {
                 case KeywordType::Return:
                     m_tokenizer.toss();
-                    return makeUnique<ReturnStmt>(parseExpr());
+                    temp = makeUnique<ReturnStmt>(parseExpr());
+                    break;
                 case KeywordType::Break:
                     m_tokenizer.toss();
-                    return makeUnique<BreakStmt>();
+                    temp = makeUnique<BreakStmt>();
+                    break;
                 case KeywordType::Continue: 
                     m_tokenizer.toss();
-                    return makeUnique<ContinueStmt>();
+                    temp = makeUnique<ContinueStmt>();
+                    break;
                 case KeywordType::Throw: 
                     m_tokenizer.toss();
-                    // TODO
+                    temp = makeUnique<ReturnStmt>(parseExpr()); // TODO
+                    break;
+                case KeywordType::Do:
+                    m_tokenizer.toss();
+                    temp = parseDoWhileStmt();
+                    break;
                 case KeywordType::If:
                     m_tokenizer.toss();
                     return parseIfStmt();
-                case KeywordType::Do: 
-                    m_tokenizer.toss();
-                    return parseDoWhileStmt();
                 case KeywordType::For: 
                     m_tokenizer.toss();
                     return parseForStmt();
@@ -86,28 +93,44 @@ UniquePtr<Stmt> Parser::parseStmt()
                     m_tokenizer.toss();
                     return parseTryCatchStmt();
                 case KeywordType::Auto:
+                    m_tokenizer.toss();
+                    temp = makeUnique<DeclStmt>(parseVariableDeclAuto());
                 case KeywordType::Var:
+                    m_tokenizer.toss();
+                    temp = makeUnique<DeclStmt>(parseVariableDeclVar());
                 case KeywordType::Int:
+                    m_tokenizer.toss();
+                    temp = makeUnique<DeclStmt>(parseVariableDeclInt());
                 case KeywordType::Bool:
+                    m_tokenizer.toss();
+                    temp = makeUnique<DeclStmt>(parseVariableDeclBool());
                 case KeywordType::Char:
+                    m_tokenizer.toss();
+                    temp = makeUnique<DeclStmt>(parseVariableDeclChar());
                 case KeywordType::Float:
+                    m_tokenizer.toss();
+                    temp = makeUnique<DeclStmt>(parseVariableDeclFloat());
                 case KeywordType::String:
-                    break; // TODO
+                    m_tokenizer.toss();
+                    temp = makeUnique<DeclStmt>(parseVariableDeclString());
 
                 default:
-                    // TODO
                     throw ExpectedStmtException();
             }
+            break;
         case TokenType::Identifier:
             // TODO
-            break;
 
         default:
-            return makeUnique<ExprStmt>(parseExpr());
+            temp = makeUnique<ExprStmt>(parseExpr());
     }
 
-    // TODO
-    return nullptr;
+    if (!match(TokenType::Semicolon))
+    {
+        throw ExpectedSemicolonException();
+    }
+
+    return std::move(temp);
 }
 
 /* ************************************************************************* */
@@ -290,11 +313,6 @@ UniquePtr<DoWhileStmt> Parser::parseDoWhileStmt()
         throw ExpectedClosingParenException();
     }
 
-    if (!match(TokenType::Semicolon))
-    {
-        throw ExpectedSemicolonException();
-    }
-
     return makeUnique<DoWhileStmt>(std::move(cond), std::move(body));
 }
 
@@ -333,6 +351,55 @@ UniquePtr<Decl> Parser::parseDecl()
 
 
     throw ExpectedDeclException();
+}
+
+/* ************************************************************************* */
+
+UniquePtr<VariableDecl> Parser::parseVariableDeclAuto()
+{
+
+}
+
+/* ************************************************************************* */
+
+UniquePtr<VariableDecl> Parser::parseVariableDeclInt()
+{
+
+}
+
+/* ************************************************************************* */
+
+UniquePtr<VariableDecl> Parser::parseVariableDeclVar()
+{
+
+}
+
+/* ************************************************************************* */
+
+UniquePtr<VariableDecl> Parser::parseVariableDeclChar()
+{
+
+}
+
+/* ************************************************************************* */
+
+UniquePtr<VariableDecl> Parser::parseVariableDeclBool()
+{
+
+}
+
+/* ************************************************************************* */
+
+UniquePtr<VariableDecl> Parser::parseVariableDeclFloat()
+{
+
+}
+
+/* ************************************************************************* */
+
+UniquePtr<VariableDecl> Parser::parseVariableDeclString()
+{
+
 }
 
 /* ************************************************************************* */
