@@ -385,21 +385,84 @@ UniquePtr<VariableDecl> Parser::parseVariableDeclChar()
 
 UniquePtr<VariableDecl> Parser::parseVariableDeclBool()
 {
+    if (!is(TokenType::Identifier))
+    {
+        throw ExpectedIdentifierException();
+    }
 
+    String name = m_tokenizer.get().getStringValue();
+    UniquePtr<Expr> init = nullptr;
+
+    m_tokenizer.toss();
+
+    if (match(TokenType::Equal))
+    {
+        init = parseExpr();
+    }
+
+    if (match(TokenType::Semicolon))
+    {
+        // TODO
+        return makeUnique<VariableDecl>(nullptr, name, std::move(init));
+    }
+
+    throw InvalidDeclException();
 }
 
 /* ************************************************************************* */
 
 UniquePtr<VariableDecl> Parser::parseVariableDeclFloat()
 {
+    if (!is(TokenType::Identifier))
+    {
+        throw ExpectedIdentifierException();
+    }
 
+    String name = m_tokenizer.get().getStringValue();
+    UniquePtr<Expr> init = nullptr;
+
+    m_tokenizer.toss();
+
+    if (match(TokenType::Equal))
+    {
+        init = parseExpr();
+    }
+
+    if (match(TokenType::Semicolon))
+    {
+        // TODO
+        return makeUnique<VariableDecl>(nullptr, name, std::move(init));
+    }
+
+    throw InvalidDeclException();
 }
 
 /* ************************************************************************* */
 
 UniquePtr<VariableDecl> Parser::parseVariableDeclString()
 {
+    if (!is(TokenType::Identifier))
+    {
+        throw ExpectedIdentifierException();
+    }
 
+    String name = m_tokenizer.get().getStringValue();
+    UniquePtr<Expr> init = nullptr;
+
+    m_tokenizer.toss();
+
+    if (match(TokenType::Equal))
+    {
+        init = parseExpr();
+    }
+
+    if (match(TokenType::Semicolon))
+    {
+        // TODO
+        return makeUnique<VariableDecl>(nullptr, name, std::move(init));
+    }
+
+    throw InvalidDeclException();
 }
 
 /* ************************************************************************* */
