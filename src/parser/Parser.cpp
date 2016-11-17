@@ -94,25 +94,25 @@ UniquePtr<Stmt> Parser::parseStmt()
                     return parseTryCatchStmt();
                 case KeywordType::Auto:
                     m_tokenizer.toss();
-                    temp = makeUnique<DeclStmt>(parseVariableDeclAuto());
+                    temp = makeUnique<DeclStmt>(parseVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_AUTO))));
                 case KeywordType::Var:
                     m_tokenizer.toss();
-                    temp = makeUnique<DeclStmt>(parseVariableDeclVar());
+                    temp = makeUnique<DeclStmt>(parseVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_VAR))));
                 case KeywordType::Int:
                     m_tokenizer.toss();
-                    temp = makeUnique<DeclStmt>(parseVariableDeclInt());
+                    temp = makeUnique<DeclStmt>(parseVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_INT))));
                 case KeywordType::Bool:
                     m_tokenizer.toss();
-                    temp = makeUnique<DeclStmt>(parseVariableDeclBool());
+                    temp = makeUnique<DeclStmt>(parseVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_BOOL))));
                 case KeywordType::Char:
                     m_tokenizer.toss();
-                    temp = makeUnique<DeclStmt>(parseVariableDeclChar());
+                    temp = makeUnique<DeclStmt>(parseVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_CHAR))));
                 case KeywordType::Float:
                     m_tokenizer.toss();
-                    temp = makeUnique<DeclStmt>(parseVariableDeclFloat());
+                    temp = makeUnique<DeclStmt>(parseVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_FLOAT))));
                 case KeywordType::String:
                     m_tokenizer.toss();
-                    temp = makeUnique<DeclStmt>(parseVariableDeclString());
+                    temp = makeUnique<DeclStmt>(parseVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_STRING))));
 
                 default:
                     throw ExpectedStmtException();
@@ -355,35 +355,7 @@ UniquePtr<Decl> Parser::parseDecl()
 
 /* ************************************************************************* */
 
-UniquePtr<VariableDecl> Parser::parseVariableDeclAuto()
-{
-
-}
-
-/* ************************************************************************* */
-
-UniquePtr<VariableDecl> Parser::parseVariableDeclInt()
-{
-
-}
-
-/* ************************************************************************* */
-
-UniquePtr<VariableDecl> Parser::parseVariableDeclVar()
-{
-
-}
-
-/* ************************************************************************* */
-
-UniquePtr<VariableDecl> Parser::parseVariableDeclChar()
-{
-
-}
-
-/* ************************************************************************* */
-
-UniquePtr<VariableDecl> Parser::parseVariableDeclBool()
+UniquePtr<VariableDecl> Parser::parseVariableDecl(const TypeInfo type)
 {
     if (!is(TokenType::Identifier))
     {
@@ -403,63 +375,7 @@ UniquePtr<VariableDecl> Parser::parseVariableDeclBool()
     if (match(TokenType::Semicolon))
     {
         // TODO
-        return makeUnique<VariableDecl>(nullptr, name, std::move(init));
-    }
-
-    throw InvalidDeclException();
-}
-
-/* ************************************************************************* */
-
-UniquePtr<VariableDecl> Parser::parseVariableDeclFloat()
-{
-    if (!is(TokenType::Identifier))
-    {
-        throw ExpectedIdentifierException();
-    }
-
-    String name = m_tokenizer.get().getStringValue();
-    UniquePtr<Expr> init = nullptr;
-
-    m_tokenizer.toss();
-
-    if (match(TokenType::Equal))
-    {
-        init = parseExpr();
-    }
-
-    if (match(TokenType::Semicolon))
-    {
-        // TODO
-        return makeUnique<VariableDecl>(nullptr, name, std::move(init));
-    }
-
-    throw InvalidDeclException();
-}
-
-/* ************************************************************************* */
-
-UniquePtr<VariableDecl> Parser::parseVariableDeclString()
-{
-    if (!is(TokenType::Identifier))
-    {
-        throw ExpectedIdentifierException();
-    }
-
-    String name = m_tokenizer.get().getStringValue();
-    UniquePtr<Expr> init = nullptr;
-
-    m_tokenizer.toss();
-
-    if (match(TokenType::Equal))
-    {
-        init = parseExpr();
-    }
-
-    if (match(TokenType::Semicolon))
-    {
-        // TODO
-        return makeUnique<VariableDecl>(nullptr, name, std::move(init));
+        return makeUnique<VariableDecl>(nullptr, type, name, std::move(init));
     }
 
     throw InvalidDeclException();

@@ -27,6 +27,7 @@
 #include "shard/ast/Stmt.hpp"
 #include "shard/ast/Expr.hpp"
 #include "shard/ast/Decl.hpp"
+#include "shard/ast/Type.hpp"
 
 /* ************************************************************************* */
 
@@ -131,39 +132,9 @@ private:
     UniquePtr<Decl> parseDecl();
 
     /**
-     * @brief parse variable declaration of type auto.
+     * @brief parse variable declaration.
      */
-    UniquePtr<VariableDecl> parseVariableDeclAuto();
-
-    /**
-     * @brief parse variable declaration of type var.
-     */
-    UniquePtr<VariableDecl> parseVariableDeclVar();
-
-    /**
-     * @brief parse variable declaration of type int.
-     */
-    UniquePtr<VariableDecl> parseVariableDeclInt();
-
-    /**
-     * @brief parse variable declaration of type char.
-     */
-    UniquePtr<VariableDecl> parseVariableDeclChar();
-
-    /**
-     * @brief parse variable declaration of type bool.
-     */
-    UniquePtr<VariableDecl> parseVariableDeclBool();
-
-    /**
-     * @brief parse variable declaration of type float.
-     */
-    UniquePtr<VariableDecl> parseVariableDeclFloat();
-
-    /**
-     * @brief parse variable declaration of type string.
-     */
-    UniquePtr<VariableDecl> parseVariableDeclString();
+    UniquePtr<VariableDecl> parseVariableDecl(const TypeInfo type);
 
 /* ************************************************************************* */
 
