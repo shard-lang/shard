@@ -18,10 +18,6 @@
 
 /* ************************************************************************* */
 
-#include "shard/parser/ParserException.hpp"
-
-/* ************************************************************************* */
-
 namespace shard {
 inline namespace v1 {
 namespace parser {
@@ -32,12 +28,168 @@ UniquePtr<Module> Parser::parseModule()
 {
     auto module = makeUnique<Module>();
 
-    while (!m_tokenizer.empty())
-    {
-        module->addDeclaration(parseDecl());
-    }
+    module->addDeclarations(parseDeclList());
 
     return std::move(module);
+}
+
+/* ************************************************************************* */
+
+PtrDynamicArray<Decl> Parser::parseDeclList()
+{
+    PtrDynamicArray<Decl> list;
+
+    while (!m_tokenizer.empty())
+    {
+        if (is(TokenType::Keyword))
+        {
+            switch (m_tokenizer.get().getKeywordType())
+            {
+                case KeywordType::Class:
+                    m_tokenizer.toss();  
+                    list.push_back(parseClassDecl());
+                    continue;
+                case KeywordType::Auto:
+                    m_tokenizer.toss();
+                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_AUTO))));
+                    continue;
+                case KeywordType::Var:
+                    m_tokenizer.toss();
+                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_VAR))));
+                    continue;
+                case KeywordType::Int:
+                    m_tokenizer.toss();
+                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_INT))));
+                    continue;
+                case KeywordType::Bool:
+                    m_tokenizer.toss();
+                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_BOOL))));
+                    continue;
+                case KeywordType::Char:
+                    m_tokenizer.toss();
+                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_CHAR))));
+                    continue;
+                case KeywordType::Float:
+                    m_tokenizer.toss();
+                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_FLOAT))));
+                    continue;
+                case KeywordType::String:
+                    m_tokenizer.toss();
+                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_STRING))));
+                    continue;
+
+                default:
+                    break;
+            }
+        }
+        else if (is(TokenType::Identifier))
+        {
+            TypeInfo type(nullptr); // TODO
+            list.push_back(parseFunctionOrVariableDecl(type));
+            continue;
+        }
+
+        throw ExpectedDeclException();
+    }
+
+    return std::move(list); 
+}
+
+/* ************************************************************************* */
+
+UniquePtr<ClassDecl> Parser::parseClassDecl()
+{
+    String name = getIdentifier();
+    m_tokenizer.toss();
+
+    if (!match(TokenType::BraceO))
+    {
+        throw ExpectedBraceException();
+    }
+
+    auto decls = parseDeclList();
+
+    if (!match(TokenType::BraceC))
+    {
+        throw ExpectedClosingBraceException();
+    }
+
+    return makeUnique<ClassDecl>(nullptr, name, std::move(decls));
+}
+
+/* ************************************************************************* */
+
+UniquePtr<VariableDecl> Parser::parseVariableDecl(const TypeInfo type)
+{
+    String name = getIdentifier();
+    m_tokenizer.toss();
+
+    return makeUnique<VariableDecl>(nullptr, type, name, parseVariableInit());
+}
+
+/* ************************************************************************* */
+
+UniquePtr<Decl> Parser::parseFunctionOrVariableDecl(const TypeInfo type)
+{
+    String name = getIdentifier();
+    m_tokenizer.toss();
+
+    if (match(TokenType::ParenO))
+    {
+        auto params = parseFunctionParameters();
+
+        if (!match(TokenType::ParenC))
+        {
+            throw ExpectedClosingParenException();
+        }
+
+        return makeUnique<FunctionDecl>(nullptr, type, name, params, parseCompoundStmt());
+    }
+
+    return makeUnique<VariableDecl>(nullptr, type, name, parseVariableInit());
+}
+
+/* ************************************************************************* */
+
+UniquePtr<Expr> Parser::parseVariableInit()
+{
+    UniquePtr<Expr> init = nullptr;
+
+    if (match(TokenType::Equal))
+    {
+        init = parseExpr();
+    }
+
+    if (!match(TokenType::Semicolon))
+    {
+        throw InvalidDeclException();
+    }
+
+    return std::move(init);
+}
+
+/* ************************************************************************* */
+
+PtrDynamicArray<VariableDecl> Parser::parseFunctionParameters()
+{
+    PtrDynamicArray<VariableDecl> temp;
+
+    // TODO
+
+    return std::move(temp);
+}
+
+PtrDynamicArray<Expr> Parser::parseExprList()
+{
+    PtrDynamicArray<Expr> temp;
+
+    do
+    {
+        temp.push_back(parseExpr());
+    }
+    while (match(TokenType::Comma));
+
+    return std::move(temp);
 }
 
 /* ************************************************************************* */
@@ -340,64 +492,6 @@ UniquePtr<CompoundStmt> Parser::parseTryCatchStmt()
 
 /* ************************************************************************* */
 
-UniquePtr<Decl> Parser::parseDecl()
-{
-    if (is(KeywordType::Class))
-    {
-
-    }
-    m_tokenizer.toss();
-    return nullptr;
-
-
-    throw ExpectedDeclException();
-}
-
-/* ************************************************************************* */
-
-UniquePtr<VariableDecl> Parser::parseVariableDecl(const TypeInfo type)
-{
-    if (!is(TokenType::Identifier))
-    {
-        throw ExpectedIdentifierException();
-    }
-
-    String name = m_tokenizer.get().getStringValue();
-    UniquePtr<Expr> init = nullptr;
-
-    m_tokenizer.toss();
-
-    if (match(TokenType::Equal))
-    {
-        init = parseExpr();
-    }
-
-    if (match(TokenType::Semicolon))
-    {
-        // TODO
-        return makeUnique<VariableDecl>(nullptr, type, name, std::move(init));
-    }
-
-    throw InvalidDeclException();
-}
-
-/* ************************************************************************* */
-
-PtrDynamicArray<Expr> Parser::parseParameters()
-{
-    PtrDynamicArray<Expr> temp;
-
-    do
-    {
-        temp.push_back(parseExpr());
-    }
-    while (match(TokenType::Comma));
-
-    return std::move(temp);
-}
-
-/* ************************************************************************* */
-
 UniquePtr<Expr> Parser::parseExpr()
 {
     auto temp = parseRelationalExpr();
@@ -559,15 +653,11 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
                 break;
             case TokenType::Period:
                 m_tokenizer.toss();
-                if (!is(TokenType::Identifier))
-                {
-                    throw ExpectedIdentifierException();
-                }
-                temp = makeUnique<MemberAccessExpr>(std::move(temp), m_tokenizer.get().getStringValue());
+                temp = makeUnique<MemberAccessExpr>(std::move(temp), getIdentifier());
                 break;
             case TokenType::ParenO:
                 m_tokenizer.toss();
-                temp = makeUnique<FunctionCallExpr>(std::move(temp), parseParameters());
+                temp = makeUnique<FunctionCallExpr>(std::move(temp), parseExprList());
                 if (!is(TokenType::ParenC))
                 {
                     throw ExpectedClosingParenException();
@@ -575,7 +665,7 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
                 break;      
             case TokenType::SquareO:
                 m_tokenizer.toss();
-                temp = makeUnique<SubscriptExpr>(std::move(temp), parseParameters());
+                temp = makeUnique<SubscriptExpr>(std::move(temp), parseExprList());
                 if (!is(TokenType::SquareC))
                 {
                     throw ExpectedClosingSquareException();

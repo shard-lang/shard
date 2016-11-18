@@ -28,6 +28,7 @@
 #include "shard/ast/Expr.hpp"
 #include "shard/ast/Decl.hpp"
 #include "shard/ast/Type.hpp"
+#include "shard/parser/ParserException.hpp"
 
 /* ************************************************************************* */
 
@@ -78,6 +79,49 @@ public:
 private:
 
     /**
+     * @brief parse declaration.
+     */
+    PtrDynamicArray<Decl> parseDeclList();
+
+    /**
+     * @brief parse class declaration.
+     */
+    UniquePtr<ClassDecl> parseClassDecl();
+
+    /**
+     * @brief parse variable declaration.
+     */
+    UniquePtr<VariableDecl> parseVariableDecl(const TypeInfo type);
+
+    /**
+     * @brief parse fucntion or variable declaration.
+     */
+    UniquePtr<Decl> parseFunctionOrVariableDecl(const TypeInfo type);
+
+/* ************************************************************************* */
+
+private:
+
+    /**
+     * @brief parse variables init expr.
+     */
+    UniquePtr<Expr> parseVariableInit();
+
+    /**
+     * @brief parse function parameter pack.
+     */
+    PtrDynamicArray<VariableDecl> parseFunctionParameters();
+
+    /**
+     * @brief parse list of extressions.
+     */
+    PtrDynamicArray<Expr> parseExprList();
+
+/* ************************************************************************* */
+
+private:
+
+    /**
      * @brief parse statement.
      */
     UniquePtr<Stmt> parseStmt();
@@ -121,29 +165,6 @@ private:
      * @brief parse TryCatch statement.
      */
     UniquePtr<CompoundStmt> parseTryCatchStmt();
-
-/* ************************************************************************* */
-
-private:
-
-    /**
-     * @brief parse declaration.
-     */
-    UniquePtr<Decl> parseDecl();
-
-    /**
-     * @brief parse variable declaration.
-     */
-    UniquePtr<VariableDecl> parseVariableDecl(const TypeInfo type);
-
-/* ************************************************************************* */
-
-private:
-
-    /**
-     * @brief parse parameter pack.
-     */
-    PtrDynamicArray<Expr> parseParameters();
 
 /* ************************************************************************* */
 
@@ -271,6 +292,18 @@ private:
             }
         }
         return false;
+    }
+
+/* ************************************************************************* */
+
+    inline String getIdentifier() const
+    {
+        if (!is(TokenType::Identifier))
+        {
+            throw ExpectedIdentifierException();
+        }
+
+        return m_tokenizer.get().getStringValue();
     }
 
 };
