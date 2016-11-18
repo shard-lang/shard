@@ -30,6 +30,7 @@ Type::~Type() = default;
 /* ************************************************************************* */
 
 const Type TYPE_BUILTIN_VOID(TypeKind::Void);
+const Type TYPE_BUILTIN_AUTO(TypeKind::Auto);
 const Type TYPE_BUILTIN_INT(TypeKind::Int);
 const Type TYPE_BUILTIN_FLOAT(TypeKind::Float);
 const Type TYPE_BUILTIN_CHAR(TypeKind::Char);

@@ -205,6 +205,20 @@ public:
 
 /* ************************************************************************* */
 
+class InvalidDeclException : public ParserException
+{
+
+private:
+
+    static constexpr char const * m_msg = "Invalid declaration (probably a missing semicolon)";
+
+public:
+
+    explicit InvalidDeclException(): ParserException(m_msg) {}
+};
+
+/* ************************************************************************* */
+
 class ExpectedExprException : public ParserException
 {
 
