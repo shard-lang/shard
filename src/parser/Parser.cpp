@@ -133,7 +133,7 @@ UniquePtr<Decl> Parser::parseFunctionOrVariableDecl(const TypeInfo type)
 {
     String name = getIdentifier();
     m_tokenizer.toss();
-
+    
     if (match(TokenType::ParenO))
     {
         auto params = parseFunctionParameters();
@@ -143,7 +143,7 @@ UniquePtr<Decl> Parser::parseFunctionOrVariableDecl(const TypeInfo type)
             throw ExpectedClosingParenException();
         }
 
-        return makeUnique<FunctionDecl>(nullptr, type, name, params, parseCompoundStmt());
+        return makeUnique<FunctionDecl>(nullptr, type, name, std::move(params), parseCompoundStmt());
     }
 
     return makeUnique<VariableDecl>(nullptr, type, name, parseVariableInit());
