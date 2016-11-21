@@ -657,10 +657,17 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
                 break;
             case TokenType::ParenO:
                 m_tokenizer.toss();
-                temp = makeUnique<FunctionCallExpr>(std::move(temp), parseExprArray());
-                if (!is(TokenType::ParenC))
+                if (is(TokenType::ParenC))
                 {
-                    throw ExpectedClosingParenException();
+                    temp = makeUnique<FunctionCallExpr>(std::move(temp));
+                }
+                else
+                {
+                    temp = makeUnique<FunctionCallExpr>(std::move(temp), parseExprArray());
+                    if (!is(TokenType::ParenC))
+                    {
+                        throw ExpectedClosingParenException();
+                    }
                 }
                 break;      
             case TokenType::SquareO:

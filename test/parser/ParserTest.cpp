@@ -45,11 +45,63 @@ static void test_impl(
 
 /* ************************************************************************* */
 
-#define test(...) test_impl(__LINE__, __VA_ARGS__)
+static void test_exception_impl(int line, const String& code, const String& correct)
+{
+    SCOPED_TRACE(code);
+
+    try
+    {
+    	Parser parser(code);
+
+    	auto temp = parser.parseModule();
+    }
+    catch (TokenizerException& ex)
+    {
+        ASSERT_EQ(correct, ex.formatMessage());
+    }
+}
 
 /* ************************************************************************* */
 
-TEST(Parser, basic)
+#define test(...) test_impl(__LINE__, __VA_ARGS__)
+#define test_exception(...) test_exception_impl(__LINE__, __VA_ARGS__)
+
+/* ************************************************************************* */
+
+TEST(Parser, variable_decl_literal)
 {
-    test("throw");
+    test("int a = 10;");
+    test("var a = 10;");
+    test("char a = 'a';");
+    test("bool a = true;");
+    test("bool b = false;");
+    test("bool c = null;");
+    test("float a = 10.1;");
+    test("string a = \"abc\";");
+    test("auto a = 10;");
+}
+TEST(Parser, variable_decl_expr)
+{
+    test("auto a = b;");
+    test("auto a = 5 % 1 + (1 + 1) - 5 * 3 / 2;");
+    test("auto a = b++;");
+    test("auto a = b--;");
+    test("auto a = ++b;");
+    test("auto a = --b;");
+    test("auto a = +b;");
+    test("auto a = -b;");
+    test("auto a = b.c.d;");
+    test("auto a = b();");
+    test("auto a = b(1, 2, 3, 4);");
+    test("auto a = !b;");
+    test("auto a = b[1];");
+    test("auto a = b[1, 2, 3];");
+    test("auto a = !b.c[1]++;");
+    test("auto a = b ? 50 : 20;");
+    test("auto a = b == c;");
+    test("auto a = b != c;");
+    test("auto a = b <= c;");
+    test("auto a = b >= c;");
+    test("auto a = b < c;");
+    test("auto a = b > c;");
 }
