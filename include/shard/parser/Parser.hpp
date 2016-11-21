@@ -110,12 +110,12 @@ private:
     /**
      * @brief parse function parameter pack.
      */
-    PtrDynamicArray<VariableDecl> parseFunctionParameters();
+    PtrDynamicArray<VariableDecl> parseDeclArray();
 
     /**
      * @brief parse list of extressions.
      */
-    PtrDynamicArray<Expr> parseExprList();
+    PtrDynamicArray<Expr> parseExprArray();
 
 /* ************************************************************************* */
 

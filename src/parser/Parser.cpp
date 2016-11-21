@@ -136,7 +136,7 @@ UniquePtr<Decl> Parser::parseFunctionOrVariableDecl(const TypeInfo type)
     
     if (match(TokenType::ParenO))
     {
-        auto params = parseFunctionParameters();
+        auto params = parseDeclArray();
 
         if (!match(TokenType::ParenC))
         {
@@ -170,7 +170,7 @@ UniquePtr<Expr> Parser::parseVariableInit()
 
 /* ************************************************************************* */
 
-PtrDynamicArray<VariableDecl> Parser::parseFunctionParameters()
+PtrDynamicArray<VariableDecl> Parser::parseDeclArray()
 {
     PtrDynamicArray<VariableDecl> temp;
 
@@ -179,7 +179,7 @@ PtrDynamicArray<VariableDecl> Parser::parseFunctionParameters()
     return std::move(temp);
 }
 
-PtrDynamicArray<Expr> Parser::parseExprList()
+PtrDynamicArray<Expr> Parser::parseExprArray()
 {
     PtrDynamicArray<Expr> temp;
 
@@ -657,7 +657,7 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
                 break;
             case TokenType::ParenO:
                 m_tokenizer.toss();
-                temp = makeUnique<FunctionCallExpr>(std::move(temp), parseExprList());
+                temp = makeUnique<FunctionCallExpr>(std::move(temp), parseExprArray());
                 if (!is(TokenType::ParenC))
                 {
                     throw ExpectedClosingParenException();
@@ -665,7 +665,7 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
                 break;      
             case TokenType::SquareO:
                 m_tokenizer.toss();
-                temp = makeUnique<SubscriptExpr>(std::move(temp), parseExprList());
+                temp = makeUnique<SubscriptExpr>(std::move(temp), parseExprArray());
                 if (!is(TokenType::SquareC))
                 {
                     throw ExpectedClosingSquareException();
