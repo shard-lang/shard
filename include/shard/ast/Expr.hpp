@@ -1386,7 +1386,7 @@ public:
      * @param      args   Call arguments.
      * @param      range  Location in source.
      */
-    explicit FunctionCallExpr(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range = {});
+    explicit FunctionCallExpr(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args = {}, SourceRange range = {});
 
 
 // Public Accessors & Mutators
