@@ -35,6 +35,7 @@ namespace ast {
 enum class TypeKind
 {
     Void,
+    Auto,
     Int,
     Float,
     Char,
@@ -160,6 +161,7 @@ private:
 
 // Builtin types
 extern const Type TYPE_BUILTIN_VOID;
+extern const Type TYPE_BUILTIN_AUTO;
 extern const Type TYPE_BUILTIN_INT;
 extern const Type TYPE_BUILTIN_FLOAT;
 extern const Type TYPE_BUILTIN_CHAR;
