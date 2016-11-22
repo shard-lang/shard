@@ -411,8 +411,8 @@ public:
      * @param      range     Source range.
      */
     explicit FunctionDecl(ViewPtr<DeclContext> context, TypeInfo retType,
-        String name, PtrDynamicArray<VariableDecl> params,
-        UniquePtr<CompoundStmt> bodyStmt, SourceRange range = {}) noexcept;
+        String name, UniquePtr<CompoundStmt> bodyStmt,
+        PtrDynamicArray<VariableDecl> params = {}, SourceRange range = {}) noexcept;
 
 
     /**

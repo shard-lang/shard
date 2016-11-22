@@ -39,7 +39,6 @@ static void test_impl(
     SCOPED_TRACE(code);
 
     Parser parser(code);
-
     auto temp = parser.parseModule();
 }
 
@@ -52,10 +51,9 @@ static void test_exception_impl(int line, const String& code, const String& corr
     try
     {
     	Parser parser(code);
-
     	auto temp = parser.parseModule();
     }
-    catch (TokenizerException& ex)
+    catch (ParserException& ex)
     {
         ASSERT_EQ(correct, ex.formatMessage());
     }
@@ -70,6 +68,7 @@ static void test_exception_impl(int line, const String& code, const String& corr
 
 TEST(Parser, variable_decl_literal)
 {
+    test("int a;");
     test("int a = 10;");
     test("var a = 10;");
     test("char a = 'a';");
@@ -104,4 +103,90 @@ TEST(Parser, variable_decl_expr)
     test("auto a = b >= c;");
     test("auto a = b < c;");
     test("auto a = b > c;");
+}
+TEST(Parser, variable_decl_non_primitive)
+{
+    test("A a;");
+    test("A a = 0;");
+}
+TEST(Parser, function_decl)
+{
+    test(
+    "int main(){return;}"
+    );
+    test(
+    "int main(int a, int b){return a + b;}"
+    );
+    test(
+    "int main(char a, var b){return a + b;}"
+    );
+    test(
+    "int main(float a, string b){return a + b;}"
+    );
+    test(
+    "int main(bool a, auto b){return a + b;}"
+    );
+    test(
+    "int main(A a, B b){return a + b;}"
+    );
+    test(
+    "int main(A a = 1, B b = 2){return a + b;}"
+    );
+}
+TEST(Parser, statements)
+{
+    test(
+    "int main(){throw 0;}"
+    );
+    test(
+    "int main(){break;}"
+    );
+    test(
+    "int main(){continue;}"
+    );
+    test(
+    "int main(){int a; {float b;string c;}}"
+    );
+    test(
+    "int main(){var a; if(a) return a;}"
+    );
+    test(
+    "int main(){auto a; char b; if (a) {return a;}else{return b;}}"
+    );
+    test(
+    "int main(){bool a; int b; if (a) {return a;}else if(b){return b;}}"
+    );
+    test(
+    "int main(){int a; while(true){a++;}}"
+    );
+    test(
+    "int main(){int a; do {a++;} while(false);}"
+    );
+    test(
+    "int main(){for(int i = 0; i < 0; i++){i++;}}"
+    );
+    test(
+    "int main(){for(;;){return;}}"
+    );
+    test(
+    "int main(){for(int i = 0;;){return;}}"
+    );
+    test(
+    "int main(){for(;true;){return;}}"
+    );
+    test(
+    "int main(){int i; for(;;i++){return;}}"
+    );
+    test_exception(
+    "int main(){int i; switch(i){case 1: return 1; case 2: return 2; default: return 3;}}", "a"
+    );
+    test_exception(
+    "int main(){int i; switch(i){case 1: return 1; case 2: return 2;}}", "a"
+    );
+    test_exception(
+    "int main(){int i; switch(i){default: return 3;}}", "a"
+    );
+    test_exception(
+    "int main(){int i; switch(i){default: return 3; case 1: return 1; case 2: return 2;}}", "a"
+    );
 }

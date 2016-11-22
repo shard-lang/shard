@@ -88,8 +88,8 @@ void VariableDecl::setInitExpr(UniquePtr<Expr> expr) noexcept
 /* ************************************************************************* */
 
 FunctionDecl::FunctionDecl(ViewPtr<DeclContext> context, TypeInfo retType,
-    String name, PtrDynamicArray<VariableDecl> params,
-    UniquePtr<CompoundStmt> bodyStmt, SourceRange range) noexcept
+    String name, UniquePtr<CompoundStmt> bodyStmt,
+    PtrDynamicArray<VariableDecl> params, SourceRange range) noexcept
     : NamedDecl(context, DeclKind::Function, moveValue(name), moveValue(range))
     , DeclContext(context)
     , m_retTypeInfo(moveValue(retType))
