@@ -105,7 +105,7 @@ TEST(FunctionDecl, base)
 {
     {
         // int foo() {}
-        const FunctionDecl decl(nullptr, TypeInfo{&TYPE_BUILTIN_INT}, "foo", {}, makeUnique<CompoundStmt>());
+        const FunctionDecl decl(nullptr, TypeInfo{&TYPE_BUILTIN_INT}, "foo", makeUnique<CompoundStmt>());
 
         EXPECT_EQ(DeclKind::Function, decl.getKind());
         EXPECT_TRUE(NamedDecl::is(decl));
@@ -120,7 +120,7 @@ TEST(FunctionDecl, base)
 
     {
         // int foo() {}
-        FunctionDecl decl(nullptr, TypeInfo{&TYPE_BUILTIN_INT}, "foo", {}, makeUnique<CompoundStmt>());
+        FunctionDecl decl(nullptr, TypeInfo{&TYPE_BUILTIN_INT}, "foo", makeUnique<CompoundStmt>());
 
         EXPECT_EQ(DeclKind::Function, decl.getKind());
         EXPECT_TRUE(NamedDecl::is(decl));
