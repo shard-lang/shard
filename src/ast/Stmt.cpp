@@ -202,7 +202,7 @@ ForStmt::ForStmt(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<E
     , m_incExpr(moveValue(incExpr))
     , m_bodyStmt(moveValue(bodyStmt))
 {
-    SHARD_ASSERT(m_initStmt);
+    //SHARD_ASSERT(m_initStmt);
     SHARD_ASSERT(m_bodyStmt);
 }
 
