@@ -126,20 +126,29 @@ if (SHARD_BUILD_TESTS)
     # Add custom target for gcov
     add_custom_target(shard-coverage
         # Cleanup lcov
-        ${LCOV} --directory . --zerocounters
+        COMMAND ${LCOV} --directory . --zerocounters
 
         # Run tests
         COMMAND ctest
 
         # Capturing lcov counters and generating report
         COMMAND ${LCOV} --directory . --capture --output-file coverage0.info
-        COMMAND ${LCOV} -r coverage0.info 'vendor/*' 'test/*' '/usr/*' --output-file coverage.info
-        COMMAND ${GENHTML} -o coverage coverage.info
-        COMMAND ${CMAKE_COMMAND} -E remove coverage.info
+        COMMAND ${LCOV} -r coverage0.info 'vendor/*' 'test/*' '/usr/*' 'Token.def' --output-file coverage.info
 
         DEPENDS core_test
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        COMMENT "Resetting code coverage counters to zero.\nProcessing code coverage counters and generating report."
+        COMMENT "Resetting code coverage counters to zero.\nProcessing code coverage counters."
+    )
+
+    # Add custom target for gcov html report
+    add_custom_target(shard-coverage-html
+        # Capturing lcov counters and generating report
+        COMMAND ${GENHTML} --demangle-cpp -o coverage coverage.info
+        COMMAND ${CMAKE_COMMAND} -E remove coverage.info
+
+        DEPENDS shard-coverage
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Generate coverage report."
     )
 endif ()
 
