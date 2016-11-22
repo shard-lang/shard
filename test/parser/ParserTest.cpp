@@ -177,16 +177,31 @@ TEST(Parser, statements)
     test(
     "int main(){int i; for(;;i++){return;}}"
     );
-    test_exception(
-    "int main(){int i; switch(i){case 1: return 1; case 2: return 2; default: return 3;}}", "a"
+    test(
+    "int main(){int i; switch(i){case 1: return 1; case 2: return 2; default: return 3;}}"
     );
-    test_exception(
-    "int main(){int i; switch(i){case 1: return 1; case 2: return 2;}}", "a"
+    test(
+    "int main(){int i; switch(i){case 1: return 1; case 2: return 2;}}"
     );
-    test_exception(
-    "int main(){int i; switch(i){default: return 3;}}", "a"
+    test(
+    "int main(){int i; switch(i){default: return 3;}}"
     );
-    test_exception(
-    "int main(){int i; switch(i){default: return 3; case 1: return 1; case 2: return 2;}}", "a"
+    test(
+    "int main(){a = b;}"
+    );
+    test(
+    "int main(){a += b;}"
+    );
+    test(
+    "int main(){a -= b;}"
+    );
+    test(
+    "int main(){a *= b;}"
+    );
+    test(
+    "int main(){a /= b;}"
+    );
+    test(
+    "int main(){a %= b;}"
     );
 }
