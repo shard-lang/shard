@@ -1035,11 +1035,10 @@ public:
      * @brief      Constructor.
      *
      * @param      expr      Test expression.
-     * @param      bodyStmt  The body statement
+     * @param      body      The body statement list
      * @param      range     Source range.
-     * @param      stmt  Body statement.
      */
-    explicit CaseStmt(UniquePtr<Expr> expr, UniquePtr<Stmt> bodyStmt, SourceRange range = {}) noexcept;
+    explicit CaseStmt(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> body = {}, SourceRange range = {}) noexcept;
 
 
     /**
@@ -1083,33 +1082,41 @@ public:
 
 
     /**
-     * @brief      Returns body statement.
+     * @brief      Returns body statement list.
      *
-     * @return     Body statement.
+     * @return     Statement list.
      */
-    ViewPtr<Stmt> getBodyStmt() noexcept
+    ViewPtr<PtrDynamicArray<Stmt>> getBody() noexcept
     {
-        return makeView(m_bodyStmt);
+        return makeView(&m_body);
     }
 
 
     /**
-     * @brief      Returns body statement.
+     * @brief      Returns body statement list.
      *
-     * @return     Body statement.
+     * @return     Statement list.
      */
-    ViewPtr<const Stmt> getBodyStmt() const noexcept
+    ViewPtr<const PtrDynamicArray<Stmt>> getBody() const noexcept
     {
-        return makeView(m_bodyStmt);
+        return makeView(&m_body);
     }
 
 
     /**
-     * @brief      Change body statement.
+     * @brief      Change body statement list.
      *
-     * @param      stmt  The new body statement.
+     * @param      stmt  The new body statement list.
      */
-    void setBodyStmt(UniquePtr<Stmt> stmt) noexcept;
+    void setBody(PtrDynamicArray<Stmt> stmtList) noexcept;
+
+
+    /**
+     * @brief      Add statement to body statement list.
+     *
+     * @param      stmt  Statement to be added.
+     */
+    void addStmt(UniquePtr<Stmt> stmt) noexcept;
 
 
 // Public Operations
@@ -1128,7 +1135,7 @@ private:
     UniquePtr<Expr> m_expr;
 
     /// Body statement.
-    UniquePtr<Stmt> m_bodyStmt;
+    PtrDynamicArray<Stmt> m_body;
 
 };
 
@@ -1151,10 +1158,10 @@ public:
     /**
      * @brief      Constructor.
      *
-     * @param      bodyStmt  Body statement.
+     * @param      body      Body statements.
      * @param      range     Source range.
      */
-    explicit DefaultStmt(UniquePtr<Stmt> bodyStmt, SourceRange range = {}) noexcept;
+    explicit DefaultStmt(PtrDynamicArray<Stmt> body = {}, SourceRange range = {}) noexcept;
 
 
     /**
@@ -1168,33 +1175,41 @@ public:
 
 
     /**
-     * @brief      Returns body statement.
+     * @brief      Returns body statement list.
      *
-     * @return     Body statement.
+     * @return     Statement list.
      */
-    ViewPtr<Stmt> getBodyStmt() noexcept
+    ViewPtr<PtrDynamicArray<Stmt>> getBody() noexcept
     {
-        return makeView(m_bodyStmt);
+        return makeView(&m_body);
     }
 
 
     /**
-     * @brief      Returns body statement.
+     * @brief      Returns body statement list.
      *
-     * @return     Body statement.
+     * @return     Statement list.
      */
-    ViewPtr<const Stmt> getBodyStmt() const noexcept
+    ViewPtr<const PtrDynamicArray<Stmt>> getBody() const noexcept
     {
-        return makeView(m_bodyStmt);
+        return makeView(&m_body);
     }
 
 
     /**
-     * @brief      Change body statement.
+     * @brief      Change body statement list.
      *
-     * @param      stmt  The new body statement.
+     * @param      stmt  The new body statement list.
      */
-    void setBodyStmt(UniquePtr<Stmt> stmt) noexcept;
+    void setBody(PtrDynamicArray<Stmt> stmtList) noexcept;
+
+
+    /**
+     * @brief      Add statement to body statement list.
+     *
+     * @param      stmt  Statement to be added.
+     */
+    void addStmt(UniquePtr<Stmt> stmt) noexcept;
 
 
 // Public Operations
@@ -1210,7 +1225,7 @@ public:
 private:
 
     /// Body statement.
-    UniquePtr<Stmt> m_bodyStmt;
+    PtrDynamicArray<Stmt> m_body;
 
 };
 

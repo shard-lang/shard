@@ -28,7 +28,14 @@ UniquePtr<Module> Parser::parseModule()
 {
     auto module = makeUnique<Module>();
 
-    module->addDeclarations(parseDeclList());
+    auto decls = parseDeclList();
+
+    module->addDeclarations(std::move(decls));
+
+    if (!m_tokenizer.empty())
+    {
+        throw ExpectedDeclException();
+    }
 
     return std::move(module);
 }
@@ -41,59 +48,60 @@ PtrDynamicArray<Decl> Parser::parseDeclList()
 
     while (!m_tokenizer.empty())
     {
-        if (is(TokenType::Keyword))
+        switch (m_tokenizer.get().getType())
         {
-            switch (m_tokenizer.get().getKeywordType())
+            case TokenType::Keyword:
+                // TODO access specifiers
+                switch (m_tokenizer.get().getKeywordType())
+                {
+                    case KeywordType::Class:
+                        m_tokenizer.toss();  
+                        list.push_back(parseClassDecl());
+                        continue;
+                    case KeywordType::Auto:
+                        m_tokenizer.toss();
+                        list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_AUTO))));
+                        continue;
+                    case KeywordType::Var:
+                        m_tokenizer.toss();
+                        list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_VAR))));
+                        continue;
+                    case KeywordType::Int:
+                        m_tokenizer.toss();
+                        list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_INT))));
+                        continue;
+                    case KeywordType::Bool:
+                        m_tokenizer.toss();
+                        list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_BOOL))));
+                        continue;
+                    case KeywordType::Char:
+                        m_tokenizer.toss();
+                        list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_CHAR))));
+                        continue;
+                    case KeywordType::Float:
+                        m_tokenizer.toss();
+                        list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_FLOAT))));
+                        continue;
+                    case KeywordType::String:
+                        m_tokenizer.toss();
+                        list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_STRING))));
+                        continue;
+
+                    default:
+                        return std::move(list);
+                }
+            case TokenType::Identifier:
             {
-                case KeywordType::Class:
-                    m_tokenizer.toss();  
-                    list.push_back(parseClassDecl());
-                    continue;
-                case KeywordType::Auto:
-                    m_tokenizer.toss();
-                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_AUTO))));
-                    continue;
-                case KeywordType::Var:
-                    m_tokenizer.toss();
-                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_VAR))));
-                    continue;
-                case KeywordType::Int:
-                    m_tokenizer.toss();
-                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_INT))));
-                    continue;
-                case KeywordType::Bool:
-                    m_tokenizer.toss();
-                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_BOOL))));
-                    continue;
-                case KeywordType::Char:
-                    m_tokenizer.toss();
-                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_CHAR))));
-                    continue;
-                case KeywordType::Float:
-                    m_tokenizer.toss();
-                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_FLOAT))));
-                    continue;
-                case KeywordType::String:
-                    m_tokenizer.toss();
-                    list.push_back(parseFunctionOrVariableDecl(TypeInfo(ViewPtr<const Type>(&TYPE_BUILTIN_STRING))));
-                    continue;
-
-                default:
-                    break;
+                TypeInfo type(nullptr); // TODO
+                m_tokenizer.toss();
+                list.push_back(parseFunctionOrVariableDecl(type));
+                continue;
             }
-        }
-        else if (is(TokenType::Identifier))
-        {
-            TypeInfo type(nullptr); // TODO
-            m_tokenizer.toss();
-            list.push_back(parseFunctionOrVariableDecl(type));
-            continue;
-        }
 
-        throw ExpectedDeclException();
+            default:
+                return std::move(list);
+        }
     }
-
-    return std::move(list); 
 }
 
 /* ************************************************************************* */
@@ -229,7 +237,7 @@ PtrDynamicArray<VariableDecl> Parser::parseDeclArray()
                 break;
             case TokenType::Identifier:
             {
-                const TypeInfo type(nullptr); // TODO
+                const TypeInfo type(nullptr); // TODO custom typeinfo
                 m_tokenizer.toss();
                 temp.push_back(parseVariableDecl(type));
                 break;
@@ -348,7 +356,7 @@ UniquePtr<Stmt> Parser::parseStmt()
             }
             break;
         case TokenType::Identifier:
-            // TODO
+            // TODO decision making
 
         default:
             temp = makeUnique<ExprStmt>(parseExpr());
@@ -495,7 +503,7 @@ PtrDynamicArray<Stmt> Parser::parseCaseList()
                 throw ExpectedColonException();
             }
 
-            temp.push_back(makeUnique<CaseStmt>(std::move(cond), parseStmt()));
+            temp.push_back(makeUnique<CaseStmt>(std::move(cond), parseCaseStmtList()));
             continue;
         }
         else if (match(KeywordType::Default))
@@ -505,11 +513,25 @@ PtrDynamicArray<Stmt> Parser::parseCaseList()
                 throw ExpectedColonException();
             }
 
-            temp.push_back(makeUnique<DefaultStmt>(parseStmt()));
+            temp.push_back(makeUnique<DefaultStmt>(parseCaseStmtList()));
             continue;
         }
 
         break;
+    }
+
+    return std::move(temp);
+}
+
+/* ************************************************************************* */
+
+PtrDynamicArray<Stmt> Parser::parseCaseStmtList()
+{
+    PtrDynamicArray<Stmt> temp;
+
+    while (!is(TokenType::BraceC) && !is(KeywordType::Case, KeywordType::Default))
+    {
+        temp.push_back(parseStmt());
     }
 
     return std::move(temp);

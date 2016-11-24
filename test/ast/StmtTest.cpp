@@ -458,7 +458,11 @@ TEST(SwitchStmt, base)
         stmt.setCondExpr(IdentifierExpr::make("type"));
 
         auto body = CompoundStmt::make();
-        body->addStatement(CaseStmt::make(IntLiteralExpr::make(1), BreakStmt::make()));
+        auto caseStmt = CaseStmt::make(IntLiteralExpr::make(1));
+
+        caseStmt->addStmt(BreakStmt::make());
+
+        body->addStatement(moveValue(caseStmt));
 
         stmt.setBodyStmt(moveValue(body));
 
@@ -476,35 +480,40 @@ TEST(CaseStmt, base)
 {
     {
         // case 0: ;
-        const CaseStmt stmt(IntLiteralExpr::make(0), ExprStmt::make());
+        CaseStmt stmt(IntLiteralExpr::make(0));
+
+        stmt.addStmt(ExprStmt::make());
 
         EXPECT_EQ(StmtKind::Case, stmt.getKind());
         EXPECT_TRUE(CaseStmt::is(stmt));
         ASSERT_NE(nullptr, stmt.getExpr());
         EXPECT_TRUE(IntLiteralExpr::is(stmt.getExpr()));
-        ASSERT_NE(nullptr, stmt.getBodyStmt());
-        EXPECT_TRUE(ExprStmt::is(stmt.getBodyStmt()));
+        ASSERT_NE(nullptr, stmt.getBody());
+        //EXPECT_TRUE(ExprStmt::is(stmt.getBody()));
     }
 
     {
         // case 0: ;
-        CaseStmt stmt(IntLiteralExpr::make(0), ExprStmt::make());
+        CaseStmt stmt(IntLiteralExpr::make(0));
+
+        stmt.addStmt(ExprStmt::make());
 
         EXPECT_EQ(StmtKind::Case, stmt.getKind());
         EXPECT_TRUE(CaseStmt::is(stmt));
         ASSERT_NE(nullptr, stmt.getExpr());
         EXPECT_TRUE(IntLiteralExpr::is(stmt.getExpr()));
-        ASSERT_NE(nullptr, stmt.getBodyStmt());
-        EXPECT_TRUE(ExprStmt::is(stmt.getBodyStmt()));
+        ASSERT_NE(nullptr, stmt.getBody());
+        //EXPECT_TRUE(ExprStmt::is(stmt.getBody()));
 
         // case "val": break;
         stmt.setExpr(StringLiteralExpr::make("val"));
-        stmt.setBodyStmt(BreakStmt::make());
+        stmt.addStmt(BreakStmt::make());
 
         ASSERT_NE(nullptr, stmt.getExpr());
         EXPECT_TRUE(StringLiteralExpr::is(stmt.getExpr()));
-        ASSERT_NE(nullptr, stmt.getBodyStmt());
-        EXPECT_TRUE(BreakStmt::is(stmt.getBodyStmt()));
+        ASSERT_NE(nullptr, stmt.getBody());
+        //EXPECT_TRUE(BreakStmt::is(stmt.getBody()));
+        EXPECT_EQ(2, stmt.getBody()->size());
     }
 }
 
@@ -514,28 +523,33 @@ TEST(DefaultStmt, base)
 {
     {
         // default: ;
-        const DefaultStmt stmt(ExprStmt::make());
+        DefaultStmt stmt;
+
+        stmt.addStmt(ExprStmt::make());
 
         EXPECT_EQ(StmtKind::Default, stmt.getKind());
         EXPECT_TRUE(DefaultStmt::is(stmt));
-        ASSERT_NE(nullptr, stmt.getBodyStmt());
-        EXPECT_TRUE(ExprStmt::is(stmt.getBodyStmt()));
+        ASSERT_NE(nullptr, stmt.getBody());
+        //EXPECT_TRUE(ExprStmt::is(stmt.getBody()));
     }
 
     {
         // default: ;
-        DefaultStmt stmt(ExprStmt::make());
+        DefaultStmt stmt;
+
+        stmt.addStmt(ExprStmt::make());
 
         EXPECT_EQ(StmtKind::Default, stmt.getKind());
         EXPECT_TRUE(DefaultStmt::is(stmt));
-        ASSERT_NE(nullptr, stmt.getBodyStmt());
-        EXPECT_TRUE(ExprStmt::is(stmt.getBodyStmt()));
+        ASSERT_NE(nullptr, stmt.getBody());
+        //EXPECT_TRUE(ExprStmt::is(stmt.getBody()));
 
         // default: break;
-        stmt.setBodyStmt(BreakStmt::make());
+        stmt.addStmt(BreakStmt::make());
 
-        ASSERT_NE(nullptr, stmt.getBodyStmt());
-        EXPECT_TRUE(BreakStmt::is(stmt.getBodyStmt()));
+        ASSERT_NE(nullptr, stmt.getBody());
+        //EXPECT_TRUE(BreakStmt::is(stmt.getBody()));
+        EXPECT_EQ(2, stmt.getBody()->size());
     }
 }
 
