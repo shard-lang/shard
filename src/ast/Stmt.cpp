@@ -202,7 +202,7 @@ ForStmt::ForStmt(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<E
     , m_incExpr(moveValue(incExpr))
     , m_bodyStmt(moveValue(bodyStmt))
 {
-    SHARD_ASSERT(m_initStmt);
+    //SHARD_ASSERT(m_initStmt);
     SHARD_ASSERT(m_bodyStmt);
 }
 
@@ -275,10 +275,10 @@ void SwitchStmt::setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept
 
 /* ************************************************************************* */
 
-CaseStmt::CaseStmt(UniquePtr<Expr> expr, UniquePtr<Stmt> bodyStmt, SourceRange range) noexcept
+CaseStmt::CaseStmt(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> body, SourceRange range) noexcept
     : Stmt(StmtKind::Case, moveValue(range))
     , m_expr(moveValue(expr))
-    , m_bodyStmt(moveValue(bodyStmt))
+    , m_body(moveValue(body))
 {
     SHARD_ASSERT(m_expr);
 }
@@ -297,17 +297,23 @@ void CaseStmt::setExpr(UniquePtr<Expr> expr) noexcept
 
 /* ************************************************************************* */
 
-void CaseStmt::setBodyStmt(UniquePtr<Stmt> stmt) noexcept
+void CaseStmt::setBody(PtrDynamicArray<Stmt> stmtList) noexcept
 {
-    SHARD_ASSERT(stmt);
-    m_bodyStmt = moveValue(stmt);
+    m_body = moveValue(stmtList);
 }
 
 /* ************************************************************************* */
 
-DefaultStmt::DefaultStmt(UniquePtr<Stmt> bodyStmt, SourceRange range) noexcept
+void CaseStmt::addStmt(UniquePtr<Stmt> stmt) noexcept
+{
+    m_body.push_back(moveValue(stmt));
+}
+
+/* ************************************************************************* */
+
+DefaultStmt::DefaultStmt(PtrDynamicArray<Stmt> body, SourceRange range) noexcept
     : Stmt(StmtKind::Default, moveValue(range))
-    , m_bodyStmt(moveValue(bodyStmt))
+    , m_body(moveValue(body))
 {
     // Nothing to do
 }
@@ -318,10 +324,16 @@ DefaultStmt::~DefaultStmt() = default;
 
 /* ************************************************************************* */
 
-void DefaultStmt::setBodyStmt(UniquePtr<Stmt> stmt) noexcept
+void DefaultStmt::setBody(PtrDynamicArray<Stmt> stmtList) noexcept
 {
-    SHARD_ASSERT(stmt);
-    m_bodyStmt = moveValue(stmt);
+    m_body = moveValue(stmtList);
+}
+
+/* ************************************************************************* */
+
+void DefaultStmt::addStmt(UniquePtr<Stmt> stmt) noexcept
+{
+    m_body.push_back(moveValue(stmt));
 }
 
 /* ************************************************************************* */

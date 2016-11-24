@@ -152,6 +152,11 @@ private:
     PtrDynamicArray<Stmt> parseCaseList();
     
     /**
+     * @brief parse statement list for cases.
+     */
+    PtrDynamicArray<Stmt> parseCaseStmtList();
+
+    /**
      * @brief parse Do-While statement.
      */
     UniquePtr<DoWhileStmt> parseDoWhileStmt();
@@ -231,15 +236,15 @@ private:
     }
 
     /**
-     * @brief returns if current TokenType is one of tested TokenTypes.
+     * @brief returns if current TokenType/KeywordType is one of tested TokenTypes/KeywordTypes.
      */
-    template<typename... Types>
-    inline bool is(Types... options) const noexcept
+    template<typename T, typename... Types>
+    inline bool is(T option, Types... options) const noexcept
     {
-        TokenType types[] {options...};
-        for (const TokenType option : types)
+        T types[] {option, options...};
+        for (const T x : types)
         {
-            if (is(option))
+            if (is(x))
             {
                 return true;
             }
@@ -279,11 +284,11 @@ private:
      * @brief returns if current TokenType is one of tested TokenTypes.
      * If so, moves to next token.
      */
-    template<typename... Types>
-    inline bool match(Types... options) noexcept
+    template<typename T, typename... Types>
+    inline bool match(T option, Types... options) noexcept
     {
-        TokenType types[] {options...};
-        for (const TokenType option : types)
+        T types[] {option, options...};
+        for (const T option : types)
         {
             if (is(option))
             {
