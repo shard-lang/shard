@@ -28,9 +28,7 @@ UniquePtr<Module> Parser::parseModule()
 {
     auto module = makeUnique<Module>();
 
-    auto decls = parseDeclList();
-
-    module->addDeclarations(std::move(decls));
+    module->addDeclarations(parseDeclList());
 
     if (!m_tokenizer.empty())
     {
@@ -102,6 +100,8 @@ PtrDynamicArray<Decl> Parser::parseDeclList()
                 return std::move(list);
         }
     }
+
+    return std::move(list);
 }
 
 /* ************************************************************************* */
