@@ -58,13 +58,13 @@ std::ostream& operator<<(std::ostream& os, const Token& obj) noexcept
         case TokenType::CommentLine:
         case TokenType::Identifier:
         case TokenType::String:
-            return os << obj.getStringValue();
+            return os << obj.getValue<String>();
         case TokenType::Float:
-            return os << obj.getFloatValue();
+            return os << obj.getValue<Token::FloatType>();
         case TokenType::Char:
-            return os << obj.getCharValue();
+            return os << obj.getValue<Token::CharType>();
         case TokenType::Int:
-            return os << obj.getIntValue();
+            return os << obj.getValue<Token::IntType>();
         default:
             return os << "---";
     }

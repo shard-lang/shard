@@ -286,7 +286,7 @@ private:
             throw ExpectedIdentifierException();
         }
 
-        return m_tokenizer.get().getStringValue();
+        return m_tokenizer.get().getValue<String>();
     }
 
 };

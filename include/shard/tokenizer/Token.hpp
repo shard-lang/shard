@@ -23,6 +23,7 @@
 
 // Shard
 #include "shard/String.hpp"
+#include "shard/Variant.hpp"
 #include "shard/SourceLocation.hpp"
 #include "shard/tokenizer/TokenType.hpp"
 
@@ -49,10 +50,7 @@ private:
 
     TokenType m_type;
 
-    String m_sValue;
-    FloatType m_fValue;
-    CharType m_cValue;
-    IntType m_iValue;
+    Variant m_value;
 
 /* ************************************************************************* */
 
@@ -63,19 +61,15 @@ public:
     /**
      * @brief constructs Token of given type.
      */
-    explicit Token
-    (
-        TokenType type,
-        const String& strVal = {},
-        FloatType fltVal = {},
-        CharType charVal = {},
-        IntType intVal = {}
-    ):
-        m_type(type),
-        m_sValue(strVal),
-        m_fValue(fltVal),
-        m_cValue(charVal),
-        m_iValue(intVal) {}
+    explicit Token(TokenType type):
+        m_type(type), m_value(nullptr){}
+
+    /**
+     * @brief constructs Token of given type with given value.
+     */
+    template <typename T>
+    explicit Token(TokenType type, const T& value):
+        m_type(type), m_value(value) {}
 
     /**
      * @brief constructs Token of type identifier with given String value.
@@ -114,7 +108,7 @@ public:
      */
     static Token FloatLiteral(FloatType value)
     {
-        return Token(TokenType::FloatLiteral, {}, value);
+        return Token(TokenType::FloatLiteral, value);
     }
 
     /**
@@ -122,7 +116,7 @@ public:
      */
     static Token CharLiteral(CharType value)
     {
-        return Token(TokenType::CharLiteral, {}, {}, value);
+        return Token(TokenType::CharLiteral, value);
     }
        
     /**
@@ -130,7 +124,7 @@ public:
      */ 
     static Token IntLiteral(IntType value)
     {
-        return Token(TokenType::IntLiteral, {}, {}, {}, value);
+        return Token(TokenType::IntLiteral, value);
     }
 
 /* ************************************************************************* */
@@ -146,35 +140,12 @@ public:
     }
 
     /**
-     * @brief returns String value of current token.
+     * @brief returns value of current token.
      */
-    inline const String& getStringValue() const noexcept
+    template <typename T>
+    inline T getValue() const noexcept
     {
-        return m_sValue;
-    }
-    
-    /**
-     * @brief returns FloatValue of current token.
-     */
-    inline FloatType getFloatValue() const noexcept
-    {
-        return m_fValue;
-    }
-    
-    /**
-     * @brief returns CharValue of current token.
-     */
-    inline CharType getCharValue() const noexcept
-    {
-        return m_cValue;
-    }
-    
-    /**
-     * @brief returns IntValue of current token.
-     */
-    inline IntType getIntValue() const noexcept
-    {
-        return m_iValue;
+        return m_value.get<T>();
     }
 
 /* ************************************************************************* */
@@ -213,14 +184,14 @@ inline bool operator==(const Token& lhs, const Token& rhs)
         case TokenType::CommentLine:
         case TokenType::Identifier:
         case TokenType::StringLiteral:
-            return lhs.getStringValue() == rhs.getStringValue();
+            return lhs.getValue<String>() == rhs.getValue<String>();
         case TokenType::FloatLiteral:
-            return std::abs(lhs.getFloatValue() - rhs.getFloatValue())
+            return std::abs(lhs.getValue<Token::FloatType>() - rhs.getValue<Token::FloatType>())
                     < std::numeric_limits<Token::FloatType>::epsilon();
         case TokenType::CharLiteral:
-            return lhs.getCharValue() == rhs.getCharValue();
+            return lhs.getValue<Token::CharType>() == rhs.getValue<Token::CharType>();
         case TokenType::IntLiteral:
-            return lhs.getIntValue() == rhs.getIntValue();
+            return lhs.getValue<Token::IntType>() == rhs.getValue<Token::IntType>();
         default:
             return true;
     }

@@ -30,6 +30,7 @@ add_shard_library(shard-core
         String.hpp
         StringView.hpp
         UniquePtr.hpp
+        Variant.hpp
         ViewPtr.hpp
         error.hpp
         utility.hpp

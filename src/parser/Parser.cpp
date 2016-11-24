@@ -771,15 +771,15 @@ UniquePtr<Expr> Parser::parsePrimaryExpr()
 	switch (token.getType())
 	{
 		case TokenType::Identifier:
-			return makeUnique<IdentifierExpr>(token.getStringValue());
+			return makeUnique<IdentifierExpr>(token.getValue<String>());
 		case TokenType::StringLiteral:
-			return makeUnique<StringLiteralExpr>(token.getStringValue());
+			return makeUnique<StringLiteralExpr>(token.getValue<String>());
 		case TokenType::FloatLiteral:
-			return makeUnique<FloatLiteralExpr>(token.getFloatValue());
+			return makeUnique<FloatLiteralExpr>(token.getValue<Token::FloatType>());
 		case TokenType::CharLiteral:
-			return makeUnique<CharLiteralExpr>(token.getCharValue());
+			return makeUnique<CharLiteralExpr>(token.getValue<Token::CharType>());
 		case TokenType::IntLiteral:
-			return makeUnique<IntLiteralExpr>(token.getIntValue());
+			return makeUnique<IntLiteralExpr>(token.getValue<Token::IntType>());
 		case TokenType::ParenO:
 			return parseParenExpr();
 		case TokenType::Null:     
