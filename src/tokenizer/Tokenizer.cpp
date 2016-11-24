@@ -36,9 +36,9 @@ namespace tokenizer {
 
 namespace
 {
-    static const StaticArray<std::pair<String, KeywordType>, KeywordTypeCount> g_keywordMap
+    static const StaticArray<std::pair<String, TokenType>, KeywordCount> g_keywordMap
     {{
-    #define KEYWORD(name, str) { str, KeywordType::name },
+    #define KEYWORD(name, str) { str, TokenType::name },
     #include "shard/tokenizer/Token.def"
     }};
 
@@ -244,11 +244,11 @@ void Tokenizer::tokenizeIdentifier() noexcept
     while (isIdentifier());
     auto search = std::find_if(
         g_keywordMap.begin(), g_keywordMap.end(),
-        [&](const std::pair<String, KeywordType>& test){ return test.first == value; }
+        [&](const std::pair<String, TokenType>& test){ return test.first == value; }
     );
     if (search != g_keywordMap.end())
     {
-        m_current = Token::Keyword(search->second);
+        m_current = Token(search->second);
     }
     else
     {

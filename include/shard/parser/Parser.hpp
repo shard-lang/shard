@@ -227,16 +227,8 @@ private:
         return m_tokenizer.get().getType() == type;
     }
 
-    /*
-     * @brief returns if current TokenType is Keyword with tested KeywordType.
-     */
-    inline bool is(KeywordType type) const noexcept
-    {
-        return is(TokenType::Keyword) && m_tokenizer.get().getKeywordType() == type;
-    }
-
     /**
-     * @brief returns if current TokenType/KeywordType is one of tested TokenTypes/KeywordTypes.
+     * @brief returns if current TokenType is one of tested TokenTypes.
      */
     template<typename T, typename... Types>
     inline bool is(T option, Types... options) const noexcept
@@ -257,20 +249,6 @@ private:
      * If so, moves to next token.
      */
     inline bool match(TokenType type) noexcept
-    {
-        if (is(type))
-        {
-            m_tokenizer.toss();
-            return true;
-        }
-        return false;
-    }
-
-    /*
-     * @brief returns if current TokenType is Keyword with tested KeywordType.
-     * If so, moves to next token.
-     */
-    inline bool match(KeywordType type) noexcept
     {
         if (is(type))
         {

@@ -25,7 +25,6 @@
 #include "shard/String.hpp"
 #include "shard/SourceLocation.hpp"
 #include "shard/tokenizer/TokenType.hpp"
-#include "shard/tokenizer/KeywordType.hpp"
 
 /* ************************************************************************* */
 
@@ -50,7 +49,6 @@ private:
 
     TokenType m_type;
 
-    KeywordType m_kType;
     String m_sValue;
     FloatType m_fValue;
     CharType m_cValue;
@@ -68,33 +66,23 @@ public:
     explicit Token
     (
         TokenType type,
-        KeywordType keyVal = {},
         const String& strVal = {},
         FloatType fltVal = {},
         CharType charVal = {},
         IntType intVal = {}
     ):
         m_type(type),
-        m_kType(keyVal),
         m_sValue(strVal),
         m_fValue(fltVal),
         m_cValue(charVal),
         m_iValue(intVal) {}
 
     /**
-     * @brief constructs Token of type Keyword with given KeywordType value.
-     */
-    static Token Keyword(KeywordType type)
-    {
-        return Token(TokenType::Keyword, type);
-    }
-
-    /**
      * @brief constructs Token of type identifier with given String value.
      */ 
     static Token Identifier(const String& value)
     {
-        return Token(TokenType::Identifier, {}, value);
+        return Token(TokenType::Identifier, value);
     }
 
     /**
@@ -102,7 +90,7 @@ public:
      */ 
     static Token StringLiteral(const String& value)
     {
-        return Token(TokenType::String, {}, value);
+        return Token(TokenType::StringLiteral, value);
     }
     
     /**
@@ -110,7 +98,7 @@ public:
      */ 
     static Token CommentBlock(const String& value)
     {
-        return Token(TokenType::CommentBlock, {}, value);
+        return Token(TokenType::CommentBlock, value);
     }
 
     /**
@@ -118,7 +106,7 @@ public:
      */ 
     static Token CommentLine(const String& value)
     {
-        return Token(TokenType::CommentLine, {}, value);
+        return Token(TokenType::CommentLine, value);
     }
 
     /**
@@ -126,7 +114,7 @@ public:
      */
     static Token FloatLiteral(FloatType value)
     {
-        return Token(TokenType::Float, {}, {}, value);
+        return Token(TokenType::FloatLiteral, {}, value);
     }
 
     /**
@@ -134,7 +122,7 @@ public:
      */
     static Token CharLiteral(CharType value)
     {
-        return Token(TokenType::Char, {}, {}, {}, value);
+        return Token(TokenType::CharLiteral, {}, {}, value);
     }
        
     /**
@@ -142,7 +130,7 @@ public:
      */ 
     static Token IntLiteral(IntType value)
     {
-        return Token(TokenType::Int, {}, {}, {}, {}, value);
+        return Token(TokenType::IntLiteral, {}, {}, {}, value);
     }
 
 /* ************************************************************************* */
@@ -189,14 +177,6 @@ public:
         return m_iValue;
     }
 
-    /**
-     * @brief returns KeywordType of current token.
-     */
-    inline KeywordType getKeywordType() const noexcept
-    {
-        return m_kType;
-    }
-
 /* ************************************************************************* */
 
 public:
@@ -232,16 +212,14 @@ inline bool operator==(const Token& lhs, const Token& rhs)
         case TokenType::CommentBlock:
         case TokenType::CommentLine:
         case TokenType::Identifier:
-        case TokenType::String:
+        case TokenType::StringLiteral:
             return lhs.getStringValue() == rhs.getStringValue();
-        case TokenType::Keyword:
-            return lhs.getKeywordType() == rhs.getKeywordType();
-        case TokenType::Float:
+        case TokenType::FloatLiteral:
             return std::abs(lhs.getFloatValue() - rhs.getFloatValue())
                     < std::numeric_limits<Token::FloatType>::epsilon();
-        case TokenType::Char:
+        case TokenType::CharLiteral:
             return lhs.getCharValue() == rhs.getCharValue();
-        case TokenType::Int:
+        case TokenType::IntLiteral:
             return lhs.getIntValue() == rhs.getIntValue();
         default:
             return true;

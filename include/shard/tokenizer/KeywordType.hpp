@@ -30,20 +30,9 @@ namespace tokenizer {
 /* ************************************************************************* */
 
 /**
- * @brief Supported keyword types.
+ * @brief Number of keywords.
  */
-enum class KeywordType
-{
-#define KEYWORD(name, str) name,
-#include "Token.def"
-};
-
-/* ************************************************************************* */
-
-/**
- * @brief Number of token types.
- */
-/*inline*/ constexpr auto KeywordTypeCount = ARG_COUNT<
+/*inline*/ constexpr auto KeywordCount = ARG_COUNT<
 #define KEYWORD(name, str) void,
 #include "Token.def"
     void

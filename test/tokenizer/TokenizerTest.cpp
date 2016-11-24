@@ -59,17 +59,6 @@ std::ostream& operator<<(std::ostream& os, const Token& obj) noexcept
         case TokenType::Identifier:
         case TokenType::String:
             return os << obj.getStringValue();
-        case TokenType::Keyword:
-        {
-            switch (obj.getKeywordType())
-            {
-#define KEYWORD(name, str)  \
-    case KeywordType::name: \
-        return os << "\"" #str "\"";
-#include "shard/tokenizer/Token.def"
-            }
-            break;
-        }
         case TokenType::Float:
             return os << obj.getFloatValue();
         case TokenType::Char:
@@ -316,29 +305,29 @@ TEST(Tokenizer, keywords)
 {
     test(
         "for float null while",
-        {Token::Keyword(KeywordType::For), Token::Keyword(KeywordType::Float),
-        Token::Keyword(KeywordType::Null), Token::Keyword(KeywordType::While)}
+        {Token(TokenType::For), Token(TokenType::Float),
+        Token(TokenType::Null), Token(TokenType::While)}
     );
     test(
         "for (int i = 0; i <= 10; i++)",
-        {Token::Keyword(KeywordType::For), Token(TokenType::ParenO), Token::Keyword(KeywordType::Int), Token::Identifier("i"),
+        {Token(TokenType::For), Token(TokenType::ParenO), Token(TokenType::Int), Token::Identifier("i"),
         Token(TokenType::Equal), Token::IntLiteral(0), Token(TokenType::Semicolon), Token::Identifier("i"),
         Token(TokenType::LessEqual), Token::IntLiteral(10), Token(TokenType::Semicolon), Token::Identifier("i"),
         Token(TokenType::PlusPlus), Token(TokenType::ParenC)}
     );
     test(
         "while(true){[]}",
-        {Token::Keyword(KeywordType::While), Token(TokenType::ParenO), Token::Keyword(KeywordType::True), Token(TokenType::ParenC),
+        {Token(TokenType::While), Token(TokenType::ParenO), Token(TokenType::True), Token(TokenType::ParenC),
         Token(TokenType::BraceO), Token(TokenType::SquareO), Token(TokenType::SquareC), Token(TokenType::BraceC)}
     );
     test(
         "string a = \"bla\";",
-        {Token::Keyword(KeywordType::String), Token::Identifier("a"), Token(TokenType::Equal),
+        {Token(TokenType::String), Token::Identifier("a"), Token(TokenType::Equal),
         Token::StringLiteral("bla"), Token(TokenType::Semicolon)}
     );
     test(
         "throw Exception& ex;",
-        {Token::Keyword(KeywordType::Throw), Token::Identifier("Exception"),
+        {Token(TokenType::Throw), Token::Identifier("Exception"),
         Token(TokenType::Amp), Token::Identifier("ex"), Token(TokenType::Semicolon)}
     );
 }

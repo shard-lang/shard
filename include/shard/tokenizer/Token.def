@@ -23,7 +23,7 @@
 #endif
 
 #ifndef KEYWORD
-#define KEYWORD(name, str)
+#define KEYWORD(name, str) TOKEN(name)
 #endif
 
 /* ************************************************************************* */
@@ -32,11 +32,11 @@ TOKEN(End)
 TOKEN(CommentLine)
 TOKEN(CommentBlock)
 TOKEN(Identifier)
-TOKEN(Keyword)
-TOKEN(String)
-TOKEN(Int)
-TOKEN(Float)
-TOKEN(Char)
+
+TOKEN(StringLiteral)
+TOKEN(IntLiteral)
+TOKEN(FloatLiteral)
+TOKEN(CharLiteral)
 
 /* ************************************************************************* */
 
