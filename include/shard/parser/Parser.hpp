@@ -56,12 +56,14 @@ private:
 public:
 
     /**
-     * @brief constructs Parser which reads from file.
+     * @brief Constructs Parser which reads from file.
+     * @param path    path to file
      */
     explicit Parser(const Path& path): m_tokenizer(path, false){}
 
     /**
-     * @brief constructs Parser which reads from String.
+     * @brief Constructs Parser which reads from String.
+     * @param path    source as string
      */
     explicit Parser(const String& source): m_tokenizer(source, false){}
 
