@@ -22,8 +22,8 @@
 #include <limits>
 
 // Shard
+#include "shard/Any.hpp"
 #include "shard/String.hpp"
-#include "shard/Variant.hpp"
 #include "shard/SourceLocation.hpp"
 #include "shard/tokenizer/TokenType.hpp"
 
@@ -50,7 +50,7 @@ private:
 
     TokenType m_type;
 
-    Variant m_value;
+    Any m_value;
 
 /* ************************************************************************* */
 

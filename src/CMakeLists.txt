@@ -16,6 +16,7 @@
 
 add_shard_library(shard-core
     HEADERS
+        Any.hpp
         Assert.hpp
         Byte.hpp
         DynamicArray.hpp
@@ -30,7 +31,6 @@ add_shard_library(shard-core
         String.hpp
         StringView.hpp
         UniquePtr.hpp
-        Variant.hpp
         ViewPtr.hpp
         error.hpp
         utility.hpp

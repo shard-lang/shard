@@ -28,9 +28,9 @@ inline namespace v1 {
 /* ************************************************************************* */
 
 /**
- * @brief Simple implementation of variant - class to hold any type.
+ * @brief Simple implementation of Any - class to hold any type.
  */
-class Variant
+class Any
 {
 
 private:
@@ -38,27 +38,27 @@ private:
     /**
     * @brief Container for value which is being hold.
     */
-    class VariantContainer
+    class VariableContainer
     {
 
     public: 
 
-    	virtual ~VariantContainer() {}
+    	virtual ~VariableContainer() {}
     };
 
     /**
      * @brief Specific implementation for each type.
      */
     template<class T>
-    class VariantContainerImpl : public VariantContainer
+    class VariableContainerImpl : public VariableContainer
     {
 
     public:
 
-        VariantContainerImpl(const T& value)
+        VariableContainerImpl(const T& value)
         	: m_value(value) {}
 
-        ~VariantContainerImpl() {}
+        ~VariableContainerImpl() {}
 
         T getValue() const noexcept { return m_value; }
 
@@ -67,22 +67,22 @@ private:
 
 private:
 
-	SharedPtr<VariantContainer> m_container;
+	SharedPtr<VariableContainer> m_container;
 
 public:
 
     /**
-     * @brief Contructor for empty variant.
+     * @brief Contructor for empty Any.
      */
-	Variant() :
+	Any() :
 		m_container(nullptr) {}
 
     /**
      * @brief Constructor of specific type.
      */
     template<typename T>
-    explicit Variant(T value) :
-        m_container(makeShared<VariantContainerImpl<T>>(value)) {}
+    explicit Any(T value) :
+        m_container(makeShared<VariableContainerImpl<T>>(value)) {}
 
 public:
 
@@ -92,7 +92,7 @@ public:
     template<typename T>
     T get() const
     {
-    	return static_cast<VariantContainerImpl<T>*>(m_container.get())->getValue();
+    	return static_cast<VariableContainerImpl<T>*>(m_container.get())->getValue();
     }
 
     /**
@@ -101,7 +101,7 @@ public:
     template<typename T>
     void set(T value)
     {
-        m_container = makeShared<VariantContainerImpl<T>>(value);
+        m_container = makeShared<VariableContainerImpl<T>>(value);
     }
 };
 
