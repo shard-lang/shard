@@ -108,6 +108,7 @@ private:
 
     Source m_src;
     Token m_current;
+    const bool m_incDoc;
 
     static constexpr char string_literal_border = '"';
     static constexpr char char_literal_border = '\'';
@@ -117,17 +118,21 @@ private:
 public:
 
     /**
-     * @brief constructs Tokenizer which reads from file.
+     * @brief Constructs Tokenizer which reads from file.
+     * @param path    path to file
+     * @param incDoc  whether tokenizer should tokenize documentation comments
      */
-    explicit Tokenizer(const Path& path): m_src(path)
+    explicit Tokenizer(const Path& path, bool incDoc = true): m_src(path), m_incDoc(incDoc)
     {
         tokenize();
     }
 
     /**
-     * @brief constructs Tokenizer which reads from String.
+     * @brief Constructs Tokenizer which reads from String.
+     * @param path    source as string
+     * @param incDoc  whether tokenizer should tokenize documentation comments
      */
-    explicit Tokenizer(const String& source): m_src(source)
+    explicit Tokenizer(const String& source, bool incDoc = true): m_src(source), m_incDoc(incDoc)
     {
         tokenize();
     }

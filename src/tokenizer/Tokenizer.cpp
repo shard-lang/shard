@@ -329,7 +329,14 @@ void Tokenizer::tokenizeOperator()
                     {
                         buf += m_src.extract();
                     }
-                    m_current = Token::CommentLine(buf);
+                    if (m_incDoc)
+                    {
+                        m_current = Token::CommentLine(buf);
+                    }
+                    else
+                    {
+                        tokenize();
+                    }
                     return;
                 }
                 case '*':
@@ -349,7 +356,14 @@ void Tokenizer::tokenizeOperator()
                         }
                         buf += m_src.extract();
                     }
-                    m_current = Token::CommentBlock(buf);
+                    if (m_incDoc)
+                    {
+                        m_current = Token::CommentBlock(buf);
+                    }
+                    else
+                    {
+                        tokenize();
+                    }
                     return;
                 }
                 default: m_current = Token(TokenType::Slash); return;
