@@ -22,10 +22,17 @@ option(SHARD_BUILD_TESTS "Build unit tests" Off)
 option(SHARD_BUILD_TOKENIZER "Build tokenizer" On)
 option(SHARD_BUILD_AST "Build AST" On)
 option(SHARD_BUILD_PARSER "Build parser" On)
+option(SHARD_BUILD_INTERPRETER "Build interpreter" On)
+option(SHARD_BUILD_TOOLS "Build tools" On)
 
 if (NOT SHARD_BUILD_TOKENIZER OR NOT SHARD_BUILD_AST)
     message(WARNING "Option to build Parser requires building AST and Tokenizer, turning Parser off.")
     set(SHARD_BUILD_PARSER Off)
+endif()
+
+if (NOT SHARD_BUILD_PARSER OR NOT SHARD_BUILD_AST)
+    message(WARNING "Option to build interpreter requires building AST and parser, turning interpreter off.")
+    set(SHARD_BUILD_INTERPRETER Off)
 endif()
 
 if (SHARD_BUILD_TESTS AND CMAKE_COMPILER_IS_GNUCXX)
@@ -64,6 +71,10 @@ endfunction ()
 
 # Add source files
 add_subdirectory(src)
+
+if (SHARD_BUILD_TOOLS)
+    add_subdirectory(tools)
+endif ()
 
 # ************************************************************************* #
 
