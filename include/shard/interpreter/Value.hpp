@@ -20,13 +20,31 @@
 
 // Shard
 #include "shard/ViewPtr.hpp"
-#include "shard/ast/Type.hpp"
+#include "shard/Any.hpp"
+#include "shard/String.hpp"
+#include "shard/interpreter/Function.hpp"
 
 /* ************************************************************************* */
 
 namespace shard {
 inline namespace v1 {
 namespace interpreter {
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Stored value kind.
+ */
+enum class ValueKind
+{
+    Null,
+    Bool,
+    Int,
+    Float,
+    Char,
+    String,
+    Function
+};
 
 /* ************************************************************************* */
 
@@ -43,9 +61,17 @@ public:
     /**
      * @brief      Constructor.
      */
-    Value() noexcept
-        : m_type(nullptr)
-        , m_value(0)
+    Value() = default;
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      value  The value.
+     */
+    Value(bool value) noexcept
+        : m_kind(ValueKind::Bool)
+        , m_value(value)
     {
         // Nothing to do
     }
@@ -56,8 +82,60 @@ public:
      *
      * @param      value  The value.
      */
-    explicit Value(int value) noexcept
-        : m_type(&ast::TYPE_BUILTIN_INT)
+    Value(int value) noexcept
+        : m_kind(ValueKind::Int)
+        , m_value(value)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      value  The value.
+     */
+    Value(float value) noexcept
+        : m_kind(ValueKind::Float)
+        , m_value(value)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      value  The value.
+     */
+    Value(char32_t value) noexcept
+        : m_kind(ValueKind::Char)
+        , m_value(value)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      value  The value.
+     */
+    Value(String value) noexcept
+        : m_kind(ValueKind::String)
+        , m_value(moveValue(value))
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      value  The value.
+     */
+    Value(Function value) noexcept
+        : m_kind(ValueKind::Function)
         , m_value(value)
     {
         // Nothing to do
@@ -69,24 +147,36 @@ public:
 
 
     /**
+     * @brief      Returns stored value kind.
+     *
+     * @return     The kind.
+     */
+    ValueKind getKind() const noexcept
+    {
+        return m_kind;
+    }
+
+
+    /**
      * @brief      Determines if value is null.
      *
      * @return     True if null, False otherwise.
      */
     bool isNull() const noexcept
     {
-        return m_type == nullptr;
+        return getKind() == ValueKind::Null;
     }
 
 
     /**
-     * @brief      Returns the declaration type.
+     * @brief      Returns as bool.
      *
-     * @return     The type.
+     * @return     The value.
      */
-    ViewPtr<const ast::Type> getType() const noexcept
+    bool asBool() const noexcept
     {
-        return m_type;
+        SHARD_ASSERT(getKind() == ValueKind::Bool);
+        return m_value.get<bool>();
     }
 
 
@@ -97,25 +187,201 @@ public:
      */
     int asInt() const noexcept
     {
-        return m_value;
+        SHARD_ASSERT(getKind() == ValueKind::Int);
+        return m_value.get<int>();
     }
 
 
-// Public Operations
-public:
+    /**
+     * @brief      Returns as float.
+     *
+     * @return     The value.
+     */
+    float asFloat() const noexcept
+    {
+        SHARD_ASSERT(getKind() == ValueKind::Float);
+        return m_value.get<float>();
+    }
 
+
+    /**
+     * @brief      Returns as character.
+     *
+     * @return     The value.
+     */
+    char32_t asChar() const noexcept
+    {
+        SHARD_ASSERT(getKind() == ValueKind::Char);
+        return m_value.get<char32_t>();
+    }
+
+
+    /**
+     * @brief      Returns as string.
+     *
+     * @return     The value.
+     */
+    String asString() const noexcept
+    {
+        SHARD_ASSERT(getKind() == ValueKind::String);
+        return m_value.get<String>();
+    }
+
+
+    /**
+     * @brief      Returns as function.
+     *
+     * @return     The value.
+     */
+    Function asFunction() const noexcept
+    {
+        SHARD_ASSERT(getKind() == ValueKind::Function);
+        return m_value.get<Function>();
+    }
 
 
 // Private Data Members
 private:
 
-    /// Declaration type.
-    ViewPtr<const ast::Type> m_type;
+    /// Stored value kind.
+    ValueKind m_kind = ValueKind::Null;
 
     /// Variable value.
-    int m_value;
+    Any m_value;
 
 };
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
+ */
+bool operator==(const Value& lhs, const Value& rhs);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
+ */
+inline bool operator!=(const Value& lhs, const Value& rhs)
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
+ */
+bool operator<(const Value& lhs, const Value& rhs);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
+ */
+inline bool operator>(const Value& lhs, const Value& rhs)
+{
+    return operator<(rhs, lhs);
+}
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
+ */
+inline bool operator<=(const Value& lhs, const Value& rhs)
+{
+    return !operator>(lhs, rhs);
+}
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
+ */
+inline bool operator>=(const Value& lhs, const Value& rhs)
+{
+    return !operator<(lhs, rhs);
+}
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Add values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Operation result.
+ */
+Value operator+(const Value& lhs, const Value& rhs);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Subtract values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Operation result.
+ */
+Value operator-(const Value& lhs, const Value& rhs);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Multiply values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Operation result.
+ */
+Value operator*(const Value& lhs, const Value& rhs);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Divide values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Operation result.
+ */
+Value operator/(const Value& lhs, const Value& rhs);
 
 /* ************************************************************************* */
 

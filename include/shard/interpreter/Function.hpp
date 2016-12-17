@@ -14,14 +14,14 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-// Declaration
-#include "shard/interpreter/Context.hpp"
+#pragma once
+
+/* ************************************************************************* */
 
 // Shard
-#include "shard/Assert.hpp"
-#include "shard/ast/Stmt.hpp"
-#include "shard/interpreter/Exception.hpp"
-#include "shard/interpreter/Function.hpp"
+#include "shard/utility.hpp"
+#include "shard/ViewPtr.hpp"
+#include "shard/ast/Decl.hpp"
 
 /* ************************************************************************* */
 
@@ -31,57 +31,66 @@ namespace interpreter {
 
 /* ************************************************************************* */
 
-Context::Context()
+/**
+ * @brief      Interpreter function description.
+ */
+class Function
 {
-    push();
 
-    auto print = addSymbol("print", SymbolKind::Function);
-    SHARD_ASSERT(print);
-    print->setValue(Function("print"));
-}
+// Public Ctors & Dtors
+public:
 
-/* ************************************************************************* */
 
-void Context::push()
-{
-    m_scopes.emplace_back();
-}
-
-/* ************************************************************************* */
-
-void Context::pop()
-{
-    m_scopes.pop_back();
-}
-
-/* ************************************************************************* */
-
-ViewPtr<Symbol> Context::findSymbol(StringView name) noexcept
-{
-    for (auto it = m_scopes.rbegin(); it != m_scopes.rend(); ++it)
+    /**
+     * @brief      Constructor.
+     *
+     * @param      name  The name
+     * @param      decl  The declaration
+     */
+    explicit Function(String name, ViewPtr<const ast::FunctionDecl> decl = nullptr)
+        : m_name(moveValue(name))
+        , m_decl(decl)
     {
-        auto it2 = it->find(String(name));
-
-        if (it2 != it->end())
-            return makeView(&(it2->second));
+        // Nothing to do
     }
 
-    return nullptr;
-}
 
-/* ************************************************************************* */
+// Public Accessors & Mutators
+public:
 
-ViewPtr<Symbol> Context::addSymbol(StringView name, SymbolKind kind)
-{
-    auto it = m_scopes.back().find(String(name));
 
-    if (it != m_scopes.back().end())
-        throw Exception("Symbol already defined within this scope");
+    /**
+     * @brief      Returns function name.
+     *
+     * @return     The name.
+     */
+    const String& getName() const noexcept
+    {
+        return m_name;
+    }
 
-    auto res = m_scopes.back().emplace(String(name), Symbol{kind});
 
-    return makeView(&(res.first->second));
-}
+    /**
+     * @brief      Returns function declaration.
+     *
+     * @return     The declaration or nullptr.
+     */
+    ViewPtr<const ast::FunctionDecl> getDecl() const noexcept
+    {
+        return m_decl;
+    }
+
+
+// Private Data Members
+private:
+
+    /// Function name.
+    String m_name;
+
+    /// Function declaration.
+    ViewPtr<const ast::FunctionDecl> m_decl;
+
+};
 
 /* ************************************************************************* */
 

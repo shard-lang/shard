@@ -19,11 +19,13 @@ add_shard_library(shard-interpreter
         Context.hpp
         Exception.hpp
         Interpreter.hpp
-        Variable.hpp
+        Symbol.hpp
+        Value.hpp
     SOURCES
         Context.cpp
         Interpreter.cpp
-        Variable.cpp
+        Symbol.cpp
+        Value.cpp
     LIBRARIES
         shard-ast
 )

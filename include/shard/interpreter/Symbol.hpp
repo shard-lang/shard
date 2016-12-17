@@ -1,4 +1,3 @@
-
 /* ************************************************************************* */
 /* This file is part of Shard.                                               */
 /*                                                                           */
@@ -15,11 +14,13 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-// Declaration
-#include "shard/interpreter/Variable.hpp"
+#pragma once
+
+/* ************************************************************************* */
 
 // Shard
-#include "shard/Assert.hpp"
+#include "shard/utility.hpp"
+#include "shard/interpreter/Value.hpp"
 
 /* ************************************************************************* */
 
@@ -29,12 +30,94 @@ namespace interpreter {
 
 /* ************************************************************************* */
 
-Variable::Variable(ViewPtr<const ast::Type> type)
-    : m_type(type)
-    , m_value{}
+/**
+ * @brief      Kind of symbol.
+ */
+enum class SymbolKind
 {
-    SHARD_ASSERT(m_type);
-}
+    Variable,
+    Constant,
+    Function
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Shard interpreter symbol.
+ */
+class Symbol
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      kind  The symbol kind.
+     */
+    explicit Symbol(SymbolKind kind);
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief      Returns the symbol kind.
+     *
+     * @return     The kind.
+     */
+    SymbolKind getKind() const noexcept
+    {
+        return m_kind;
+    }
+
+
+    /**
+     * @brief      Returns the current value.
+     *
+     * @return     The value.
+     */
+    Value& getValue() noexcept
+    {
+        return m_value;
+    }
+
+
+    /**
+     * @brief      Returns the current value.
+     *
+     * @return     The value.
+     */
+    const Value& getValue() const noexcept
+    {
+        return m_value;
+    }
+
+
+    /**
+     * @brief      Returns the current value.
+     *
+     * @return     The value.
+     */
+    void setValue(Value value) noexcept
+    {
+        m_value = moveValue(value);
+    }
+
+
+// Private Data Members
+private:
+
+    /// Symbol kind.
+    SymbolKind m_kind;
+
+    /// Variable value.
+    Value m_value;
+
+};
 
 /* ************************************************************************* */
 

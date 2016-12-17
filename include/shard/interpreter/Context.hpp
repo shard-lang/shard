@@ -25,7 +25,7 @@
 #include "shard/DynamicArray.hpp"
 #include "shard/Map.hpp"
 #include "shard/ast/Type.hpp"
-#include "shard/interpreter/Variable.hpp"
+#include "shard/interpreter/Symbol.hpp"
 
 /* ************************************************************************* */
 
@@ -71,27 +71,27 @@ public:
      *
      * @return     Pointer to variable or nullptr.
      */
-    ViewPtr<Variable> findVariable(StringView name) noexcept;
+    ViewPtr<Symbol> findSymbol(StringView name) noexcept;
 
 
     /**
-     * @brief      Creates a variable.
+     * @brief      Creates a symbol.
      *
-     * @param      name  The variable name.
-     * @param      type  The variable type.
+     * @param      name  The symbol name.
+     * @param      kind  The symbol kind.
      *
-     * @return     Pointer to variable.
+     * @return     Pointer to symbol.
      *
-     * @throws     Exception  If variable already exists.
+     * @throws     Exception  If symbol already exists.
      */
-    ViewPtr<Variable> createVariable(StringView name, ViewPtr<const ast::Type> type);
+    ViewPtr<Symbol> addSymbol(StringView name, SymbolKind kind);
 
 
 // Private Data Members
 private:
 
-    /// Scope stack.
-    DynamicArray<Map<String, Variable>> m_stack;
+    /// Scope based symbol table.
+    DynamicArray<Map<String, Symbol>> m_scopes;
 
 };
 

@@ -31,7 +31,8 @@
 
 /* ************************************************************************* */
 
-#define PRINT_CALL // printf("%s\n", __PRETTY_FUNCTION__);
+//#define PRINT_CALL printf("%s\n", __PRETTY_FUNCTION__);
+#define PRINT_CALL
 
 /* ************************************************************************* */
 
@@ -71,7 +72,7 @@ void interpretDeclStmt(ViewPtr<const ast::DeclStmt> stmt, Context& ctx)
     auto varDecl = ast::VariableDecl::cast(decl);
 
     // Create variable
-    auto var = ctx.createVariable(varDecl->getName(), varDecl->getType());
+    auto var = ctx.addSymbol(varDecl->getName(), SymbolKind::Variable);
 
     if (varDecl->getInitExpr())
         var->setValue(interpret(varDecl->getInitExpr(), ctx));
@@ -180,6 +181,12 @@ void interpretReturnStmt(ViewPtr<const ast::ReturnStmt> stmt, Context& ctx)
     SHARD_ASSERT(stmt);
     PRINT_CALL;
 
+    // Evaluate return expr
+    auto ret = interpret(stmt->getResExpr(), ctx);
+
+    auto retSym = ctx.findSymbol("return");
+    SHARD_ASSERT(retSym);
+    retSym->setValue(moveValue(ret));
 }
 
 /* ************************************************************************* */
@@ -219,7 +226,7 @@ Value interpretFloatLiteralExpr(ViewPtr<const ast::FloatLiteralExpr> expr, Conte
     SHARD_ASSERT(expr);
     PRINT_CALL;
 
-    return {};
+    return Value(expr->getValue());
 }
 
 /* ************************************************************************* */
@@ -229,7 +236,7 @@ Value interpretCharLiteralExpr(ViewPtr<const ast::CharLiteralExpr> expr, Context
     SHARD_ASSERT(expr);
     PRINT_CALL;
 
-    return {};
+    return Value(expr->getValue());
 }
 
 /* ************************************************************************* */
@@ -239,7 +246,7 @@ Value interpretStringLiteralExpr(ViewPtr<const ast::StringLiteralExpr> expr, Con
     SHARD_ASSERT(expr);
     PRINT_CALL;
 
-    return {};
+    return Value(expr->getValue());
 }
 
 /* ************************************************************************* */
@@ -256,24 +263,22 @@ Value interpretBinaryExpr(ViewPtr<const ast::BinaryExpr> expr, Context& ctx)
     switch (expr->getOpKind())
     {
     //  Equality operators
-    case ast::BinaryExpr::OpKind::EQ: break;
-    case ast::BinaryExpr::OpKind::NE: break;
+    case ast::BinaryExpr::OpKind::EQ: return Value(lhs == rhs);
+    case ast::BinaryExpr::OpKind::NE: return Value(lhs != rhs);
 
     // Relational operators
-    case ast::BinaryExpr::OpKind::LT: break;
-    case ast::BinaryExpr::OpKind::LE: break;
-    case ast::BinaryExpr::OpKind::GT: break;
-    case ast::BinaryExpr::OpKind::GE: break;
+    case ast::BinaryExpr::OpKind::LT: return Value(lhs < rhs);
+    case ast::BinaryExpr::OpKind::LE: return Value(lhs <= rhs);
+    case ast::BinaryExpr::OpKind::GT: return Value(lhs > rhs);
+    case ast::BinaryExpr::OpKind::GE: return Value(lhs >= rhs);
 
     // Additive operators
-    case ast::BinaryExpr::OpKind::Add:
-        return Value(lhs.asInt() + rhs.asInt());
-
-    case ast::BinaryExpr::OpKind::Sub: break;
+    case ast::BinaryExpr::OpKind::Add: return lhs + rhs;
+    case ast::BinaryExpr::OpKind::Sub: return lhs - rhs;
 
     // Multiplicative operators
-    case ast::BinaryExpr::OpKind::Mul: break;
-    case ast::BinaryExpr::OpKind::Div: break;
+    case ast::BinaryExpr::OpKind::Mul: return lhs * rhs;
+    case ast::BinaryExpr::OpKind::Div: return lhs / rhs;
     case ast::BinaryExpr::OpKind::Rem: break;
 
     // Assignment operators
@@ -339,9 +344,13 @@ Value interpretIdentifierExpr(ViewPtr<const ast::IdentifierExpr> expr, Context& 
     SHARD_ASSERT(expr);
     PRINT_CALL;
 
-    auto var = ctx.findVariable(expr->getName());
+    // Try to find required symbol
+    auto sym = ctx.findSymbol(expr->getName());
 
-    return var->getValue();
+    if (sym == nullptr)
+        throw Exception("Symbol '" + expr->getName() + "' not defined in within current scope");
+
+    return sym->getValue();
 }
 
 /* ************************************************************************* */
@@ -351,16 +360,76 @@ Value interpretFunctionCallExpr(ViewPtr<const ast::FunctionCallExpr> expr, Conte
     SHARD_ASSERT(expr);
     PRINT_CALL;
 
-    // TODO: remove
-    if (ast::IdentifierExpr::is(expr->getExpr()) && ast::IdentifierExpr::cast(expr->getExpr())->getName() == "print")
+    // Evaluate expr before arguments
+    auto res = interpret(expr->getExpr(), ctx);
+
+    if (res.getKind() != ValueKind::Function)
+        throw Exception("Not a function");
+
+    // Get function info
+    auto fn = res.asFunction();
+
+    // Builtin function
+    if (fn.getName() == "print")
     {
-        for (const auto& arg : expr->getArguments())
+        for (auto& arg : expr->getArguments())
         {
-            printf("%d\n", interpret(makeView(arg), ctx).asInt());
+            // Evaluate argument
+            auto val = interpret(makeView(arg), ctx);
+
+            switch (val.getKind())
+            {
+            case ValueKind::Null:       printf("null"); break;
+            case ValueKind::Bool:       printf("%s", val.asBool() ? "true" : "false"); break;
+            case ValueKind::Int:        printf("%d", val.asInt()); break;
+            case ValueKind::Float:      printf("%f", val.asFloat()); break;
+            case ValueKind::Char:       printf("%c", static_cast<char>(val.asChar())); break;
+            case ValueKind::String:     printf("%s", val.asString().c_str()); break;
+            case ValueKind::Function:   printf("<callable>"); break;
+            }
         }
+
+        printf("\n");
+
+        return {};
     }
 
-    return {};
+    if (fn.getDecl() == nullptr)
+        throw Exception("Missing function declaration");
+
+    // FIXME: Function context
+
+    // Arguments context
+    ctx.push();
+
+    // Return value
+    auto retSym = ctx.addSymbol("return", SymbolKind::Variable);
+
+    // Parameters & Arguments
+    const auto& params = fn.getDecl()->getParameters();
+    const auto& args = expr->getArguments();
+
+    if (args.size() != params.size())
+        throw Exception("Function call argument count mismatch");
+
+    // Register arguments
+    for (int i = 0; i < params.size(); ++i)
+    {
+        auto param = ctx.addSymbol(params[i]->getName(), SymbolKind::Variable);
+        SHARD_ASSERT(param);
+
+        param->setValue(interpret(makeView(args[i]), ctx));
+    }
+
+    // Intepret function body
+    interpretCompoundStmt(fn.getDecl()->getBodyStmt(), ctx);
+
+    // Get return value
+    auto ret = retSym->getValue();
+
+    ctx.pop();
+
+    return ret;
 }
 
 /* ************************************************************************* */
@@ -394,28 +463,54 @@ void interpret(ViewPtr<const ast::Module> unit, Context& ctx)
     SHARD_ASSERT(unit);
     PRINT_CALL;
 
-    // Register variable declarations
-    for (const auto& decl : unit->getDeclarations<ast::VariableDecl>())
+    // Register declarations
+    for (const auto& decl : unit->getDeclarations())
     {
         SHARD_ASSERT(decl);
-        auto var = ctx.createVariable(decl->getName(), decl->getType());
-        SHARD_ASSERT(var);
 
-        if (decl->getInitExpr())
-            var->setValue(interpret(decl->getInitExpr(), ctx));
+        // Is variable
+        if (ast::VariableDecl::is(decl))
+        {
+            const auto varDecl = ast::VariableDecl::cast(decl);
+            SHARD_ASSERT(varDecl);
+
+            // Register symbol as variable
+            auto var = ctx.addSymbol(varDecl->getName(), SymbolKind::Variable);
+            SHARD_ASSERT(var);
+
+            // Define variable initial value
+            if (varDecl->getInitExpr())
+                var->setValue(interpret(varDecl->getInitExpr(), ctx));
+        }
+        else if (ast::FunctionDecl::is(decl))
+        {
+            const auto fnDecl = ast::FunctionDecl::cast(decl);
+            SHARD_ASSERT(fnDecl);
+
+            // Register symbol as function
+            auto fn = ctx.addSymbol(fnDecl->getName(), SymbolKind::Function);
+            SHARD_ASSERT(fn);
+
+            // Store function definition
+            fn->setValue(Function(fnDecl->getName(), fnDecl));
+        }
     }
 
-    // Find function declaration
-    ViewPtr<ast::Decl> decl = unit->findDeclaration("main");
+    // Find main function
+    auto main = ctx.findSymbol("main");
 
-    if (decl == nullptr || !ast::FunctionDecl::is(decl))
+    if (main == nullptr || main->getValue().getKind() != ValueKind::Function)
         throw Exception("No 'main' function in the compilation unit");
 
     // Parameters
     ctx.push();
 
+    // Main function info
+    auto mainFn = main->getValue().asFunction();
+    SHARD_ASSERT(mainFn.getDecl());
+
     // Call function
-    interpret(ast::FunctionDecl::cast(decl)->getBodyStmt(), ctx);
+    interpret(mainFn.getDecl()->getBodyStmt(), ctx);
 }
 
 /* ************************************************************************* */
