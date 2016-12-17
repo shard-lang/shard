@@ -20,6 +20,7 @@
 
 // Shard
 #include "shard/Assert.hpp"
+#include "shard/ast/Expr.hpp"
 
 /* ************************************************************************* */
 

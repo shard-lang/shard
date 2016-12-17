@@ -20,6 +20,7 @@
 // Shard
 #include "shard/Assert.hpp"
 #include "shard/ast/Stmt.hpp"
+#include "shard/ast/Expr.hpp"
 #include "shard/interpreter/Exception.hpp"
 #include "shard/interpreter/Function.hpp"
 
