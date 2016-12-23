@@ -17,6 +17,10 @@
 // Declaration
 #include "shard/ast/Type.hpp"
 
+// Shard
+#include "shard/Assert.hpp"
+#include "shard/utility.hpp"
+
 /* ************************************************************************* */
 
 namespace shard {
@@ -25,18 +29,30 @@ namespace ast {
 
 /* ************************************************************************* */
 
-Type::~Type() = default;
+Type::Type(TypeKind kind) noexcept
+    : m_kind(kind)
+{
+    SHARD_ASSERT(m_kind != TypeKind::Typename);
+}
 
 /* ************************************************************************* */
 
-const Type TYPE_BUILTIN_VOID(TypeKind::Void);
-const Type TYPE_BUILTIN_AUTO(TypeKind::Auto);
-const Type TYPE_BUILTIN_INT(TypeKind::Int);
-const Type TYPE_BUILTIN_FLOAT(TypeKind::Float);
-const Type TYPE_BUILTIN_CHAR(TypeKind::Char);
-const Type TYPE_BUILTIN_STRING(TypeKind::String);
-const Type TYPE_BUILTIN_VAR(TypeKind::Var);
-const Type TYPE_BUILTIN_BOOL(TypeKind::Bool);
+Type::Type(String name)
+    : m_kind(TypeKind::Typename)
+    , m_name(moveValue(name))
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+bool operator==(const Type& lhs, const Type& rhs) noexcept
+{
+    if (!lhs.isBuiltin() && !rhs.isBuiltin())
+        return lhs.getName() == rhs.getName();
+
+    return lhs.getKind() == rhs.getKind();
+}
 
 /* ************************************************************************* */
 

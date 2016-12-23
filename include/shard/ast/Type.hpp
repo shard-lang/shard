@@ -19,7 +19,7 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/ViewPtr.hpp"
+#include "shard/String.hpp"
 
 /* ************************************************************************* */
 
@@ -30,24 +30,49 @@ namespace ast {
 /* ************************************************************************* */
 
 /**
- * @brief Type of the type.
+ * @brief      Type of the type.
  */
 enum class TypeKind
 {
-    Void,
-    Auto,
-    Int,
-    Float,
-    Char,
-    String,
+    /// Special type which allows to store any type at runtime. It's universal
+    /// variable type.
     Var,
-    Bool
+
+    /// Automatic variable type which is deduced by initializer expression. The
+    /// type cannot be changed later and only values with same type can be
+    /// stored withing the variable.
+    Auto,
+
+    /// No type. Usable only as functions return type.
+    Void,
+
+    /// Integer type.
+    Int,
+
+    /// Floating point type.
+    Float,
+
+    /// Character type (UNICODE).
+    Char,
+
+    /// String type.
+    String,
+
+    /// Boolean type.
+    Bool,
+
+    /// User defined type. Must be used with name of the type.
+    Typename
 };
 
 /* ************************************************************************* */
 
 /**
- * @brief Base type.
+ * @brief      Variable type.
+ *
+ * @details    This class is used for store information about variable (and
+ *             function return type and parameters) type. Variable type can be
+ *             one of the builtin types or user defined type.
  */
 class Type
 {
@@ -57,20 +82,21 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param kind Type kind.
+     * @brief      Constructor.
+     *
+     * @param      kind  Type kind. The `TypeKind::Typename` cannot be used.
      */
-    explicit Type(TypeKind kind) noexcept
-        : m_kind(kind)
-    {
-        // Nothing to do
-    }
+    Type(TypeKind kind) noexcept;
 
 
     /**
-     * @brief Destructor.
+     * @brief      Constructor.
+     *
+     * @param      name  The typename.
+     *
+     * @note       The result kind is `TypeKind::Typename`.
      */
-    virtual ~Type();
+    Type(String name);
 
 
 // Public Accessors & Mutators
@@ -78,12 +104,35 @@ public:
 
 
     /**
-     * @brief Returns type kind
-     * @return
+     * @brief      Returns type kind
+     *
+     * @return     The kind.
      */
     TypeKind getKind() const noexcept
     {
         return m_kind;
+    }
+
+
+    /**
+     * @brief      Determines if type is builtin.
+     *
+     * @return     True if builtin, False otherwise.
+     */
+    bool isBuiltin() const noexcept
+    {
+        return getKind() != TypeKind::Typename;
+    }
+
+
+    /**
+     * @brief      Returns the typename.
+     *
+     * @return     The name.
+     */
+    const String& getName() const noexcept
+    {
+        return m_name;
     }
 
 
@@ -93,81 +142,36 @@ private:
     /// Type kind.
     TypeKind m_kind;
 
+    /// Type name.
+    String m_name;
 };
 
 /* ************************************************************************* */
 
 /**
- * @brief Type information.
+ * @brief      Compare two types.
  *
- * Class is lightweight to copy and it's designed be a part of classes which
- * need some type information. Variables, parameters can have specificators
- * (like `const`) and having every used combination in some global type list
- * will be unmanagable. So this class contains enum which define if it is
- * a basic type or a user defined type and pointer to user defined type
- * declaration.
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
  */
-class TypeInfo
-{
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     * @param type Pointer to base type.
-     */
-    TypeInfo(ViewPtr<const Type> type) noexcept
-        : m_type(type)
-    {
-        // Nothing to do
-    }
-
-
-// Public Accessors & Mutators
-public:
-
-
-    /**
-     * @brief Returns base type.
-     * @return
-     */
-    ViewPtr<const Type> getType() const noexcept
-    {
-        return m_type;
-    }
-
-
-    /**
-     * @brief Change base type.
-     * @param type
-     */
-    void setType(ViewPtr<const Type> type) noexcept
-    {
-        m_type = type;
-    }
-
-
-// Private Data Members
-private:
-
-    /// Pointer to base type.
-    ViewPtr<const Type> m_type;
-
-};
+bool operator==(const Type& lhs, const Type& rhs) noexcept;
 
 /* ************************************************************************* */
 
-// Builtin types
-extern const Type TYPE_BUILTIN_VOID;
-extern const Type TYPE_BUILTIN_AUTO;
-extern const Type TYPE_BUILTIN_INT;
-extern const Type TYPE_BUILTIN_FLOAT;
-extern const Type TYPE_BUILTIN_CHAR;
-extern const Type TYPE_BUILTIN_STRING;
-extern const Type TYPE_BUILTIN_VAR;
-extern const Type TYPE_BUILTIN_BOOL;
+/**
+ * @brief      Compare two types.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
+ */
+inline bool operator!=(const Type& lhs, const Type& rhs) noexcept
+{
+    return !operator==(lhs, rhs);
+}
 
 /* ************************************************************************* */
 

@@ -17,21 +17,19 @@
 add_shard_library(shard-ast
     HEADERS
         Decl.hpp
-        DeclContext.hpp
         Expr.hpp
-        Module.hpp
         Stmt.hpp
         StmtContainer.hpp
         Type.hpp
         utility.hpp
+        Unit.hpp
     SOURCES
         Decl.cpp
-        DeclContext.cpp
         Expr.cpp
-        Module.cpp
         Stmt.cpp
         StmtContainer.cpp
         Type.cpp
+        Unit.cpp
     LIBRARIES
         shard-core
 )

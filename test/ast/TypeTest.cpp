@@ -27,30 +27,22 @@ using namespace shard::ast;
 
 /* ************************************************************************ */
 
-TEST(Type, builtins)
-{
-    EXPECT_EQ(TypeKind::Void,   TYPE_BUILTIN_VOID.getKind());
-    EXPECT_EQ(TypeKind::Int,    TYPE_BUILTIN_INT.getKind());
-    EXPECT_EQ(TypeKind::Float,  TYPE_BUILTIN_FLOAT.getKind());
-    EXPECT_EQ(TypeKind::Char,   TYPE_BUILTIN_CHAR.getKind());
-    EXPECT_EQ(TypeKind::String, TYPE_BUILTIN_STRING.getKind());
-    EXPECT_EQ(TypeKind::Var,    TYPE_BUILTIN_VAR.getKind());
-}
-
-/* ************************************************************************ */
-
 TEST(TypeInfo, construction)
 {
     {
-        const TypeInfo info(&TYPE_BUILTIN_VAR);
-
-        EXPECT_EQ(&TYPE_BUILTIN_VAR, info.getType());
+        const Type type(TypeKind::Var);
+        EXPECT_EQ(TypeKind::Var, type.getKind());
     }
 
     {
-        const TypeInfo info(&TYPE_BUILTIN_VOID);
+        const Type type(TypeKind::Auto);
+        EXPECT_EQ(TypeKind::Auto, type.getKind());
+    }
 
-        EXPECT_EQ(&TYPE_BUILTIN_VOID, info.getType());
+    {
+        const Type type("MyClass");
+        EXPECT_EQ(TypeKind::Typename, type.getKind());
+        EXPECT_EQ("MyClass", type.getName());
     }
 }
 
