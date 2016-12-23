@@ -19,10 +19,6 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/Assert.hpp"
-#include "shard/ViewPtr.hpp"
-#include "shard/UniquePtr.hpp"
-#include "shard/utility.hpp"
 #include "shard/SourceLocation.hpp"
 #include "shard/SourceRange.hpp"
 
@@ -36,33 +32,19 @@ namespace ast {
 /* ************************************************************************* */
 
 /**
- * @brief Helper class for storing location in source code.
+ * @brief      Base class for all AST nodes.
  */
-class NodeBase
+class Node
 {
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     * @param range Source range.
-     */
-    NodeBase(SourceRange range) noexcept
-        : m_range(moveValue(range))
-    {
-        // Nothing to do
-    }
-
 
 // Public Accessors & Mutators
 public:
 
 
     /**
-     * @brief Returns source range.
-     * @return
+     * @brief      Returns source range.
+     *
+     * @return     The source range.
      */
     const SourceRange& getSourceRange() const noexcept
     {
@@ -71,8 +53,9 @@ public:
 
 
     /**
-     * @brief Returns source range start.
-     * @return
+     * @brief      Returns source range start.
+     *
+     * @return     The source start.
      */
     const SourceLocation& getSourceStart() const noexcept
     {
@@ -81,8 +64,9 @@ public:
 
 
     /**
-     * @brief Returns source range end.
-     * @return
+     * @brief      Returns source range end.
+     *
+     * @return     The source end.
      */
     const SourceLocation& getSourceEnd() const noexcept
     {
@@ -90,104 +74,29 @@ public:
     }
 
 
-// Private Data Members
-private:
-
-    /// Source range.
-    SourceRange m_range;
-
-};
-
-/* ************************************************************************* */
-
-template<typename Kind>
-class KindRange
-{
-
-// Public Ctors & Dtors
-public:
+// Protected Ctors & Dtors
+protected:
 
 
     /**
      * @brief      Constructor.
      *
-     * @param      first  The first value.
-     * @param      last   The last value.
+     * @param      range  Source range.
      */
-    constexpr KindRange(Kind first, Kind last) noexcept
-        : m_first(first)
-        , m_last(last)
-    {
-        // Nothing to do
-    }
-
-
-// Public Accessors & Mutators
-public:
+    Node(SourceRange range) noexcept;
 
 
     /**
-     * @brief      Returns the first value.
-     *
-     * @return     The first value.
+     * @brief      Destructor.
      */
-    Kind getFirst() const noexcept
-    {
-        return m_first;
-    }
-
-
-    /**
-     * @brief      Returns the last value.
-     *
-     * @return     The last value.
-     */
-    Kind getLast() const noexcept
-    {
-        return m_last;
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Compare operator.
-     *
-     * @param      rng   The kind range.
-     * @param      kind  The kind.
-     *
-     * @return     Comparision result.
-     */
-    friend constexpr bool operator==(KindRange rng, Kind kind)
-    {
-        return kind >= rng.getFirst() && kind <= rng.getLast();
-    }
-
-
-    /**
-     * @brief      Compare operator.
-     *
-     * @param      kind  The kind.
-     * @param      rng   The kind range.
-     *
-     * @return     Comparision result.
-     */
-    friend constexpr bool operator==(Kind kind, KindRange rng)
-    {
-        return operator==(rng, kind);
-    }
+    ~Node() = default;
 
 
 // Private Data Members
 private:
 
-    /// The first value.
-    Kind m_first;
-
-    /// The last value.
-    Kind m_last;
+    /// Source range.
+    SourceRange m_range;
 
 };
 

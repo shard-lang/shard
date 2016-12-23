@@ -15,12 +15,10 @@
 /* ************************************************************************* */
 
 // Declaration
-#include "shard/ast/StmtContainer.hpp"
+#include "shard/ast/Node.hpp"
 
 // Shard
 #include "shard/utility.hpp"
-#include "shard/ast/Stmt.hpp"
-#include "shard/ast/Expr.hpp"
 
 /* ************************************************************************* */
 
@@ -30,25 +28,10 @@ namespace ast {
 
 /* ************************************************************************* */
 
-StmtContainer::StmtContainer() noexcept = default;
-
-/* ************************************************************************* */
-
-StmtContainer::~StmtContainer() = default;
-
-/* ************************************************************************* */
-
-StmtContainer::StmtContainer(PtrDynamicArray<Stmt> stmts) noexcept
-    : m_statements(moveValue(stmts))
+Node::Node(SourceRange range) noexcept
+    : m_range(moveValue(range))
 {
     // Nothing to do
-}
-
-/* ************************************************************************* */
-
-void StmtContainer::addStatement(UniquePtr<Stmt> stmt) noexcept
-{
-    m_statements.push_back(moveValue(stmt));
 }
 
 /* ************************************************************************* */

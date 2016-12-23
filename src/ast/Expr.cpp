@@ -28,12 +28,8 @@ namespace ast {
 
 /* ************************************************************************* */
 
-Expr::~Expr() = default;
-
-/* ************************************************************************* */
-
 Expr::Expr(ExprKind kind, SourceRange range) noexcept
-    : LocationInfo(range)
+    : Node(range)
     , m_kind(kind)
 {
     // Nothing to do
@@ -41,16 +37,35 @@ Expr::Expr(ExprKind kind, SourceRange range) noexcept
 
 /* ************************************************************************* */
 
+Expr::~Expr() = default;
+
+/* ************************************************************************* */
+
+constexpr KindRange<ExprKind> LiteralExpr::Kind;
+
+/* ************************************************************************* */
+
 NullLiteralExpr::NullLiteralExpr(SourceRange range) noexcept
-    : LiteralExpr(ExprKind::NullLiteral, range)
+    : LiteralExpr(Kind, range)
 {
     // Nothing to do
+}
+
+/* ************************************************************************* */
+
+NullLiteralExpr::~NullLiteralExpr() = default;
+
+/* ************************************************************************* */
+
+UniquePtr<NullLiteralExpr> NullLiteralExpr::make(SourceRange range)
+{
+    return makeUnique<NullLiteralExpr>(moveValue(range));
 }
 
 /* ************************************************************************* */
 
 BoolLiteralExpr::BoolLiteralExpr(ValueType value, SourceRange range) noexcept
-    : LiteralExpr(ExprKind::BoolLiteral, range)
+    : LiteralExpr(Kind, range)
     , m_value(value)
 {
     // Nothing to do
@@ -58,26 +73,84 @@ BoolLiteralExpr::BoolLiteralExpr(ValueType value, SourceRange range) noexcept
 
 /* ************************************************************************* */
 
+BoolLiteralExpr::~BoolLiteralExpr() = default;
+
+/* ************************************************************************* */
+
+void BoolLiteralExpr::setValue(ValueType value)
+{
+    m_value = value;
+}
+
+/* ************************************************************************* */
+
+UniquePtr<BoolLiteralExpr> BoolLiteralExpr::make(ValueType value, SourceRange range)
+{
+    return makeUnique<BoolLiteralExpr>(moveValue(value), moveValue(range));
+}
+
+/* ************************************************************************* */
+
+constexpr KindRange<ExprKind> NumberLiteralExpr::Kind;
+
+/* ************************************************************************* */
+
 IntLiteralExpr::IntLiteralExpr(ValueType value, SourceRange range) noexcept
-    : NumberLiteralExpr(ExprKind::IntLiteral, range)
+    : NumberLiteralExpr(Kind, range)
     , m_value(value)
 {
     // Nothing to do
+}
+
+/* ************************************************************************* */
+
+IntLiteralExpr::~IntLiteralExpr() = default;
+
+/* ************************************************************************* */
+
+void IntLiteralExpr::setValue(ValueType value)
+{
+    m_value = value;
+}
+
+/* ************************************************************************* */
+
+UniquePtr<IntLiteralExpr> IntLiteralExpr::make(ValueType value, SourceRange range)
+{
+    return makeUnique<IntLiteralExpr>(moveValue(value), moveValue(range));
 }
 
 /* ************************************************************************* */
 
 FloatLiteralExpr::FloatLiteralExpr(ValueType value, SourceRange range) noexcept
-    : NumberLiteralExpr(ExprKind::FloatLiteral, range)
+    : NumberLiteralExpr(Kind, range)
     , m_value(value)
 {
     // Nothing to do
+}
+
+/* ************************************************************************* */
+
+FloatLiteralExpr::~FloatLiteralExpr() = default;
+
+/* ************************************************************************* */
+
+void FloatLiteralExpr::setValue(ValueType value)
+{
+    m_value = value;
+}
+
+/* ************************************************************************* */
+
+UniquePtr<FloatLiteralExpr> FloatLiteralExpr::make(ValueType value, SourceRange range)
+{
+    return makeUnique<FloatLiteralExpr>(moveValue(value), moveValue(range));
 }
 
 /* ************************************************************************* */
 
 CharLiteralExpr::CharLiteralExpr(ValueType value, SourceRange range) noexcept
-    : LiteralExpr(ExprKind::CharLiteral, range)
+    : LiteralExpr(Kind, range)
     , m_value(value)
 {
     // Nothing to do
@@ -85,8 +158,26 @@ CharLiteralExpr::CharLiteralExpr(ValueType value, SourceRange range) noexcept
 
 /* ************************************************************************* */
 
+CharLiteralExpr::~CharLiteralExpr() = default;
+
+/* ************************************************************************* */
+
+void CharLiteralExpr::setValue(ValueType value)
+{
+    m_value = value;
+}
+
+/* ************************************************************************* */
+
+UniquePtr<CharLiteralExpr> CharLiteralExpr::make(ValueType value, SourceRange range)
+{
+    return makeUnique<CharLiteralExpr>(moveValue(value), moveValue(range));
+}
+
+/* ************************************************************************* */
+
 StringLiteralExpr::StringLiteralExpr(ValueType value, SourceRange range)
-    : LiteralExpr(ExprKind::StringLiteral, range)
+    : LiteralExpr(Kind, range)
     , m_value(moveValue(value))
 {
     // Nothing to do
@@ -94,8 +185,26 @@ StringLiteralExpr::StringLiteralExpr(ValueType value, SourceRange range)
 
 /* ************************************************************************* */
 
+StringLiteralExpr::~StringLiteralExpr() = default;
+
+/* ************************************************************************* */
+
+void StringLiteralExpr::setValue(ValueType value)
+{
+    m_value = moveValue(value);
+}
+
+/* ************************************************************************* */
+
+UniquePtr<StringLiteralExpr> StringLiteralExpr::make(ValueType value, SourceRange range)
+{
+    return makeUnique<StringLiteralExpr>(moveValue(value), moveValue(range));
+}
+
+/* ************************************************************************* */
+
 BinaryExpr::BinaryExpr(OpKind op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, SourceRange range)
-    : Expr(ExprKind::Binary, range)
+    : Expr(Kind, range)
     , m_operator(op)
     , m_lhs(moveValue(lhs))
     , m_rhs(moveValue(rhs))
@@ -105,8 +214,42 @@ BinaryExpr::BinaryExpr(OpKind op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, Sour
 
 /* ************************************************************************* */
 
+BinaryExpr::~BinaryExpr() = default;
+
+/* ************************************************************************* */
+
+void BinaryExpr::setOpKind(OpKind op)
+{
+    m_operator = op;
+}
+
+/* ************************************************************************* */
+
+void BinaryExpr::setLhs(UniquePtr<Expr> lhs)
+{
+    SHARD_ASSERT(lhs);
+    m_lhs = moveValue(lhs);
+}
+
+/* ************************************************************************* */
+
+void BinaryExpr::setRhs(UniquePtr<Expr> rhs)
+{
+    SHARD_ASSERT(rhs);
+    m_rhs = moveValue(rhs);
+}
+
+/* ************************************************************************* */
+
+UniquePtr<BinaryExpr> BinaryExpr::make(OpKind op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, SourceRange range)
+{
+    return makeUnique<BinaryExpr>(op, moveValue(lhs), moveValue(rhs), moveValue(range));
+}
+
+/* ************************************************************************* */
+
 UnaryExpr::UnaryExpr(OpKind op, UniquePtr<Expr> expr, SourceRange range)
-    : Expr(ExprKind::Unary, range)
+    : Expr(Kind, range)
     , m_operator(op)
     , m_expr(moveValue(expr))
 {
@@ -115,8 +258,34 @@ UnaryExpr::UnaryExpr(OpKind op, UniquePtr<Expr> expr, SourceRange range)
 
 /* ************************************************************************* */
 
+UnaryExpr::~UnaryExpr() = default;
+
+/* ************************************************************************* */
+
+void UnaryExpr::setOpKind(OpKind op)
+{
+    m_operator = op;
+}
+
+/* ************************************************************************* */
+
+void UnaryExpr::setExpr(UniquePtr<Expr> expr)
+{
+    SHARD_ASSERT(expr);
+    m_expr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+UniquePtr<UnaryExpr> UnaryExpr::make(OpKind op, UniquePtr<Expr> expr, SourceRange range)
+{
+    return makeUnique<UnaryExpr>(op, moveValue(expr), moveValue(range));
+}
+
+/* ************************************************************************* */
+
 TernaryExpr::TernaryExpr(UniquePtr<Expr> condExpr, UniquePtr<Expr> trueExpr, UniquePtr<Expr> falseExpr, SourceRange range)
-    : Expr(ExprKind::Ternary, range)
+    : Expr(Kind, range)
     , m_condExpr(moveValue(condExpr))
     , m_trueExpr(moveValue(trueExpr))
     , m_falseExpr(moveValue(falseExpr))
@@ -126,26 +295,99 @@ TernaryExpr::TernaryExpr(UniquePtr<Expr> condExpr, UniquePtr<Expr> trueExpr, Uni
 
 /* ************************************************************************* */
 
+TernaryExpr::~TernaryExpr() = default;
+
+/* ************************************************************************* */
+
+void TernaryExpr::setCondExpr(UniquePtr<Expr> expr)
+{
+    SHARD_ASSERT(expr);
+    m_condExpr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+void TernaryExpr::setTrueExpr(UniquePtr<Expr> expr)
+{
+    SHARD_ASSERT(expr);
+    m_trueExpr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+void TernaryExpr::setFalseExpr(UniquePtr<Expr> expr)
+{
+    SHARD_ASSERT(expr);
+    m_falseExpr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+UniquePtr<TernaryExpr> TernaryExpr::make(UniquePtr<Expr> condExpr, UniquePtr<Expr> trueExpr, UniquePtr<Expr> falseExpr, SourceRange range)
+{
+    return makeUnique<TernaryExpr>(moveValue(condExpr), moveValue(trueExpr), moveValue(falseExpr), moveValue(range));
+}
+
+/* ************************************************************************* */
+
 ParenExpr::ParenExpr(UniquePtr<Expr> expr, SourceRange range)
-    : Expr(ExprKind::Paren, range)
+    : Expr(Kind, range)
     , m_expr(moveValue(expr))
 {
     SHARD_ASSERT(m_expr);
+}
+
+/* ************************************************************************* */
+
+ParenExpr::~ParenExpr() = default;
+
+/* ************************************************************************* */
+
+void ParenExpr::setExpr(UniquePtr<Expr> expr)
+{
+    SHARD_ASSERT(expr);
+    m_expr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+UniquePtr<ParenExpr> ParenExpr::make(UniquePtr<Expr> expr, SourceRange range)
+{
+    return makeUnique<ParenExpr>(moveValue(expr), moveValue(range));
 }
 
 /* ************************************************************************* */
 
 IdentifierExpr::IdentifierExpr(String name, SourceRange range)
-    : Expr(ExprKind::Identifier, range)
+    : Expr(Kind, range)
     , m_name(moveValue(name))
 {
     SHARD_ASSERT(!m_name.empty());
+}
+
+/* ************************************************************************* */
+
+IdentifierExpr::~IdentifierExpr() = default;
+
+/* ************************************************************************* */
+
+void IdentifierExpr::setName(String name)
+{
+    SHARD_ASSERT(!name.empty());
+    m_name = moveValue(name);
+}
+
+/* ************************************************************************* */
+
+UniquePtr<IdentifierExpr> IdentifierExpr::make(String name, SourceRange range)
+{
+    return makeUnique<IdentifierExpr>(moveValue(name), moveValue(range));
 }
 
 /* ************************************************************************* */
 
 MemberAccessExpr::MemberAccessExpr(UniquePtr<Expr> expr, String name, SourceRange range)
-    : Expr(ExprKind::MemberAccess, range)
+    : Expr(Kind, range)
     , m_expr(moveValue(expr))
     , m_name(moveValue(name))
 {
@@ -154,8 +396,35 @@ MemberAccessExpr::MemberAccessExpr(UniquePtr<Expr> expr, String name, SourceRang
 
 /* ************************************************************************* */
 
+MemberAccessExpr::~MemberAccessExpr() = default;
+
+/* ************************************************************************* */
+
+void MemberAccessExpr::setExpr(UniquePtr<Expr> expr)
+{
+    SHARD_ASSERT(expr);
+    m_expr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+void MemberAccessExpr::setName(String name)
+{
+    SHARD_ASSERT(!name.empty());
+    m_name = moveValue(name);
+}
+
+/* ************************************************************************* */
+
+UniquePtr<MemberAccessExpr> MemberAccessExpr::make(UniquePtr<Expr> expr, String name, SourceRange range)
+{
+    return makeUnique<MemberAccessExpr>(moveValue(expr), moveValue(name), moveValue(range));
+}
+
+/* ************************************************************************* */
+
 FunctionCallExpr::FunctionCallExpr(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
-    : Expr(ExprKind::FunctionCall, range)
+    : Expr(Kind, range)
     , m_expr(moveValue(expr))
     , m_arguments(moveValue(args))
 {
@@ -164,12 +433,64 @@ FunctionCallExpr::FunctionCallExpr(UniquePtr<Expr> expr, PtrDynamicArray<Expr> a
 
 /* ************************************************************************* */
 
+FunctionCallExpr::~FunctionCallExpr() = default;
+
+/* ************************************************************************* */
+
+void FunctionCallExpr::setExpr(UniquePtr<Expr> expr)
+{
+    SHARD_ASSERT(expr);
+    m_expr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+void FunctionCallExpr::setArguments(PtrDynamicArray<Expr> args)
+{
+    m_arguments = moveValue(args);
+}
+
+/* ************************************************************************* */
+
+UniquePtr<FunctionCallExpr> FunctionCallExpr::make(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
+{
+    return makeUnique<FunctionCallExpr>(moveValue(expr), moveValue(args), moveValue(range));
+}
+
+/* ************************************************************************* */
+
 SubscriptExpr::SubscriptExpr(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
-    : Expr(ExprKind::Subscript, range)
+    : Expr(Kind, range)
     , m_expr(moveValue(expr))
     , m_arguments(moveValue(args))
 {
     SHARD_ASSERT(m_expr);
+}
+
+/* ************************************************************************* */
+
+SubscriptExpr::~SubscriptExpr() = default;
+
+/* ************************************************************************* */
+
+void SubscriptExpr::setExpr(UniquePtr<Expr> expr)
+{
+    SHARD_ASSERT(expr);
+    m_expr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+void SubscriptExpr::setArguments(PtrDynamicArray<Expr> args)
+{
+    m_arguments = moveValue(args);
+}
+
+/* ************************************************************************* */
+
+UniquePtr<SubscriptExpr> SubscriptExpr::make(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
+{
+    return makeUnique<SubscriptExpr>(moveValue(expr), moveValue(args), moveValue(range));
 }
 
 /* ************************************************************************* */

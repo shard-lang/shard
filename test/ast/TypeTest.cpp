@@ -47,3 +47,36 @@ TEST(TypeInfo, construction)
 }
 
 /* ************************************************************************ */
+
+TEST(TypeInfo, compare)
+{
+    {
+        const Type type1(TypeKind::Var);
+        const Type type2(TypeKind::Var);
+
+        EXPECT_EQ(type1, type2);
+    }
+
+    {
+        const Type type1(TypeKind::Int);
+        const Type type2(TypeKind::Float);
+
+        EXPECT_NE(type1, type2);
+    }
+
+    {
+        const Type type1("MyClass");
+        const Type type2("MyClass");
+
+        EXPECT_EQ(type1, type2);
+    }
+
+    {
+        const Type type1("MyClass1");
+        const Type type2("MyClass2");
+
+        EXPECT_NE(type1, type2);
+    }
+}
+
+/* ************************************************************************ */

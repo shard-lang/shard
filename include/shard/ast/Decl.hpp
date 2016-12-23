@@ -19,14 +19,14 @@
 /* ************************************************************************* */
 
 // Shard
+#include "shard/Assert.hpp"
 #include "shard/utility.hpp"
 #include "shard/UniquePtr.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/String.hpp"
 #include "shard/PtrDynamicArray.hpp"
-#include "shard/ast/utility.hpp"
+#include "shard/ast/Node.hpp"
 #include "shard/ast/Type.hpp"
-#include "shard/ast/DeclContext.hpp"
 
 /* ************************************************************************* */
 
@@ -42,25 +42,55 @@ class CompoundStmt;
 /* ************************************************************************* */
 
 /**
- * @brief Kind of Declaration.
+ * @brief      Kind of Declaration.
  */
 enum class DeclKind
 {
     Variable,
     Function,
     Class,
-    //Namespace,
-    Named_First = Variable,
-    Named_Last  = Class
-    //Named_Last  = Namespace
+    Namespace,
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Declaration access specifier.
+ */
+enum class DeclAccessSpecifier
+{
+    /// Access is not specified and use rules defined by context. It's also
+    /// value for declaration where access specifier cannot be used
+    /// (like local variables).
+    Default,
+
+    /// Declaration is accessible by anyone.
+    Public,
+
+    /// Declaration is accessible only under by some rules.
+    Protected,
+
+    /// Declaration is not accessible outside scope within compilation unit.
+    /// If some other compilation unit define same scope the declaration is
+    /// not accessible from that unit.
+    Private
 };
 
 /* ************************************************************************* */
 
 /**
  * @brief      Base declaration class.
+ *
+ * @details    This abstract class serves as base class for all declaration
+ *             types as variable, function and class declaration. It's not
+ *             possible to create an object of this class directly (pure virtual
+ *             destructor, protected constructor), the only way is to create an
+ *             object of child class. Type of the declaration can be obtained by
+ *             calling `getKind`. All declarations are named so can be
+ *             identified later. The name should represents declaration scope
+ *             naming scheme not FQN scheme.
  */
-class Decl : public LocationInfo
+class Decl : public Node
 {
 
 // Public Ctors & Dtors
@@ -68,7 +98,7 @@ public:
 
 
     /**
-     * @brief Destructor.
+     * @brief      Destructor.
      */
     virtual ~Decl() = 0;
 
@@ -78,30 +108,11 @@ public:
 
 
     /**
-     * @brief      Returns declaration context.
+     * @brief      Returns the declaration kind.
      *
-     * @return     Declaration context.
-     */
-    ViewPtr<DeclContext> getContext() noexcept
-    {
-        return m_context;
-    }
-
-
-    /**
-     * @brief      Returns declaration context.
+     * @details    Use for specific declaration type identification.
      *
-     * @return     Declaration context.
-     */
-    ViewPtr<const DeclContext> getContext() const noexcept
-    {
-        return m_context;
-    }
-
-
-    /**
-     * @brief Returns Declaration type.
-     * @return Declaration type.
+     * @return     The declaration kind.
      */
     DeclKind getKind() const noexcept
     {
@@ -109,81 +120,8 @@ public:
     }
 
 
-// Protected Ctors & Dtors
-protected:
-
-
     /**
-     * @brief      Constructor.
-     *
-     * @param      context  Declaration context.
-     * @param      type     Declaration type.
-     * @param      range    Source range.
-     */
-    explicit Decl(ViewPtr<DeclContext> context, DeclKind type,
-        SourceRange range) noexcept;
-
-
-    // Private Data Members
-private:
-
-    /// Declaration context.
-    ViewPtr<DeclContext> m_context;
-
-    /// Declaration type.
-    DeclKind m_kind;
-};
-
-/* ************************************************************************* */
-
-/**
- * @brief Helper class for declaration kinds.
- * @tparam KIND Tested declaration kind.
- * @tparam T    Class type.
- */
-template<DeclKind KIND, typename T>
-struct DeclHelper
-    : public KindTester<DeclKind, KIND, Decl>
-    , public KindCaster<Decl, T>
-    , public KindMaker<T>
-{
-    // Nothing to do
-};
-
-/* ************************************************************************* */
-
-/**
- * @brief Helper class for declaration kinds.
- * @tparam KIND1 The first tested declaration kind.
- * @tparam KIND2 The last tested declaration kind.
- * @tparam T     Class type.
- */
-template<DeclKind KIND1, DeclKind KIND2, typename T>
-struct DeclRangeHelper
-    : public KindRangeTester<DeclKind, KIND1, KIND2, Decl>
-    , public KindCaster<Decl, T>
-    , public KindMaker<T>
-{
-    // Nothing to do
-};
-
-/* ************************************************************************* */
-
-/**
- * @brief      Base class for all declarations which are named: function, class, variable.
- */
-class NamedDecl
-    : public Decl
-    , private DeclRangeHelper<DeclKind::Named_First, DeclKind::Named_Last, NamedDecl>
-{
-
-
-// Public Accessors & Mutators
-public:
-
-
-    /**
-     * @brief      Returns declaration name.
+     * @brief      Returns the declaration name in local scope naming scheme.
      *
      * @return     The declaration name.
      */
@@ -194,13 +132,32 @@ public:
 
 
     /**
-     * @brief      Change declaration name.
+     * @brief      Change the declaration name.
      *
-     * @param      name  New declaration name.
+     * @return     The declaration name in local scope naming scheme.
      */
-    void setName(String name) noexcept
+    void setName(String name);
+
+
+    /**
+     * @brief      Returns the declaration access specifier.
+     *
+     * @return     The access specifier.
+     */
+    DeclAccessSpecifier getAccessSpecifier() const noexcept
     {
-        m_name = moveValue(name);
+        return m_accessSpecifier;
+    }
+
+
+    /**
+     * @brief      Change the declaration access specifier.
+     *
+     * @param      spec  The access specifier.
+     */
+    void setAccessSpecifier(DeclAccessSpecifier spec) noexcept
+    {
+        m_accessSpecifier = spec;
     }
 
 
@@ -208,8 +165,48 @@ public:
 public:
 
 
-    using DeclRangeHelper<DeclKind::Named_First, DeclKind::Named_Last, NamedDecl>::is;
-    using DeclRangeHelper<DeclKind::Named_First, DeclKind::Named_Last, NamedDecl>::cast;
+    /**
+     * @brief      Test if declaration match required kind.
+     *
+     * @tparam     DeclType  Declaration type.
+     *
+     * @return     Returns `true` if this is `DeclType`, `false` otherwise.
+     */
+    template<typename DeclType>
+    bool is() const noexcept
+    {
+        return getKind() == DeclType::Kind;
+    }
+
+
+    /**
+     * @brief      Cast this to required declaration type.
+     *
+     * @tparam     DeclType  Declaration type.
+     *
+     * @return     Reference to required declaration type.
+     */
+    template<typename DeclType>
+    DeclType& cast() noexcept
+    {
+        SHARD_ASSERT(is<DeclType>());
+        return static_cast<DeclType&>(*this);
+    }
+
+
+    /**
+     * @brief      Cast this to required declaration type.
+     *
+     * @tparam     DeclType  Declaration type.
+     *
+     * @return     Reference to required declaration type.
+     */
+    template<typename DeclType>
+    const DeclType& cast() const noexcept
+    {
+        SHARD_ASSERT(is<DeclType>());
+        return static_cast<const DeclType&>(*this);
+    }
 
 
 // Protected Ctors & Dtors
@@ -219,20 +216,24 @@ protected:
     /**
      * @brief      Constructor.
      *
-     * @param      context  The declaration context.
-     * @param      kind     Declaration kind.
-     * @param      name     Declaration name.
-     * @param      range    Source range.
+     * @param      kind   The declaration kind.
+     * @param      name   The declaration name in local scope naming scheme.
+     * @param      range  The declaration location within the source.
      */
-    explicit NamedDecl(ViewPtr<DeclContext> context, DeclKind kind, String name,
-        SourceRange range = {}) noexcept;
+    explicit Decl(DeclKind kind, String name, SourceRange range);
 
 
     // Private Data Members
 private:
 
+    /// Declaration kind.
+    DeclKind m_kind;
+
     /// Declaration name.
     String m_name;
+
+    /// Declaration access specifier
+    DeclAccessSpecifier m_accessSpecifier = DeclAccessSpecifier::Default;
 };
 
 /* ************************************************************************* */
@@ -243,10 +244,16 @@ private:
  * @details    In the source it appears as: `<type> <name>` or `<type> <name> =
  *             <initExpr>`.
  */
-class VariableDecl final
-    : public NamedDecl
-    , private DeclHelper<DeclKind::Variable, VariableDecl>
+class VariableDecl final : public Decl
 {
+
+// Public Constants
+public:
+
+
+    /// Declaration kind
+    static constexpr DeclKind Kind = DeclKind::Variable;
+
 
 // Public Ctors & Dtors
 public:
@@ -255,29 +262,12 @@ public:
     /**
      * @brief      Constructor.
      *
-     * @param      context   The declaration context.
-     * @param      type      Type info.
-     * @param      name      Variable name.
-     * @param      initExpr  Initialization expression.
-     * @param      range     Source range.
+     * @param      type      The variable type.
+     * @param      name      The variable name.
+     * @param      initExpr  The optional initialization expression.
+     * @param      range     The declaration location within the source.
      */
-    explicit VariableDecl(ViewPtr<DeclContext> context, TypeInfo type,
-        String name, UniquePtr<Expr> initExpr = nullptr,
-        SourceRange range = {}) noexcept;
-
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      context   The declaration context.
-     * @param      type      Variable type.
-     * @param      name      Variable name.
-     * @param      initExpr  Initialization expression.
-     * @param      range     Source range.
-     */
-    explicit VariableDecl(ViewPtr<DeclContext> context,
-        ViewPtr<const Type> type, String name,
-        UniquePtr<Expr> initExpr = nullptr, SourceRange range = {}) noexcept;
+    explicit VariableDecl(Type type, String name, UniquePtr<Expr> initExpr = nullptr, SourceRange range = {});
 
 
     /**
@@ -291,51 +281,26 @@ public:
 
 
     /**
-     * @brief      Return type information.
+     * @brief      Return the variable type.
      *
-     * @return     Variable type information.
+     * @return     The variable type.
      */
-    const TypeInfo& getTypeInfo() const noexcept
+    const Type& getType() const noexcept
     {
-        return m_typeInfo;
+        return m_type;
     }
 
 
     /**
-     * @brief      Change type information.
+     * @brief      Change the variable type.
      *
-     * @param      info  Variable type information.
+     * @param      type  The variable type.
      */
-    void setTypeInfo(TypeInfo info) noexcept
-    {
-        m_typeInfo = moveValue(info);
-    }
+    void setType(Type type);
 
 
     /**
-     * @brief      Return type.
-     *
-     * @return     Variable type.
-     */
-    ViewPtr<const Type> getType() const noexcept
-    {
-        return m_typeInfo.getType();
-    }
-
-
-    /**
-     * @brief      Change variable type.
-     *
-     * @param      type  New variable type.
-     */
-    void setType(ViewPtr<const Type> type) noexcept
-    {
-        m_typeInfo.setType(type);
-    }
-
-
-    /**
-     * @brief      Returns initialization expression.
+     * @brief      Returns the initialization expression.
      *
      * @return     The initialization expression.
      */
@@ -346,7 +311,7 @@ public:
 
 
     /**
-     * @brief      Returns initialization expression.
+     * @brief      Returns the initialization expression.
      *
      * @return     The initialization expression.
      */
@@ -357,27 +322,35 @@ public:
 
 
     /**
-     * @brief      Change initialization expression.
+     * @brief      Change the initialization expression.
      *
-     * @param      expr  New initialization expression.
+     * @param      expr  The initialization expression.
      */
-    void setInitExpr(UniquePtr<Expr> expr) noexcept;
+    void setInitExpr(UniquePtr<Expr> expr);
 
 
 // Public Operations
 public:
 
 
-    using DeclHelper<DeclKind::Variable, VariableDecl>::is;
-    using DeclHelper<DeclKind::Variable, VariableDecl>::cast;
-    using DeclHelper<DeclKind::Variable, VariableDecl>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      type      The variable type.
+     * @param      name      The variable name.
+     * @param      initExpr  The optional initialization expression.
+     * @param      range     The declaration location within the source.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<VariableDecl> make(Type type, String name, UniquePtr<Expr> initExpr = nullptr, SourceRange range = {});
 
 
 // Private Data Members
 private:
 
-    /// Type information.
-    TypeInfo m_typeInfo;
+    /// Variable type.
+    Type m_type;
 
     /// Initializer expression.
     UniquePtr<Expr> m_initExpr;
@@ -390,11 +363,16 @@ private:
  *
  * @details    In the source it appears as: `<retType> <name> (<params>) <bodyStmt>`.
  */
-class FunctionDecl final
-    : public NamedDecl
-    , private DeclHelper<DeclKind::Function, FunctionDecl>
-    , public DeclContext
+class FunctionDecl final : public Decl
 {
+
+// Public Constants
+public:
+
+
+    /// Declaration kind
+    static constexpr DeclKind Kind = DeclKind::Function;
+
 
 // Public Ctors & Dtors
 public:
@@ -403,16 +381,14 @@ public:
     /**
      * @brief      Constructor.
      *
-     * @param      context   The declaration context.
-     * @param      retType   Return type information.
-     * @param      name      Function name.
-     * @param      params    Function parameters.
-     * @param      bodyStmt  Function body.
-     * @param      range     Source range.
+     * @param      retType   The function return type.
+     * @param      name      The function name.
+     * @param      params    The function parameters.
+     * @param      bodyStmt  The function body.
+     * @param      range     The declaration location within the source.
      */
-    explicit FunctionDecl(ViewPtr<DeclContext> context, TypeInfo retType,
-        String name, UniquePtr<CompoundStmt> bodyStmt,
-        PtrDynamicArray<VariableDecl> params = {}, SourceRange range = {}) noexcept;
+    explicit FunctionDecl(Type retType, String name, UniquePtr<CompoundStmt> bodyStmt,
+        PtrDynamicArray<VariableDecl> params = {}, SourceRange range = {});
 
 
     /**
@@ -426,84 +402,47 @@ public:
 
 
     /**
-     * @brief      Return return type information.
+     * @brief      Return the function return type.
      *
-     * @return     Return type information.
+     * @return     The function return type.
      */
-    TypeInfo& getRetTypeInfo() noexcept
+    const Type& getRetType() const noexcept
     {
-        return m_retTypeInfo;
+        return m_retType;
     }
 
 
     /**
-     * @brief      Return return type information.
+     * @brief      Change the return type.
      *
-     * @return     Return type information.
+     * @param      type  The return type.
      */
-    const TypeInfo& getRetTypeInfo() const noexcept
-    {
-        return m_retTypeInfo;
-    }
+    void setRetType(Type type);
 
 
     /**
-     * @brief      Change return type information.
-     *
-     * @param      info  New return type information.
-     */
-    void setRetTypeInfo(TypeInfo info) noexcept
-    {
-        m_retTypeInfo = moveValue(info);
-    }
-
-
-    /**
-     * @brief      Return return type.
-     *
-     * @return     Return type.
-     */
-    ViewPtr<const Type> getRetType() const noexcept
-    {
-        return m_retTypeInfo.getType();
-    }
-
-
-    /**
-     * @brief      Change return type.
-     *
-     * @param      type  New return type.
-     */
-    void setRetType(ViewPtr<const Type> type) noexcept
-    {
-        SHARD_ASSERT(type);
-        m_retTypeInfo.setType(type);
-    }
-
-
-    /**
-     * @brief      Returns function parameters.
+     * @brief      Returns the function parameters.
      *
      * @return     A list of function parameters.
      */
-    DynamicArray<ViewPtr<VariableDecl>> getParameters() const noexcept
+    const PtrDynamicArray<VariableDecl>& getParameters() const noexcept
     {
-        return getDeclarations<VariableDecl>();
+        return m_parameters;
     }
 
 
     /**
-     * @brief      Change function parameters.
+     * @brief      Change the function parameters.
      *
      * @param      params  The function parameters.
      */
-    void setParameters(PtrDynamicArray<VariableDecl> params) noexcept;
+    void setParameters(PtrDynamicArray<VariableDecl> params);
 
 
     /**
-     * @brief      Returns pointer to function body.
+     * @brief      Returns the function body statement.
      *
-     * @return     Body statement.
+     * @return     The function body compound statement.
      */
     ViewPtr<const CompoundStmt> getBodyStmt() const noexcept
     {
@@ -512,9 +451,9 @@ public:
 
 
     /**
-     * @brief      Returns pointer to function body.
+     * @brief      Returns the function body statement.
      *
-     * @return     Body statement.
+     * @return     The function body compound statement.
      */
     ViewPtr<CompoundStmt> getBodyStmt() noexcept
     {
@@ -523,30 +462,116 @@ public:
 
 
     /**
-     * @brief      Change function body.
+     * @brief      Change the function body.
      *
-     * @param      stmt  Body statement.
+     * @param      stmt  The function body compound statement.
      */
-    void setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept;
+    void setBodyStmt(UniquePtr<CompoundStmt> stmt);
 
 
 // Public Operations
 public:
 
 
-    using DeclHelper<DeclKind::Function, FunctionDecl>::is;
-    using DeclHelper<DeclKind::Function, FunctionDecl>::cast;
-    using DeclHelper<DeclKind::Function, FunctionDecl>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      retType   The function return type.
+     * @param      name      The function name.
+     * @param      bodyStmt  The function body.
+     * @param      params    The function parameters.
+     * @param      range     The declaration location within the source.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<FunctionDecl> make(Type retType, String name, UniquePtr<CompoundStmt> bodyStmt,
+        PtrDynamicArray<VariableDecl> params = {}, SourceRange range = {});
 
 
 // Private Data Members
 private:
 
-    /// Return type information.
-    TypeInfo m_retTypeInfo;
+    /// Return type.
+    Type m_retType;
+
+    /// Function parameters.
+    PtrDynamicArray<VariableDecl> m_parameters;
 
     /// Function body.
     UniquePtr<CompoundStmt> m_bodyStmt;
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Base class for declaration which are compound of other
+ *             declarations (class, namespace, ...).
+ */
+class CompoundDecl : public Decl
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~CompoundDecl();
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief      Returns declarations.
+     *
+     * @return     The declarations.
+     */
+    const PtrDynamicArray<Decl>& getDecls() const noexcept
+    {
+        return m_declarations;
+    }
+
+
+    /**
+     * @brief      Set declarations.
+     *
+     * @param      decls  The declarations.
+     */
+    void setDecls(PtrDynamicArray<Decl> decls);
+
+
+    /**
+     * @brief      Add declaration.
+     *
+     * @param      decl  The declaration to add.
+     */
+    void addDecl(UniquePtr<Decl> decl);
+
+
+// Protected Ctors & Dtors
+public:
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      kind   The declaration kind.
+     * @param      name   The declaration name in local scope naming scheme.
+     * @param      decls  The declarations.
+     * @param      range  The declaration location within the source.
+     */
+    explicit CompoundDecl(DeclKind kind, String name, PtrDynamicArray<Decl> decls, SourceRange range);
+
+
+// Private Data Members
+private:
+
+    /// Declarations
+    PtrDynamicArray<Decl> m_declarations;
+
 };
 
 /* ************************************************************************* */
@@ -556,11 +581,16 @@ private:
  *
  * @details    In the source it appears as: `class <name> { <decls> }`.
  */
-class ClassDecl final
-    : public NamedDecl
-    , private DeclHelper<DeclKind::Class, ClassDecl>
-    , public DeclContext
+class ClassDecl final : public CompoundDecl
 {
+
+// Public Constants
+public:
+
+
+    /// Declaration kind
+    static constexpr DeclKind Kind = DeclKind::Class;
+
 
 // Public Ctors & Dtors
 public:
@@ -569,13 +599,11 @@ public:
     /**
      * @brief      Constructor.
      *
-     * @param      context  The declaration context.
-     * @param      name     Class name.
-     * @param      decls    Declarations.
-     * @param      range    Source range.
+     * @param      name   The class name.
+     * @param      decls  The list of declarations.
+     * @param      range  The declaration location within the source.
      */
-    explicit ClassDecl(ViewPtr<DeclContext> context, String name,
-        PtrDynamicArray<Decl> decls = {}, SourceRange range = {}) noexcept;
+    explicit ClassDecl(String name, PtrDynamicArray<Decl> decls = {}, SourceRange range = {});
 
 
     /**
@@ -588,50 +616,71 @@ public:
 public:
 
 
-    using DeclHelper<DeclKind::Class, ClassDecl>::is;
-    using DeclHelper<DeclKind::Class, ClassDecl>::cast;
-    using DeclHelper<DeclKind::Class, ClassDecl>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      name   The class name.
+     * @param      decls  The list of declarations.
+     * @param      range  The declaration location within the source.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<ClassDecl> make(String name, PtrDynamicArray<Decl> decls = {}, SourceRange range = {});
 
 };
 
 /* ************************************************************************* */
 
 /**
- * @brief Namespace declaration.
+ * @brief      Namespace declaration.
  */
-// class NamespaceDecl final
-//     : public NamedDecl
-//     , private DeclHelper<DeclKind::Namespace, NamespaceDecl>
-//     , public DeclContext
-// {
+class NamespaceDecl final : public CompoundDecl
+{
 
-// // Public Ctors & Dtors
-// public:
+// Public Constants
+public:
 
 
-//     /**
-//      * @brief Constructor.
-//      * @param name     Class name.
-//      * @param decls    Declarations.
-//      * @param range    Source range.
-//      */
-//     explicit NamespaceDecl(ViewPtr<DeclContext> context, String name, PtrDynamicArray<Decl> decls = {}, SourceRange range = {}) noexcept;
+    /// Declaration kind
+    static constexpr DeclKind Kind = DeclKind::Namespace;
 
 
-//     /**
-//      * @brief Destructor.
-//      */
-//     ~NamespaceDecl();
+// Public Ctors & Dtors
+public:
 
 
-// // Public Operations
-// public:
+   /**
+     * @brief      Constructor.
+     *
+     * @param      name   The class name.
+     * @param      decls  The list of declarations.
+     * @param      range  The declaration location within the source.
+     */
+   explicit NamespaceDecl(String name, PtrDynamicArray<Decl> decls = {}, SourceRange range = {});
 
 
-//     using DeclHelper<DeclKind::Namespace, NamespaceDecl>::is;
-//     using DeclHelper<DeclKind::Namespace, NamespaceDecl>::cast;
+   /**
+    * @brief      Destructor.
+    */
+    ~NamespaceDecl();
 
-// };
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief      Construct object.
+     *
+     * @param      name   The class name.
+     * @param      decls  The list of declarations.
+     * @param      range  The declaration location within the source.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<NamespaceDecl> make(String name, PtrDynamicArray<Decl> decls = {}, SourceRange range = {});
+
+};
 
 /* ************************************************************************* */
 

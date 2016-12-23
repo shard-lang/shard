@@ -18,16 +18,16 @@ add_shard_library(shard-ast
     HEADERS
         Decl.hpp
         Expr.hpp
+        Node.hpp
         Stmt.hpp
-        StmtContainer.hpp
         Type.hpp
         utility.hpp
         Unit.hpp
     SOURCES
         Decl.cpp
         Expr.cpp
+        Node.cpp
         Stmt.cpp
-        StmtContainer.cpp
         Type.cpp
         Unit.cpp
     LIBRARIES
