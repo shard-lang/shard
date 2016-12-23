@@ -15,13 +15,39 @@
 /* ************************************************************************* */
 
 // Declaration
-#include "shard/ast/Module.hpp"
+#include "shard/ast/Unit.hpp"
 
 /* ************************************************************************* */
 
 namespace shard {
 inline namespace v1 {
 namespace ast {
+
+/* ************************************************************************* */
+
+Unit::Unit(PtrDynamicArray<Decl> decls)
+    : m_declarations(moveValue(decls))
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+Unit::~Unit() = default;
+
+/* ************************************************************************* */
+
+void Unit::setDeclarations(PtrDynamicArray<Decl> decls)
+{
+    m_declarations = moveValue(decls);
+}
+
+/* ************************************************************************* */
+
+void Unit::addDeclaration(UniquePtr<Decl> decl)
+{
+    m_declarations.push_back(moveValue(decl));
+}
 
 /* ************************************************************************* */
 

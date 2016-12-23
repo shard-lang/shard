@@ -19,7 +19,8 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/ast/DeclContext.hpp"
+#include "shard/PtrDynamicArray.hpp"
+#include "shard/ast/Decl.hpp"
 
 /* ************************************************************************* */
 
@@ -30,10 +31,65 @@ namespace ast {
 /* ************************************************************************* */
 
 /**
- * @brief Top level AST object.
+ * @brief      The compilation unit.
  */
-class Module : public DeclContext
+class Unit
 {
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      decls  The declarations.
+     */
+    explicit Unit(PtrDynamicArray<Decl> decls);
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~Unit();
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief      Returns declarations.
+     *
+     * @return     The declarations.
+     */
+    const PtrDynamicArray<Decl>& getDeclarations() const noexcept
+    {
+        return m_declarations;
+    }
+
+
+    /**
+     * @brief      Set declarations.
+     *
+     * @param      decls  The declarations.
+     */
+    void setDeclarations(PtrDynamicArray<Decl> decls);
+
+
+    /**
+     * @brief      Add declaration.
+     *
+     * @param      decl  The declaration to add.
+     */
+    void addDeclaration(UniquePtr<Decl> decl);
+
+
+// Private Data Members
+private:
+
+    /// Declarations
+    PtrDynamicArray<Decl> m_declarations;
 
 };
 
