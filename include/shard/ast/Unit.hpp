@@ -14,13 +14,13 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-// Declaration
-#include "shard/ast/StmtContainer.hpp"
+#pragma once
+
+/* ************************************************************************* */
 
 // Shard
-#include "shard/utility.hpp"
-#include "shard/ast/Stmt.hpp"
-#include "shard/ast/Expr.hpp"
+#include "shard/PtrDynamicArray.hpp"
+#include "shard/ast/Decl.hpp"
 
 /* ************************************************************************* */
 
@@ -30,26 +30,68 @@ namespace ast {
 
 /* ************************************************************************* */
 
-StmtContainer::StmtContainer() noexcept = default;
-
-/* ************************************************************************* */
-
-StmtContainer::~StmtContainer() = default;
-
-/* ************************************************************************* */
-
-StmtContainer::StmtContainer(PtrDynamicArray<Stmt> stmts) noexcept
-    : m_statements(moveValue(stmts))
+/**
+ * @brief      The compilation unit.
+ */
+class Unit
 {
-    // Nothing to do
-}
 
-/* ************************************************************************* */
+// Public Ctors & Dtors
+public:
 
-void StmtContainer::addStatement(UniquePtr<Stmt> stmt) noexcept
-{
-    m_statements.push_back(moveValue(stmt));
-}
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      decls  The declarations.
+     */
+    explicit Unit(PtrDynamicArray<Decl> decls);
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~Unit();
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief      Returns declarations.
+     *
+     * @return     The declarations.
+     */
+    const PtrDynamicArray<Decl>& getDeclarations() const noexcept
+    {
+        return m_declarations;
+    }
+
+
+    /**
+     * @brief      Set declarations.
+     *
+     * @param      decls  The declarations.
+     */
+    void setDeclarations(PtrDynamicArray<Decl> decls);
+
+
+    /**
+     * @brief      Add declaration.
+     *
+     * @param      decl  The declaration to add.
+     */
+    void addDeclaration(UniquePtr<Decl> decl);
+
+
+// Private Data Members
+private:
+
+    /// Declarations
+    PtrDynamicArray<Decl> m_declarations;
+
+};
 
 /* ************************************************************************* */
 

@@ -15,13 +15,24 @@
 /* ************************************************************************* */
 
 // Declaration
-#include "shard/ast/Module.hpp"
+#include "shard/ast/Node.hpp"
+
+// Shard
+#include "shard/utility.hpp"
 
 /* ************************************************************************* */
 
 namespace shard {
 inline namespace v1 {
 namespace ast {
+
+/* ************************************************************************* */
+
+Node::Node(SourceRange range) noexcept
+    : m_range(moveValue(range))
+{
+    // Nothing to do
+}
 
 /* ************************************************************************* */
 

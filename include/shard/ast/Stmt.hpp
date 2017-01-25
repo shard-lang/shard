@@ -24,7 +24,7 @@
 #include "shard/ViewPtr.hpp"
 #include "shard/PtrDynamicArray.hpp"
 #include "shard/ast/utility.hpp"
-#include "shard/ast/StmtContainer.hpp"
+#include "shard/ast/Node.hpp"
 
 /* ************************************************************************* */
 
@@ -64,7 +64,7 @@ enum class StmtKind
 /**
  * @brief      Base statement class.
  */
-class Stmt : public LocationInfo
+class Stmt : public Node
 {
 
 // Public Ctors & Dtors
@@ -82,12 +82,61 @@ public:
 
 
     /**
-     * @brief Returns statement kind.
-     * @return Statement kind.
+     * @brief      Returns statement kind.
+     *
+     * @return     Statement kind.
      */
     StmtKind getKind() const noexcept
     {
         return m_kind;
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief      Test if statement match required kind.
+     *
+     * @tparam     StmtType  Statement type.
+     *
+     * @return     Returns `true` if this is `StmtType`, `false` otherwise.
+     */
+    template<typename StmtType>
+    bool is() const noexcept
+    {
+        return getKind() == StmtType::Kind;
+    }
+
+
+    /**
+     * @brief      Cast this to required statement type.
+     *
+     * @tparam     StmtType  Statement type.
+     *
+     * @return     Reference to required statement type.
+     */
+    template<typename StmtType>
+    StmtType& cast() noexcept
+    {
+        SHARD_ASSERT(is<StmtType>());
+        return static_cast<StmtType&>(*this);
+    }
+
+
+    /**
+     * @brief      Cast this to required statement type.
+     *
+     * @tparam     StmtType  Statement type.
+     *
+     * @return     Reference to required statement type.
+     */
+    template<typename StmtType>
+    const StmtType& cast() const noexcept
+    {
+        SHARD_ASSERT(is<StmtType>());
+        return static_cast<const StmtType&>(*this);
     }
 
 
@@ -101,7 +150,7 @@ protected:
      * @param      kind   Statement kind.
      * @param      range  Source range.
      */
-    explicit Stmt(StmtKind kind, SourceRange range) noexcept;
+    explicit Stmt(StmtKind kind, SourceRange range);
 
 
 // Private Data Members
@@ -115,31 +164,21 @@ private:
 /* ************************************************************************* */
 
 /**
- * @brief Helper class for statement types.
- * @tparam KIND Tested statement type.
- * @tparam T    Class type.
- */
-template<StmtKind KIND, typename T>
-struct StmtHelper
-    : public KindTester<StmtKind, KIND, Stmt>
-    , public KindCaster<Stmt, T>
-    , public KindMaker<T>
-{
-    // Nothing to do
-};
-
-/* ************************************************************************* */
-
-/**
  * @brief      Expression statement.
  *
  * @details    In the source it represents: `;` or `<expr>;`. When the `expr` is
  *             `nullptr` it's an empty statement.
  */
-class ExprStmt final
-    : public Stmt
-    , private StmtHelper<StmtKind::Expr, ExprStmt>
+class ExprStmt final : public Stmt
 {
+
+// Public Constants
+public:
+
+
+    /// Expression kind
+    static constexpr StmtKind Kind = StmtKind::Expr;
+
 
 // Public Ctors & Dtors
 public:
@@ -151,7 +190,7 @@ public:
      * @param      expr   Expression.
      * @param      range  Source range.
      */
-    explicit ExprStmt(UniquePtr<Expr> expr = nullptr, SourceRange range = {}) noexcept;
+    explicit ExprStmt(UniquePtr<Expr> expr = nullptr, SourceRange range = {});
 
 
     /**
@@ -191,16 +230,22 @@ public:
      *
      * @param      expr  The new expression.
      */
-    void setExpr(UniquePtr<Expr> expr) noexcept;
+    void setExpr(UniquePtr<Expr> expr);
 
 
 // Public Operations
 public:
 
 
-    using StmtHelper<StmtKind::Expr, ExprStmt>::is;
-    using StmtHelper<StmtKind::Expr, ExprStmt>::cast;
-    using StmtHelper<StmtKind::Expr, ExprStmt>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      expr   Expression.
+     * @param      range  Source range.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<ExprStmt> make(UniquePtr<Expr> expr = nullptr, SourceRange range = {});
 
 
 // Private Data Members
@@ -219,10 +264,16 @@ private:
  * @details    Statement which declares a variable. In the source it appears as:
  *             `<decl>;`.
  */
-class DeclStmt final
-    : public Stmt
-    , private StmtHelper<StmtKind::Decl, DeclStmt>
+class DeclStmt final : public Stmt
 {
+
+// Public Constants
+public:
+
+
+    /// Expression kind
+    static constexpr StmtKind Kind = StmtKind::Decl;
+
 
 // Public Ctors & Dtors
 public:
@@ -234,7 +285,7 @@ public:
      * @param      decl   Declaration.
      * @param      range  Source range.
      */
-    explicit DeclStmt(UniquePtr<Decl> decl, SourceRange range = {}) noexcept;
+    explicit DeclStmt(UniquePtr<Decl> decl, SourceRange range = {});
 
 
     /**
@@ -274,16 +325,22 @@ public:
      *
      * @param      decl  The new declaration.
      */
-    void setDecl(UniquePtr<Decl> decl) noexcept;
+    void setDecl(UniquePtr<Decl> decl);
 
 
 // Public Operations
 public:
 
 
-    using StmtHelper<StmtKind::Decl, DeclStmt>::is;
-    using StmtHelper<StmtKind::Decl, DeclStmt>::cast;
-    using StmtHelper<StmtKind::Decl, DeclStmt>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      decl   Declaration.
+     * @param      range  Source range.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<DeclStmt> make(UniquePtr<Decl> decl, SourceRange range = {});
 
 
 // Private Data Members
@@ -302,11 +359,16 @@ private:
  * @details    It's a container for other statements. In the source is looks
  *             like this: `{ <stmts> }`.
  */
-class CompoundStmt final
-    : public Stmt
-    , private StmtHelper<StmtKind::Compound, CompoundStmt>
-    , public StmtContainer
+class CompoundStmt final : public Stmt
 {
+
+// Public Constants
+public:
+
+
+    /// Expression kind
+    static constexpr StmtKind Kind = StmtKind::Compound;
+
 
 // Public Ctors & Dtors
 public:
@@ -318,16 +380,66 @@ public:
      * @param      stmts  A list of statements.
      * @param      range  Source range.
      */
-    explicit CompoundStmt(PtrDynamicArray<Stmt> stmts = {}, SourceRange range = {}) noexcept;
+    explicit CompoundStmt(PtrDynamicArray<Stmt> stmts = {}, SourceRange range = {});
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~CompoundStmt();
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief      Returns the statements.
+     *
+     * @return     The statements.
+     */
+    const PtrDynamicArray<Stmt>& getStmts() const noexcept
+    {
+        return m_statements;
+    }
+
+
+    /**
+     * @brief      Change the statements.
+     *
+     * @param      stmt  The new statements.
+     */
+    void setStmts(PtrDynamicArray<Stmt> stmts);
+
+
+    /**
+     * @brief      Add statement to body statement list.
+     *
+     * @param      stmt  Statement to be added.
+     */
+    void addStmt(UniquePtr<Stmt> stmt);
 
 
 // Public Operations
 public:
 
 
-    using StmtHelper<StmtKind::Compound, CompoundStmt>::is;
-    using StmtHelper<StmtKind::Compound, CompoundStmt>::cast;
-    using StmtHelper<StmtKind::Compound, CompoundStmt>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      stmts  A list of statements.
+     * @param      range  Source range.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<CompoundStmt> make(PtrDynamicArray<Stmt> stmts = {}, SourceRange range = {});
+
+
+// Private Data Members
+private:
+
+    /// Case statements.
+    PtrDynamicArray<Stmt> m_statements;
 
 };
 
@@ -339,10 +451,16 @@ public:
  * @details    In the source it appears as: `if (<condExpr>) <thenStmt>` or `if
  *             (<condExpr>) <thenStmt> else <elseStmt>`.
  */
-class IfStmt final
-    : public Stmt
-    , private StmtHelper<StmtKind::If, IfStmt>
+class IfStmt final : public Stmt
 {
+
+// Public Constants
+public:
+
+
+    /// Expression kind
+    static constexpr StmtKind Kind = StmtKind::If;
+
 
 // Public Ctors & Dtors
 public:
@@ -356,7 +474,7 @@ public:
      * @param      elseStmt  Else branch statement.
      * @param      range     Source range.
      */
-    explicit IfStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stmt> elseStmt = nullptr, SourceRange range = {}) noexcept;
+    explicit IfStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stmt> elseStmt = nullptr, SourceRange range = {});
 
 
     /**
@@ -396,7 +514,7 @@ public:
      *
      * @param      expr  The new condition expression.
      */
-    void setCondExpr(UniquePtr<Expr> expr) noexcept;
+    void setCondExpr(UniquePtr<Expr> expr);
 
 
     /**
@@ -426,7 +544,7 @@ public:
      *
      * @param      stmt  The new then branch statement.
      */
-    void setThenStmt(UniquePtr<Stmt> stmt) noexcept;
+    void setThenStmt(UniquePtr<Stmt> stmt);
 
 
     /**
@@ -456,16 +574,24 @@ public:
      *
      * @param      stmt  The new else branch statement.
      */
-    void setElseStmt(UniquePtr<Stmt> stmt) noexcept;
+    void setElseStmt(UniquePtr<Stmt> stmt);
 
 
 // Public Operations
 public:
 
 
-    using StmtHelper<StmtKind::If, IfStmt>::is;
-    using StmtHelper<StmtKind::If, IfStmt>::cast;
-    using StmtHelper<StmtKind::If, IfStmt>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      condExpr  Condition expression.
+     * @param      thenStmt  Then branch statement.
+     * @param      elseStmt  Else branch statement.
+     * @param      range     Source range.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<IfStmt> make(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stmt> elseStmt = nullptr, SourceRange range = {});
 
 
 // Private Data Members
@@ -489,10 +615,16 @@ private:
  *
  * @details    In the source it appears as: `while (<condExpr>) <bodyStmt>`.
  */
-class WhileStmt final
-    : public Stmt
-    , private StmtHelper<StmtKind::While, WhileStmt>
+class WhileStmt final : public Stmt
 {
+
+// Public Constants
+public:
+
+
+    /// Expression kind
+    static constexpr StmtKind Kind = StmtKind::While;
+
 
 // Public Ctors & Dtors
 public:
@@ -505,7 +637,7 @@ public:
      * @param      bodyStmt  Body statement.
      * @param      range     Source range.
      */
-    explicit WhileStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range = {}) noexcept;
+    explicit WhileStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range = {}) ;
 
 
     /**
@@ -545,7 +677,7 @@ public:
      *
      * @param      expr  The new condition expression.
      */
-    void setCondExpr(UniquePtr<Expr> expr) noexcept;
+    void setCondExpr(UniquePtr<Expr> expr);
 
 
     /**
@@ -575,16 +707,23 @@ public:
      *
      * @param      stmt  The new body statement.
      */
-    void setBodyStmt(UniquePtr<Stmt> stmt) noexcept;
+    void setBodyStmt(UniquePtr<Stmt> stmt);
 
 
 // Public Operations
 public:
 
 
-    using StmtHelper<StmtKind::While, WhileStmt>::is;
-    using StmtHelper<StmtKind::While, WhileStmt>::cast;
-    using StmtHelper<StmtKind::While, WhileStmt>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      condExpr  Condition expression.
+     * @param      bodyStmt  Body statement.
+     * @param      range     Source range.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<WhileStmt> make(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range = {});
 
 
 // Private Data Members
@@ -605,10 +744,16 @@ private:
  *
  * @details    In the source it appears as: `do <bodyStmt> while (<condExpr>);`.
  */
-class DoWhileStmt final
-    : public Stmt
-    , private StmtHelper<StmtKind::DoWhile, DoWhileStmt>
+class DoWhileStmt final : public Stmt
 {
+
+// Public Constants
+public:
+
+
+    /// Expression kind
+    static constexpr StmtKind Kind = StmtKind::DoWhile;
+
 
 // Public Ctors & Dtors
 public:
@@ -621,7 +766,7 @@ public:
      * @param      bodyStmt  Body statement.
      * @param      range     Source range.
      */
-    explicit DoWhileStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range = {}) noexcept;
+    explicit DoWhileStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range = {});
 
 
     /**
@@ -661,7 +806,7 @@ public:
      *
      * @param      expr  The new condition expression.
      */
-    void setCondExpr(UniquePtr<Expr> expr) noexcept;
+    void setCondExpr(UniquePtr<Expr> expr);
 
 
     /**
@@ -691,16 +836,23 @@ public:
      *
      * @param      stmt  The new body statement.
      */
-    void setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept;
+    void setBodyStmt(UniquePtr<CompoundStmt> stmt);
 
 
 // Public Operations
 public:
 
 
-    using StmtHelper<StmtKind::DoWhile, DoWhileStmt>::is;
-    using StmtHelper<StmtKind::DoWhile, DoWhileStmt>::cast;
-    using StmtHelper<StmtKind::DoWhile, DoWhileStmt>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      condExpr  Condition expression.
+     * @param      bodyStmt  Body statement.
+     * @param      range     Source range.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<DoWhileStmt> make(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range = {});
 
 
 // Private Data Members
@@ -722,10 +874,16 @@ private:
  * @details    In the source it appears as: `for (<initStmt> <condExpr> ;
  *             <incExpr>) <bodyStmt>`.
  */
-class ForStmt final
-    : public Stmt
-    , private StmtHelper<StmtKind::For, ForStmt>
+class ForStmt final : public Stmt
 {
+
+// Public Constants
+public:
+
+
+    /// Expression kind
+    static constexpr StmtKind Kind = StmtKind::For;
+
 
 // Public Ctors & Dtors
 public:
@@ -740,7 +898,7 @@ public:
      * @param      bodyStmt  Body statement.
      * @param      range     Source range.
      */
-    explicit ForStmt(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<Expr> incExpr, UniquePtr<Stmt> bodyStmt, SourceRange range = {}) noexcept;
+    explicit ForStmt(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<Expr> incExpr, UniquePtr<Stmt> bodyStmt, SourceRange range = {});
 
 
     /**
@@ -780,7 +938,7 @@ public:
      *
      * @param      stmt  THe new initialization statement.
      */
-    void setInitStmt(UniquePtr<Stmt> stmt) noexcept;
+    void setInitStmt(UniquePtr<Stmt> stmt);
 
 
     /**
@@ -810,7 +968,7 @@ public:
      *
      * @param      expr  The new condition epxression.
      */
-    void setCondExpr(UniquePtr<Expr> expr) noexcept;
+    void setCondExpr(UniquePtr<Expr> expr);
 
 
     /**
@@ -840,7 +998,7 @@ public:
      *
      * @param      expr  The new increment expression.
      */
-    void setIncExpr(UniquePtr<Expr> expr) noexcept;
+    void setIncExpr(UniquePtr<Expr> expr);
 
 
     /**
@@ -870,16 +1028,25 @@ public:
      *
      * @param      stmt  The new body statement.
      */
-    void setBodyStmt(UniquePtr<Stmt> stmt) noexcept;
+    void setBodyStmt(UniquePtr<Stmt> stmt);
 
 
 // Public Operations
 public:
 
 
-    using StmtHelper<StmtKind::For, ForStmt>::is;
-    using StmtHelper<StmtKind::For, ForStmt>::cast;
-    using StmtHelper<StmtKind::For, ForStmt>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      initStmt  Initialization statement.
+     * @param      condExpr  Test expression.
+     * @param      incExpr   Increment statement.
+     * @param      bodyStmt  Body statement.
+     * @param      range     Source range.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<ForStmt> make(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<Expr> incExpr, UniquePtr<Stmt> bodyStmt, SourceRange range = {});
 
 
 // Private Data Members
@@ -906,10 +1073,16 @@ private:
  *
  * @details    In the source it appears as: `switch (<condExpr>) <bodyStmt>`.
  */
-class SwitchStmt final
-    : public Stmt
-    , private StmtHelper<StmtKind::Switch, SwitchStmt>
+class SwitchStmt final : public Stmt
 {
+
+// Public Constants
+public:
+
+
+    /// Expression kind
+    static constexpr StmtKind Kind = StmtKind::Switch;
+
 
 // Public Ctors & Dtors
 public:
@@ -922,7 +1095,7 @@ public:
      * @param      bodyStmt  Body statement.
      * @param      range     Source range.
      */
-    explicit SwitchStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range = {}) noexcept;
+    explicit SwitchStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range = {});
 
 
     /**
@@ -962,7 +1135,7 @@ public:
      *
      * @param      expr  The new condition epxression.
      */
-    void setCondExpr(UniquePtr<Expr> expr) noexcept;
+    void setCondExpr(UniquePtr<Expr> expr);
 
 
     /**
@@ -992,16 +1165,23 @@ public:
      *
      * @param      stmt  The new body statement.
      */
-    void setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept;
+    void setBodyStmt(UniquePtr<CompoundStmt> stmt);
 
 
 // Public Operations
 public:
 
 
-    using StmtHelper<StmtKind::Switch, SwitchStmt>::is;
-    using StmtHelper<StmtKind::Switch, SwitchStmt>::cast;
-    using StmtHelper<StmtKind::Switch, SwitchStmt>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      condExpr  Condition expression.
+     * @param      bodyStmt  Body statement.
+     * @param      range     Source range.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<SwitchStmt> make(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range = {});
 
 
 // Private Data Members
@@ -1022,10 +1202,16 @@ private:
  *
  * @details    In the source it appears as: `case <expr>: <bodyStmt>`.
  */
-class CaseStmt final
-    : public Stmt
-    , private StmtHelper<StmtKind::Case, CaseStmt>
+class CaseStmt final : public Stmt
 {
+
+// Public Constants
+public:
+
+
+    /// Expression kind
+    static constexpr StmtKind Kind = StmtKind::Case;
+
 
 // Public Ctors & Dtors
 public:
@@ -1034,11 +1220,11 @@ public:
     /**
      * @brief      Constructor.
      *
-     * @param      expr      Test expression.
-     * @param      body      The body statement list
-     * @param      range     Source range.
+     * @param      expr   The case expression.
+     * @param      stmts  The statement list.
+     * @param      range  Source range.
      */
-    explicit CaseStmt(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> body = {}, SourceRange range = {}) noexcept;
+    explicit CaseStmt(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> stmts = {}, SourceRange range = {});
 
 
     /**
@@ -1074,41 +1260,30 @@ public:
 
 
     /**
-     * @brief      Change epxression.
+     * @brief      Change expression.
      *
-     * @param      expr  The new epxression.
+     * @param      expr  The new expression.
      */
-    void setExpr(UniquePtr<Expr> expr) noexcept;
+    void setExpr(UniquePtr<Expr> expr);
 
 
     /**
-     * @brief      Returns body statement list.
+     * @brief      Returns the statements.
      *
-     * @return     Statement list.
+     * @return     The statements.
      */
-    ViewPtr<PtrDynamicArray<Stmt>> getBody() noexcept
+    const PtrDynamicArray<Stmt>& getStmts() const noexcept
     {
-        return makeView(&m_body);
+        return m_statements;
     }
 
 
     /**
-     * @brief      Returns body statement list.
+     * @brief      Change the statements.
      *
-     * @return     Statement list.
+     * @param      stmt  The new statements.
      */
-    ViewPtr<const PtrDynamicArray<Stmt>> getBody() const noexcept
-    {
-        return makeView(&m_body);
-    }
-
-
-    /**
-     * @brief      Change body statement list.
-     *
-     * @param      stmt  The new body statement list.
-     */
-    void setBody(PtrDynamicArray<Stmt> stmtList) noexcept;
+    void setStmts(PtrDynamicArray<Stmt> stmts);
 
 
     /**
@@ -1116,16 +1291,23 @@ public:
      *
      * @param      stmt  Statement to be added.
      */
-    void addStmt(UniquePtr<Stmt> stmt) noexcept;
+    void addStmt(UniquePtr<Stmt> stmt);
 
 
 // Public Operations
 public:
 
 
-    using StmtHelper<StmtKind::Case, CaseStmt>::is;
-    using StmtHelper<StmtKind::Case, CaseStmt>::cast;
-    using StmtHelper<StmtKind::Case, CaseStmt>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      expr   The case expression.
+     * @param      stmts  The statement list.
+     * @param      range  Source range.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<CaseStmt> make(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> stmts = {}, SourceRange range = {});
 
 
 // Private Data Members
@@ -1134,8 +1316,8 @@ private:
     /// Case test expression.
     UniquePtr<Expr> m_expr;
 
-    /// Body statement.
-    PtrDynamicArray<Stmt> m_body;
+    /// The statements.
+    PtrDynamicArray<Stmt> m_statements;
 
 };
 
@@ -1146,10 +1328,16 @@ private:
  *
  * @details    In the source it appears as: `default: <bodyStmt>`.
  */
-class DefaultStmt final
-    : public Stmt
-    , private StmtHelper<StmtKind::Default, DefaultStmt>
+class DefaultStmt final : public Stmt
 {
+
+// Public Constants
+public:
+
+
+    /// Expression kind
+    static constexpr StmtKind Kind = StmtKind::Default;
+
 
 // Public Ctors & Dtors
 public:
@@ -1161,7 +1349,7 @@ public:
      * @param      body      Body statements.
      * @param      range     Source range.
      */
-    explicit DefaultStmt(PtrDynamicArray<Stmt> body = {}, SourceRange range = {}) noexcept;
+    explicit DefaultStmt(PtrDynamicArray<Stmt> body = {}, SourceRange range = {});
 
 
     /**
@@ -1175,33 +1363,22 @@ public:
 
 
     /**
-     * @brief      Returns body statement list.
+     * @brief      Returns the statements.
      *
-     * @return     Statement list.
+     * @return     The statements.
      */
-    ViewPtr<PtrDynamicArray<Stmt>> getBody() noexcept
+    const PtrDynamicArray<Stmt>& getStmts() const noexcept
     {
-        return makeView(&m_body);
+        return m_statements;
     }
 
 
     /**
-     * @brief      Returns body statement list.
+     * @brief      Change the statements.
      *
-     * @return     Statement list.
+     * @param      stmt  The new statements.
      */
-    ViewPtr<const PtrDynamicArray<Stmt>> getBody() const noexcept
-    {
-        return makeView(&m_body);
-    }
-
-
-    /**
-     * @brief      Change body statement list.
-     *
-     * @param      stmt  The new body statement list.
-     */
-    void setBody(PtrDynamicArray<Stmt> stmtList) noexcept;
+    void setStmts(PtrDynamicArray<Stmt> stmts);
 
 
     /**
@@ -1209,23 +1386,29 @@ public:
      *
      * @param      stmt  Statement to be added.
      */
-    void addStmt(UniquePtr<Stmt> stmt) noexcept;
+    void addStmt(UniquePtr<Stmt> stmt);
 
 
 // Public Operations
 public:
 
 
-    using StmtHelper<StmtKind::Default, DefaultStmt>::is;
-    using StmtHelper<StmtKind::Default, DefaultStmt>::cast;
-    using StmtHelper<StmtKind::Default, DefaultStmt>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      body      Body statements.
+     * @param      range     Source range.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<DefaultStmt> make(PtrDynamicArray<Stmt> body = {}, SourceRange range = {});
 
 
 // Private Data Members
 private:
 
-    /// Body statement.
-    PtrDynamicArray<Stmt> m_body;
+    /// The statements.
+    PtrDynamicArray<Stmt> m_statements;
 
 };
 
@@ -1236,10 +1419,16 @@ private:
  *
  * @details    In the source it appears as: `continue;`.
  */
-class ContinueStmt final
-    : public Stmt
-    , private StmtHelper<StmtKind::Continue, ContinueStmt>
+class ContinueStmt final : public Stmt
 {
+
+// Public Constants
+public:
+
+
+    /// Expression kind
+    static constexpr StmtKind Kind = StmtKind::Continue;
+
 
 // Public Ctors & Dtors
 public:
@@ -1250,16 +1439,27 @@ public:
      *
      * @param      range  Source range.
      */
-    explicit ContinueStmt(SourceRange range = {}) noexcept;
+    explicit ContinueStmt(SourceRange range = {});
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~ContinueStmt();
 
 
 // Public Operations
 public:
 
 
-    using StmtHelper<StmtKind::Continue, ContinueStmt>::is;
-    using StmtHelper<StmtKind::Continue, ContinueStmt>::cast;
-    using StmtHelper<StmtKind::Continue, ContinueStmt>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      range  Source range.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<ContinueStmt> make(SourceRange range = {});
 
 };
 
@@ -1270,10 +1470,16 @@ public:
  *
  * @details    In the source it appears as: `break;`.
  */
-class BreakStmt final
-    : public Stmt
-    , private StmtHelper<StmtKind::Break, BreakStmt>
+class BreakStmt final : public Stmt
 {
+
+// Public Constants
+public:
+
+
+    /// Expression kind
+    static constexpr StmtKind Kind = StmtKind::Break;
+
 
 // Public Ctors & Dtors
 public:
@@ -1284,16 +1490,27 @@ public:
      *
      * @param      range  Source range.
      */
-    explicit BreakStmt(SourceRange range = {}) noexcept;
+    explicit BreakStmt(SourceRange range = {});
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~BreakStmt();
 
 
 // Public Operations
 public:
 
 
-    using StmtHelper<StmtKind::Break, BreakStmt>::is;
-    using StmtHelper<StmtKind::Break, BreakStmt>::cast;
-    using StmtHelper<StmtKind::Break, BreakStmt>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      range  Source range.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<BreakStmt> make(SourceRange range = {});
 
 };
 
@@ -1304,10 +1521,16 @@ public:
  *
  * @details    In the source it appears as: `return <resExpr>;` or `return;`.
  */
-class ReturnStmt final
-    : public Stmt
-    , private StmtHelper<StmtKind::Return, ReturnStmt>
+class ReturnStmt final : public Stmt
 {
+
+// Public Constants
+public:
+
+
+    /// Expression kind
+    static constexpr StmtKind Kind = StmtKind::Return;
+
 
 // Public Ctors & Dtors
 public:
@@ -1319,7 +1542,7 @@ public:
      * @param      resExpr  Result expression.
      * @param      range    Source range.
      */
-    explicit ReturnStmt(UniquePtr<Expr> resExpr = nullptr, SourceRange range = {}) noexcept;
+    explicit ReturnStmt(UniquePtr<Expr> resExpr = nullptr, SourceRange range = {});
 
 
     /**
@@ -1359,16 +1582,22 @@ public:
      *
      * @param      expr  The new result expression.
      */
-    void setResExpr(UniquePtr<Expr> expr) noexcept;
+    void setResExpr(UniquePtr<Expr> expr);
 
 
 // Public Operations
 public:
 
 
-    using StmtHelper<StmtKind::Return, ReturnStmt>::is;
-    using StmtHelper<StmtKind::Return, ReturnStmt>::cast;
-    using StmtHelper<StmtKind::Return, ReturnStmt>::make;
+    /**
+     * @brief      Construct object.
+     *
+     * @param      resExpr  Result expression.
+     * @param      range    Source range.
+     *
+     * @return     Created unique pointer.
+     */
+    static UniquePtr<ReturnStmt> make(UniquePtr<Expr> resExpr = nullptr, SourceRange range = {});
 
 
 // Private Data Members

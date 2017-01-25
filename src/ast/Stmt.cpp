@@ -34,8 +34,8 @@ Stmt::~Stmt() = default;
 
 /* ************************************************************************* */
 
-Stmt::Stmt(StmtKind kind, SourceRange range) noexcept
-    : LocationInfo(moveValue(range))
+Stmt::Stmt(StmtKind kind, SourceRange range)
+    : Node(moveValue(range))
     , m_kind(kind)
 {
     // Nothing to do
@@ -43,8 +43,8 @@ Stmt::Stmt(StmtKind kind, SourceRange range) noexcept
 
 /* ************************************************************************* */
 
-ExprStmt::ExprStmt(UniquePtr<Expr> expr, SourceRange range) noexcept
-    : Stmt(StmtKind::Expr, moveValue(range))
+ExprStmt::ExprStmt(UniquePtr<Expr> expr, SourceRange range)
+    : Stmt(Kind, moveValue(range))
     , m_expr(moveValue(expr))
 {
     // Nothing to do
@@ -56,7 +56,7 @@ ExprStmt::~ExprStmt() = default;
 
 /* ************************************************************************* */
 
-void ExprStmt::setExpr(UniquePtr<Expr> expr) noexcept
+void ExprStmt::setExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
     m_expr = moveValue(expr);
@@ -64,8 +64,15 @@ void ExprStmt::setExpr(UniquePtr<Expr> expr) noexcept
 
 /* ************************************************************************* */
 
-DeclStmt::DeclStmt(UniquePtr<Decl> decl, SourceRange range) noexcept
-    : Stmt(StmtKind::Decl, moveValue(range))
+UniquePtr<ExprStmt> ExprStmt::make(UniquePtr<Expr> expr, SourceRange range)
+{
+    return makeUnique<ExprStmt>(moveValue(expr), moveValue(range));
+}
+
+/* ************************************************************************* */
+
+DeclStmt::DeclStmt(UniquePtr<Decl> decl, SourceRange range)
+    : Stmt(Kind, moveValue(range))
     , m_decl(moveValue(decl))
 {
     SHARD_ASSERT(m_decl);
@@ -77,7 +84,7 @@ DeclStmt::~DeclStmt() = default;
 
 /* ************************************************************************* */
 
-void DeclStmt::setDecl(UniquePtr<Decl> decl) noexcept
+void DeclStmt::setDecl(UniquePtr<Decl> decl)
 {
     SHARD_ASSERT(decl);
     m_decl = moveValue(decl);
@@ -85,17 +92,49 @@ void DeclStmt::setDecl(UniquePtr<Decl> decl) noexcept
 
 /* ************************************************************************* */
 
-CompoundStmt::CompoundStmt(PtrDynamicArray<Stmt> stmts, SourceRange range) noexcept
-    : Stmt(StmtKind::Compound, moveValue(range))
-    , StmtContainer(moveValue(stmts))
+UniquePtr<DeclStmt> DeclStmt::make(UniquePtr<Decl> decl, SourceRange range)
+{
+    return makeUnique<DeclStmt>(moveValue(decl), moveValue(range));
+}
+
+/* ************************************************************************* */
+
+CompoundStmt::CompoundStmt(PtrDynamicArray<Stmt> stmts, SourceRange range)
+    : Stmt(Kind, moveValue(range))
+    , m_statements(moveValue(stmts))
 {
     // Nothing to do
 }
 
 /* ************************************************************************* */
 
-IfStmt::IfStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stmt> elseStmt, SourceRange range) noexcept
-    : Stmt(StmtKind::If, moveValue(range))
+CompoundStmt::~CompoundStmt() = default;
+
+/* ************************************************************************* */
+
+void CompoundStmt::setStmts(PtrDynamicArray<Stmt> stmts)
+{
+    m_statements = moveValue(stmts);
+}
+
+/* ************************************************************************* */
+
+void CompoundStmt::addStmt(UniquePtr<Stmt> stmt)
+{
+    m_statements.push_back(moveValue(stmt));
+}
+
+/* ************************************************************************* */
+
+UniquePtr<CompoundStmt> CompoundStmt::make(PtrDynamicArray<Stmt> stmts, SourceRange range)
+{
+    return makeUnique<CompoundStmt>(moveValue(stmts), moveValue(range));
+}
+
+/* ************************************************************************* */
+
+IfStmt::IfStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stmt> elseStmt, SourceRange range)
+    : Stmt(Kind, moveValue(range))
     , m_condExpr(moveValue(condExpr))
     , m_thenStmt(moveValue(thenStmt))
     , m_elseStmt(moveValue(elseStmt))
@@ -110,7 +149,7 @@ IfStmt::~IfStmt() = default;
 
 /* ************************************************************************* */
 
-void IfStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
+void IfStmt::setCondExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
     m_condExpr = moveValue(expr);
@@ -118,7 +157,7 @@ void IfStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
 
 /* ************************************************************************* */
 
-void IfStmt::setThenStmt(UniquePtr<Stmt> stmt) noexcept
+void IfStmt::setThenStmt(UniquePtr<Stmt> stmt)
 {
     SHARD_ASSERT(stmt);
     m_thenStmt = moveValue(stmt);
@@ -126,15 +165,22 @@ void IfStmt::setThenStmt(UniquePtr<Stmt> stmt) noexcept
 
 /* ************************************************************************* */
 
-void IfStmt::setElseStmt(UniquePtr<Stmt> stmt) noexcept
+void IfStmt::setElseStmt(UniquePtr<Stmt> stmt)
 {
     m_elseStmt = moveValue(stmt);
 }
 
 /* ************************************************************************* */
 
-WhileStmt::WhileStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range) noexcept
-    : Stmt(StmtKind::While, moveValue(range))
+UniquePtr<IfStmt> IfStmt::make(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stmt> elseStmt, SourceRange range)
+{
+    return makeUnique<IfStmt>(moveValue(condExpr), moveValue(thenStmt), moveValue(elseStmt), moveValue(range));
+}
+
+/* ************************************************************************* */
+
+WhileStmt::WhileStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range)
+    : Stmt(Kind, moveValue(range))
     , m_condExpr(moveValue(condExpr))
     , m_bodyStmt(moveValue(bodyStmt))
 {
@@ -148,7 +194,7 @@ WhileStmt::~WhileStmt() = default;
 
 /* ************************************************************************* */
 
-void WhileStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
+void WhileStmt::setCondExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
     m_condExpr = moveValue(expr);
@@ -156,7 +202,7 @@ void WhileStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
 
 /* ************************************************************************* */
 
-void WhileStmt::setBodyStmt(UniquePtr<Stmt> stmt) noexcept
+void WhileStmt::setBodyStmt(UniquePtr<Stmt> stmt)
 {
     SHARD_ASSERT(stmt);
     m_bodyStmt = moveValue(stmt);
@@ -164,8 +210,15 @@ void WhileStmt::setBodyStmt(UniquePtr<Stmt> stmt) noexcept
 
 /* ************************************************************************* */
 
-DoWhileStmt::DoWhileStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range) noexcept
-    : Stmt(StmtKind::DoWhile, moveValue(range))
+UniquePtr<WhileStmt> WhileStmt::make(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range)
+{
+    return makeUnique<WhileStmt>(moveValue(condExpr), moveValue(bodyStmt), moveValue(range));
+}
+
+/* ************************************************************************* */
+
+DoWhileStmt::DoWhileStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range)
+    : Stmt(Kind, moveValue(range))
     , m_condExpr(moveValue(condExpr))
     , m_bodyStmt(moveValue(bodyStmt))
 {
@@ -179,7 +232,7 @@ DoWhileStmt::~DoWhileStmt() = default;
 
 /* ************************************************************************* */
 
-void DoWhileStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
+void DoWhileStmt::setCondExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
     m_condExpr = moveValue(expr);
@@ -187,7 +240,7 @@ void DoWhileStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
 
 /* ************************************************************************* */
 
-void DoWhileStmt::setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept
+void DoWhileStmt::setBodyStmt(UniquePtr<CompoundStmt> stmt)
 {
     SHARD_ASSERT(stmt);
     m_bodyStmt = moveValue(stmt);
@@ -195,14 +248,20 @@ void DoWhileStmt::setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept
 
 /* ************************************************************************* */
 
-ForStmt::ForStmt(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<Expr> incExpr, UniquePtr<Stmt> bodyStmt, SourceRange range) noexcept
-    : Stmt(StmtKind::For, moveValue(range))
+UniquePtr<DoWhileStmt> DoWhileStmt::make(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range)
+{
+    return makeUnique<DoWhileStmt>(moveValue(condExpr), moveValue(bodyStmt), moveValue(range));
+}
+
+/* ************************************************************************* */
+
+ForStmt::ForStmt(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<Expr> incExpr, UniquePtr<Stmt> bodyStmt, SourceRange range)
+    : Stmt(Kind, moveValue(range))
     , m_initStmt(moveValue(initStmt))
     , m_condExpr(moveValue(condExpr))
     , m_incExpr(moveValue(incExpr))
     , m_bodyStmt(moveValue(bodyStmt))
 {
-    //SHARD_ASSERT(m_initStmt);
     SHARD_ASSERT(m_bodyStmt);
 }
 
@@ -212,7 +271,7 @@ ForStmt::~ForStmt() = default;
 
 /* ************************************************************************* */
 
-void ForStmt::setInitStmt(UniquePtr<Stmt> stmt) noexcept
+void ForStmt::setInitStmt(UniquePtr<Stmt> stmt)
 {
     SHARD_ASSERT(stmt);
     m_initStmt = moveValue(stmt);
@@ -220,7 +279,7 @@ void ForStmt::setInitStmt(UniquePtr<Stmt> stmt) noexcept
 
 /* ************************************************************************* */
 
-void ForStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
+void ForStmt::setCondExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
     m_condExpr = moveValue(expr);
@@ -228,7 +287,7 @@ void ForStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
 
 /* ************************************************************************* */
 
-void ForStmt::setIncExpr(UniquePtr<Expr> expr) noexcept
+void ForStmt::setIncExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
     m_incExpr = moveValue(expr);
@@ -236,7 +295,7 @@ void ForStmt::setIncExpr(UniquePtr<Expr> expr) noexcept
 
 /* ************************************************************************* */
 
-void ForStmt::setBodyStmt(UniquePtr<Stmt> stmt) noexcept
+void ForStmt::setBodyStmt(UniquePtr<Stmt> stmt)
 {
     SHARD_ASSERT(stmt);
     m_bodyStmt = moveValue(stmt);
@@ -244,8 +303,15 @@ void ForStmt::setBodyStmt(UniquePtr<Stmt> stmt) noexcept
 
 /* ************************************************************************* */
 
-SwitchStmt::SwitchStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range) noexcept
-    : Stmt(StmtKind::Switch, moveValue(range))
+UniquePtr<ForStmt> ForStmt::make(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<Expr> incExpr, UniquePtr<Stmt> bodyStmt, SourceRange range)
+{
+    return makeUnique<ForStmt>(moveValue(initStmt), moveValue(condExpr), moveValue(incExpr), moveValue(bodyStmt), moveValue(range));
+}
+
+/* ************************************************************************* */
+
+SwitchStmt::SwitchStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range)
+    : Stmt(Kind, moveValue(range))
     , m_condExpr(moveValue(condExpr))
     , m_bodyStmt(moveValue(bodyStmt))
 {
@@ -259,7 +325,7 @@ SwitchStmt::~SwitchStmt() = default;
 
 /* ************************************************************************* */
 
-void SwitchStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
+void SwitchStmt::setCondExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
     m_condExpr = moveValue(expr);
@@ -267,7 +333,7 @@ void SwitchStmt::setCondExpr(UniquePtr<Expr> expr) noexcept
 
 /* ************************************************************************* */
 
-void SwitchStmt::setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept
+void SwitchStmt::setBodyStmt(UniquePtr<CompoundStmt> stmt)
 {
     SHARD_ASSERT(stmt);
     m_bodyStmt = moveValue(stmt);
@@ -275,10 +341,17 @@ void SwitchStmt::setBodyStmt(UniquePtr<CompoundStmt> stmt) noexcept
 
 /* ************************************************************************* */
 
-CaseStmt::CaseStmt(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> body, SourceRange range) noexcept
-    : Stmt(StmtKind::Case, moveValue(range))
+UniquePtr<SwitchStmt> SwitchStmt::make(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range)
+{
+    return makeUnique<SwitchStmt>(moveValue(condExpr), moveValue(bodyStmt), moveValue(range));
+}
+
+/* ************************************************************************* */
+
+CaseStmt::CaseStmt(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> stmts, SourceRange range)
+    : Stmt(Kind, moveValue(range))
     , m_expr(moveValue(expr))
-    , m_body(moveValue(body))
+    , m_statements(moveValue(stmts))
 {
     SHARD_ASSERT(m_expr);
 }
@@ -289,7 +362,7 @@ CaseStmt::~CaseStmt() = default;
 
 /* ************************************************************************* */
 
-void CaseStmt::setExpr(UniquePtr<Expr> expr) noexcept
+void CaseStmt::setExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
     m_expr = moveValue(expr);
@@ -297,23 +370,30 @@ void CaseStmt::setExpr(UniquePtr<Expr> expr) noexcept
 
 /* ************************************************************************* */
 
-void CaseStmt::setBody(PtrDynamicArray<Stmt> stmtList) noexcept
+void CaseStmt::setStmts(PtrDynamicArray<Stmt> stmts)
 {
-    m_body = moveValue(stmtList);
+    m_statements = moveValue(stmts);
 }
 
 /* ************************************************************************* */
 
-void CaseStmt::addStmt(UniquePtr<Stmt> stmt) noexcept
+void CaseStmt::addStmt(UniquePtr<Stmt> stmt)
 {
-    m_body.push_back(moveValue(stmt));
+    m_statements.push_back(moveValue(stmt));
 }
 
 /* ************************************************************************* */
 
-DefaultStmt::DefaultStmt(PtrDynamicArray<Stmt> body, SourceRange range) noexcept
-    : Stmt(StmtKind::Default, moveValue(range))
-    , m_body(moveValue(body))
+UniquePtr<CaseStmt> CaseStmt::make(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> stmts, SourceRange range)
+{
+    return makeUnique<CaseStmt>(moveValue(expr), moveValue(stmts), moveValue(range));
+}
+
+/* ************************************************************************* */
+
+DefaultStmt::DefaultStmt(PtrDynamicArray<Stmt> stmts, SourceRange range)
+    : Stmt(Kind, moveValue(range))
+    , m_statements(moveValue(stmts))
 {
     // Nothing to do
 }
@@ -324,38 +404,67 @@ DefaultStmt::~DefaultStmt() = default;
 
 /* ************************************************************************* */
 
-void DefaultStmt::setBody(PtrDynamicArray<Stmt> stmtList) noexcept
+void DefaultStmt::setStmts(PtrDynamicArray<Stmt> stmts)
 {
-    m_body = moveValue(stmtList);
+    m_statements = moveValue(stmts);
 }
 
 /* ************************************************************************* */
 
-void DefaultStmt::addStmt(UniquePtr<Stmt> stmt) noexcept
+void DefaultStmt::addStmt(UniquePtr<Stmt> stmt)
 {
-    m_body.push_back(moveValue(stmt));
+    m_statements.push_back(moveValue(stmt));
 }
 
 /* ************************************************************************* */
 
-ContinueStmt::ContinueStmt(SourceRange range) noexcept
-    : Stmt(StmtKind::Continue, moveValue(range))
+UniquePtr<DefaultStmt> DefaultStmt::make(PtrDynamicArray<Stmt> body, SourceRange range)
+{
+    return makeUnique<DefaultStmt>(moveValue(body), moveValue(range));
+}
+
+/* ************************************************************************* */
+
+ContinueStmt::ContinueStmt(SourceRange range)
+    : Stmt(Kind, moveValue(range))
 {
     // Nothing to do
 }
 
 /* ************************************************************************* */
 
-BreakStmt::BreakStmt(SourceRange range) noexcept
-    : Stmt(StmtKind::Break, moveValue(range))
+ContinueStmt::~ContinueStmt() = default;
+
+/* ************************************************************************* */
+
+UniquePtr<ContinueStmt> ContinueStmt::make(SourceRange range)
+{
+    return makeUnique<ContinueStmt>(moveValue(range));
+}
+
+/* ************************************************************************* */
+
+BreakStmt::BreakStmt(SourceRange range)
+    : Stmt(Kind, moveValue(range))
 {
     // Nothing to do
 }
 
 /* ************************************************************************* */
 
-ReturnStmt::ReturnStmt(UniquePtr<Expr> resExpr, SourceRange range) noexcept
-    : Stmt(StmtKind::Return, moveValue(range))
+BreakStmt::~BreakStmt() = default;
+
+/* ************************************************************************* */
+
+UniquePtr<BreakStmt> BreakStmt::make(SourceRange range)
+{
+    return makeUnique<BreakStmt>(moveValue(range));
+}
+
+/* ************************************************************************* */
+
+ReturnStmt::ReturnStmt(UniquePtr<Expr> resExpr, SourceRange range)
+    : Stmt(Kind, moveValue(range))
     , m_resExpr(moveValue(resExpr))
 {
     // Nothing to do
@@ -367,9 +476,16 @@ ReturnStmt::~ReturnStmt() = default;
 
 /* ************************************************************************* */
 
-void ReturnStmt::setResExpr(UniquePtr<Expr> expr) noexcept
+void ReturnStmt::setResExpr(UniquePtr<Expr> expr)
 {
     m_resExpr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+UniquePtr<ReturnStmt> ReturnStmt::make(UniquePtr<Expr> resExpr, SourceRange range)
+{
+    return makeUnique<ReturnStmt>(moveValue(resExpr), moveValue(range));
 }
 
 /* ************************************************************************* */

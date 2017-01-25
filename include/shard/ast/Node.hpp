@@ -19,7 +19,8 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/ast/DeclContext.hpp"
+#include "shard/SourceLocation.hpp"
+#include "shard/SourceRange.hpp"
 
 /* ************************************************************************* */
 
@@ -27,13 +28,75 @@ namespace shard {
 inline namespace v1 {
 namespace ast {
 
+
 /* ************************************************************************* */
 
 /**
- * @brief Top level AST object.
+ * @brief      Base class for all AST nodes.
  */
-class Module : public DeclContext
+class Node
 {
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief      Returns source range.
+     *
+     * @return     The source range.
+     */
+    const SourceRange& getSourceRange() const noexcept
+    {
+        return m_range;
+    }
+
+
+    /**
+     * @brief      Returns source range start.
+     *
+     * @return     The source start.
+     */
+    const SourceLocation& getSourceStart() const noexcept
+    {
+        return getSourceRange().getStart();
+    }
+
+
+    /**
+     * @brief      Returns source range end.
+     *
+     * @return     The source end.
+     */
+    const SourceLocation& getSourceEnd() const noexcept
+    {
+        return getSourceRange().getEnd();
+    }
+
+
+// Protected Ctors & Dtors
+protected:
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      range  Source range.
+     */
+    Node(SourceRange range) noexcept;
+
+
+    /**
+     * @brief      Destructor.
+     */
+    ~Node() = default;
+
+
+// Private Data Members
+private:
+
+    /// Source range.
+    SourceRange m_range;
 
 };
 

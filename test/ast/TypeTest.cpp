@@ -27,30 +27,55 @@ using namespace shard::ast;
 
 /* ************************************************************************ */
 
-TEST(Type, builtins)
+TEST(TypeInfo, construction)
 {
-    EXPECT_EQ(TypeKind::Void,   TYPE_BUILTIN_VOID.getKind());
-    EXPECT_EQ(TypeKind::Int,    TYPE_BUILTIN_INT.getKind());
-    EXPECT_EQ(TypeKind::Float,  TYPE_BUILTIN_FLOAT.getKind());
-    EXPECT_EQ(TypeKind::Char,   TYPE_BUILTIN_CHAR.getKind());
-    EXPECT_EQ(TypeKind::String, TYPE_BUILTIN_STRING.getKind());
-    EXPECT_EQ(TypeKind::Var,    TYPE_BUILTIN_VAR.getKind());
+    {
+        const Type type(TypeKind::Var);
+        EXPECT_EQ(TypeKind::Var, type.getKind());
+    }
+
+    {
+        const Type type(TypeKind::Auto);
+        EXPECT_EQ(TypeKind::Auto, type.getKind());
+    }
+
+    {
+        const Type type("MyClass");
+        EXPECT_EQ(TypeKind::Typename, type.getKind());
+        EXPECT_EQ("MyClass", type.getName());
+    }
 }
 
 /* ************************************************************************ */
 
-TEST(TypeInfo, construction)
+TEST(TypeInfo, compare)
 {
     {
-        const TypeInfo info(&TYPE_BUILTIN_VAR);
+        const Type type1(TypeKind::Var);
+        const Type type2(TypeKind::Var);
 
-        EXPECT_EQ(&TYPE_BUILTIN_VAR, info.getType());
+        EXPECT_EQ(type1, type2);
     }
 
     {
-        const TypeInfo info(&TYPE_BUILTIN_VOID);
+        const Type type1(TypeKind::Int);
+        const Type type2(TypeKind::Float);
 
-        EXPECT_EQ(&TYPE_BUILTIN_VOID, info.getType());
+        EXPECT_NE(type1, type2);
+    }
+
+    {
+        const Type type1("MyClass");
+        const Type type2("MyClass");
+
+        EXPECT_EQ(type1, type2);
+    }
+
+    {
+        const Type type1("MyClass1");
+        const Type type2("MyClass2");
+
+        EXPECT_NE(type1, type2);
     }
 }
 

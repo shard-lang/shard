@@ -38,7 +38,7 @@ namespace ast {
 /**
  * @brief Helper class for storing location in source code.
  */
-class LocationInfo
+class NodeBase
 {
 
 // Public Ctors & Dtors
@@ -49,7 +49,7 @@ public:
      * @brief Constructor.
      * @param range Source range.
      */
-    LocationInfo(SourceRange range) noexcept
+    NodeBase(SourceRange range) noexcept
         : m_range(moveValue(range))
     {
         // Nothing to do
@@ -98,247 +98,96 @@ private:
 
 };
 
-
 /* ************************************************************************* */
 
-/**
- * @brief Cast helper class.
- * @tparam BaseT  Base type.
- * @tparam ChildT Child type.
- */
-template<typename BaseT, typename ChildT>
-class KindCaster
+template<typename Kind>
+class KindRange
 {
 
-// Public Operations
+// Public Ctors & Dtors
 public:
 
 
     /**
-     * @brief Cast base type to specified subclass.
-     * @param value Value to cast.
-     * @return Casted value.
-     */
-    static ChildT& cast(BaseT& value) noexcept
-    {
-        SHARD_ASSERT(ChildT::is(value));
-        return static_cast<const ChildT&>(value);
-    }
-
-
-    /**
-     * @brief Cast base type to specified subclass.
-     * @param value Value to cast.
-     * @return Casted value.
-     */
-    static const ChildT& cast(const BaseT& value) noexcept
-    {
-        SHARD_ASSERT(ChildT::is(value));
-        return static_cast<const ChildT&>(value);
-    }
-
-
-    /**
-     * @brief Cast base type to specified subclass.
-     * @param value Value to cast.
-     * @return Casted value.
-     */
-    static ViewPtr<ChildT> cast(ViewPtr<BaseT> value) noexcept
-    {
-        SHARD_ASSERT(ChildT::is(value));
-        return ViewPtr<ChildT>(static_cast<ChildT*>(value.get()));
-    }
-
-
-    /**
-     * @brief Cast base type to specified subclass.
-     * @param value Value to cast.
-     * @return Casted value.
-     */
-    static ViewPtr<const ChildT> cast(ViewPtr<const BaseT> value) noexcept
-    {
-        SHARD_ASSERT(ChildT::is(value));
-        return ViewPtr<const ChildT>(static_cast<const ChildT*>(value.get()));
-    }
-
-
-    /**
-     * @brief Cast base type to specified subclass.
-     * @param value Value to cast.
-     * @return Casted value.
-     */
-    static ViewPtr<ChildT> cast(const UniquePtr<BaseT>& value) noexcept
-    {
-        SHARD_ASSERT(ChildT::is(value));
-        return ViewPtr<ChildT>(static_cast<ChildT*>(value.get()));
-    }
-
-
-    /**
-     * @brief Cast base type to specified subclass.
-     * @param value Value to cast.
-     * @return Casted value.
-     */
-    static ViewPtr<const ChildT> cast(const UniquePtr<const BaseT>& value) noexcept
-    {
-        SHARD_ASSERT(ChildT::is(value));
-        return ViewPtr<const ChildT>(static_cast<const ChildT*>(value.get()));
-    }
-
-};
-
-/* ************************************************************************* */
-
-/**
- * @brief Helper class for types.
- * @tparam EnumT Enum type.
- * @tparam KIND  Tested enum value.
- * @tparam BaseT Base type.
- */
-template<typename EnumT, EnumT KIND, typename BaseT>
-class KindTester
-{
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Check if given object match this class requirements.
-     * @param value Value to test.
-     * @return
-     */
-    static bool is(const BaseT& value) noexcept
-    {
-        return value.getKind() == KIND;
-    }
-
-
-    /**
-     * @brief Check if given object match this class requirements.
-     * @param value Value to test.
-     * @return
-     */
-    static bool is(ViewPtr<const BaseT> value) noexcept
-    {
-        SHARD_ASSERT(value);
-        return is(*value);
-    }
-
-
-    /**
-     * @brief Check if given object match this class requirements.
-     * @param value Value to test.
-     * @return
-     */
-    static bool is(const UniquePtr<BaseT>& value) noexcept
-    {
-        SHARD_ASSERT(value);
-        return is(*value);
-    }
-
-
-    /**
-     * @brief Check if given object match this class requirements.
-     * @param value Value to test.
-     * @return
-     */
-    static bool is(const UniquePtr<const BaseT>& value) noexcept
-    {
-        SHARD_ASSERT(value);
-        return is(*value);
-    }
-
-};
-
-/* ************************************************************************* */
-
-/**
- * @brief Helper class for types.
- * @tparam EnumT Enum type.
- * @tparam KIND1 The first tested enum value.
- * @tparam KIND2 The last tested enum value.
- * @tparam BaseT Base type.
- */
-template<typename EnumT, EnumT KIND1, EnumT KIND2, typename BaseT>
-class KindRangeTester
-{
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Check if given object match this class requirements.
-     * @param value Value to test.
-     * @return
-     */
-    static bool is(const BaseT& value) noexcept
-    {
-        return
-            value.getKind() >= KIND1 &&
-            value.getKind() <= KIND2
-        ;
-    }
-
-
-    /**
-     * @brief Check if given object match this class requirements.
-     * @param value Value to test.
-     * @return
-     */
-    static bool is(ViewPtr<BaseT> value) noexcept
-    {
-        SHARD_ASSERT(value);
-        return is(*value);
-    }
-
-
-    /**
-     * @brief Check if given object match this class requirements.
-     * @param value Value to test.
-     * @return
-     */
-    static bool is(const UniquePtr<BaseT>& value) noexcept
-    {
-        SHARD_ASSERT(value);
-        return is(*value);
-    }
-
-};
-
-/* ************************************************************************* */
-
-/**
- * @brief      Helper class for making instances of given object.
- *
- * @tparam     T     Kind object type.
- */
-template<typename T>
-class KindMaker
-{
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
+     * @brief      Constructor.
      *
-     * @param      args  Construction arguments.
-     *
-     * @tparam     Args  Construction argument types.
-     *
-     * @return     Created unique pointer.
+     * @param      first  The first value.
+     * @param      last   The last value.
      */
-    template<typename... Args>
-    static UniquePtr<T> make(Args&&... args)
+    constexpr KindRange(Kind first, Kind last) noexcept
+        : m_first(first)
+        , m_last(last)
     {
-        // TODO: custom allocator
-        return makeUnique<T>(forwardValue<Args>(args)...);
+        // Nothing to do
     }
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief      Returns the first value.
+     *
+     * @return     The first value.
+     */
+    Kind getFirst() const noexcept
+    {
+        return m_first;
+    }
+
+
+    /**
+     * @brief      Returns the last value.
+     *
+     * @return     The last value.
+     */
+    Kind getLast() const noexcept
+    {
+        return m_last;
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief      Compare operator.
+     *
+     * @param      rng   The kind range.
+     * @param      kind  The kind.
+     *
+     * @return     Comparision result.
+     */
+    friend constexpr bool operator==(KindRange rng, Kind kind)
+    {
+        return kind >= rng.getFirst() && kind <= rng.getLast();
+    }
+
+
+    /**
+     * @brief      Compare operator.
+     *
+     * @param      kind  The kind.
+     * @param      rng   The kind range.
+     *
+     * @return     Comparision result.
+     */
+    friend constexpr bool operator==(Kind kind, KindRange rng)
+    {
+        return operator==(rng, kind);
+    }
+
+
+// Private Data Members
+private:
+
+    /// The first value.
+    Kind m_first;
+
+    /// The last value.
+    Kind m_last;
 
 };
 
