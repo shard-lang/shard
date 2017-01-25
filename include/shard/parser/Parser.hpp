@@ -23,7 +23,7 @@
 #include "shard/PtrDynamicArray.hpp"
 #include "shard/tokenizer/Tokenizer.hpp"
 #include "shard/tokenizer/TokenType.hpp"
-#include "shard/ast/Module.hpp"
+#include "shard/ast/Unit.hpp"
 #include "shard/ast/Stmt.hpp"
 #include "shard/ast/Expr.hpp"
 #include "shard/ast/Decl.hpp"
@@ -74,7 +74,7 @@ public:
     /**
      * @brief initiates syntax analysis on given source.
      */
-	UniquePtr<Module> parseModule();
+	UniquePtr<Unit> parseUnit();
 
 /* ************************************************************************* */
 
@@ -93,12 +93,12 @@ private:
     /**
      * @brief parse variable declaration.
      */
-    UniquePtr<VariableDecl> parseVariableDecl(const TypeInfo type);
+    UniquePtr<VariableDecl> parseVariableDecl(const Type type);
 
     /**
      * @brief parse fucntion or variable declaration.
      */
-    UniquePtr<Decl> parseFunctionOrVariableDecl(const TypeInfo type);
+    UniquePtr<Decl> parseFunctionOrVariableDecl(const Type type);
 
 /* ************************************************************************* */
 
@@ -221,7 +221,7 @@ private:
 
 private:
 
-    /*
+    /**
      * @brief returns if current TokenType is tested TokenType.
      */
     inline bool is(TokenType type) const noexcept

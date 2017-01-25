@@ -39,7 +39,7 @@ static void test_impl(
     SCOPED_TRACE(code);
 
     Parser parser(code);
-    auto temp = parser.parseModule();
+    auto temp = parser.parseUnit();
 }
 
 /* ************************************************************************* */
@@ -51,7 +51,7 @@ static void test_exception_impl(int line, const String& code, const String& corr
     try
     {
     	Parser parser(code);
-    	auto temp = parser.parseModule();
+    	auto temp = parser.parseUnit();
     }
     catch (ParserException& ex)
     {
