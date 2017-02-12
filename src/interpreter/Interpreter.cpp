@@ -25,7 +25,7 @@
 #include "shard/ast/Decl.hpp"
 #include "shard/ast/Stmt.hpp"
 #include "shard/ast/Expr.hpp"
-#include "shard/ast/Module.hpp"
+#include "shard/ast/Unit.hpp"
 #include "shard/interpreter/Exception.hpp"
 #include "shard/interpreter/Context.hpp"
 
@@ -66,7 +66,7 @@ void interpretDeclStmt(ViewPtr<const ast::DeclStmt> stmt, Context& ctx)
     SHARD_ASSERT(decl);
 
     // Only variable is supported
-    if (!ast::VariableDecl::is(decl))
+    if (!decl->is<ast::VariableDecl>())
         throw Exception("Only variable can be declared in statement");
 
     auto varDecl = ast::VariableDecl::cast(decl);
@@ -458,7 +458,7 @@ Value interpretSubscriptExpr(ViewPtr<const ast::SubscriptExpr> expr, Context& ct
 
 /* ************************************************************************* */
 
-void interpret(ViewPtr<const ast::Module> unit, Context& ctx)
+void interpret(ViewPtr<const ast::Unit> unit, Context& ctx)
 {
     SHARD_ASSERT(unit);
     PRINT_CALL;
@@ -469,7 +469,7 @@ void interpret(ViewPtr<const ast::Module> unit, Context& ctx)
         SHARD_ASSERT(decl);
 
         // Is variable
-        if (ast::VariableDecl::is(decl))
+        if (decl->is<ast::VariableDecl>())
         {
             const auto varDecl = ast::VariableDecl::cast(decl);
             SHARD_ASSERT(varDecl);
@@ -482,7 +482,7 @@ void interpret(ViewPtr<const ast::Module> unit, Context& ctx)
             if (varDecl->getInitExpr())
                 var->setValue(interpret(varDecl->getInitExpr(), ctx));
         }
-        else if (ast::FunctionDecl::is(decl))
+        else if (decl->is<ast::FunctionDecl>())
         {
             const auto fnDecl = ast::FunctionDecl::cast(decl);
             SHARD_ASSERT(fnDecl);
@@ -515,7 +515,7 @@ void interpret(ViewPtr<const ast::Module> unit, Context& ctx)
 
 /* ************************************************************************* */
 
-void interpret(ViewPtr<const ast::Module> unit)
+void interpret(ViewPtr<const ast::Unit> unit)
 {
     SHARD_ASSERT(unit);
     PRINT_CALL;
