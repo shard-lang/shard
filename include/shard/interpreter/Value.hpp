@@ -1,0 +1,392 @@
+/* ************************************************************************* */
+/* This file is part of Shard.                                               */
+/*                                                                           */
+/* Shard is free software: you can redistribute it and/or modify             */
+/* it under the terms of the GNU Affero General Public License as            */
+/* published by the Free Software Foundation.                                */
+/*                                                                           */
+/* This program is distributed in the hope that it will be useful,           */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of            */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              */
+/* GNU Affero General Public License for more details.                       */
+/*                                                                           */
+/* You should have received a copy of the GNU Affero General Public License  */
+/* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
+/* ************************************************************************* */
+
+#pragma once
+
+/* ************************************************************************* */
+
+// Shard
+#include "shard/ViewPtr.hpp"
+#include "shard/Any.hpp"
+#include "shard/String.hpp"
+#include "shard/interpreter/Function.hpp"
+
+/* ************************************************************************* */
+
+namespace shard {
+inline namespace v1 {
+namespace interpreter {
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Stored value kind.
+ */
+enum class ValueKind
+{
+    Null,
+    Bool,
+    Int,
+    Float,
+    Char,
+    String,
+    Function
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Shard interpreter runtime variable.
+ */
+class Value
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief      Constructor.
+     */
+    Value() = default;
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      value  The value.
+     */
+    Value(bool value) noexcept
+        : m_kind(ValueKind::Bool)
+        , m_value(value)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      value  The value.
+     */
+    Value(int value) noexcept
+        : m_kind(ValueKind::Int)
+        , m_value(value)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      value  The value.
+     */
+    Value(float value) noexcept
+        : m_kind(ValueKind::Float)
+        , m_value(value)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      value  The value.
+     */
+    Value(char32_t value) noexcept
+        : m_kind(ValueKind::Char)
+        , m_value(value)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      value  The value.
+     */
+    Value(String value) noexcept
+        : m_kind(ValueKind::String)
+        , m_value(moveValue(value))
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      value  The value.
+     */
+    Value(Function value) noexcept
+        : m_kind(ValueKind::Function)
+        , m_value(value)
+    {
+        // Nothing to do
+    }
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief      Returns stored value kind.
+     *
+     * @return     The kind.
+     */
+    ValueKind getKind() const noexcept
+    {
+        return m_kind;
+    }
+
+
+    /**
+     * @brief      Determines if value is null.
+     *
+     * @return     True if null, False otherwise.
+     */
+    bool isNull() const noexcept
+    {
+        return getKind() == ValueKind::Null;
+    }
+
+
+    /**
+     * @brief      Returns as bool.
+     *
+     * @return     The value.
+     */
+    bool asBool() const noexcept
+    {
+        SHARD_ASSERT(getKind() == ValueKind::Bool);
+        return m_value.get<bool>();
+    }
+
+
+    /**
+     * @brief      Returns as integer.
+     *
+     * @return     The value.
+     */
+    int asInt() const noexcept
+    {
+        SHARD_ASSERT(getKind() == ValueKind::Int);
+        return m_value.get<int>();
+    }
+
+
+    /**
+     * @brief      Returns as float.
+     *
+     * @return     The value.
+     */
+    float asFloat() const noexcept
+    {
+        SHARD_ASSERT(getKind() == ValueKind::Float);
+        return m_value.get<float>();
+    }
+
+
+    /**
+     * @brief      Returns as character.
+     *
+     * @return     The value.
+     */
+    char32_t asChar() const noexcept
+    {
+        SHARD_ASSERT(getKind() == ValueKind::Char);
+        return m_value.get<char32_t>();
+    }
+
+
+    /**
+     * @brief      Returns as string.
+     *
+     * @return     The value.
+     */
+    String asString() const noexcept
+    {
+        SHARD_ASSERT(getKind() == ValueKind::String);
+        return m_value.get<String>();
+    }
+
+
+    /**
+     * @brief      Returns as function.
+     *
+     * @return     The value.
+     */
+    Function asFunction() const noexcept
+    {
+        SHARD_ASSERT(getKind() == ValueKind::Function);
+        return m_value.get<Function>();
+    }
+
+
+// Private Data Members
+private:
+
+    /// Stored value kind.
+    ValueKind m_kind = ValueKind::Null;
+
+    /// Variable value.
+    Any m_value;
+
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
+ */
+bool operator==(const Value& lhs, const Value& rhs);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
+ */
+inline bool operator!=(const Value& lhs, const Value& rhs)
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
+ */
+bool operator<(const Value& lhs, const Value& rhs);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
+ */
+inline bool operator>(const Value& lhs, const Value& rhs)
+{
+    return operator<(rhs, lhs);
+}
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
+ */
+inline bool operator<=(const Value& lhs, const Value& rhs)
+{
+    return !operator>(lhs, rhs);
+}
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Comparision result.
+ */
+inline bool operator>=(const Value& lhs, const Value& rhs)
+{
+    return !operator<(lhs, rhs);
+}
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Add values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Operation result.
+ */
+Value operator+(const Value& lhs, const Value& rhs);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Subtract values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Operation result.
+ */
+Value operator-(const Value& lhs, const Value& rhs);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Multiply values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Operation result.
+ */
+Value operator*(const Value& lhs, const Value& rhs);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Divide values.
+ *
+ * @param      lhs   The left hand side
+ * @param      rhs   The right hand side
+ *
+ * @return     Operation result.
+ */
+Value operator/(const Value& lhs, const Value& rhs);
+
+/* ************************************************************************* */
+
+}
+}
+}
+
+/* ************************************************************************* */

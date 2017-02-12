@@ -14,46 +14,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-add_shard_library(shard-core
-    HEADERS
-        Any.hpp
-        Assert.hpp
-        Byte.hpp
-        DynamicArray.hpp
-        Exception.hpp
-        FilePath.hpp
-        FixedArray.hpp
-        HashMap.hpp
-        Map.hpp
-        SharedPtr.hpp
-        SourceLocation.hpp
-        SourceRange.hpp
-        String.hpp
-        StringView.hpp
-        UniquePtr.hpp
-        ViewPtr.hpp
-        error.hpp
-        utility.hpp
-    SOURCES
-        error.cpp
-)
+cmake_minimum_required(VERSION 3.1)
 
 # ************************************************************************* #
 
-if (SHARD_BUILD_TOKENIZER)
-    add_subdirectory(tokenizer)
-endif ()
-
-if (SHARD_BUILD_AST)
-    add_subdirectory(ast)
-endif ()
-
-if (SHARD_BUILD_PARSER)
-    add_subdirectory(parser)
-endif ()
-
-if (SHARD_BUILD_INTERPRETER)
-    add_subdirectory(interpreter)
-endif ()
+add_subdirectory(interpreter)
 
 # ************************************************************************* #
