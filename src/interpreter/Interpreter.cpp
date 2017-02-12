@@ -69,13 +69,13 @@ void interpretDeclStmt(ViewPtr<const ast::DeclStmt> stmt, Context& ctx)
     if (!decl->is<ast::VariableDecl>())
         throw Exception("Only variable can be declared in statement");
 
-    auto varDecl = ast::VariableDecl::cast(decl);
+    auto varDecl = decl->cast<ast::VariableDecl>();
 
     // Create variable
-    auto var = ctx.addSymbol(varDecl->getName(), SymbolKind::Variable);
+    auto var = ctx.addSymbol(varDecl.getName(), SymbolKind::Variable);
 
-    if (varDecl->getInitExpr())
-        var->setValue(interpret(varDecl->getInitExpr(), ctx));
+    if (varDecl.getInitExpr())
+        var->setValue(interpret(varDecl.getInitExpr(), ctx));
 }
 
 /* ************************************************************************* */
@@ -471,28 +471,28 @@ void interpret(ViewPtr<const ast::Unit> unit, Context& ctx)
         // Is variable
         if (decl->is<ast::VariableDecl>())
         {
-            const auto varDecl = ast::VariableDecl::cast(decl);
+            const auto varDecl = decl->cast<ast::VariableDecl>();
             SHARD_ASSERT(varDecl);
 
             // Register symbol as variable
-            auto var = ctx.addSymbol(varDecl->getName(), SymbolKind::Variable);
+            auto var = ctx.addSymbol(varDecl.getName(), SymbolKind::Variable);
             SHARD_ASSERT(var);
 
             // Define variable initial value
             if (varDecl->getInitExpr())
-                var->setValue(interpret(varDecl->getInitExpr(), ctx));
+                var->setValue(interpret(varDecl.getInitExpr(), ctx));
         }
         else if (decl->is<ast::FunctionDecl>())
         {
-            const auto fnDecl = ast::FunctionDecl::cast(decl);
+            const auto fnDecl = decl->cast<ast::FunctionDecl>();
             SHARD_ASSERT(fnDecl);
 
             // Register symbol as function
-            auto fn = ctx.addSymbol(fnDecl->getName(), SymbolKind::Function);
+            auto fn = ctx.addSymbol(fnDecl.getName(), SymbolKind::Function);
             SHARD_ASSERT(fn);
 
             // Store function definition
-            fn->setValue(Function(fnDecl->getName(), fnDecl));
+            fn->setValue(Function(fnDecl.getName(), fnDecl));
         }
     }
 
@@ -533,7 +533,7 @@ void interpret(ViewPtr<const ast::Stmt> stmt, Context& ctx)
     PRINT_CALL;
 
 #define CASE(name) \
-    case ast::StmtKind::name: interpret ## name ## Stmt(ast::name ## Stmt::cast(stmt), ctx); break;
+    case ast::StmtKind::name: interpret ## name ## Stmt(stmt->cast<ast::name ## Stmt>(), ctx); break;
 
     switch (stmt->getKind())
     {
@@ -563,7 +563,7 @@ Value interpret(ViewPtr<const ast::Expr> expr, Context& ctx)
     PRINT_CALL;
 
 #define CASE(name) \
-    case ast::ExprKind::name: return interpret ## name ## Expr(ast::name ## Expr::cast(expr), ctx);
+    case ast::ExprKind::name: return interpret ## name ## Expr(expr->cast<ast::name ## Expr>(), ctx);
 
     switch (expr->getKind())
     {
