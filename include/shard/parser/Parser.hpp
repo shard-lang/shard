@@ -281,6 +281,11 @@ private:
 
 /* ************************************************************************* */
 
+private:
+
+    /**
+     * @brief returns tokens value if token is identifier
+     */
     inline String getIdentifier() const
     {
         if (!is(TokenType::Identifier))

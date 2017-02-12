@@ -80,14 +80,14 @@ PtrDynamicArray<Decl> Parser::parseDeclList()
 				continue;
 			case TokenType::Identifier:
 			{
-				const Type type(nullptr); // TODO
+				const Type type(getIdentifier());
 				m_tokenizer.toss();
 				list.push_back(parseFunctionOrVariableDecl(type));
 				continue;
 			}
 
 			default:
-				return std::move(list);
+				throw ExpectedDeclException();
 		}
 	}
 
@@ -139,7 +139,7 @@ UniquePtr<Decl> Parser::parseFunctionOrVariableDecl(const Type type)
 
 		if (!match(TokenType::ParenC))
 		{
-			auto params = parseDeclArray();
+			params = parseDeclArray();
 
 			if (!match(TokenType::ParenC))
 			{
@@ -219,7 +219,7 @@ PtrDynamicArray<VariableDecl> Parser::parseDeclArray()
 				break;
 			case TokenType::Identifier:
 			{
-				const Type type(nullptr); // TODO custom Type
+				const Type type(getIdentifier());
 				m_tokenizer.toss();
 				temp.push_back(parseVariableDecl(type));
 				break;
