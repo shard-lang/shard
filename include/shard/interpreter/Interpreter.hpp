@@ -30,7 +30,7 @@ namespace shard { inline namespace v1 { namespace ast {
 
 class Expr;
 class Stmt;
-class Module;
+class Unit;
 
 /* ************************************************************************* */
 
@@ -54,7 +54,7 @@ class Context;
  * @param      unit  The unit.
  * @param      ctx   The context.
  */
-extern void interpret(ViewPtr<const ast::Module> unit, Context& ctx);
+extern void interpret(ViewPtr<const ast::Unit> unit, Context& ctx);
 
 /* ************************************************************************* */
 
@@ -63,7 +63,7 @@ extern void interpret(ViewPtr<const ast::Module> unit, Context& ctx);
  *
  * @param      unit  The unit.
  */
-extern void interpret(ViewPtr<const ast::Module> unit);
+extern void interpret(ViewPtr<const ast::Unit> unit);
 
 /* ************************************************************************* */
 

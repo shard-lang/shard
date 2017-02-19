@@ -26,7 +26,7 @@
 #include "shard/String.hpp"
 #include "shard/StringView.hpp"
 #include "shard/Exception.hpp"
-#include "shard/ast/Module.hpp"
+#include "shard/ast/Unit.hpp"
 #include "shard/parser/Parser.hpp"
 #include "shard/interpreter/Interpreter.hpp"
 
@@ -47,10 +47,10 @@ namespace {
  *
  * @return     AST.
  */
-UniquePtr<ast::Module> createAst(StringView filename)
+UniquePtr<ast::Unit> createAst(StringView filename)
 {
     if (filename != "-")
-        return parser::Parser(Path(String(filename))).parseModule();
+        return parser::Parser(Path(String(filename))).parseUnit();
 
     String input;
     input.reserve(4096);
@@ -62,7 +62,7 @@ UniquePtr<ast::Module> createAst(StringView filename)
         std::back_inserter(input)
     );
 
-    return parser::Parser(moveValue(input)).parseModule();
+    return parser::Parser(moveValue(input)).parseUnit();
 }
 
 /* ************************************************************************* */
