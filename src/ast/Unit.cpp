@@ -17,6 +17,9 @@
 // Declaration
 #include "shard/ast/Unit.hpp"
 
+// Shard
+#include "shard/ast/Expr.hpp"
+
 /* ************************************************************************* */
 
 namespace shard {
