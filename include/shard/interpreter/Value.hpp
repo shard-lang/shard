@@ -61,7 +61,7 @@ public:
     /**
      * @brief      Constructor.
      */
-    Value() = default;
+    Value() noexcept;
 
 
     /**
@@ -69,12 +69,7 @@ public:
      *
      * @param      value  The value.
      */
-    Value(bool value) noexcept
-        : m_kind(ValueKind::Bool)
-        , m_value(value)
-    {
-        // Nothing to do
-    }
+    Value(bool value) noexcept;
 
 
     /**
@@ -82,12 +77,7 @@ public:
      *
      * @param      value  The value.
      */
-    Value(int value) noexcept
-        : m_kind(ValueKind::Int)
-        , m_value(value)
-    {
-        // Nothing to do
-    }
+    Value(int value) noexcept;
 
 
     /**
@@ -95,12 +85,7 @@ public:
      *
      * @param      value  The value.
      */
-    Value(float value) noexcept
-        : m_kind(ValueKind::Float)
-        , m_value(value)
-    {
-        // Nothing to do
-    }
+    Value(float value) noexcept;
 
 
     /**
@@ -108,12 +93,7 @@ public:
      *
      * @param      value  The value.
      */
-    Value(char32_t value) noexcept
-        : m_kind(ValueKind::Char)
-        , m_value(value)
-    {
-        // Nothing to do
-    }
+    Value(char32_t value) noexcept;
 
 
     /**
@@ -121,12 +101,7 @@ public:
      *
      * @param      value  The value.
      */
-    Value(String value) noexcept
-        : m_kind(ValueKind::String)
-        , m_value(moveValue(value))
-    {
-        // Nothing to do
-    }
+    Value(String value) noexcept;
 
 
     /**
@@ -134,12 +109,7 @@ public:
      *
      * @param      value  The value.
      */
-    Value(Function value) noexcept
-        : m_kind(ValueKind::Function)
-        , m_value(value)
-    {
-        // Nothing to do
-    }
+    Value(Function value) noexcept;
 
 
 // Public Accessors & Mutators
@@ -151,10 +121,7 @@ public:
      *
      * @return     The kind.
      */
-    ValueKind getKind() const noexcept
-    {
-        return m_kind;
-    }
+    ValueKind getKind() const noexcept;
 
 
     /**
@@ -162,10 +129,7 @@ public:
      *
      * @return     True if null, False otherwise.
      */
-    bool isNull() const noexcept
-    {
-        return getKind() == ValueKind::Null;
-    }
+    bool isNull() const noexcept;
 
 
     /**
@@ -173,11 +137,7 @@ public:
      *
      * @return     The value.
      */
-    bool asBool() const noexcept
-    {
-        SHARD_ASSERT(getKind() == ValueKind::Bool);
-        return m_value.get<bool>();
-    }
+    bool asBool() const noexcept;
 
 
     /**
@@ -185,11 +145,7 @@ public:
      *
      * @return     The value.
      */
-    int asInt() const noexcept
-    {
-        SHARD_ASSERT(getKind() == ValueKind::Int);
-        return m_value.get<int>();
-    }
+    int asInt() const noexcept;
 
 
     /**
@@ -197,11 +153,7 @@ public:
      *
      * @return     The value.
      */
-    float asFloat() const noexcept
-    {
-        SHARD_ASSERT(getKind() == ValueKind::Float);
-        return m_value.get<float>();
-    }
+    float asFloat() const noexcept;
 
 
     /**
@@ -209,11 +161,7 @@ public:
      *
      * @return     The value.
      */
-    char32_t asChar() const noexcept
-    {
-        SHARD_ASSERT(getKind() == ValueKind::Char);
-        return m_value.get<char32_t>();
-    }
+    char32_t asChar() const noexcept;
 
 
     /**
@@ -221,11 +169,7 @@ public:
      *
      * @return     The value.
      */
-    String asString() const noexcept
-    {
-        SHARD_ASSERT(getKind() == ValueKind::String);
-        return m_value.get<String>();
-    }
+    String asString() const noexcept;
 
 
     /**
@@ -233,11 +177,7 @@ public:
      *
      * @return     The value.
      */
-    Function asFunction() const noexcept
-    {
-        SHARD_ASSERT(getKind() == ValueKind::Function);
-        return m_value.get<Function>();
-    }
+    Function asFunction() const noexcept;
 
 
 // Private Data Members
@@ -273,10 +213,7 @@ bool operator==(const Value& lhs, const Value& rhs);
  *
  * @return     Comparision result.
  */
-inline bool operator!=(const Value& lhs, const Value& rhs)
-{
-    return !operator==(lhs, rhs);
-}
+bool operator!=(const Value& lhs, const Value& rhs);
 
 /* ************************************************************************* */
 
@@ -300,10 +237,7 @@ bool operator<(const Value& lhs, const Value& rhs);
  *
  * @return     Comparision result.
  */
-inline bool operator>(const Value& lhs, const Value& rhs)
-{
-    return operator<(rhs, lhs);
-}
+bool operator>(const Value& lhs, const Value& rhs);
 
 /* ************************************************************************* */
 
@@ -315,10 +249,7 @@ inline bool operator>(const Value& lhs, const Value& rhs)
  *
  * @return     Comparision result.
  */
-inline bool operator<=(const Value& lhs, const Value& rhs)
-{
-    return !operator>(lhs, rhs);
-}
+bool operator<=(const Value& lhs, const Value& rhs);
 
 /* ************************************************************************* */
 
@@ -330,10 +261,7 @@ inline bool operator<=(const Value& lhs, const Value& rhs)
  *
  * @return     Comparision result.
  */
-inline bool operator>=(const Value& lhs, const Value& rhs)
-{
-    return !operator<(lhs, rhs);
-}
+bool operator>=(const Value& lhs, const Value& rhs);
 
 /* ************************************************************************* */
 
@@ -382,6 +310,171 @@ Value operator*(const Value& lhs, const Value& rhs);
  * @return     Operation result.
  */
 Value operator/(const Value& lhs, const Value& rhs);
+
+/* ************************************************************************* */
+
+}
+}
+}
+
+/* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+
+namespace shard {
+inline namespace v1 {
+namespace interpreter {
+
+/* ************************************************************************* */
+
+inline Value::Value() noexcept
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+inline Value::Value(bool value) noexcept
+    : m_kind(ValueKind::Bool)
+    , m_value(value)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+inline Value::Value(int value) noexcept
+    : m_kind(ValueKind::Int)
+    , m_value(value)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+inline Value::Value(float value) noexcept
+    : m_kind(ValueKind::Float)
+    , m_value(value)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+inline Value::Value(char32_t value) noexcept
+    : m_kind(ValueKind::Char)
+    , m_value(value)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+inline Value::Value(String value) noexcept
+    : m_kind(ValueKind::String)
+    , m_value(moveValue(value))
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+inline Value::Value(Function value) noexcept
+    : m_kind(ValueKind::Function)
+    , m_value(value)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+inline ValueKind Value::getKind() const noexcept
+{
+    return m_kind;
+}
+
+/* ************************************************************************* */
+
+inline bool Value::isNull() const noexcept
+{
+    return getKind() == ValueKind::Null;
+}
+
+/* ************************************************************************* */
+
+inline bool Value::asBool() const noexcept
+{
+    SHARD_ASSERT(getKind() == ValueKind::Bool);
+    return m_value.get<bool>();
+}
+
+/* ************************************************************************* */
+
+inline int Value::asInt() const noexcept
+{
+    SHARD_ASSERT(getKind() == ValueKind::Int);
+    return m_value.get<int>();
+}
+
+/* ************************************************************************* */
+
+inline float Value::asFloat() const noexcept
+{
+    SHARD_ASSERT(getKind() == ValueKind::Float);
+    return m_value.get<float>();
+}
+
+/* ************************************************************************* */
+
+inline char32_t Value::asChar() const noexcept
+{
+    SHARD_ASSERT(getKind() == ValueKind::Char);
+    return m_value.get<char32_t>();
+}
+
+/* ************************************************************************* */
+
+inline String Value::asString() const noexcept
+{
+    SHARD_ASSERT(getKind() == ValueKind::String);
+    return m_value.get<String>();
+}
+
+/* ************************************************************************* */
+
+inline Function Value::asFunction() const noexcept
+{
+    SHARD_ASSERT(getKind() == ValueKind::Function);
+    return m_value.get<Function>();
+}
+
+/* ************************************************************************* */
+
+inline bool operator!=(const Value& lhs, const Value& rhs)
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************* */
+
+inline bool operator>(const Value& lhs, const Value& rhs)
+{
+    return operator<(rhs, lhs);
+}
+
+/* ************************************************************************* */
+
+inline bool operator<=(const Value& lhs, const Value& rhs)
+{
+    return !operator>(lhs, rhs);
+}
+
+/* ************************************************************************* */
+
+inline bool operator>=(const Value& lhs, const Value& rhs)
+{
+    return !operator<(lhs, rhs);
+}
 
 /* ************************************************************************* */
 

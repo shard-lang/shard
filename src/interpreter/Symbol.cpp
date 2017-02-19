@@ -30,7 +30,7 @@ namespace interpreter {
 
 /* ************************************************************************* */
 
-Symbol::Symbol(SymbolKind kind)
+Symbol::Symbol(SymbolKind kind) noexcept
     : m_kind(kind)
     , m_value{}
 {

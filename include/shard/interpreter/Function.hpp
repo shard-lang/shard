@@ -47,12 +47,7 @@ public:
      * @param      name  The name
      * @param      decl  The declaration
      */
-    explicit Function(String name, ViewPtr<const ast::FunctionDecl> decl = nullptr)
-        : m_name(moveValue(name))
-        , m_decl(decl)
-    {
-        // Nothing to do
-    }
+    explicit Function(String name, ViewPtr<const ast::FunctionDecl> decl = nullptr);
 
 
 // Public Accessors & Mutators
@@ -64,10 +59,7 @@ public:
      *
      * @return     The name.
      */
-    const String& getName() const noexcept
-    {
-        return m_name;
-    }
+    const String& getName() const noexcept;
 
 
     /**
@@ -75,10 +67,7 @@ public:
      *
      * @return     The declaration or nullptr.
      */
-    ViewPtr<const ast::FunctionDecl> getDecl() const noexcept
-    {
-        return m_decl;
-    }
+    ViewPtr<const ast::FunctionDecl> getDecl() const noexcept;
 
 
 // Private Data Members
@@ -91,6 +80,43 @@ private:
     ViewPtr<const ast::FunctionDecl> m_decl;
 
 };
+
+/* ************************************************************************* */
+
+}
+}
+}
+
+/* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+
+namespace shard {
+inline namespace v1 {
+namespace interpreter {
+
+/* ************************************************************************* */
+
+inline Function::Function(String name, ViewPtr<const ast::FunctionDecl> decl)
+    : m_name(moveValue(name))
+    , m_decl(decl)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+inline const String& Function::getName() const noexcept
+{
+    return m_name;
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const ast::FunctionDecl> Function::getDecl() const noexcept
+{
+    return m_decl;
+}
 
 /* ************************************************************************* */
 

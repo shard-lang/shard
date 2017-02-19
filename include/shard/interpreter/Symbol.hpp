@@ -57,7 +57,7 @@ public:
      *
      * @param      kind  The symbol kind.
      */
-    explicit Symbol(SymbolKind kind);
+    explicit Symbol(SymbolKind kind) noexcept;
 
 
 // Public Accessors & Mutators
@@ -69,10 +69,7 @@ public:
      *
      * @return     The kind.
      */
-    SymbolKind getKind() const noexcept
-    {
-        return m_kind;
-    }
+    SymbolKind getKind() const noexcept;
 
 
     /**
@@ -80,10 +77,7 @@ public:
      *
      * @return     The value.
      */
-    Value& getValue() noexcept
-    {
-        return m_value;
-    }
+    Value& getValue() noexcept;
 
 
     /**
@@ -91,10 +85,7 @@ public:
      *
      * @return     The value.
      */
-    const Value& getValue() const noexcept
-    {
-        return m_value;
-    }
+    const Value& getValue() const noexcept;
 
 
     /**
@@ -102,10 +93,7 @@ public:
      *
      * @return     The value.
      */
-    void setValue(Value value) noexcept
-    {
-        m_value = moveValue(value);
-    }
+    void setValue(Value value) noexcept;
 
 
 // Private Data Members
@@ -118,6 +106,48 @@ private:
     Value m_value;
 
 };
+
+/* ************************************************************************* */
+
+}
+}
+}
+
+/* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+
+namespace shard {
+inline namespace v1 {
+namespace interpreter {
+
+/* ************************************************************************* */
+
+inline SymbolKind Symbol::getKind() const noexcept
+{
+    return m_kind;
+}
+
+/* ************************************************************************* */
+
+inline Value& Symbol::getValue() noexcept
+{
+    return m_value;
+}
+
+/* ************************************************************************* */
+
+inline const Value& Symbol::getValue() const noexcept
+{
+    return m_value;
+}
+
+/* ************************************************************************* */
+
+inline void Symbol::setValue(Value value) noexcept
+{
+    m_value = moveValue(value);
+}
 
 /* ************************************************************************* */
 

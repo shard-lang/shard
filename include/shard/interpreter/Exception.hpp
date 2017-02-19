@@ -31,6 +31,9 @@ namespace interpreter {
 
 /* ************************************************************************* */
 
+/**
+ * @brief      Interpreter exception.
+ */
 class Exception : public shard::Exception
 {
 
@@ -43,11 +46,7 @@ public:
      *
      * @param      msg   The message
      */
-    explicit Exception(String msg)
-        : m_message(moveValue(msg))
-    {
-        // Nothing to do
-    }
+    explicit Exception(String msg);
 
 
 // Public Accessors & Mutators
@@ -59,10 +58,7 @@ public:
      *
      * @return     The message.
      */
-    const char* what() const noexcept override
-    {
-        return m_message.c_str();
-    }
+    const char* what() const noexcept override;
 
 
 // Private Data Members
@@ -72,6 +68,35 @@ private:
     String m_message;
 
 };
+
+/* ************************************************************************* */
+
+}
+}
+}
+
+/* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+
+namespace shard {
+inline namespace v1 {
+namespace interpreter {
+
+/* ************************************************************************* */
+
+inline Exception::Exception(String msg)
+    : m_message(moveValue(msg))
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+inline const char* Exception::what() const noexcept
+{
+    return m_message.c_str();
+}
 
 /* ************************************************************************* */
 

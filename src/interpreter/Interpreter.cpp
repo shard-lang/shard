@@ -492,6 +492,10 @@ void interpret(ViewPtr<const ast::Unit> unit, Context& ctx)
             // Store function definition
             fn->setValue(Function(fnDecl.getName(), &fnDecl));
         }
+        else
+        {
+            throw Exception("Unknown declaration type");
+        }
     }
 
     // Find main function
