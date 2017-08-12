@@ -15,6 +15,54 @@
 # ************************************************************************* #
 
 ##
+## Add target for coverage
+##
+function (add_coverage_target)
+    if (NOT TARGET shard-coverage)
+        # Required program
+        find_program(LCOV lcov)
+
+        # Add custom target for gcov
+        add_custom_target(shard-coverage
+            # Cleanup lcov
+            COMMAND ${LCOV} --directory . --zerocounters
+
+            # Run tests
+            COMMAND ctest
+
+            # Capturing lcov counters and generating report
+            COMMAND ${LCOV} --directory . --capture --output-file coverage0.info
+            COMMAND ${LCOV} -r coverage0.info 'vendor/*' 'test/*' '/usr/*' 'Token.def' --output-file coverage.info
+
+            DEPENDS core_test
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Resetting code coverage counters to zero.\nProcessing code coverage counters."
+        )
+    endif ()
+endfunction ()
+
+##
+## Add target for HTML coverage output.
+##
+function (add_coverage_html_target)
+    if (NOT TARGET shard-coverage-html)
+        # Find genhtml program
+        find_program(GENHTML genhtml)
+
+        # Add custom target for gcov html report
+        add_custom_target(shard-coverage-html
+            # Capturing lcov counters and generating report
+            COMMAND ${GENHTML} --demangle-cpp -o coverage coverage.info
+            COMMAND ${CMAKE_COMMAND} -E remove coverage.info
+
+            DEPENDS shard-coverage
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Generate coverage report."
+        )
+    endif ()
+endfunction ()
+
+##
 ## Enables code coverage for given target.
 ##
 ## param: NAME target name.
@@ -24,6 +72,9 @@ function (target_coverage NAME)
     if (CMAKE_COMPILER_IS_GNUCXX)
         target_compile_options(${NAME} PRIVATE --coverage)
         target_link_libraries(${NAME} PRIVATE --coverage)
+
+        add_coverage_target()
+        add_coverage_html_target()
     endif ()
 endfunction ()
 
