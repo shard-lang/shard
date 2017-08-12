@@ -14,7 +14,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-cmake_minimum_required(VERSION 3.1)
+option(SHARD_BUILD_TOOLS "Build tools" On)
+
+# ************************************************************************* #
+
+if (NOT SHARD_BUILD_TOOLS)
+    return ()
+endif ()
 
 # ************************************************************************* #
 

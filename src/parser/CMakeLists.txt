@@ -14,9 +14,25 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
+# Build parser part
+option(SHARD_BUILD_PARSER "Build parser" On)
+
+# ************************************************************************* #
+
 if (NOT SHARD_BUILD_PARSER)
     return ()
 endif ()
+
+# ************************************************************************* #
+
+# Check conditions
+if (NOT SHARD_BUILD_TOKENIZER OR NOT SHARD_BUILD_AST)
+    message(WARNING "Option to build Parser requires building AST and Tokenizer, turning Parser off.")
+    set(SHARD_BUILD_PARSER Off)
+    return ()
+endif()
+
+# ************************************************************************* #
 
 # Create Shard part
 add_library(shard-parser

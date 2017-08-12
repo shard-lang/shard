@@ -14,9 +14,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
+# Build AST part
+option(SHARD_BUILD_AST "Build AST" On)
+
+# ************************************************************************* #
+
 if (NOT SHARD_BUILD_AST)
     return ()
 endif ()
+
+# ************************************************************************* #
 
 # Create Shard part
 add_library(shard-ast

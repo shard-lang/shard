@@ -14,9 +14,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
+# Build Tokenizer part
+option(SHARD_BUILD_TOKENIZER "Build tokenizer" On)
+
+# ************************************************************************* #
+
 if (NOT SHARD_BUILD_TOKENIZER)
     return ()
 endif ()
+
+# ************************************************************************* #
 
 # Create Shard part
 add_library(shard-tokenizer

@@ -14,9 +14,25 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
+# Build Interpreter part
+option(SHARD_BUILD_INTERPRETER "Build interpreter" On)
+
+# ************************************************************************* #
+
 if (NOT SHARD_BUILD_INTERPRETER)
     return ()
 endif ()
+
+# ************************************************************************* #
+
+# Check conditions
+if (NOT SHARD_BUILD_PARSER OR NOT SHARD_BUILD_AST)
+    message(WARNING "Option to build interpreter requires building AST and parser, turning interpreter off.")
+    set(SHARD_BUILD_INTERPRETER Off)
+    return ()
+endif()
+
+# ************************************************************************* #
 
 # Create Shard part
 add_library(shard-interpreter
