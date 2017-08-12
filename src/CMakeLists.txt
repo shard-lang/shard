@@ -29,6 +29,11 @@ target_compile_features(shard-core
     PUBLIC cxx_std_17
 )
 
+# Link libraries
+target_link_libraries(shard-core
+    INTERFACE stdc++fs
+)
+
 # Enable coverage
 if (SHARD_COVERAGE)
     include(Coverage)

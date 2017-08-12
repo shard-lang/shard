@@ -14,20 +14,48 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-# Core test
-add_shard_test(core_test
-    SOURCES
-        SourceLocation.cpp
-        ViewPtr.cpp
-    LIBRARIES
-        shard-core
-)
+option(SHARD_BUILD_TESTS "Build unit tests" Off)
+
+if (SHARD_BUILD_TESTS AND CMAKE_COMPILER_IS_GNUCXX)
+    option(SHARD_COVERAGE "Enable code coverage generation" Off)
+endif ()
 
 # ************************************************************************* #
 
-if (SHARD_BUILD_TOKENIZER)
-    add_subdirectory(tokenizer)
+if (NOT SHARD_BUILD_TESTS)
+    return ()
 endif ()
+
+# ************************************************************************* #
+
+# CTest support
+enable_testing()
+
+# ************************************************************************* #
+
+# Create test executable
+add_executable(shard-core_test
+    SourceLocation.cpp
+    ViewPtr.cpp
+)
+
+# Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
+target_compile_features(shard-core_test
+    PUBLIC cxx_std_17
+)
+
+target_link_libraries(shard-core_test
+    PRIVATE shard-core
+    PRIVATE gtest_main
+)
+
+target_coverage(shard-core_test)
+
+add_test(shard-core_test shard-core_test)
+
+# ************************************************************************* #
+
+add_subdirectory(tokenizer)
 
 if (SHARD_BUILD_AST)
     add_subdirectory(ast)

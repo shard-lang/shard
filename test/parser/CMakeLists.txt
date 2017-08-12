@@ -14,13 +14,29 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-add_shard_test(shard-parser_test
-    SOURCES
-        ParserTest.cpp
-    LIBRARIES
-        shard-parser
-        shard-tokenizer
-        shard-ast
+if (NOT SHARD_BUILD_PARSER)
+    return ()
+endif ()
+
+# ************************************************************************* #
+
+# Create test executable
+add_executable(shard-parser_test
+    ParserTest.cpp
 )
+
+# Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
+target_compile_features(shard-parser_test
+    PUBLIC cxx_std_17
+)
+
+target_link_libraries(shard-parser_test
+    PRIVATE shard-parser
+    PRIVATE gtest_main
+)
+
+target_coverage(shard-parser_test)
+
+add_test(shard-parser_test shard-parser_test)
 
 # ************************************************************************* #

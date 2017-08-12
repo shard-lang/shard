@@ -23,80 +23,36 @@ project(shard VERSION 0.1.0)
 
 # ************************************************************************* #
 
-option(SHARD_BUILD_TESTS "Build unit tests" Off)
-
-if (SHARD_BUILD_TESTS AND CMAKE_COMPILER_IS_GNUCXX)
-    option(SHARD_COVERAGE "Enable code coverage generation" Off)
-endif ()
+# Append to modules path
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # ************************************************************************* #
 
-# Append to modules path
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+# Init google test submodule
+if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/vendor/googletest/CMakeLists.txt")
+    find_package(Git REQUIRED)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive vendor/googletest
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+endif ()
+
+# Build google test
+set(BUILD_GMOCK Off CACHE BOOL "" FORCE)
+set(BUILD_GTEST On CACHE BOOL "" FORCE)
+set(gtest_force_shared_crt On CACHE BOOL "" FORCE)
+mark_as_advanced(BUILD_GMOCK BUILD_GTEST gtest_build_samples gtest_build_tests gtest_disable_pthreads gtest_hide_internal_symbols gtest_force_shared_crt)
+add_subdirectory(vendor/googletest)
 
 # ************************************************************************* #
 
 # Add source files
 add_subdirectory(src)
 
-if (SHARD_BUILD_TOOLS)
-    add_subdirectory(tools)
-endif ()
+# Add tools
+add_subdirectory(tools)
 
-# ************************************************************************* #
-
-# Build tests
-if (SHARD_BUILD_TESTS)
-    # CTest support
-    enable_testing()
-
-    function (add_shard_test NAME)
-        include(CMakeParseArguments)
-        cmake_parse_arguments(ARG "" "" "HEADERS;SOURCES;LIBRARIES" ${ARGN})
-
-        add_executable(${NAME} ${ARG_SOURCES})
-
-        set_target_properties(${NAME} PROPERTIES
-            CXX_STANDARD 17
-            CXX_STANDARD_REQUIRED On
-            CXX_EXTENSIONS Off
-        )
-
-        target_include_directories(${NAME}
-            PUBLIC ${CURRENT_DIR}/include
-        )
-
-        target_link_libraries(${NAME}
-            PRIVATE ${ARG_LIBRARIES}
-            PRIVATE gtest_main
-        )
-
-        if (CMAKE_COMPILER_IS_GNUCXX AND SHARD_COVERAGE)
-            target_compile_options(${NAME} PRIVATE --coverage)
-            target_link_libraries(${NAME} PRIVATE --coverage)
-        endif ()
-
-        add_test(${NAME} ${NAME})
-    endfunction ()
-
-    # Init google test submodule
-    if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/vendor/googletest/CMakeLists.txt")
-        find_package(Git REQUIRED)
-        execute_process(
-            COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive vendor/googletest
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        )
-    endif ()
-
-    # Build google test
-    set(BUILD_GMOCK Off CACHE BOOL "" FORCE)
-    set(BUILD_GTEST On CACHE BOOL "" FORCE)
-    set(gtest_force_shared_crt On CACHE BOOL "" FORCE)
-    mark_as_advanced(BUILD_GMOCK BUILD_GTEST gtest_build_samples gtest_build_tests gtest_disable_pthreads gtest_hide_internal_symbols gtest_force_shared_crt)
-    add_subdirectory(vendor/googletest)
-
-    # Add shard tests
-    add_subdirectory(test)
-endif ()
+# Add shard tests
+add_subdirectory(test)
 
 # ************************************************************************* #

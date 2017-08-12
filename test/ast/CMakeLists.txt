@@ -14,14 +14,32 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-add_shard_test(shard-ast_test
-    SOURCES
-        TypeTest.cpp
-        ExprTest.cpp
-        DeclTest.cpp
-        StmtTest.cpp
-    LIBRARIES
-        shard-ast
+if (NOT SHARD_BUILD_AST)
+    return ()
+endif ()
+
+# ************************************************************************* #
+
+# Create test executable
+add_executable(shard-ast_test
+    TypeTest.cpp
+    ExprTest.cpp
+    DeclTest.cpp
+    StmtTest.cpp
 )
+
+# Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
+target_compile_features(shard-ast_test
+    PUBLIC cxx_std_17
+)
+
+target_link_libraries(shard-ast_test
+    PRIVATE shard-ast
+    PRIVATE gtest_main
+)
+
+target_coverage(shard-ast_test)
+
+add_test(shard-ast_test shard-ast_test)
 
 # ************************************************************************* #

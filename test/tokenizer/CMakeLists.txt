@@ -14,14 +14,31 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-add_shard_test(shard-tokenizer_test
-    SOURCES
-        TokenizerTest.cpp
-        SourceTest.cpp
-    LIBRARIES
-        shard-tokenizer
-        stdc++fs
+if (NOT SHARD_BUILD_TOKENIZER)
+    return ()
+endif ()
+
+# ************************************************************************* #
+
+# Create test executable
+add_executable(shard-tokenizer_test
+    TokenizerTest.cpp
+    SourceTest.cpp
 )
+
+# Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
+target_compile_features(shard-tokenizer_test
+    PUBLIC cxx_std_17
+)
+
+target_link_libraries(shard-tokenizer_test
+    PRIVATE shard-tokenizer
+    PRIVATE gtest_main
+)
+
+target_coverage(shard-tokenizer_test)
+
+add_test(shard-tokenizer_test shard-tokenizer_test)
 
 # ************************************************************************* #
 

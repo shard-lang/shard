@@ -14,17 +14,26 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-cmake_minimum_required(VERSION 3.1)
+# Create shard interpreter
+add_executable(shard-interpreter-cli
+    main.cpp
+)
 
-# ************************************************************************* #
+target_link_libraries(shard-interpreter-cli
+    PUBLIC shard-interpreter
+    PUBLIC shard-parser
+    PUBLIC shard-ast
+    PUBLIC shard-tokenizer
+)
 
-add_executable(shard-interpreter-cli main.cpp)
-target_link_libraries(shard-interpreter-cli shard-interpreter shard-parser shard-ast shard-tokenizer stdc++fs)
+# Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
+target_compile_features(shard-core
+    PUBLIC cxx_std_17
+)
+
 set_target_properties(shard-interpreter-cli PROPERTIES
-    CXX_STANDARD 14
-    CXX_STANDARD_REQUIRED On
-    CXX_EXTENSIONS Off
-    OUTPUT_NAME shard-interpreter
+    OUTPUT_NAME shard
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 
 # ************************************************************************* #
