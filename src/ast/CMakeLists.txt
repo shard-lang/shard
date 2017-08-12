@@ -14,24 +14,39 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-add_shard_library(shard-ast
-    HEADERS
-        Decl.hpp
-        Expr.hpp
-        Node.hpp
-        Stmt.hpp
-        Type.hpp
-        utility.hpp
-        Unit.hpp
-    SOURCES
-        Decl.cpp
-        Expr.cpp
-        Node.cpp
-        Stmt.cpp
-        Type.cpp
-        Unit.cpp
-    LIBRARIES
-        shard-core
+if (NOT SHARD_BUILD_AST)
+    return ()
+endif ()
+
+# Create Shard part
+add_library(shard-ast
+    Decl.cpp
+    Expr.cpp
+    Node.cpp
+    Stmt.cpp
+    Type.cpp
+    Unit.cpp
 )
+
+# Include directories
+target_include_directories(shard-ast
+    PUBLIC ../../include
+)
+
+# Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
+target_compile_features(shard-ast
+    PUBLIC cxx_std_17
+)
+
+# Link to libraries
+target_link_libraries(shard-ast
+    PUBLIC shard-core
+)
+
+# Enable coverage
+if (SHARD_COVERAGE)
+    include(Coverage)
+    target_coverage(shard-ast)
+endif ()
 
 # ************************************************************************* #

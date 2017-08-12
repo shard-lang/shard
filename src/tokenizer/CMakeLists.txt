@@ -14,18 +14,34 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-add_shard_library(shard-tokenizer
-    HEADERS
-        Tokenizer.hpp
-        Token.hpp
-        TokenType.hpp
-        KeywordType.hpp
-        TokenizerException.hpp
-        Source.hpp
-    SOURCES
-        Tokenizer.cpp
-    LIBRARIES
-        shard-core
+if (NOT SHARD_BUILD_TOKENIZER)
+    return ()
+endif ()
+
+# Create Shard part
+add_library(shard-tokenizer
+    Tokenizer.cpp
 )
+
+# Include directories
+target_include_directories(shard-tokenizer
+    PUBLIC ../../include
+)
+
+# Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
+target_compile_features(shard-tokenizer
+    PUBLIC cxx_std_17
+)
+
+# Link to libraries
+target_link_libraries(shard-tokenizer
+    PUBLIC shard-core
+)
+
+# Enable coverage
+if (SHARD_COVERAGE)
+    include(Coverage)
+    target_coverage(shard-tokenizer)
+endif ()
 
 # ************************************************************************* #

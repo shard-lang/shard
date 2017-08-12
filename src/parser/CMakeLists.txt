@@ -14,16 +14,36 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-add_shard_library(shard-parser
-    HEADERS
-        Parser.hpp
-        ParserException.hpp
-    SOURCES
-        Parser.cpp
-    LIBRARIES
-        shard-core
-        shard-tokenizer
-        shard-ast
+if (NOT SHARD_BUILD_PARSER)
+    return ()
+endif ()
+
+# Create Shard part
+add_library(shard-parser
+    Parser.cpp
 )
+
+# Include directories
+target_include_directories(shard-parser
+    PUBLIC ../../include
+)
+
+# Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
+target_compile_features(shard-parser
+    PUBLIC cxx_std_17
+)
+
+# Link to libraries
+target_link_libraries(shard-parser
+    PUBLIC shard-core
+    PUBLIC shard-tokenizer
+    PUBLIC shard-ast
+)
+
+# Enable coverage
+if (SHARD_COVERAGE)
+    include(Coverage)
+    target_coverage(shard-parser)
+endif ()
 
 # ************************************************************************* #

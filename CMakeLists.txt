@@ -14,7 +14,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.8)
+
+# ************************************************************************* #
+
+# Project information
+project(shard VERSION 0.1.0)
 
 # ************************************************************************* #
 
@@ -41,31 +46,8 @@ endif ()
 
 # ************************************************************************* #
 
-set(CURRENT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-
-# ************************************************************************* #
-
-function (add_shard_library NAME)
-    include(CMakeParseArguments)
-    cmake_parse_arguments(ARG "" "" "HEADERS;SOURCES;LIBRARIES" ${ARGN})
-
-    add_library(${NAME} ${ARG_SOURCES})
-
-    set_target_properties(${NAME} PROPERTIES
-        CXX_STANDARD 14
-        CXX_STANDARD_REQUIRED On
-        CXX_EXTENSIONS Off
-    )
-
-    target_include_directories(${NAME}
-        PUBLIC ${CURRENT_DIR}/include
-    )
-
-    if (SHARD_BUILD_TESTS AND CMAKE_COMPILER_IS_GNUCXX AND SHARD_COVERAGE)
-        target_compile_options(${NAME} PRIVATE --coverage)
-        target_link_libraries(${NAME} PRIVATE --coverage)
-    endif ()
-endfunction ()
+# Append to modules path
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # ************************************************************************* #
 
@@ -90,7 +72,7 @@ if (SHARD_BUILD_TESTS)
         add_executable(${NAME} ${ARG_SOURCES})
 
         set_target_properties(${NAME} PROPERTIES
-            CXX_STANDARD 14
+            CXX_STANDARD 17
             CXX_STANDARD_REQUIRED On
             CXX_EXTENSIONS Off
         )
