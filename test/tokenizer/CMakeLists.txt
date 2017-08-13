@@ -36,7 +36,12 @@ target_link_libraries(shard-tokenizer_test
     PRIVATE gtest_main
 )
 
-target_coverage(shard-tokenizer_test)
+if (SHARD_COVERAGE)
+    include(Coverage)
+    target_coverage(shard-tokenizer_test)
+endif ()
+
+# ************************************************************************* #
 
 add_test(shard-tokenizer_test shard-tokenizer_test)
 

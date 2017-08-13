@@ -35,7 +35,12 @@ target_link_libraries(shard-parser_test
     PRIVATE gtest_main
 )
 
-target_coverage(shard-parser_test)
+if (SHARD_COVERAGE)
+    include(Coverage)
+    target_coverage(shard-parser_test)
+endif ()
+
+# ************************************************************************* #
 
 add_test(shard-parser_test shard-parser_test)
 

@@ -52,6 +52,11 @@ add_subdirectory(src)
 # Add tools
 add_subdirectory(tools)
 
+# ************************************************************************* #
+
+# CTest support
+enable_testing()
+
 # Add shard tests
 add_subdirectory(test)
 

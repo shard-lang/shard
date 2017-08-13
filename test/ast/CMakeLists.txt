@@ -38,7 +38,12 @@ target_link_libraries(shard-ast_test
     PRIVATE gtest_main
 )
 
-target_coverage(shard-ast_test)
+if (SHARD_COVERAGE)
+    include(Coverage)
+    target_coverage(shard-ast_test)
+endif ()
+
+# ************************************************************************* #
 
 add_test(shard-ast_test shard-ast_test)
 

@@ -28,11 +28,6 @@ endif ()
 
 # ************************************************************************* #
 
-# CTest support
-enable_testing()
-
-# ************************************************************************* #
-
 # Create test executable
 add_executable(shard-core_test
     SourceLocation.cpp
@@ -49,20 +44,19 @@ target_link_libraries(shard-core_test
     PRIVATE gtest_main
 )
 
-target_coverage(shard-core_test)
+if (SHARD_COVERAGE)
+    include(Coverage)
+    target_coverage(shard-core_test)
+endif ()
+
+# ************************************************************************* #
 
 add_test(shard-core_test shard-core_test)
 
 # ************************************************************************* #
 
 add_subdirectory(tokenizer)
-
-if (SHARD_BUILD_AST)
-    add_subdirectory(ast)
-endif ()
-
-if (SHARD_BUILD_PARSER)
-    add_subdirectory(parser)
-endif ()
+add_subdirectory(ast)
+add_subdirectory(parser)
 
 # ************************************************************************* #
