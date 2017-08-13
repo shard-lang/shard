@@ -38,7 +38,7 @@ matrix:
 install:
     - docker build -t shard --build-arg PKG=$PKG --build-arg CC=$CC --build-arg CXX=$CXX .
     - mkdir -p ${TRAVIS_BUILD_DIR}/build
-    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard -v ${TRAVIS_BUILD_DIR}/build:/opt/build shard cmake -DCMAKE_BUILD_TYPE=release -DSHARD_BUILD_TESTS=On ${TRAVIS_BUILD_DIR}
+    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard -v ${TRAVIS_BUILD_DIR}/build:/opt/build shard cmake -DCMAKE_BUILD_TYPE=release -DSHARD_BUILD_TESTS=On "/opt/shard"
 
 script:
     - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard -v ${TRAVIS_BUILD_DIR}/build:/opt/build shard cmake --build .
