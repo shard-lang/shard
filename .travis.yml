@@ -31,33 +31,17 @@ matrix:
     include:
         - compiler: gcc
           env:
-            - CC=gcc-5
-            - CXX=g++-5
-            - PKG=g++-5
-        - compiler: clang
-          env:
-            - CC=clang-3.6
-            - CXX=clang++-3.6
-            - PKG=clang-3.6
-        - compiler: clang
-          env:
-            - CC=clang-3.7
-            - CXX=clang++-3.7
-            - PKG=clang-3.7
-        - compiler: clang
-          env:
-            - CC=clang-3.8
-            - CXX=clang++-3.8
-            - PKG=clang-3.8
+            - CC=gcc-7
+            - CXX=g++-7
+            - PKG=g++-7
 
 install:
     - docker build -t shard --build-arg PKG=$PKG --build-arg CC=$CC --build-arg CXX=$CXX .
     - mkdir -p ${TRAVIS_BUILD_DIR}/build
-    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard shard ls -la /opt/shard
-    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard shard cmake -DCMAKE_BUILD_TYPE=release -DSHARD_BUILD_TESTS=On ..
+    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard -v ${TRAVIS_BUILD_DIR}/build:/opt/build shard cmake -DCMAKE_BUILD_TYPE=release -DSHARD_BUILD_TESTS=On ${TRAVIS_BUILD_DIR}
 
 script:
-    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard shard cmake --build .
-    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard shard ctest --verbose
+    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard -v ${TRAVIS_BUILD_DIR}/build:/opt/build shard cmake --build .
+    - docker run -v ${TRAVIS_BUILD_DIR}:/opt/shard -v ${TRAVIS_BUILD_DIR}/build:/opt/build shard ctest --verbose
 
 # ######################################################################### #
