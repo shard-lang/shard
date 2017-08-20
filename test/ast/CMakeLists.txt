@@ -22,10 +22,44 @@ endif ()
 
 # Create test executable
 add_executable(shard-ast_test
-    TypeTest.cpp
-    ExprTest.cpp
-    DeclTest.cpp
-    StmtTest.cpp
+    Type_test.cpp
+
+    # Expr
+    BinaryExpr_test.cpp
+    BoolLiteralExpr_test.cpp
+    CharLiteralExpr_test.cpp
+    Expr_test.cpp
+    FloatLiteralExpr_test.cpp
+    FunctionCallExpr_test.cpp
+    IdentifierExpr_test.cpp
+    IntLiteralExpr_test.cpp
+    MemberAccessExpr_test.cpp
+    NullLiteralExpr_test.cpp
+    ParenExpr_test.cpp
+    StringLiteralExpr_test.cpp
+    SubscriptExpr_test.cpp
+    UnaryExpr_test.cpp
+
+    # Decl
+    ClassDecl_test.cpp
+    FunctionDecl_test.cpp
+    NamespaceDecl_test.cpp
+    VariableDecl_test.cpp
+
+    # Stmt
+    BreakStmt_test.cpp
+    CaseStmt_test.cpp
+    CompoundStmt_test.cpp
+    ContinueStmt_test.cpp
+    DeclStmt_test.cpp
+    DefaultStmt_test.cpp
+    DoWhileStmt_test.cpp
+    ExprStmt_test.cpp
+    ForStmt_test.cpp
+    IfStmt_test.cpp
+    ReturnStmt_test.cpp
+    SwitchStmt_test.cpp
+    WhileStmt_test.cpp
 )
 
 # Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
