@@ -27,12 +27,36 @@ endif ()
 
 # Create Shard part
 add_library(shard-ast
-    Decl.cpp
-    Expr.cpp
     Node.cpp
-    Stmt.cpp
     Type.cpp
     Unit.cpp
+
+    # Decl
+    ClassDecl.cpp
+    CompoundDecl.cpp
+    Decl.cpp
+    FunctionDecl.cpp
+    NamespaceDecl.cpp
+    VariableDecl.cpp
+
+    # Stmt
+    BreakStmt.cpp
+    CaseStmt.cpp
+    CompoundStmt.cpp
+    ContinueStmt.cpp
+    DeclStmt.cpp
+    DefaultStmt.cpp
+    DoWhileStmt.cpp
+    ExprStmt.cpp
+    ForStmt.cpp
+    IfStmt.cpp
+    ReturnStmt.cpp
+    Stmt.cpp
+    SwitchStmt.cpp
+    WhileStmt.cpp
+
+    # Expr
+    Expr.cpp
 )
 
 # Include directories

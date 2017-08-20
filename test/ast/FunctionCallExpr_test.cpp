@@ -21,6 +21,7 @@
 #include <limits>
 
 // Shard
+#include "shard/utility.hpp"
 #include "shard/ast/Expr.hpp"
 
 /* ************************************************************************ */

@@ -18,6 +18,7 @@
 #include "shard/ast/Expr.hpp"
 
 // Shard
+#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 
 /* ************************************************************************* */

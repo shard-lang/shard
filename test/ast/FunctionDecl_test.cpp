@@ -18,10 +18,11 @@
 #include "gtest/gtest.h"
 
 // Shard
-#include "shard/ast/Decl.hpp"
+#include "shard/ast/FunctionDecl.hpp"
+#include "shard/ast/VariableDecl.hpp"
 #include "shard/ast/Type.hpp"
 #include "shard/ast/Expr.hpp"
-#include "shard/ast/Stmt.hpp"
+#include "shard/ast/CompoundStmt.hpp"
 
 /* ************************************************************************ */
 

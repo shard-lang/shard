@@ -24,9 +24,9 @@
 #include "shard/tokenizer/Tokenizer.hpp"
 #include "shard/tokenizer/TokenType.hpp"
 #include "shard/ast/Unit.hpp"
-#include "shard/ast/Stmt.hpp"
+#include "shard/ast/Stmts.hpp"
 #include "shard/ast/Expr.hpp"
-#include "shard/ast/Decl.hpp"
+#include "shard/ast/Decls.hpp"
 #include "shard/ast/Type.hpp"
 #include "shard/parser/ParserException.hpp"
 

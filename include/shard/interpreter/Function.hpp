@@ -21,7 +21,7 @@
 // Shard
 #include "shard/utility.hpp"
 #include "shard/ViewPtr.hpp"
-#include "shard/ast/Decl.hpp"
+#include "shard/ast/FunctionDecl.hpp"
 
 /* ************************************************************************* */
 

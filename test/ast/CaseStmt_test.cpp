@@ -18,9 +18,10 @@
 #include "gtest/gtest.h"
 
 // Shard
-#include "shard/ast/Stmt.hpp"
+#include "shard/ast/CaseStmt.hpp"
+#include "shard/ast/BreakStmt.hpp"
+#include "shard/ast/ExprStmt.hpp"
 #include "shard/ast/Expr.hpp"
-#include "shard/ast/Decl.hpp"
 
 /* ************************************************************************ */
 

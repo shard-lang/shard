@@ -18,76 +18,9 @@
 
 /* ************************************************************************* */
 
-// Shard
-#include "shard/Assert.hpp"
-#include "shard/ViewPtr.hpp"
-#include "shard/UniquePtr.hpp"
-#include "shard/utility.hpp"
-#include "shard/SourceLocation.hpp"
-#include "shard/SourceRange.hpp"
-
-/* ************************************************************************* */
-
 namespace shard {
 inline namespace v1 {
 namespace ast {
-
-
-/* ************************************************************************* */
-
-/**
- * @brief      Helper class for storing location in source code.
- */
-class NodeBase
-{
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      range  Source range.
-     */
-    NodeBase(SourceRange range) noexcept;
-
-
-// Public Accessors & Mutators
-public:
-
-
-    /**
-     * @brief      Returns source range.
-     *
-     * @return     The source range.
-     */
-    const SourceRange& getSourceRange() const noexcept;
-
-
-    /**
-     * @brief      Returns source range start.
-     *
-     * @return     The source start.
-     */
-    const SourceLocation& getSourceStart() const noexcept;
-
-
-    /**
-     * @brief      Returns source range end.
-     *
-     * @return     The source end.
-     */
-    const SourceLocation& getSourceEnd() const noexcept;
-
-
-// Private Data Members
-private:
-
-    /// Source range.
-    SourceRange m_range;
-
-};
 
 /* ************************************************************************* */
 
@@ -171,35 +104,6 @@ constexpr bool operator==(Kind kind, KindRange<Kind> rng);
 
 /* ************************************************************************* */
 /* ************************************************************************* */
-/* ************************************************************************* */
-
-inline NodeBase::NodeBase(SourceRange range) noexcept
-    : m_range(moveValue(range))
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-inline const SourceRange& NodeBase::getSourceRange() const noexcept
-{
-    return m_range;
-}
-
-/* ************************************************************************* */
-
-inline const SourceLocation& NodeBase::getSourceStart() const noexcept
-{
-    return getSourceRange().getStart();
-}
-
-/* ************************************************************************* */
-
-inline const SourceLocation& NodeBase::getSourceEnd() const noexcept
-{
-    return getSourceRange().getEnd();
-}
-
 /* ************************************************************************* */
 
 template<typename Kind>
