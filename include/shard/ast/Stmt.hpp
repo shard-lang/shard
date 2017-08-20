@@ -86,10 +86,7 @@ public:
      *
      * @return     Statement kind.
      */
-    StmtKind getKind() const noexcept
-    {
-        return m_kind;
-    }
+    StmtKind getKind() const noexcept;
 
 
 // Public Operations
@@ -104,10 +101,7 @@ public:
      * @return     Returns `true` if this is `StmtType`, `false` otherwise.
      */
     template<typename StmtType>
-    bool is() const noexcept
-    {
-        return getKind() == StmtType::Kind;
-    }
+    bool is() const noexcept;
 
 
     /**
@@ -118,11 +112,7 @@ public:
      * @return     Reference to required statement type.
      */
     template<typename StmtType>
-    StmtType& cast() noexcept
-    {
-        SHARD_ASSERT(is<StmtType>());
-        return static_cast<StmtType&>(*this);
-    }
+    StmtType& cast() noexcept;
 
 
     /**
@@ -133,11 +123,7 @@ public:
      * @return     Reference to required statement type.
      */
     template<typename StmtType>
-    const StmtType& cast() const noexcept
-    {
-        SHARD_ASSERT(is<StmtType>());
-        return static_cast<const StmtType&>(*this);
-    }
+    const StmtType& cast() const noexcept;
 
 
 // Protected Ctors & Dtors
@@ -208,10 +194,7 @@ public:
      *
      * @return     Expression.
      */
-    ViewPtr<Expr> getExpr() noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<Expr> getExpr() noexcept;
 
 
     /**
@@ -219,10 +202,7 @@ public:
      *
      * @return     Expression.
      */
-    ViewPtr<const Expr> getExpr() const noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<const Expr> getExpr() const noexcept;
 
 
     /**
@@ -303,10 +283,7 @@ public:
      *
      * @return     Declaration.
      */
-    ViewPtr<Decl> getDecl() noexcept
-    {
-        return makeView(m_decl);
-    }
+    ViewPtr<Decl> getDecl() noexcept;
 
 
     /**
@@ -314,11 +291,7 @@ public:
      *
      * @return     Declaration.
      */
-    ViewPtr<const Decl> getDecl() const noexcept
-    {
-        return makeView(m_decl);
-    }
-
+    ViewPtr<const Decl> getDecl() const noexcept;
 
     /**
      * @brief      Change declaration.
@@ -398,10 +371,7 @@ public:
      *
      * @return     The statements.
      */
-    const PtrDynamicArray<Stmt>& getStmts() const noexcept
-    {
-        return m_statements;
-    }
+    const PtrDynamicArray<Stmt>& getStmts() const noexcept;
 
 
     /**
@@ -492,10 +462,7 @@ public:
      *
      * @return     Condition expression.
      */
-    ViewPtr<Expr> getCondExpr() noexcept
-    {
-        return makeView(m_condExpr);
-    }
+    ViewPtr<Expr> getCondExpr() noexcept;
 
 
     /**
@@ -503,10 +470,7 @@ public:
      *
      * @return     Condition expression.
      */
-    ViewPtr<const Expr> getCondExpr() const noexcept
-    {
-        return makeView(m_condExpr);
-    }
+    ViewPtr<const Expr> getCondExpr() const noexcept;
 
 
     /**
@@ -522,10 +486,7 @@ public:
      *
      * @return     Then branch statement.
      */
-    ViewPtr<Stmt> getThenStmt() noexcept
-    {
-        return makeView(m_thenStmt);
-    }
+    ViewPtr<Stmt> getThenStmt() noexcept;
 
 
     /**
@@ -533,10 +494,7 @@ public:
      *
      * @return     Then branch statement.
      */
-    ViewPtr<const Stmt> getThenStmt() const noexcept
-    {
-        return makeView(m_thenStmt);
-    }
+    ViewPtr<const Stmt> getThenStmt() const noexcept;
 
 
     /**
@@ -552,10 +510,7 @@ public:
      *
      * @return     Else branch statement.
      */
-    ViewPtr<Stmt> getElseStmt() noexcept
-    {
-        return makeView(m_elseStmt);
-    }
+    ViewPtr<Stmt> getElseStmt() noexcept;
 
 
     /**
@@ -563,10 +518,7 @@ public:
      *
      * @return     Else branch statement.
      */
-    ViewPtr<const Stmt> getElseStmt() const noexcept
-    {
-        return makeView(m_elseStmt);
-    }
+    ViewPtr<const Stmt> getElseStmt() const noexcept;
 
 
     /**
@@ -655,10 +607,7 @@ public:
      *
      * @return     Expression.
      */
-    ViewPtr<Expr> getCondExpr() noexcept
-    {
-        return makeView(m_condExpr);
-    }
+    ViewPtr<Expr> getCondExpr() noexcept;
 
 
     /**
@@ -666,10 +615,7 @@ public:
      *
      * @return     Expression.
      */
-    ViewPtr<const Expr> getCondExpr() const noexcept
-    {
-        return makeView(m_condExpr);
-    }
+    ViewPtr<const Expr> getCondExpr() const noexcept;
 
 
     /**
@@ -685,10 +631,7 @@ public:
      *
      * @return     Body statement.
      */
-    ViewPtr<Stmt> getBodyStmt() noexcept
-    {
-        return makeView(m_bodyStmt);
-    }
+    ViewPtr<Stmt> getBodyStmt() noexcept;
 
 
     /**
@@ -696,10 +639,7 @@ public:
      *
      * @return     Body statement.
      */
-    ViewPtr<const Stmt> getBodyStmt() const noexcept
-    {
-        return makeView(m_bodyStmt);
-    }
+    ViewPtr<const Stmt> getBodyStmt() const noexcept;
 
 
     /**
@@ -784,10 +724,7 @@ public:
      *
      * @return     Expression.
      */
-    ViewPtr<Expr> getCondExpr() noexcept
-    {
-        return makeView(m_condExpr);
-    }
+    ViewPtr<Expr> getCondExpr() noexcept;
 
 
     /**
@@ -795,10 +732,7 @@ public:
      *
      * @return     Expression.
      */
-    ViewPtr<const Expr> getCondExpr() const noexcept
-    {
-        return makeView(m_condExpr);
-    }
+    ViewPtr<const Expr> getCondExpr() const noexcept;
 
 
     /**
@@ -814,10 +748,7 @@ public:
      *
      * @return     Body statement.
      */
-    ViewPtr<CompoundStmt> getBodyStmt() noexcept
-    {
-        return makeView(m_bodyStmt);
-    }
+    ViewPtr<CompoundStmt> getBodyStmt() noexcept;
 
 
     /**
@@ -825,10 +756,7 @@ public:
      *
      * @return     Body statement.
      */
-    ViewPtr<const CompoundStmt> getBodyStmt() const noexcept
-    {
-        return makeView(m_bodyStmt);
-    }
+    ViewPtr<const CompoundStmt> getBodyStmt() const noexcept;
 
 
     /**
@@ -916,10 +844,7 @@ public:
      *
      * @return     Initialization statement.
      */
-    ViewPtr<Stmt> getInitStmt() noexcept
-    {
-        return makeView(m_initStmt);
-    }
+    ViewPtr<Stmt> getInitStmt() noexcept;
 
 
     /**
@@ -927,10 +852,7 @@ public:
      *
      * @return     Initialization statement.
      */
-    ViewPtr<const Stmt> getInitStmt() const noexcept
-    {
-        return makeView(m_initStmt);
-    }
+    ViewPtr<const Stmt> getInitStmt() const noexcept;
 
 
     /**
@@ -946,10 +868,7 @@ public:
      *
      * @return     Condition epxression.
      */
-    ViewPtr<Expr> getCondExpr() noexcept
-    {
-        return makeView(m_condExpr);
-    }
+    ViewPtr<Expr> getCondExpr() noexcept;
 
 
     /**
@@ -957,10 +876,7 @@ public:
      *
      * @return     Condition epxression.
      */
-    ViewPtr<const Expr> getCondExpr() const noexcept
-    {
-        return makeView(m_condExpr);
-    }
+    ViewPtr<const Expr> getCondExpr() const noexcept;
 
 
     /**
@@ -976,10 +892,7 @@ public:
      *
      * @return     Increment expression.
      */
-    ViewPtr<Expr> getIncExpr() noexcept
-    {
-        return makeView(m_incExpr);
-    }
+    ViewPtr<Expr> getIncExpr() noexcept;
 
 
     /**
@@ -987,10 +900,7 @@ public:
      *
      * @return     Increment expression.
      */
-    ViewPtr<const Expr> getIncExpr() const noexcept
-    {
-        return makeView(m_incExpr);
-    }
+    ViewPtr<const Expr> getIncExpr() const noexcept;
 
 
     /**
@@ -1006,10 +916,7 @@ public:
      *
      * @return     Body statement.
      */
-    ViewPtr<Stmt> getBodyStmt() noexcept
-    {
-        return makeView(m_bodyStmt);
-    }
+    ViewPtr<Stmt> getBodyStmt() noexcept;
 
 
     /**
@@ -1017,10 +924,7 @@ public:
      *
      * @return     Body statement.
      */
-    ViewPtr<const Stmt> getBodyStmt() const noexcept
-    {
-        return makeView(m_bodyStmt);
-    }
+    ViewPtr<const Stmt> getBodyStmt() const noexcept;
 
 
     /**
@@ -1113,10 +1017,7 @@ public:
      *
      * @return     Condition expression.
      */
-    ViewPtr<Expr> getCondExpr() noexcept
-    {
-        return makeView(m_condExpr);
-    }
+    ViewPtr<Expr> getCondExpr() noexcept;
 
 
     /**
@@ -1124,10 +1025,7 @@ public:
      *
      * @return     Condition expression.
      */
-    ViewPtr<const Expr> getCondExpr() const noexcept
-    {
-        return makeView(m_condExpr);
-    }
+    ViewPtr<const Expr> getCondExpr() const noexcept;
 
 
     /**
@@ -1143,10 +1041,7 @@ public:
      *
      * @return     Body statement.
      */
-    ViewPtr<CompoundStmt> getBodyStmt() noexcept
-    {
-        return makeView(m_bodyStmt);
-    }
+    ViewPtr<CompoundStmt> getBodyStmt() noexcept;
 
 
     /**
@@ -1154,10 +1049,7 @@ public:
      *
      * @return     Body statement.
      */
-    ViewPtr<const CompoundStmt> getBodyStmt() const noexcept
-    {
-        return makeView(m_bodyStmt);
-    }
+    ViewPtr<const CompoundStmt> getBodyStmt() const noexcept;
 
 
     /**
@@ -1242,10 +1134,7 @@ public:
      *
      * @return     Condition expression.
      */
-    ViewPtr<Expr> getExpr() noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<Expr> getExpr() noexcept;
 
 
     /**
@@ -1253,10 +1142,7 @@ public:
      *
      * @return     Condition expression.
      */
-    ViewPtr<const Expr> getExpr() const noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<const Expr> getExpr() const noexcept;
 
 
     /**
@@ -1272,10 +1158,7 @@ public:
      *
      * @return     The statements.
      */
-    const PtrDynamicArray<Stmt>& getStmts() const noexcept
-    {
-        return m_statements;
-    }
+    const PtrDynamicArray<Stmt>& getStmts() const noexcept;
 
 
     /**
@@ -1367,10 +1250,7 @@ public:
      *
      * @return     The statements.
      */
-    const PtrDynamicArray<Stmt>& getStmts() const noexcept
-    {
-        return m_statements;
-    }
+    const PtrDynamicArray<Stmt>& getStmts() const noexcept;
 
 
     /**
@@ -1560,10 +1440,7 @@ public:
      *
      * @return     Result expression.
      */
-    ViewPtr<Expr> getResExpr() noexcept
-    {
-        return makeView(m_resExpr);
-    }
+    ViewPtr<Expr> getResExpr() noexcept;
 
 
     /**
@@ -1571,10 +1448,7 @@ public:
      *
      * @return     Result expression.
      */
-    ViewPtr<const Expr> getResExpr() const noexcept
-    {
-        return makeView(m_resExpr);
-    }
+    ViewPtr<const Expr> getResExpr() const noexcept;
 
 
     /**
@@ -1607,6 +1481,300 @@ private:
     UniquePtr<Expr> m_resExpr;
 
 };
+
+/* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+
+inline StmtKind Stmt::getKind() const noexcept
+{
+    return m_kind;
+}
+
+/* ************************************************************************* */
+
+template<typename StmtType>
+inline bool Stmt::is() const noexcept
+{
+    return getKind() == StmtType::Kind;
+}
+
+/* ************************************************************************* */
+
+template<typename StmtType>
+inline StmtType& Stmt::cast() noexcept
+{
+    SHARD_ASSERT(is<StmtType>());
+    return static_cast<StmtType&>(*this);
+}
+
+/* ************************************************************************* */
+
+template<typename StmtType>
+inline const StmtType& Stmt::cast() const noexcept
+{
+    SHARD_ASSERT(is<StmtType>());
+    return static_cast<const StmtType&>(*this);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> ExprStmt::getExpr() noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> ExprStmt::getExpr() const noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Decl> DeclStmt::getDecl() noexcept
+{
+    return makeView(m_decl);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Decl> DeclStmt::getDecl() const noexcept
+{
+    return makeView(m_decl);
+}
+
+/* ************************************************************************* */
+
+inline const PtrDynamicArray<Stmt>& CompoundStmt::getStmts() const noexcept
+{
+    return m_statements;
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> IfStmt::getCondExpr() noexcept
+{
+    return makeView(m_condExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> IfStmt::getCondExpr() const noexcept
+{
+    return makeView(m_condExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Stmt> IfStmt::getThenStmt() noexcept
+{
+    return makeView(m_thenStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Stmt> IfStmt::getThenStmt() const noexcept
+{
+    return makeView(m_thenStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Stmt> IfStmt::getElseStmt() noexcept
+{
+    return makeView(m_elseStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Stmt> IfStmt::getElseStmt() const noexcept
+{
+    return makeView(m_elseStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> WhileStmt::getCondExpr() noexcept
+{
+    return makeView(m_condExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> WhileStmt::getCondExpr() const noexcept
+{
+    return makeView(m_condExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Stmt> WhileStmt::getBodyStmt() noexcept
+{
+    return makeView(m_bodyStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Stmt> WhileStmt::getBodyStmt() const noexcept
+{
+    return makeView(m_bodyStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> DoWhileStmt::getCondExpr() noexcept
+{
+    return makeView(m_condExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> DoWhileStmt::getCondExpr() const noexcept
+{
+    return makeView(m_condExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<CompoundStmt> DoWhileStmt::getBodyStmt() noexcept
+{
+    return makeView(m_bodyStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const CompoundStmt> DoWhileStmt::getBodyStmt() const noexcept
+{
+    return makeView(m_bodyStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Stmt> ForStmt::getInitStmt() noexcept
+{
+    return makeView(m_initStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Stmt> ForStmt::getInitStmt() const noexcept
+{
+    return makeView(m_initStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> ForStmt::getCondExpr() noexcept
+{
+    return makeView(m_condExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> ForStmt::getCondExpr() const noexcept
+{
+    return makeView(m_condExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> ForStmt::getIncExpr() noexcept
+{
+    return makeView(m_incExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> ForStmt::getIncExpr() const noexcept
+{
+    return makeView(m_incExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Stmt> ForStmt::getBodyStmt() noexcept
+{
+    return makeView(m_bodyStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Stmt> ForStmt::getBodyStmt() const noexcept
+{
+    return makeView(m_bodyStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> SwitchStmt::getCondExpr() noexcept
+{
+    return makeView(m_condExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> SwitchStmt::getCondExpr() const noexcept
+{
+    return makeView(m_condExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<CompoundStmt> SwitchStmt::getBodyStmt() noexcept
+{
+    return makeView(m_bodyStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const CompoundStmt> SwitchStmt::getBodyStmt() const noexcept
+{
+    return makeView(m_bodyStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> CaseStmt::getExpr() noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> CaseStmt::getExpr() const noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline const PtrDynamicArray<Stmt>& CaseStmt::getStmts() const noexcept
+{
+    return m_statements;
+}
+
+/* ************************************************************************* */
+
+inline const PtrDynamicArray<Stmt>& DefaultStmt::getStmts() const noexcept
+{
+    return m_statements;
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> ReturnStmt::getResExpr() noexcept
+{
+    return makeView(m_resExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> ReturnStmt::getResExpr() const noexcept
+{
+    return makeView(m_resExpr);
+}
 
 /* ************************************************************************* */
 

@@ -63,10 +63,7 @@ public:
      *
      * @return     The declarations.
      */
-    const PtrDynamicArray<Decl>& getDeclarations() const noexcept
-    {
-        return m_declarations;
-    }
+    const PtrDynamicArray<Decl>& getDeclarations() const noexcept;
 
 
     /**
@@ -92,6 +89,15 @@ private:
     PtrDynamicArray<Decl> m_declarations;
 
 };
+
+/* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+
+inline const PtrDynamicArray<Decl>& Unit::getDeclarations() const noexcept
+{
+    return m_declarations;
+}
 
 /* ************************************************************************* */
 

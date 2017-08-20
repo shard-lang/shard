@@ -114,10 +114,7 @@ public:
      *
      * @return     The declaration kind.
      */
-    DeclKind getKind() const noexcept
-    {
-        return m_kind;
-    }
+    DeclKind getKind() const noexcept;
 
 
     /**
@@ -125,10 +122,7 @@ public:
      *
      * @return     The declaration name.
      */
-    const String& getName() const noexcept
-    {
-        return m_name;
-    }
+    const String& getName() const noexcept;
 
 
     /**
@@ -144,10 +138,7 @@ public:
      *
      * @return     The access specifier.
      */
-    DeclAccessSpecifier getAccessSpecifier() const noexcept
-    {
-        return m_accessSpecifier;
-    }
+    DeclAccessSpecifier getAccessSpecifier() const noexcept;
 
 
     /**
@@ -155,10 +146,7 @@ public:
      *
      * @param      spec  The access specifier.
      */
-    void setAccessSpecifier(DeclAccessSpecifier spec) noexcept
-    {
-        m_accessSpecifier = spec;
-    }
+    void setAccessSpecifier(DeclAccessSpecifier spec) noexcept;
 
 
 // Public Operations
@@ -173,10 +161,7 @@ public:
      * @return     Returns `true` if this is `DeclType`, `false` otherwise.
      */
     template<typename DeclType>
-    bool is() const noexcept
-    {
-        return getKind() == DeclType::Kind;
-    }
+    bool is() const noexcept;
 
 
     /**
@@ -187,11 +172,7 @@ public:
      * @return     Reference to required declaration type.
      */
     template<typename DeclType>
-    DeclType& cast() noexcept
-    {
-        SHARD_ASSERT(is<DeclType>());
-        return static_cast<DeclType&>(*this);
-    }
+    DeclType& cast() noexcept;
 
 
     /**
@@ -202,11 +183,7 @@ public:
      * @return     Reference to required declaration type.
      */
     template<typename DeclType>
-    const DeclType& cast() const noexcept
-    {
-        SHARD_ASSERT(is<DeclType>());
-        return static_cast<const DeclType&>(*this);
-    }
+    const DeclType& cast() const noexcept;
 
 
 // Protected Ctors & Dtors
@@ -223,7 +200,7 @@ protected:
     explicit Decl(DeclKind kind, String name, SourceRange range);
 
 
-    // Private Data Members
+// Private Data Members
 private:
 
     /// Declaration kind.
@@ -285,10 +262,7 @@ public:
      *
      * @return     The variable type.
      */
-    const Type& getType() const noexcept
-    {
-        return m_type;
-    }
+    const Type& getType() const noexcept;
 
 
     /**
@@ -304,10 +278,7 @@ public:
      *
      * @return     The initialization expression.
      */
-    ViewPtr<const Expr> getInitExpr() const noexcept
-    {
-        return makeView(m_initExpr);
-    }
+    ViewPtr<const Expr> getInitExpr() const noexcept;
 
 
     /**
@@ -315,10 +286,7 @@ public:
      *
      * @return     The initialization expression.
      */
-    ViewPtr<Expr> getInitExpr() noexcept
-    {
-        return makeView(m_initExpr);
-    }
+    ViewPtr<Expr> getInitExpr() noexcept;
 
 
     /**
@@ -406,10 +374,7 @@ public:
      *
      * @return     The function return type.
      */
-    const Type& getRetType() const noexcept
-    {
-        return m_retType;
-    }
+    const Type& getRetType() const noexcept;
 
 
     /**
@@ -425,10 +390,7 @@ public:
      *
      * @return     A list of function parameters.
      */
-    const PtrDynamicArray<VariableDecl>& getParameters() const noexcept
-    {
-        return m_parameters;
-    }
+    const PtrDynamicArray<VariableDecl>& getParameters() const noexcept;
 
 
     /**
@@ -444,10 +406,7 @@ public:
      *
      * @return     The function body compound statement.
      */
-    ViewPtr<const CompoundStmt> getBodyStmt() const noexcept
-    {
-        return makeView(m_bodyStmt);
-    }
+    ViewPtr<const CompoundStmt> getBodyStmt() const noexcept;
 
 
     /**
@@ -455,10 +414,7 @@ public:
      *
      * @return     The function body compound statement.
      */
-    ViewPtr<CompoundStmt> getBodyStmt() noexcept
-    {
-        return makeView(m_bodyStmt);
-    }
+    ViewPtr<CompoundStmt> getBodyStmt() noexcept;
 
 
     /**
@@ -529,10 +485,7 @@ public:
      *
      * @return     The declarations.
      */
-    const PtrDynamicArray<Decl>& getDecls() const noexcept
-    {
-        return m_declarations;
-    }
+    const PtrDynamicArray<Decl>& getDecls() const noexcept;
 
 
     /**
@@ -681,6 +634,118 @@ public:
     static UniquePtr<NamespaceDecl> make(String name, PtrDynamicArray<Decl> decls = {}, SourceRange range = {});
 
 };
+
+/* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+
+inline DeclKind Decl::getKind() const noexcept
+{
+    return m_kind;
+}
+
+/* ************************************************************************* */
+
+inline const String& Decl::getName() const noexcept
+{
+    return m_name;
+}
+
+/* ************************************************************************* */
+
+inline DeclAccessSpecifier Decl::getAccessSpecifier() const noexcept
+{
+    return m_accessSpecifier;
+}
+
+/* ************************************************************************* */
+
+inline void Decl::setAccessSpecifier(DeclAccessSpecifier spec) noexcept
+{
+    m_accessSpecifier = spec;
+}
+
+/* ************************************************************************* */
+
+template<typename DeclType>
+inline bool Decl::is() const noexcept
+{
+    return getKind() == DeclType::Kind;
+}
+
+/* ************************************************************************* */
+
+template<typename DeclType>
+inline DeclType& Decl::cast() noexcept
+{
+    SHARD_ASSERT(is<DeclType>());
+    return static_cast<DeclType&>(*this);
+}
+
+/* ************************************************************************* */
+
+template<typename DeclType>
+inline const DeclType& Decl::cast() const noexcept
+{
+    SHARD_ASSERT(is<DeclType>());
+    return static_cast<const DeclType&>(*this);
+}
+
+/* ************************************************************************* */
+
+inline const Type& VariableDecl::getType() const noexcept
+{
+    return m_type;
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> VariableDecl::getInitExpr() const noexcept
+{
+    return makeView(m_initExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> VariableDecl::getInitExpr() noexcept
+{
+    return makeView(m_initExpr);
+}
+
+/* ************************************************************************* */
+
+inline const Type& FunctionDecl::getRetType() const noexcept
+{
+    return m_retType;
+}
+
+/* ************************************************************************* */
+
+inline const PtrDynamicArray<VariableDecl>& FunctionDecl::getParameters() const noexcept
+{
+    return m_parameters;
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const CompoundStmt> FunctionDecl::getBodyStmt() const noexcept
+{
+    return makeView(m_bodyStmt);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<CompoundStmt> FunctionDecl::getBodyStmt() noexcept
+{
+    return makeView(m_bodyStmt);
+}
+
+/* ************************************************************************* */
+
+inline const PtrDynamicArray<Decl>& CompoundDecl::getDecls() const noexcept
+{
+    return m_declarations;
+}
 
 /* ************************************************************************* */
 

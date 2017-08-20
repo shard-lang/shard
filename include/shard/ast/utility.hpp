@@ -36,7 +36,7 @@ namespace ast {
 /* ************************************************************************* */
 
 /**
- * @brief Helper class for storing location in source code.
+ * @brief      Helper class for storing location in source code.
  */
 class NodeBase
 {
@@ -46,14 +46,11 @@ public:
 
 
     /**
-     * @brief Constructor.
-     * @param range Source range.
+     * @brief      Constructor.
+     *
+     * @param      range  Source range.
      */
-    NodeBase(SourceRange range) noexcept
-        : m_range(moveValue(range))
-    {
-        // Nothing to do
-    }
+    NodeBase(SourceRange range) noexcept;
 
 
 // Public Accessors & Mutators
@@ -61,33 +58,27 @@ public:
 
 
     /**
-     * @brief Returns source range.
-     * @return
+     * @brief      Returns source range.
+     *
+     * @return     The source range.
      */
-    const SourceRange& getSourceRange() const noexcept
-    {
-        return m_range;
-    }
+    const SourceRange& getSourceRange() const noexcept;
 
 
     /**
-     * @brief Returns source range start.
-     * @return
+     * @brief      Returns source range start.
+     *
+     * @return     The source start.
      */
-    const SourceLocation& getSourceStart() const noexcept
-    {
-        return getSourceRange().getStart();
-    }
+    const SourceLocation& getSourceStart() const noexcept;
 
 
     /**
-     * @brief Returns source range end.
-     * @return
+     * @brief      Returns source range end.
+     *
+     * @return     The source end.
      */
-    const SourceLocation& getSourceEnd() const noexcept
-    {
-        return getSourceRange().getEnd();
-    }
+    const SourceLocation& getSourceEnd() const noexcept;
 
 
 // Private Data Members
@@ -114,12 +105,7 @@ public:
      * @param      first  The first value.
      * @param      last   The last value.
      */
-    constexpr KindRange(Kind first, Kind last) noexcept
-        : m_first(first)
-        , m_last(last)
-    {
-        // Nothing to do
-    }
+    constexpr KindRange(Kind first, Kind last) noexcept;
 
 
 // Public Accessors & Mutators
@@ -131,10 +117,7 @@ public:
      *
      * @return     The first value.
      */
-    Kind getFirst() const noexcept
-    {
-        return m_first;
-    }
+    Kind getFirst() const noexcept;
 
 
     /**
@@ -142,42 +125,7 @@ public:
      *
      * @return     The last value.
      */
-    Kind getLast() const noexcept
-    {
-        return m_last;
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Compare operator.
-     *
-     * @param      rng   The kind range.
-     * @param      kind  The kind.
-     *
-     * @return     Comparision result.
-     */
-    friend constexpr bool operator==(KindRange rng, Kind kind)
-    {
-        return kind >= rng.getFirst() && kind <= rng.getLast();
-    }
-
-
-    /**
-     * @brief      Compare operator.
-     *
-     * @param      kind  The kind.
-     * @param      rng   The kind range.
-     *
-     * @return     Comparision result.
-     */
-    friend constexpr bool operator==(Kind kind, KindRange rng)
-    {
-        return operator==(rng, kind);
-    }
+    Kind getLast() const noexcept;
 
 
 // Private Data Members
@@ -190,6 +138,109 @@ private:
     Kind m_last;
 
 };
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare operator.
+ *
+ * @param      rng   The kind range.
+ * @param      kind  The kind.
+ *
+ * @tparam     Kind  Kind type.
+ *
+ * @return     Comparision result.
+ */
+template<typename Kind>
+constexpr bool operator==(KindRange<Kind> rng, Kind kind);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Compare operator.
+ *
+ * @param      kind  The kind.
+ * @param      rng   The kind range.
+ *
+ * @tparam     Kind  Kind type.
+ *
+ * @return     Comparision result.
+ */
+template<typename Kind>
+constexpr bool operator==(Kind kind, KindRange<Kind> rng);
+
+/* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+
+inline NodeBase::NodeBase(SourceRange range) noexcept
+    : m_range(moveValue(range))
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+inline const SourceRange& NodeBase::getSourceRange() const noexcept
+{
+    return m_range;
+}
+
+/* ************************************************************************* */
+
+inline const SourceLocation& NodeBase::getSourceStart() const noexcept
+{
+    return getSourceRange().getStart();
+}
+
+/* ************************************************************************* */
+
+inline const SourceLocation& NodeBase::getSourceEnd() const noexcept
+{
+    return getSourceRange().getEnd();
+}
+
+/* ************************************************************************* */
+
+template<typename Kind>
+inline constexpr KindRange<Kind>::KindRange(Kind first, Kind last) noexcept
+    : m_first(first)
+    , m_last(last)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+template<typename Kind>
+inline Kind KindRange<Kind>::getFirst() const noexcept
+{
+    return m_first;
+}
+
+/* ************************************************************************* */
+
+template<typename Kind>
+inline Kind KindRange<Kind>::getLast() const noexcept
+{
+    return m_last;
+}
+
+/* ************************************************************************* */
+
+template<typename Kind>
+inline constexpr bool operator==(KindRange<Kind> rng, Kind kind)
+{
+    return kind >= rng.getFirst() && kind <= rng.getLast();
+}
+
+/* ************************************************************************* */
+
+template<typename Kind>
+inline constexpr bool operator==(Kind kind, KindRange<Kind> rng)
+{
+    return operator==(rng, kind);
+}
 
 /* ************************************************************************* */
 

@@ -92,10 +92,7 @@ public:
      *
      * @return     Expression kind.
      */
-    ExprKind getKind() const noexcept
-    {
-        return m_kind;
-    }
+    ExprKind getKind() const noexcept;
 
 
 // Public Operations
@@ -110,10 +107,7 @@ public:
      * @return     Returns `true` if this is `ExprType`, `false` otherwise.
      */
     template<typename ExprType>
-    bool is() const noexcept
-    {
-        return getKind() == ExprType::Kind;
-    }
+    bool is() const noexcept;
 
 
     /**
@@ -124,11 +118,7 @@ public:
      * @return     Reference to required expression type.
      */
     template<typename ExprType>
-    ExprType& cast() noexcept
-    {
-        SHARD_ASSERT(is<ExprType>());
-        return static_cast<ExprType&>(*this);
-    }
+    ExprType& cast() noexcept;
 
 
     /**
@@ -139,11 +129,7 @@ public:
      * @return     Reference to required expression type.
      */
     template<typename ExprType>
-    const ExprType& cast() const noexcept
-    {
-        SHARD_ASSERT(is<ExprType>());
-        return static_cast<const ExprType&>(*this);
-    }
+    const ExprType& cast() const noexcept;
 
 
 // Protected Ctors & Dtors
@@ -300,10 +286,7 @@ public:
      *
      * @return     Literal value.
      */
-    ValueType getValue() const noexcept
-    {
-        return m_value;
-    }
+    ValueType getValue() const noexcept;
 
 
     /**
@@ -417,10 +400,7 @@ public:
      *
      * @return     Literal value.
      */
-    ValueType getValue() const noexcept
-    {
-        return m_value;
-    }
+    ValueType getValue() const noexcept;
 
 
     /**
@@ -510,10 +490,7 @@ public:
      *
      * @return     Literal value.
      */
-    ValueType getValue() const noexcept
-    {
-        return m_value;
-    }
+    ValueType getValue() const noexcept;
 
 
     /**
@@ -603,10 +580,7 @@ public:
      *
      * @return     Literal value.
      */
-    ValueType getValue() const noexcept
-    {
-        return m_value;
-    }
+    ValueType getValue() const noexcept;
 
 
     /**
@@ -696,10 +670,7 @@ public:
      *
      * @return     Literal value.
      */
-    const ValueType& getValue() const noexcept
-    {
-        return m_value;
-    }
+    const ValueType& getValue() const noexcept;
 
 
     /**
@@ -822,10 +793,7 @@ public:
      *
      * @return     Operation kind.
      */
-    OpKind getOpKind() const noexcept
-    {
-        return m_operator;
-    }
+    OpKind getOpKind() const noexcept;
 
 
     /**
@@ -841,10 +809,7 @@ public:
      *
      * @return     LHS expression.
      */
-    ViewPtr<const Expr> getLhs() const noexcept
-    {
-        return makeView(m_lhs);
-    }
+    ViewPtr<const Expr> getLhs() const noexcept;
 
 
     /**
@@ -852,10 +817,7 @@ public:
      *
      * @return     LHS expression.
      */
-    ViewPtr<Expr> getLhs() noexcept
-    {
-        return makeView(m_lhs);
-    }
+    ViewPtr<Expr> getLhs() noexcept;
 
 
     /**
@@ -871,10 +833,7 @@ public:
      *
      * @return     RHS expression.
      */
-    ViewPtr<const Expr> getRhs() const noexcept
-    {
-        return makeView(m_rhs);
-    }
+    ViewPtr<const Expr> getRhs() const noexcept;
 
 
     /**
@@ -882,10 +841,7 @@ public:
      *
      * @return     RHS expression.
      */
-    ViewPtr<Expr> getRhs() noexcept
-    {
-        return makeView(m_rhs);
-    }
+    ViewPtr<Expr> getRhs() noexcept;
 
 
     /**
@@ -995,10 +951,7 @@ public:
      *
      * @return     Operation kind.
      */
-    OpKind getOpKind() const noexcept
-    {
-        return m_operator;
-    }
+    OpKind getOpKind() const noexcept;
 
 
     /**
@@ -1014,10 +967,7 @@ public:
      *
      * @return     Subexpression.
      */
-    ViewPtr<const Expr> getExpr() const noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<const Expr> getExpr() const noexcept;
 
 
     /**
@@ -1025,10 +975,7 @@ public:
      *
      * @return     Subexpression.
      */
-    ViewPtr<Expr> getExpr() noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<Expr> getExpr() noexcept;
 
 
     /**
@@ -1114,10 +1061,7 @@ public:
      *
      * @return     Condition expression.
      */
-    ViewPtr<const Expr> getCondExpr() const noexcept
-    {
-        return makeView(m_condExpr);
-    }
+    ViewPtr<const Expr> getCondExpr() const noexcept;
 
 
     /**
@@ -1125,10 +1069,7 @@ public:
      *
      * @return     Condition expression.
      */
-    ViewPtr<Expr> getCondExpr() noexcept
-    {
-        return makeView(m_condExpr);
-    }
+    ViewPtr<Expr> getCondExpr() noexcept;
 
 
     /**
@@ -1144,10 +1085,7 @@ public:
      *
      * @return     True expression.
      */
-    ViewPtr<const Expr> getTrueExpr() const noexcept
-    {
-        return makeView(m_trueExpr);
-    }
+    ViewPtr<const Expr> getTrueExpr() const noexcept;
 
 
     /**
@@ -1155,10 +1093,7 @@ public:
      *
      * @return     True expression.
      */
-    ViewPtr<Expr> getTrueExpr() noexcept
-    {
-        return makeView(m_trueExpr);
-    }
+    ViewPtr<Expr> getTrueExpr() noexcept;
 
 
     /**
@@ -1174,10 +1109,7 @@ public:
      *
      * @return     False expression.
      */
-    ViewPtr<const Expr> getFalseExpr() const noexcept
-    {
-        return makeView(m_falseExpr);
-    }
+    ViewPtr<const Expr> getFalseExpr() const noexcept;
 
 
     /**
@@ -1185,10 +1117,7 @@ public:
      *
      * @return     False expression.
      */
-    ViewPtr<Expr> getFalseExpr() noexcept
-    {
-        return makeView(m_falseExpr);
-    }
+    ViewPtr<Expr> getFalseExpr() noexcept;
 
 
     /**
@@ -1197,6 +1126,7 @@ public:
      * @param      expr  The new expression.
      */
     void setFalseExpr(UniquePtr<Expr> expr);
+
 
 // Public Operations
 public:
@@ -1274,10 +1204,7 @@ public:
      *
      * @return     Inner expression.
      */
-    ViewPtr<const Expr> getExpr() const noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<const Expr> getExpr() const noexcept;
 
 
     /**
@@ -1285,10 +1212,7 @@ public:
      *
      * @return     Inner expression.
      */
-    ViewPtr<Expr> getExpr() noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<Expr> getExpr() noexcept;
 
 
     /**
@@ -1367,10 +1291,7 @@ public:
      *
      * @return     Identifier name.
      */
-    const String& getName() const noexcept
-    {
-        return m_name;
-    }
+    const String& getName() const noexcept;
 
 
     /**
@@ -1451,10 +1372,7 @@ public:
      *
      * @return     The evaluation context expression.
      */
-    ViewPtr<const Expr> getExpr() const noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<const Expr> getExpr() const noexcept;
 
 
     /**
@@ -1462,10 +1380,7 @@ public:
      *
      * @return     The evaluation context expression.
      */
-    ViewPtr<Expr> getExpr() noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<Expr> getExpr() noexcept;
 
 
     /**
@@ -1481,11 +1396,7 @@ public:
      *
      * @return     Identifier name.
      */
-    const String& getName() const noexcept
-    {
-        return m_name;
-    }
-
+    const String& getName() const noexcept;
 
     /**
      * @brief      Change identifier name.
@@ -1570,10 +1481,7 @@ public:
      *
      * @return     The callee expression.
      */
-    ViewPtr<const Expr> getExpr() const noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<const Expr> getExpr() const noexcept;
 
 
     /**
@@ -1581,10 +1489,7 @@ public:
      *
      * @return     The callee expression.
      */
-    ViewPtr<Expr> getExpr() noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<Expr> getExpr() noexcept;
 
 
     /**
@@ -1600,10 +1505,7 @@ public:
      *
      * @return     The call arguments.
      */
-    const PtrDynamicArray<Expr>& getArguments() const noexcept
-    {
-        return m_arguments;
-    }
+    const PtrDynamicArray<Expr>& getArguments() const noexcept;
 
 
     /**
@@ -1688,10 +1590,7 @@ public:
      *
      * @return     The callee expression.
      */
-    ViewPtr<const Expr> getExpr() const noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<const Expr> getExpr() const noexcept;
 
 
     /**
@@ -1699,10 +1598,7 @@ public:
      *
      * @return     The callee expression.
      */
-    ViewPtr<Expr> getExpr() noexcept
-    {
-        return makeView(m_expr);
-    }
+    ViewPtr<Expr> getExpr() noexcept;
 
 
     /**
@@ -1718,10 +1614,7 @@ public:
      *
      * @return     The call arguments.
      */
-    const PtrDynamicArray<Expr>& getArguments() const noexcept
-    {
-        return m_arguments;
-    }
+    const PtrDynamicArray<Expr>& getArguments() const noexcept;
 
 
     /**
@@ -1758,6 +1651,258 @@ private:
     PtrDynamicArray<Expr> m_arguments;
 
 };
+
+/* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+
+inline ExprKind Expr::getKind() const noexcept
+{
+    return m_kind;
+}
+
+/* ************************************************************************* */
+
+template<typename ExprType>
+inline bool Expr::is() const noexcept
+{
+    return getKind() == ExprType::Kind;
+}
+
+/* ************************************************************************* */
+
+template<typename ExprType>
+inline ExprType& Expr::cast() noexcept
+{
+    SHARD_ASSERT(is<ExprType>());
+    return static_cast<ExprType&>(*this);
+}
+
+/* ************************************************************************* */
+
+template<typename ExprType>
+inline const ExprType& Expr::cast() const noexcept
+{
+    SHARD_ASSERT(is<ExprType>());
+    return static_cast<const ExprType&>(*this);
+}
+
+/* ************************************************************************* */
+
+inline BoolLiteralExpr::ValueType BoolLiteralExpr::getValue() const noexcept
+{
+    return m_value;
+}
+
+/* ************************************************************************* */
+
+inline IntLiteralExpr::ValueType IntLiteralExpr::getValue() const noexcept
+{
+    return m_value;
+}
+
+/* ************************************************************************* */
+
+inline FloatLiteralExpr::ValueType FloatLiteralExpr::getValue() const noexcept
+{
+    return m_value;
+}
+
+/* ************************************************************************* */
+
+inline CharLiteralExpr::ValueType CharLiteralExpr::getValue() const noexcept
+{
+    return m_value;
+}
+
+/* ************************************************************************* */
+
+inline const StringLiteralExpr::ValueType& StringLiteralExpr::getValue() const noexcept
+{
+    return m_value;
+}
+
+/* ************************************************************************* */
+
+inline BinaryExpr::OpKind BinaryExpr::getOpKind() const noexcept
+{
+    return m_operator;
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> BinaryExpr::getLhs() const noexcept
+{
+    return makeView(m_lhs);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> BinaryExpr::getLhs() noexcept
+{
+    return makeView(m_lhs);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> BinaryExpr::getRhs() const noexcept
+{
+    return makeView(m_rhs);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> BinaryExpr::getRhs() noexcept
+{
+    return makeView(m_rhs);
+}
+
+/* ************************************************************************* */
+
+inline UnaryExpr::OpKind UnaryExpr::getOpKind() const noexcept
+{
+    return m_operator;
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> UnaryExpr::getExpr() const noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> UnaryExpr::getExpr() noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> TernaryExpr::getCondExpr() const noexcept
+{
+    return makeView(m_condExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> TernaryExpr::getCondExpr() noexcept
+{
+    return makeView(m_condExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> TernaryExpr::getTrueExpr() const noexcept
+{
+    return makeView(m_trueExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> TernaryExpr::getTrueExpr() noexcept
+{
+    return makeView(m_trueExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> TernaryExpr::getFalseExpr() const noexcept
+{
+    return makeView(m_falseExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> TernaryExpr::getFalseExpr() noexcept
+{
+    return makeView(m_falseExpr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> ParenExpr::getExpr() const noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> ParenExpr::getExpr() noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline const String& IdentifierExpr::getName() const noexcept
+{
+    return m_name;
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> MemberAccessExpr::getExpr() const noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> MemberAccessExpr::getExpr() noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline const String& MemberAccessExpr::getName() const noexcept
+{
+    return m_name;
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> FunctionCallExpr::getExpr() const noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> FunctionCallExpr::getExpr() noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline const PtrDynamicArray<Expr>& FunctionCallExpr::getArguments() const noexcept
+{
+    return m_arguments;
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Expr> SubscriptExpr::getExpr() const noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<Expr> SubscriptExpr::getExpr() noexcept
+{
+    return makeView(m_expr);
+}
+
+/* ************************************************************************* */
+
+inline const PtrDynamicArray<Expr>& SubscriptExpr::getArguments() const noexcept
+{
+    return m_arguments;
+}
 
 /* ************************************************************************* */
 

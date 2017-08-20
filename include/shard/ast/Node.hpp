@@ -28,7 +28,6 @@ namespace shard {
 inline namespace v1 {
 namespace ast {
 
-
 /* ************************************************************************* */
 
 /**
@@ -46,10 +45,7 @@ public:
      *
      * @return     The source range.
      */
-    const SourceRange& getSourceRange() const noexcept
-    {
-        return m_range;
-    }
+    const SourceRange& getSourceRange() const noexcept;
 
 
     /**
@@ -57,10 +53,7 @@ public:
      *
      * @return     The source start.
      */
-    const SourceLocation& getSourceStart() const noexcept
-    {
-        return getSourceRange().getStart();
-    }
+    const SourceLocation& getSourceStart() const noexcept;
 
 
     /**
@@ -68,10 +61,7 @@ public:
      *
      * @return     The source end.
      */
-    const SourceLocation& getSourceEnd() const noexcept
-    {
-        return getSourceRange().getEnd();
-    }
+    const SourceLocation& getSourceEnd() const noexcept;
 
 
 // Protected Ctors & Dtors
@@ -99,6 +89,29 @@ private:
     SourceRange m_range;
 
 };
+
+/* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+
+inline const SourceRange& Node::getSourceRange() const noexcept
+{
+    return m_range;
+}
+
+/* ************************************************************************* */
+
+inline const SourceLocation& Node::getSourceStart() const noexcept
+{
+    return getSourceRange().getStart();
+}
+
+/* ************************************************************************* */
+
+inline const SourceLocation& Node::getSourceEnd() const noexcept
+{
+    return getSourceRange().getEnd();
+}
 
 /* ************************************************************************* */
 

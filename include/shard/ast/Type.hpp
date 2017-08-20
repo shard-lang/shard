@@ -108,10 +108,7 @@ public:
      *
      * @return     The kind.
      */
-    TypeKind getKind() const noexcept
-    {
-        return m_kind;
-    }
+    TypeKind getKind() const noexcept;
 
 
     /**
@@ -119,10 +116,7 @@ public:
      *
      * @return     True if builtin, False otherwise.
      */
-    bool isBuiltin() const noexcept
-    {
-        return getKind() != TypeKind::Typename;
-    }
+    bool isBuiltin() const noexcept;
 
 
     /**
@@ -130,10 +124,7 @@ public:
      *
      * @return     The name.
      */
-    const String& getName() const noexcept
-    {
-        return m_name;
-    }
+    const String& getName() const noexcept;
 
 
 // Private Data Members
@@ -168,6 +159,33 @@ bool operator==(const Type& lhs, const Type& rhs) noexcept;
  *
  * @return     Comparision result.
  */
+bool operator!=(const Type& lhs, const Type& rhs) noexcept;
+
+/* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+
+inline TypeKind Type::getKind() const noexcept
+{
+    return m_kind;
+}
+
+/* ************************************************************************* */
+
+inline bool Type::isBuiltin() const noexcept
+{
+    return getKind() != TypeKind::Typename;
+}
+
+/* ************************************************************************* */
+
+inline const String& Type::getName() const noexcept
+{
+    return m_name;
+}
+
+/* ************************************************************************* */
+
 inline bool operator!=(const Type& lhs, const Type& rhs) noexcept
 {
     return !operator==(lhs, rhs);
