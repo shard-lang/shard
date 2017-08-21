@@ -14,23 +14,36 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#pragma once
+// GTest
+#include "gtest/gtest.h"
 
-/* ************************************************************************* */
-
-#include "shard/ast/Stmt.hpp"
+// Shard
 #include "shard/ast/stmt/BreakStmt.hpp"
-#include "shard/ast/stmt/CaseStmt.hpp"
-#include "shard/ast/stmt/CompoundStmt.hpp"
-#include "shard/ast/stmt/ContinueStmt.hpp"
-#include "shard/ast/stmt/DeclStmt.hpp"
-#include "shard/ast/stmt/DefaultStmt.hpp"
-#include "shard/ast/stmt/DoWhileStmt.hpp"
-#include "shard/ast/stmt/ExprStmt.hpp"
-#include "shard/ast/stmt/ForStmt.hpp"
-#include "shard/ast/stmt/IfStmt.hpp"
-#include "shard/ast/stmt/ReturnStmt.hpp"
-#include "shard/ast/stmt/SwitchStmt.hpp"
-#include "shard/ast/stmt/WhileStmt.hpp"
 
-/* ************************************************************************* */
+/* ************************************************************************ */
+
+using namespace shard;
+using namespace shard::ast;
+
+/* ************************************************************************ */
+
+TEST(BreakStmt, base)
+{
+    {
+        // break;
+        const BreakStmt stmt;
+
+        EXPECT_EQ(StmtKind::Break, stmt.getKind());
+        EXPECT_TRUE(stmt.is<BreakStmt>());
+    }
+
+    {
+        // break;
+        const auto stmt = BreakStmt::make();
+
+        EXPECT_EQ(StmtKind::Break, stmt->getKind());
+        EXPECT_TRUE(stmt->is<BreakStmt>());
+    }
+}
+
+/* ************************************************************************ */

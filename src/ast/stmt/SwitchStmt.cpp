@@ -14,108 +14,57 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#pragma once
-
-/* ************************************************************************* */
+// Declaration
+#include "shard/ast/stmt/SwitchStmt.hpp"
 
 // Shard
 #include "shard/utility.hpp"
-#include "shard/ViewPtr.hpp"
-#include "shard/ast/decl/FunctionDecl.hpp"
+#include "shard/Assert.hpp"
+#include "shard/ast/Expr.hpp"
+#include "shard/ast/stmt/CompoundStmt.hpp"
 
 /* ************************************************************************* */
 
 namespace shard {
 inline namespace v1 {
-namespace interpreter {
+namespace ast {
 
 /* ************************************************************************* */
 
-/**
- * @brief      Interpreter function description.
- */
-class Function
+SwitchStmt::SwitchStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range)
+    : Stmt(Kind, moveValue(range))
+    , m_condExpr(moveValue(condExpr))
+    , m_bodyStmt(moveValue(bodyStmt))
 {
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      name  The name
-     * @param      decl  The declaration
-     */
-    explicit Function(String name, ViewPtr<const ast::FunctionDecl> decl = nullptr);
-
-
-// Public Accessors & Mutators
-public:
-
-
-    /**
-     * @brief      Returns function name.
-     *
-     * @return     The name.
-     */
-    const String& getName() const noexcept;
-
-
-    /**
-     * @brief      Returns function declaration.
-     *
-     * @return     The declaration or nullptr.
-     */
-    ViewPtr<const ast::FunctionDecl> getDecl() const noexcept;
-
-
-// Private Data Members
-private:
-
-    /// Function name.
-    String m_name;
-
-    /// Function declaration.
-    ViewPtr<const ast::FunctionDecl> m_decl;
-
-};
-
-/* ************************************************************************* */
-
-}
-}
+    SHARD_ASSERT(m_condExpr);
+    SHARD_ASSERT(m_bodyStmt);
 }
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace interpreter {
+SwitchStmt::~SwitchStmt() = default;
 
 /* ************************************************************************* */
 
-inline Function::Function(String name, ViewPtr<const ast::FunctionDecl> decl)
-    : m_name(moveValue(name))
-    , m_decl(decl)
+void SwitchStmt::setCondExpr(UniquePtr<Expr> expr)
 {
-    // Nothing to do
+    SHARD_ASSERT(expr);
+    m_condExpr = moveValue(expr);
 }
 
 /* ************************************************************************* */
 
-inline const String& Function::getName() const noexcept
+void SwitchStmt::setBodyStmt(UniquePtr<CompoundStmt> stmt)
 {
-    return m_name;
+    SHARD_ASSERT(stmt);
+    m_bodyStmt = moveValue(stmt);
 }
 
 /* ************************************************************************* */
 
-inline ViewPtr<const ast::FunctionDecl> Function::getDecl() const noexcept
+UniquePtr<SwitchStmt> SwitchStmt::make(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range)
 {
-    return m_decl;
+    return makeUnique<SwitchStmt>(moveValue(condExpr), moveValue(bodyStmt), moveValue(range));
 }
 
 /* ************************************************************************* */

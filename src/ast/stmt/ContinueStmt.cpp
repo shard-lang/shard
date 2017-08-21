@@ -14,23 +14,41 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#pragma once
+// Declaration
+#include "shard/ast/stmt/ContinueStmt.hpp"
+
+// Shard
+#include "shard/utility.hpp"
 
 /* ************************************************************************* */
 
-#include "shard/ast/Stmt.hpp"
-#include "shard/ast/stmt/BreakStmt.hpp"
-#include "shard/ast/stmt/CaseStmt.hpp"
-#include "shard/ast/stmt/CompoundStmt.hpp"
-#include "shard/ast/stmt/ContinueStmt.hpp"
-#include "shard/ast/stmt/DeclStmt.hpp"
-#include "shard/ast/stmt/DefaultStmt.hpp"
-#include "shard/ast/stmt/DoWhileStmt.hpp"
-#include "shard/ast/stmt/ExprStmt.hpp"
-#include "shard/ast/stmt/ForStmt.hpp"
-#include "shard/ast/stmt/IfStmt.hpp"
-#include "shard/ast/stmt/ReturnStmt.hpp"
-#include "shard/ast/stmt/SwitchStmt.hpp"
-#include "shard/ast/stmt/WhileStmt.hpp"
+namespace shard {
+inline namespace v1 {
+namespace ast {
+
+/* ************************************************************************* */
+
+ContinueStmt::ContinueStmt(SourceRange range)
+    : Stmt(Kind, moveValue(range))
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+ContinueStmt::~ContinueStmt() = default;
+
+/* ************************************************************************* */
+
+UniquePtr<ContinueStmt> ContinueStmt::make(SourceRange range)
+{
+    return makeUnique<ContinueStmt>(moveValue(range));
+}
+
+/* ************************************************************************* */
+
+}
+}
+}
 
 /* ************************************************************************* */

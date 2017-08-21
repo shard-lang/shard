@@ -32,28 +32,28 @@ add_library(shard-ast
     Unit.cpp
 
     # Decl
-    ClassDecl.cpp
-    CompoundDecl.cpp
     Decl.cpp
-    FunctionDecl.cpp
-    NamespaceDecl.cpp
-    VariableDecl.cpp
+    decl/ClassDecl.cpp
+    decl/CompoundDecl.cpp
+    decl/FunctionDecl.cpp
+    decl/NamespaceDecl.cpp
+    decl/VariableDecl.cpp
 
     # Stmt
-    BreakStmt.cpp
-    CaseStmt.cpp
-    CompoundStmt.cpp
-    ContinueStmt.cpp
-    DeclStmt.cpp
-    DefaultStmt.cpp
-    DoWhileStmt.cpp
-    ExprStmt.cpp
-    ForStmt.cpp
-    IfStmt.cpp
-    ReturnStmt.cpp
     Stmt.cpp
-    SwitchStmt.cpp
-    WhileStmt.cpp
+    stmt/BreakStmt.cpp
+    stmt/CaseStmt.cpp
+    stmt/CompoundStmt.cpp
+    stmt/ContinueStmt.cpp
+    stmt/DeclStmt.cpp
+    stmt/DefaultStmt.cpp
+    stmt/DoWhileStmt.cpp
+    stmt/ExprStmt.cpp
+    stmt/ForStmt.cpp
+    stmt/IfStmt.cpp
+    stmt/ReturnStmt.cpp
+    stmt/SwitchStmt.cpp
+    stmt/WhileStmt.cpp
 
     # Expr
     Expr.cpp

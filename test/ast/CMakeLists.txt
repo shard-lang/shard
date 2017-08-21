@@ -25,41 +25,41 @@ add_executable(shard-ast_test
     Type_test.cpp
 
     # Expr
-    BinaryExpr_test.cpp
-    BoolLiteralExpr_test.cpp
-    CharLiteralExpr_test.cpp
     Expr_test.cpp
-    FloatLiteralExpr_test.cpp
-    FunctionCallExpr_test.cpp
-    IdentifierExpr_test.cpp
-    IntLiteralExpr_test.cpp
-    MemberAccessExpr_test.cpp
-    NullLiteralExpr_test.cpp
-    ParenExpr_test.cpp
-    StringLiteralExpr_test.cpp
-    SubscriptExpr_test.cpp
-    UnaryExpr_test.cpp
+    expr/BinaryExpr_test.cpp
+    expr/BoolLiteralExpr_test.cpp
+    expr/CharLiteralExpr_test.cpp
+    expr/FloatLiteralExpr_test.cpp
+    expr/FunctionCallExpr_test.cpp
+    expr/IdentifierExpr_test.cpp
+    expr/IntLiteralExpr_test.cpp
+    expr/MemberAccessExpr_test.cpp
+    expr/NullLiteralExpr_test.cpp
+    expr/ParenExpr_test.cpp
+    expr/StringLiteralExpr_test.cpp
+    expr/SubscriptExpr_test.cpp
+    expr/UnaryExpr_test.cpp
 
     # Decl
-    ClassDecl_test.cpp
-    FunctionDecl_test.cpp
-    NamespaceDecl_test.cpp
-    VariableDecl_test.cpp
+    decl/ClassDecl_test.cpp
+    decl/FunctionDecl_test.cpp
+    decl/NamespaceDecl_test.cpp
+    decl/VariableDecl_test.cpp
 
     # Stmt
-    BreakStmt_test.cpp
-    CaseStmt_test.cpp
-    CompoundStmt_test.cpp
-    ContinueStmt_test.cpp
-    DeclStmt_test.cpp
-    DefaultStmt_test.cpp
-    DoWhileStmt_test.cpp
-    ExprStmt_test.cpp
-    ForStmt_test.cpp
-    IfStmt_test.cpp
-    ReturnStmt_test.cpp
-    SwitchStmt_test.cpp
-    WhileStmt_test.cpp
+    stmt/BreakStmt_test.cpp
+    stmt/CaseStmt_test.cpp
+    stmt/CompoundStmt_test.cpp
+    stmt/ContinueStmt_test.cpp
+    stmt/DeclStmt_test.cpp
+    stmt/DefaultStmt_test.cpp
+    stmt/DoWhileStmt_test.cpp
+    stmt/ExprStmt_test.cpp
+    stmt/ForStmt_test.cpp
+    stmt/IfStmt_test.cpp
+    stmt/ReturnStmt_test.cpp
+    stmt/SwitchStmt_test.cpp
+    stmt/WhileStmt_test.cpp
 )
 
 # Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)

@@ -19,10 +19,10 @@
 /* ************************************************************************* */
 
 #include "shard/ast/Decl.hpp"
-#include "shard/ast/ClassDecl.hpp"
-#include "shard/ast/CompoundDecl.hpp"
-#include "shard/ast/FunctionDecl.hpp"
-#include "shard/ast/NamespaceDecl.hpp"
-#include "shard/ast/VariableDecl.hpp"
+#include "shard/ast/decl/ClassDecl.hpp"
+#include "shard/ast/decl/CompoundDecl.hpp"
+#include "shard/ast/decl/FunctionDecl.hpp"
+#include "shard/ast/decl/NamespaceDecl.hpp"
+#include "shard/ast/decl/VariableDecl.hpp"
 
 /* ************************************************************************* */

@@ -14,23 +14,36 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#pragma once
+// GTest
+#include "gtest/gtest.h"
 
-/* ************************************************************************* */
-
-#include "shard/ast/Stmt.hpp"
-#include "shard/ast/stmt/BreakStmt.hpp"
-#include "shard/ast/stmt/CaseStmt.hpp"
-#include "shard/ast/stmt/CompoundStmt.hpp"
+// Shard
 #include "shard/ast/stmt/ContinueStmt.hpp"
-#include "shard/ast/stmt/DeclStmt.hpp"
-#include "shard/ast/stmt/DefaultStmt.hpp"
-#include "shard/ast/stmt/DoWhileStmt.hpp"
-#include "shard/ast/stmt/ExprStmt.hpp"
-#include "shard/ast/stmt/ForStmt.hpp"
-#include "shard/ast/stmt/IfStmt.hpp"
-#include "shard/ast/stmt/ReturnStmt.hpp"
-#include "shard/ast/stmt/SwitchStmt.hpp"
-#include "shard/ast/stmt/WhileStmt.hpp"
 
-/* ************************************************************************* */
+/* ************************************************************************ */
+
+using namespace shard;
+using namespace shard::ast;
+
+/* ************************************************************************ */
+
+TEST(ContinueStmt, base)
+{
+    {
+        // continue;
+        const ContinueStmt stmt;
+
+        EXPECT_EQ(StmtKind::Continue, stmt.getKind());
+        EXPECT_TRUE(stmt.is<ContinueStmt>());
+    }
+
+    {
+        // continue;
+        const auto stmt = ContinueStmt::make();
+
+        EXPECT_EQ(StmtKind::Continue, stmt->getKind());
+        EXPECT_TRUE(stmt->is<ContinueStmt>());
+    }
+}
+
+/* ************************************************************************ */

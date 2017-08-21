@@ -14,108 +14,62 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#pragma once
-
-/* ************************************************************************* */
+// Declaration
+#include "shard/ast/stmt/CaseStmt.hpp"
 
 // Shard
 #include "shard/utility.hpp"
-#include "shard/ViewPtr.hpp"
-#include "shard/ast/decl/FunctionDecl.hpp"
+#include "shard/Assert.hpp"
+#include "shard/ast/Expr.hpp"
+#include "shard/ast/Stmt.hpp"
 
 /* ************************************************************************* */
 
 namespace shard {
 inline namespace v1 {
-namespace interpreter {
+namespace ast {
 
 /* ************************************************************************* */
 
-/**
- * @brief      Interpreter function description.
- */
-class Function
+CaseStmt::CaseStmt(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> stmts, SourceRange range)
+    : Stmt(Kind, moveValue(range))
+    , m_expr(moveValue(expr))
+    , m_statements(moveValue(stmts))
 {
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      name  The name
-     * @param      decl  The declaration
-     */
-    explicit Function(String name, ViewPtr<const ast::FunctionDecl> decl = nullptr);
-
-
-// Public Accessors & Mutators
-public:
-
-
-    /**
-     * @brief      Returns function name.
-     *
-     * @return     The name.
-     */
-    const String& getName() const noexcept;
-
-
-    /**
-     * @brief      Returns function declaration.
-     *
-     * @return     The declaration or nullptr.
-     */
-    ViewPtr<const ast::FunctionDecl> getDecl() const noexcept;
-
-
-// Private Data Members
-private:
-
-    /// Function name.
-    String m_name;
-
-    /// Function declaration.
-    ViewPtr<const ast::FunctionDecl> m_decl;
-
-};
-
-/* ************************************************************************* */
-
-}
-}
+    SHARD_ASSERT(m_expr);
 }
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace interpreter {
+CaseStmt::~CaseStmt() = default;
 
 /* ************************************************************************* */
 
-inline Function::Function(String name, ViewPtr<const ast::FunctionDecl> decl)
-    : m_name(moveValue(name))
-    , m_decl(decl)
+void CaseStmt::setExpr(UniquePtr<Expr> expr)
 {
-    // Nothing to do
+    SHARD_ASSERT(expr);
+    m_expr = moveValue(expr);
 }
 
 /* ************************************************************************* */
 
-inline const String& Function::getName() const noexcept
+void CaseStmt::setStmts(PtrDynamicArray<Stmt> stmts)
 {
-    return m_name;
+    m_statements = moveValue(stmts);
 }
 
 /* ************************************************************************* */
 
-inline ViewPtr<const ast::FunctionDecl> Function::getDecl() const noexcept
+void CaseStmt::addStmt(UniquePtr<Stmt> stmt)
 {
-    return m_decl;
+    m_statements.push_back(moveValue(stmt));
+}
+
+/* ************************************************************************* */
+
+UniquePtr<CaseStmt> CaseStmt::make(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> stmts, SourceRange range)
+{
+    return makeUnique<CaseStmt>(moveValue(expr), moveValue(stmts), moveValue(range));
 }
 
 /* ************************************************************************* */

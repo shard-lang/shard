@@ -14,108 +14,74 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#pragma once
-
-/* ************************************************************************* */
+// Declaration
+#include "shard/ast/stmt/ForStmt.hpp"
 
 // Shard
 #include "shard/utility.hpp"
-#include "shard/ViewPtr.hpp"
-#include "shard/ast/decl/FunctionDecl.hpp"
+#include "shard/Assert.hpp"
+#include "shard/ast/Expr.hpp"
+#include "shard/ast/Stmt.hpp"
 
 /* ************************************************************************* */
 
 namespace shard {
 inline namespace v1 {
-namespace interpreter {
+namespace ast {
 
 /* ************************************************************************* */
 
-/**
- * @brief      Interpreter function description.
- */
-class Function
+ForStmt::ForStmt(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<Expr> incExpr, UniquePtr<Stmt> bodyStmt, SourceRange range)
+    : Stmt(Kind, moveValue(range))
+    , m_initStmt(moveValue(initStmt))
+    , m_condExpr(moveValue(condExpr))
+    , m_incExpr(moveValue(incExpr))
+    , m_bodyStmt(moveValue(bodyStmt))
 {
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      name  The name
-     * @param      decl  The declaration
-     */
-    explicit Function(String name, ViewPtr<const ast::FunctionDecl> decl = nullptr);
-
-
-// Public Accessors & Mutators
-public:
-
-
-    /**
-     * @brief      Returns function name.
-     *
-     * @return     The name.
-     */
-    const String& getName() const noexcept;
-
-
-    /**
-     * @brief      Returns function declaration.
-     *
-     * @return     The declaration or nullptr.
-     */
-    ViewPtr<const ast::FunctionDecl> getDecl() const noexcept;
-
-
-// Private Data Members
-private:
-
-    /// Function name.
-    String m_name;
-
-    /// Function declaration.
-    ViewPtr<const ast::FunctionDecl> m_decl;
-
-};
-
-/* ************************************************************************* */
-
-}
-}
+    SHARD_ASSERT(m_bodyStmt);
 }
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace interpreter {
+ForStmt::~ForStmt() = default;
 
 /* ************************************************************************* */
 
-inline Function::Function(String name, ViewPtr<const ast::FunctionDecl> decl)
-    : m_name(moveValue(name))
-    , m_decl(decl)
+void ForStmt::setInitStmt(UniquePtr<Stmt> stmt)
 {
-    // Nothing to do
+    SHARD_ASSERT(stmt);
+    m_initStmt = moveValue(stmt);
 }
 
 /* ************************************************************************* */
 
-inline const String& Function::getName() const noexcept
+void ForStmt::setCondExpr(UniquePtr<Expr> expr)
 {
-    return m_name;
+    SHARD_ASSERT(expr);
+    m_condExpr = moveValue(expr);
 }
 
 /* ************************************************************************* */
 
-inline ViewPtr<const ast::FunctionDecl> Function::getDecl() const noexcept
+void ForStmt::setIncExpr(UniquePtr<Expr> expr)
 {
-    return m_decl;
+    SHARD_ASSERT(expr);
+    m_incExpr = moveValue(expr);
+}
+
+/* ************************************************************************* */
+
+void ForStmt::setBodyStmt(UniquePtr<Stmt> stmt)
+{
+    SHARD_ASSERT(stmt);
+    m_bodyStmt = moveValue(stmt);
+}
+
+/* ************************************************************************* */
+
+UniquePtr<ForStmt> ForStmt::make(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<Expr> incExpr, UniquePtr<Stmt> bodyStmt, SourceRange range)
+{
+    return makeUnique<ForStmt>(moveValue(initStmt), moveValue(condExpr), moveValue(incExpr), moveValue(bodyStmt), moveValue(range));
 }
 
 /* ************************************************************************* */
