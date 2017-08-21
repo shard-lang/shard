@@ -40,6 +40,7 @@ add_library(shard-interpreter
     Interpreter.cpp
     Symbol.cpp
     Value.cpp
+    Scope.cpp
 )
 
 # Include directories

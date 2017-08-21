@@ -20,6 +20,7 @@
 
 // Shard
 #include "shard/utility.hpp"
+#include "shard/ViewPtr.hpp"
 #include "shard/interpreter/Value.hpp"
 
 /* ************************************************************************* */
@@ -27,6 +28,10 @@
 namespace shard {
 inline namespace v1 {
 namespace interpreter {
+
+/* ************************************************************************* */
+
+class Scope;
 
 /* ************************************************************************* */
 
@@ -55,13 +60,30 @@ public:
     /**
      * @brief      Constructor.
      *
-     * @param      kind  The symbol kind.
+     * @param      scope  The declaration scope.
+     * @param      kind   The symbol kind.
      */
-    explicit Symbol(SymbolKind kind) noexcept;
+    Symbol(ViewPtr<Scope> scope, SymbolKind kind) noexcept;
 
 
 // Public Accessors & Mutators
 public:
+
+
+    /**
+     * @brief      Returns the declaration scope.
+     *
+     * @return     The declaration scope.
+     */
+    ViewPtr<Scope> getScope() noexcept;
+
+
+    /**
+     * @brief      Returns the declaration scope.
+     *
+     * @return     The declaration scope.
+     */
+    ViewPtr<const Scope> getScope() const noexcept;
 
 
     /**
@@ -99,6 +121,9 @@ public:
 // Private Data Members
 private:
 
+    /// Declaration scope.
+    ViewPtr<Scope> m_scope;
+
     /// Symbol kind.
     SymbolKind m_kind;
 
@@ -120,6 +145,20 @@ private:
 namespace shard {
 inline namespace v1 {
 namespace interpreter {
+
+/* ************************************************************************* */
+
+inline ViewPtr<Scope> Symbol::getScope() noexcept
+{
+    return m_scope;
+}
+
+/* ************************************************************************* */
+
+inline ViewPtr<const Scope> Symbol::getScope() const noexcept
+{
+    return m_scope;
+}
 
 /* ************************************************************************* */
 

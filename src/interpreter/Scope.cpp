@@ -15,12 +15,10 @@
 /* ************************************************************************* */
 
 // Declaration
-#include "shard/interpreter/Context.hpp"
+#include "shard/interpreter/Scope.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/interpreter/Exception.hpp"
-#include "shard/interpreter/Function.hpp"
 
 /* ************************************************************************* */
 
@@ -30,60 +28,40 @@ namespace interpreter {
 
 /* ************************************************************************* */
 
-Context::Context()
+Scope::Scope(ViewPtr<Scope> parent)
+    : m_parent(parent)
 {
-    auto scope = push();
-
-    // TODO: remove
-    auto print = scope->addSymbol("print", SymbolKind::Function);
-    SHARD_ASSERT(print);
-    print->setValue(Function("print"));
+    // Nothing to do
 }
 
 /* ************************************************************************* */
 
-ViewPtr<Scope> Context::push(ViewPtr<Scope> parent)
+ViewPtr<Symbol> Scope::findSymbol(StringView name) noexcept
 {
-    if (parent == nullptr)
-        parent = getCurrent();
+    auto it = m_symbols.find(String(name));
 
-    // Create new scope
-    m_scopes.emplace_back(makeUnique<Scope>(parent));
+    if (it != m_symbols.end())
+        return makeView(&(it->second));
 
-    // Get last created
-    m_current = makeView(m_scopes.back());
+    // Search in parent
+    if (m_parent != nullptr)
+        return m_parent->findSymbol(name);
 
-    return m_current;
+    return nullptr;
 }
 
 /* ************************************************************************* */
 
-void Context::pop()
+ViewPtr<Symbol> Scope::addSymbol(String name, SymbolKind kind)
 {
-    if (m_scopes.size() <= 1)
-        throw Exception("Trying to remove last scope");
+    auto it = m_symbols.find(name);
 
-    // Remove scope
-    m_scopes.pop_back();
+    if (it != m_symbols.end())
+        throw Exception("Symbol already defined within this scope");
 
-    // Set new parent
-    m_current = makeView(m_scopes.back());
-}
+    auto res = m_symbols.emplace(moveValue(name), Symbol{this, kind});
 
-/* ************************************************************************* */
-
-ViewPtr<Symbol> Context::findSymbol(StringView name) noexcept
-{
-    SHARD_ASSERT(m_current);
-    return m_current->findSymbol(name);
-}
-
-/* ************************************************************************* */
-
-ViewPtr<Symbol> Context::addSymbol(String name, SymbolKind kind)
-{
-    SHARD_ASSERT(m_current);
-    return m_current->addSymbol(moveValue(name), kind);
+    return makeView(&(res.first->second));
 }
 
 /* ************************************************************************* */

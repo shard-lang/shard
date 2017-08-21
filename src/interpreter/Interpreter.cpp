@@ -31,8 +31,18 @@
 
 /* ************************************************************************* */
 
-//#define PRINT_CALL printf("%s\n", __PRETTY_FUNCTION__);
-#define PRINT_CALL
+//#define DEBUG_PRINT
+
+/* ************************************************************************* */
+
+#ifdef DEBUG_PRINT
+int g_indent = 0;
+#define CALL_PUSH printf("%*s%s\n", g_indent, "", __PRETTY_FUNCTION__); ++g_indent
+# define CALL_POP --g_indent
+#else
+# define CALL_PUSH
+# define CALL_POP
+#endif
 
 /* ************************************************************************* */
 
@@ -49,9 +59,11 @@ namespace {
 void interpretExprStmt(ViewPtr<const ast::ExprStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
     interpret(stmt->getExpr(), ctx);
+
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -59,7 +71,7 @@ void interpretExprStmt(ViewPtr<const ast::ExprStmt> stmt, Context& ctx)
 void interpretDeclStmt(ViewPtr<const ast::DeclStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
     // Get declaration
     const auto& decl = stmt->getDecl();
@@ -76,6 +88,8 @@ void interpretDeclStmt(ViewPtr<const ast::DeclStmt> stmt, Context& ctx)
 
     if (varDecl.getInitExpr())
         var->setValue(interpret(varDecl.getInitExpr(), ctx));
+
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -83,7 +97,7 @@ void interpretDeclStmt(ViewPtr<const ast::DeclStmt> stmt, Context& ctx)
 void interpretCompoundStmt(ViewPtr<const ast::CompoundStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
     ctx.push();
 
@@ -91,6 +105,8 @@ void interpretCompoundStmt(ViewPtr<const ast::CompoundStmt> stmt, Context& ctx)
         interpret(makeView(s), ctx);
 
     ctx.pop();
+
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -98,8 +114,9 @@ void interpretCompoundStmt(ViewPtr<const ast::CompoundStmt> stmt, Context& ctx)
 void interpretIfStmt(ViewPtr<const ast::IfStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -107,8 +124,9 @@ void interpretIfStmt(ViewPtr<const ast::IfStmt> stmt, Context& ctx)
 void interpretWhileStmt(ViewPtr<const ast::WhileStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -116,8 +134,9 @@ void interpretWhileStmt(ViewPtr<const ast::WhileStmt> stmt, Context& ctx)
 void interpretDoWhileStmt(ViewPtr<const ast::DoWhileStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -125,8 +144,9 @@ void interpretDoWhileStmt(ViewPtr<const ast::DoWhileStmt> stmt, Context& ctx)
 void interpretForStmt(ViewPtr<const ast::ForStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -134,8 +154,9 @@ void interpretForStmt(ViewPtr<const ast::ForStmt> stmt, Context& ctx)
 void interpretSwitchStmt(ViewPtr<const ast::SwitchStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -143,8 +164,9 @@ void interpretSwitchStmt(ViewPtr<const ast::SwitchStmt> stmt, Context& ctx)
 void interpretCaseStmt(ViewPtr<const ast::CaseStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -152,8 +174,9 @@ void interpretCaseStmt(ViewPtr<const ast::CaseStmt> stmt, Context& ctx)
 void interpretDefaultStmt(ViewPtr<const ast::DefaultStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -161,8 +184,9 @@ void interpretDefaultStmt(ViewPtr<const ast::DefaultStmt> stmt, Context& ctx)
 void interpretContinueStmt(ViewPtr<const ast::ContinueStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -170,8 +194,9 @@ void interpretContinueStmt(ViewPtr<const ast::ContinueStmt> stmt, Context& ctx)
 void interpretBreakStmt(ViewPtr<const ast::BreakStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -179,14 +204,16 @@ void interpretBreakStmt(ViewPtr<const ast::BreakStmt> stmt, Context& ctx)
 void interpretReturnStmt(ViewPtr<const ast::ReturnStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
     // Evaluate return expr
     auto ret = interpret(stmt->getResExpr(), ctx);
 
-    auto retSym = ctx.findSymbol("return");
+    auto retSym = ctx.findSymbol("#return");
     SHARD_ASSERT(retSym);
     retSym->setValue(moveValue(ret));
+
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -194,8 +221,9 @@ void interpretReturnStmt(ViewPtr<const ast::ReturnStmt> stmt, Context& ctx)
 Value interpretNullLiteralExpr(ViewPtr<const ast::NullLiteralExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
     return {};
 }
 
@@ -204,8 +232,9 @@ Value interpretNullLiteralExpr(ViewPtr<const ast::NullLiteralExpr> expr, Context
 Value interpretBoolLiteralExpr(ViewPtr<const ast::BoolLiteralExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
     return Value(expr->getValue());
 }
 
@@ -214,8 +243,9 @@ Value interpretBoolLiteralExpr(ViewPtr<const ast::BoolLiteralExpr> expr, Context
 Value interpretIntLiteralExpr(ViewPtr<const ast::IntLiteralExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
     return Value(expr->getValue());
 }
 
@@ -224,8 +254,9 @@ Value interpretIntLiteralExpr(ViewPtr<const ast::IntLiteralExpr> expr, Context& 
 Value interpretFloatLiteralExpr(ViewPtr<const ast::FloatLiteralExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
     return Value(expr->getValue());
 }
 
@@ -234,8 +265,9 @@ Value interpretFloatLiteralExpr(ViewPtr<const ast::FloatLiteralExpr> expr, Conte
 Value interpretCharLiteralExpr(ViewPtr<const ast::CharLiteralExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
     return Value(expr->getValue());
 }
 
@@ -244,8 +276,9 @@ Value interpretCharLiteralExpr(ViewPtr<const ast::CharLiteralExpr> expr, Context
 Value interpretStringLiteralExpr(ViewPtr<const ast::StringLiteralExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
     return Value(expr->getValue());
 }
 
@@ -254,11 +287,13 @@ Value interpretStringLiteralExpr(ViewPtr<const ast::StringLiteralExpr> expr, Con
 Value interpretBinaryExpr(ViewPtr<const ast::BinaryExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
     // Evaluate operands
     auto lhs = interpret(expr->getLhs(), ctx);
     auto rhs = interpret(expr->getRhs(), ctx);
+
+    CALL_POP;
 
     switch (expr->getOpKind())
     {
@@ -298,10 +333,12 @@ Value interpretBinaryExpr(ViewPtr<const ast::BinaryExpr> expr, Context& ctx)
 Value interpretUnaryExpr(ViewPtr<const ast::UnaryExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
     // Evaluate
     auto res = interpret(expr->getExpr(), ctx);
+
+    CALL_POP;
 
     switch (expr->getOpKind())
     {
@@ -322,8 +359,9 @@ Value interpretUnaryExpr(ViewPtr<const ast::UnaryExpr> expr, Context& ctx)
 Value interpretTernaryExpr(ViewPtr<const ast::TernaryExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
     return {};
 }
 
@@ -332,9 +370,12 @@ Value interpretTernaryExpr(ViewPtr<const ast::TernaryExpr> expr, Context& ctx)
 Value interpretParenExpr(ViewPtr<const ast::ParenExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
-    return interpret(expr->getExpr(), ctx);
+    auto value = interpret(expr->getExpr(), ctx);
+
+    CALL_POP;
+    return value;
 }
 
 /* ************************************************************************* */
@@ -342,7 +383,7 @@ Value interpretParenExpr(ViewPtr<const ast::ParenExpr> expr, Context& ctx)
 Value interpretIdentifierExpr(ViewPtr<const ast::IdentifierExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
     // Try to find required symbol
     auto sym = ctx.findSymbol(expr->getName());
@@ -350,6 +391,7 @@ Value interpretIdentifierExpr(ViewPtr<const ast::IdentifierExpr> expr, Context& 
     if (sym == nullptr)
         throw Exception("Symbol '" + expr->getName() + "' not defined in within current scope");
 
+    CALL_POP;
     return sym->getValue();
 }
 
@@ -358,7 +400,7 @@ Value interpretIdentifierExpr(ViewPtr<const ast::IdentifierExpr> expr, Context& 
 Value interpretFunctionCallExpr(ViewPtr<const ast::FunctionCallExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
     // Evaluate expr before arguments
     auto res = interpret(expr->getExpr(), ctx);
@@ -391,6 +433,7 @@ Value interpretFunctionCallExpr(ViewPtr<const ast::FunctionCallExpr> expr, Conte
 
         printf("\n");
 
+        CALL_POP;
         return {};
     }
 
@@ -398,12 +441,16 @@ Value interpretFunctionCallExpr(ViewPtr<const ast::FunctionCallExpr> expr, Conte
         throw Exception("Missing function declaration");
 
     // FIXME: Function context
+    auto scope = ctx.findSymbol(fn.getName());
+
+    if (scope == nullptr)
+        throw Exception("Unknown function declaration scope");
 
     // Arguments context
-    ctx.push();
+    ctx.push(scope->getScope());
 
     // Return value
-    auto retSym = ctx.addSymbol("return", SymbolKind::Variable);
+    auto retSym = ctx.addSymbol("#return", SymbolKind::Variable);
 
     // Parameters & Arguments
     const auto& params = fn.getDecl()->getParameters();
@@ -429,6 +476,7 @@ Value interpretFunctionCallExpr(ViewPtr<const ast::FunctionCallExpr> expr, Conte
 
     ctx.pop();
 
+    CALL_POP;
     return ret;
 }
 
@@ -437,8 +485,9 @@ Value interpretFunctionCallExpr(ViewPtr<const ast::FunctionCallExpr> expr, Conte
 Value interpretMemberAccessExpr(ViewPtr<const ast::MemberAccessExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
     return {};
 }
 
@@ -447,8 +496,9 @@ Value interpretMemberAccessExpr(ViewPtr<const ast::MemberAccessExpr> expr, Conte
 Value interpretSubscriptExpr(ViewPtr<const ast::SubscriptExpr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
+    CALL_POP;
     return {};
 }
 
@@ -461,7 +511,7 @@ Value interpretSubscriptExpr(ViewPtr<const ast::SubscriptExpr> expr, Context& ct
 void interpret(ViewPtr<const ast::Unit> unit, Context& ctx)
 {
     SHARD_ASSERT(unit);
-    PRINT_CALL;
+    CALL_PUSH;
 
     // Register declarations
     for (const auto& decl : unit->getDeclarations())
@@ -513,6 +563,8 @@ void interpret(ViewPtr<const ast::Unit> unit, Context& ctx)
 
     // Call function
     interpret(mainFn.getDecl()->getBodyStmt(), ctx);
+
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -520,11 +572,13 @@ void interpret(ViewPtr<const ast::Unit> unit, Context& ctx)
 void interpret(ViewPtr<const ast::Unit> unit)
 {
     SHARD_ASSERT(unit);
-    PRINT_CALL;
+    CALL_PUSH;
 
     Context ctx;
 
     interpret(unit, ctx);
+
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -532,7 +586,7 @@ void interpret(ViewPtr<const ast::Unit> unit)
 void interpret(ViewPtr<const ast::Stmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    CALL_PUSH;
 
 #define CASE(name) \
     case ast::StmtKind::name: interpret ## name ## Stmt(&stmt->cast<ast::name ## Stmt>(), ctx); break;
@@ -555,6 +609,8 @@ void interpret(ViewPtr<const ast::Stmt> stmt, Context& ctx)
     }
 
 #undef CASE
+
+    CALL_POP;
 }
 
 /* ************************************************************************* */
@@ -562,7 +618,7 @@ void interpret(ViewPtr<const ast::Stmt> stmt, Context& ctx)
 Value interpret(ViewPtr<const ast::Expr> expr, Context& ctx)
 {
     SHARD_ASSERT(expr);
-    PRINT_CALL;
+    CALL_PUSH;
 
 #define CASE(name) \
     case ast::ExprKind::name: return interpret ## name ## Expr(&expr->cast<ast::name ## Expr>(), ctx);
@@ -587,6 +643,7 @@ Value interpret(ViewPtr<const ast::Expr> expr, Context& ctx)
 
 #undef CASE
 
+    CALL_POP;
     return {};
 }
 

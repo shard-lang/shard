@@ -30,8 +30,9 @@ namespace interpreter {
 
 /* ************************************************************************* */
 
-Symbol::Symbol(SymbolKind kind) noexcept
-    : m_kind(kind)
+Symbol::Symbol(ViewPtr<Scope> scope, SymbolKind kind) noexcept
+    : m_scope(scope)
+    , m_kind(kind)
     , m_value{}
 {
     // Nothing to do

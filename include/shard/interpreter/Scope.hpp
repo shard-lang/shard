@@ -20,9 +20,10 @@
 
 // Shard
 #include "shard/ViewPtr.hpp"
-#include "shard/UniquePtr.hpp"
-#include "shard/DynamicArray.hpp"
-#include "shard/interpreter/Scope.hpp"
+#include "shard/String.hpp"
+#include "shard/StringView.hpp"
+#include "shard/Map.hpp"
+#include "shard/interpreter/Symbol.hpp"
 
 /* ************************************************************************* */
 
@@ -33,9 +34,9 @@ namespace interpreter {
 /* ************************************************************************* */
 
 /**
- * @brief      Shard interpreter context.
+ * @brief      Shard interpreter scope.
  */
-class Context
+class Scope
 {
 
 // Public Ctors & Dtors
@@ -44,8 +45,10 @@ public:
 
     /**
      * @brief      Constructor.
+     *
+     * @param      parent  The optional parent scope.
      */
-    Context();
+    Scope(ViewPtr<Scope> parent = nullptr);
 
 
 // Public Accessors & Mutators
@@ -53,40 +56,23 @@ public:
 
 
     /**
-     * @brief      Returns the current scope.
+     * @brief      Gets the parent scope.
      *
-     * @return     The current scope.
+     * @return     The parent scope.
      */
-    ViewPtr<Scope> getCurrent() noexcept;
+    ViewPtr<Scope> getParent() noexcept;
 
 
     /**
-     * @brief      Returns the current scope.
+     * @brief      Gets the parent scope.
      *
-     * @return     The current scope.
+     * @return     The parent scope.
      */
-    ViewPtr<const Scope> getCurrent() const noexcept;
+    ViewPtr<const Scope> getParent() const noexcept;
 
 
 // Public Operations
 public:
-
-
-    /**
-     * @brief      Push new scope.
-     *
-     * @param      parent  The optional parent scope. If is `nullptr` the
-     *                     current scope is used as parent.
-     *
-     * @return     The new scope.
-     */
-    ViewPtr<Scope> push(ViewPtr<Scope> parent = nullptr);
-
-
-    /**
-     * @brief      Pop current scope.
-     */
-    void pop();
 
 
     /**
@@ -100,7 +86,7 @@ public:
 
 
     /**
-     * @brief      Creates a symbol in the current scope.
+     * @brief      Creates a symbol.
      *
      * @param      name  The symbol name.
      * @param      kind  The symbol kind.
@@ -115,27 +101,28 @@ public:
 // Private Data Members
 private:
 
-    /// Scope based symbol table.
-    DynamicArray<UniquePtr<Scope>> m_scopes;
+    /// Parent scope.
+    ViewPtr<Scope> m_parent;
 
-    /// Current scope.
-    ViewPtr<Scope> m_current;
+    /// Symbols table.
+    Map<String, Symbol> m_symbols;
+
 };
 
 /* ************************************************************************* */
 /* ************************************************************************* */
 /* ************************************************************************* */
 
-inline ViewPtr<Scope> Context::getCurrent() noexcept
+inline ViewPtr<Scope> Scope::getParent() noexcept
 {
-    return m_current;
+    return m_parent;
 }
 
 /* ************************************************************************* */
 
-inline ViewPtr<const Scope> Context::getCurrent() const noexcept
+inline ViewPtr<const Scope> Scope::getParent() const noexcept
 {
-    return m_current;
+    return m_parent;
 }
 
 /* ************************************************************************* */
