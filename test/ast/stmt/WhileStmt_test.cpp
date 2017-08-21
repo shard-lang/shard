@@ -21,8 +21,8 @@
 #include "shard/ast/stmt/WhileStmt.hpp"
 #include "shard/ast/stmt/ExprStmt.hpp"
 #include "shard/ast/stmt/ContinueStmt.hpp"
-#include "shard/ast/Expr.hpp"
-#include "shard/ast/Decl.hpp"
+#include "shard/ast/expr/BoolLiteralExpr.hpp"
+#include "shard/ast/expr/IntLiteralExpr.hpp"
 
 /* ************************************************************************ */
 

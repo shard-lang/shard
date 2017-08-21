@@ -24,7 +24,7 @@
 #include "shard/Assert.hpp"
 #include "shard/ast/Decls.hpp"
 #include "shard/ast/Stmts.hpp"
-#include "shard/ast/Expr.hpp"
+#include "shard/ast/Exprs.hpp"
 #include "shard/ast/Unit.hpp"
 #include "shard/interpreter/Exception.hpp"
 #include "shard/interpreter/Context.hpp"

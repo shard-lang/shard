@@ -21,7 +21,9 @@
 #include <limits>
 
 // Shard
-#include "shard/ast/Expr.hpp"
+#include "shard/ast/expr/MemberAccessExpr.hpp"
+#include "shard/ast/expr/IdentifierExpr.hpp"
+#include "shard/ast/expr/ParenExpr.hpp"
 
 /* ************************************************************************ */
 

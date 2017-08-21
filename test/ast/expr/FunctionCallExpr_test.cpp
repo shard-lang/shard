@@ -22,7 +22,8 @@
 
 // Shard
 #include "shard/utility.hpp"
-#include "shard/ast/Expr.hpp"
+#include "shard/ast/expr/FunctionCallExpr.hpp"
+#include "shard/ast/expr/IdentifierExpr.hpp"
 
 /* ************************************************************************ */
 

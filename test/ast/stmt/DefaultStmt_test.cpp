@@ -21,8 +21,8 @@
 #include "shard/ast/stmt/DefaultStmt.hpp"
 #include "shard/ast/stmt/ExprStmt.hpp"
 #include "shard/ast/stmt/BreakStmt.hpp"
-#include "shard/ast/Expr.hpp"
 #include "shard/ast/Decl.hpp"
+#include "shard/ast/Expr.hpp"
 
 /* ************************************************************************ */
 

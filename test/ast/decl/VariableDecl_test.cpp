@@ -20,8 +20,7 @@
 // Shard
 #include "shard/ast/decl/VariableDecl.hpp"
 #include "shard/ast/Type.hpp"
-#include "shard/ast/Expr.hpp"
-#include "shard/ast/Stmt.hpp"
+#include "shard/ast/expr/StringLiteralExpr.hpp"
 
 /* ************************************************************************ */
 

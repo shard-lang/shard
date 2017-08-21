@@ -22,6 +22,7 @@
 
 // Shard
 #include "shard/ast/Expr.hpp"
+#include "shard/ast/expr/IdentifierExpr.hpp"
 
 /* ************************************************************************ */
 

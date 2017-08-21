@@ -21,7 +21,8 @@
 #include <limits>
 
 // Shard
-#include "shard/ast/Expr.hpp"
+#include "shard/ast/expr/NullLiteralExpr.hpp"
+#include "shard/ast/expr/BoolLiteralExpr.hpp"
 
 /* ************************************************************************ */
 

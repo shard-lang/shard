@@ -20,7 +20,7 @@
 // Shard
 #include "shard/ast/stmt/CompoundStmt.hpp"
 #include "shard/ast/stmt/ExprStmt.hpp"
-#include "shard/ast/Expr.hpp"
+#include "shard/ast/expr/IntLiteralExpr.hpp"
 #include "shard/ast/Decl.hpp"
 
 /* ************************************************************************ */

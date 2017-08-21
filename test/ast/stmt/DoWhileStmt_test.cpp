@@ -21,7 +21,7 @@
 #include "shard/ast/stmt/DoWhileStmt.hpp"
 #include "shard/ast/stmt/CompoundStmt.hpp"
 #include "shard/ast/stmt/BreakStmt.hpp"
-#include "shard/ast/Expr.hpp"
+#include "shard/ast/expr/BoolLiteralExpr.hpp"
 #include "shard/ast/Decl.hpp"
 
 /* ************************************************************************ */

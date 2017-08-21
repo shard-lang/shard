@@ -22,7 +22,8 @@
 #include "shard/ast/stmt/CompoundStmt.hpp"
 #include "shard/ast/stmt/CaseStmt.hpp"
 #include "shard/ast/stmt/BreakStmt.hpp"
-#include "shard/ast/Expr.hpp"
+#include "shard/ast/expr/IdentifierExpr.hpp"
+#include "shard/ast/expr/IntLiteralExpr.hpp"
 #include "shard/ast/Decl.hpp"
 
 /* ************************************************************************ */

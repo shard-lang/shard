@@ -23,7 +23,8 @@
 #include "shard/ast/stmt/CompoundStmt.hpp"
 #include "shard/ast/stmt/DeclStmt.hpp"
 #include "shard/ast/stmt/ContinueStmt.hpp"
-#include "shard/ast/Expr.hpp"
+#include "shard/ast/expr/BoolLiteralExpr.hpp"
+#include "shard/ast/expr/IntLiteralExpr.hpp"
 #include "shard/ast/decl/VariableDecl.hpp"
 
 /* ************************************************************************ */

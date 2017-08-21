@@ -19,7 +19,8 @@
 
 // Shard
 #include "shard/ast/stmt/ReturnStmt.hpp"
-#include "shard/ast/Expr.hpp"
+#include "shard/ast/expr/BoolLiteralExpr.hpp"
+#include "shard/ast/expr/FloatLiteralExpr.hpp"
 
 /* ************************************************************************ */
 
