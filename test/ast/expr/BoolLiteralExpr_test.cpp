@@ -37,7 +37,6 @@ TEST(BoolLiteralExpr, base)
         const BoolLiteralExpr expr(true);
 
         EXPECT_EQ(ExprKind::BoolLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_FALSE(expr.is<NullLiteralExpr>());
         EXPECT_TRUE(expr.is<BoolLiteralExpr>());
         EXPECT_TRUE(expr.getValue());
@@ -47,7 +46,6 @@ TEST(BoolLiteralExpr, base)
         const BoolLiteralExpr expr(false);
 
         EXPECT_EQ(ExprKind::BoolLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_FALSE(expr.is<NullLiteralExpr>());
         EXPECT_TRUE(expr.is<BoolLiteralExpr>());
         EXPECT_FALSE(expr.getValue());
@@ -57,7 +55,6 @@ TEST(BoolLiteralExpr, base)
         BoolLiteralExpr expr(false);
 
         EXPECT_EQ(ExprKind::BoolLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_FALSE(expr.is<NullLiteralExpr>());
         EXPECT_TRUE(expr.is<BoolLiteralExpr>());
         EXPECT_FALSE(expr.getValue());
@@ -75,7 +72,6 @@ TEST(BoolLiteralExpr, base)
         ASSERT_NE(nullptr, expr);
 
         EXPECT_EQ(ExprKind::BoolLiteral, expr->getKind());
-        EXPECT_TRUE(expr->is<LiteralExpr>());
         EXPECT_FALSE(expr->is<NullLiteralExpr>());
         EXPECT_TRUE(expr->is<BoolLiteralExpr>());
         EXPECT_TRUE(expr->getValue());

@@ -29,8 +29,7 @@ namespace ast {
 /* ************************************************************************* */
 
 BoolLiteralExpr::BoolLiteralExpr(ValueType value, SourceRange range) noexcept
-    : LiteralExpr(Kind, range)
-    , m_value(value)
+    : LiteralExpr(Kind, value, range)
 {
     // Nothing to do
 }
@@ -38,13 +37,6 @@ BoolLiteralExpr::BoolLiteralExpr(ValueType value, SourceRange range) noexcept
 /* ************************************************************************* */
 
 BoolLiteralExpr::~BoolLiteralExpr() = default;
-
-/* ************************************************************************* */
-
-void BoolLiteralExpr::setValue(ValueType value)
-{
-    m_value = value;
-}
 
 /* ************************************************************************* */
 

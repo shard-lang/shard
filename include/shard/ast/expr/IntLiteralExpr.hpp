@@ -37,7 +37,7 @@ namespace ast {
  *             0x12345. The value can be accessed by calling `getValue` and
  *             changed by `setValue`.
  */
-class IntLiteralExpr final : public NumberLiteralExpr
+class IntLiteralExpr final : public LiteralExpr<int>
 {
 
 // Public Constants
@@ -46,14 +46,6 @@ public:
 
     /// Expression kind
     static constexpr ExprKind Kind = ExprKind::IntLiteral;
-
-
-// Public Types
-public:
-
-
-    /// Integer type.
-    using ValueType = int;
 
 
 // Public Ctors & Dtors
@@ -75,26 +67,6 @@ public:
     ~IntLiteralExpr();
 
 
-// Public Accessors & Mutators
-public:
-
-
-    /**
-     * @brief      Returns literal value.
-     *
-     * @return     Literal value.
-     */
-    ValueType getValue() const noexcept;
-
-
-    /**
-     * @brief      Change literal value.
-     *
-     * @param      value  The new literal value.
-     */
-    void setValue(ValueType value);
-
-
 // Public Operations
 public:
 
@@ -109,23 +81,7 @@ public:
      */
     static UniquePtr<IntLiteralExpr> make(ValueType value, SourceRange range = {});
 
-
-// Private Data Members
-private:
-
-    /// Literal value.
-    ValueType m_value;
-
 };
-
-/* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
-
-inline IntLiteralExpr::ValueType IntLiteralExpr::getValue() const noexcept
-{
-    return m_value;
-}
 
 /* ************************************************************************* */
 

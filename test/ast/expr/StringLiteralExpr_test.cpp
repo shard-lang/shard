@@ -36,9 +36,7 @@ TEST(StringLiteralExpr, base)
         const StringLiteralExpr expr({});
 
         EXPECT_EQ(ExprKind::StringLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_TRUE(expr.is<StringLiteralExpr>());
-        EXPECT_FALSE(expr.is<NumberLiteralExpr>());
         EXPECT_TRUE(expr.getValue().empty());
         EXPECT_EQ(StringLiteralExpr::ValueType{}, expr.getValue());
     }
@@ -47,9 +45,7 @@ TEST(StringLiteralExpr, base)
         const StringLiteralExpr expr("");
 
         EXPECT_EQ(ExprKind::StringLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_TRUE(expr.is<StringLiteralExpr>());
-        EXPECT_FALSE(expr.is<NumberLiteralExpr>());
         EXPECT_TRUE(expr.getValue().empty());
         EXPECT_EQ("", expr.getValue());
     }
@@ -58,9 +54,7 @@ TEST(StringLiteralExpr, base)
         const StringLiteralExpr expr("Hello world");
 
         EXPECT_EQ(ExprKind::StringLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_TRUE(expr.is<StringLiteralExpr>());
-        EXPECT_FALSE(expr.is<NumberLiteralExpr>());
         EXPECT_FALSE(expr.getValue().empty());
         EXPECT_EQ("Hello world", expr.getValue());
     }
@@ -69,9 +63,7 @@ TEST(StringLiteralExpr, base)
         StringLiteralExpr expr({});
 
         EXPECT_EQ(ExprKind::StringLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_TRUE(expr.is<StringLiteralExpr>());
-        EXPECT_FALSE(expr.is<NumberLiteralExpr>());
         EXPECT_TRUE(expr.getValue().empty());
         EXPECT_EQ(StringLiteralExpr::ValueType{}, expr.getValue());
 
@@ -88,9 +80,7 @@ TEST(StringLiteralExpr, base)
         ASSERT_NE(nullptr, expr);
 
         EXPECT_EQ(ExprKind::StringLiteral, expr->getKind());
-        EXPECT_TRUE(expr->is<LiteralExpr>());
         EXPECT_TRUE(expr->is<StringLiteralExpr>());
-        EXPECT_FALSE(expr->is<NumberLiteralExpr>());
         EXPECT_TRUE(expr->getValue().empty());
         EXPECT_EQ(StringLiteralExpr::ValueType{}, expr->getValue());
     }

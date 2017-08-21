@@ -35,7 +35,7 @@ namespace ast {
  *
  * @details    In the language it represents `null` keyword.
  */
-class NullLiteralExpr final : public LiteralExpr
+class NullLiteralExpr final : public Expr
 {
 
 // Public Constants

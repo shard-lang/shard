@@ -38,8 +38,6 @@ TEST(FloatLiteralExpr, base)
         const FloatLiteralExpr expr(0);
 
         EXPECT_EQ(ExprKind::FloatLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
-        EXPECT_TRUE(expr.is<NumberLiteralExpr>());
         EXPECT_TRUE(expr.is<FloatLiteralExpr>());
         EXPECT_FALSE(expr.is<IntLiteralExpr>());
         EXPECT_FLOAT_EQ(0, expr.getValue());
@@ -50,8 +48,6 @@ TEST(FloatLiteralExpr, base)
         const FloatLiteralExpr expr(0.111);
 
         EXPECT_EQ(ExprKind::FloatLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
-        EXPECT_TRUE(expr.is<NumberLiteralExpr>());
         EXPECT_TRUE(expr.is<FloatLiteralExpr>());
         EXPECT_FALSE(expr.is<IntLiteralExpr>());
         EXPECT_FLOAT_EQ(0.111, expr.getValue());
@@ -62,8 +58,6 @@ TEST(FloatLiteralExpr, base)
         const FloatLiteralExpr expr(std::numeric_limits<FloatLiteralExpr::ValueType>::min());
 
         EXPECT_EQ(ExprKind::FloatLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
-        EXPECT_TRUE(expr.is<NumberLiteralExpr>());
         EXPECT_TRUE(expr.is<FloatLiteralExpr>());
         EXPECT_FALSE(expr.is<IntLiteralExpr>());
         EXPECT_FLOAT_EQ(std::numeric_limits<FloatLiteralExpr::ValueType>::min(), expr.getValue());
@@ -74,8 +68,6 @@ TEST(FloatLiteralExpr, base)
         const FloatLiteralExpr expr(std::numeric_limits<FloatLiteralExpr::ValueType>::max());
 
         EXPECT_EQ(ExprKind::FloatLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
-        EXPECT_TRUE(expr.is<NumberLiteralExpr>());
         EXPECT_TRUE(expr.is<FloatLiteralExpr>());
         EXPECT_FALSE(expr.is<IntLiteralExpr>());
         EXPECT_FLOAT_EQ(std::numeric_limits<FloatLiteralExpr::ValueType>::max(), expr.getValue());
@@ -85,8 +77,6 @@ TEST(FloatLiteralExpr, base)
         FloatLiteralExpr expr(0);
 
         EXPECT_EQ(ExprKind::FloatLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
-        EXPECT_TRUE(expr.is<NumberLiteralExpr>());
         EXPECT_TRUE(expr.is<FloatLiteralExpr>());
         EXPECT_FALSE(expr.is<IntLiteralExpr>());
         EXPECT_FLOAT_EQ(0, expr.getValue());
@@ -105,8 +95,6 @@ TEST(FloatLiteralExpr, base)
         ASSERT_NE(nullptr, expr);
 
         EXPECT_EQ(ExprKind::FloatLiteral, expr->getKind());
-        EXPECT_TRUE(expr->is<LiteralExpr>());
-        EXPECT_TRUE(expr->is<NumberLiteralExpr>());
         EXPECT_TRUE(expr->is<FloatLiteralExpr>());
         EXPECT_FALSE(expr->is<IntLiteralExpr>());
         EXPECT_FLOAT_EQ(0, expr->getValue());

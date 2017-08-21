@@ -30,8 +30,7 @@ namespace ast {
 /* ************************************************************************* */
 
 StringLiteralExpr::StringLiteralExpr(ValueType value, SourceRange range)
-    : LiteralExpr(Kind, range)
-    , m_value(moveValue(value))
+    : LiteralExpr(Kind, moveValue(value), range)
 {
     // Nothing to do
 }
@@ -39,13 +38,6 @@ StringLiteralExpr::StringLiteralExpr(ValueType value, SourceRange range)
 /* ************************************************************************* */
 
 StringLiteralExpr::~StringLiteralExpr() = default;
-
-/* ************************************************************************* */
-
-void StringLiteralExpr::setValue(ValueType value)
-{
-    m_value = moveValue(value);
-}
 
 /* ************************************************************************* */
 

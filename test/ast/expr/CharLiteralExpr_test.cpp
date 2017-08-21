@@ -38,9 +38,7 @@ TEST(CharLiteralExpr, base)
         const CharLiteralExpr expr('\0');
 
         EXPECT_EQ(ExprKind::CharLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_TRUE(expr.is<CharLiteralExpr>());
-        EXPECT_FALSE(expr.is<NumberLiteralExpr>());
         EXPECT_FALSE(expr.is<IntLiteralExpr>());
         EXPECT_EQ('\0', expr.getValue());
     }
@@ -49,9 +47,7 @@ TEST(CharLiteralExpr, base)
         const CharLiteralExpr expr(L'á');
 
         EXPECT_EQ(ExprKind::CharLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_TRUE(expr.is<CharLiteralExpr>());
-        EXPECT_FALSE(expr.is<NumberLiteralExpr>());
         EXPECT_FALSE(expr.is<IntLiteralExpr>());
         EXPECT_EQ(L'á', expr.getValue());
     }
@@ -60,9 +56,7 @@ TEST(CharLiteralExpr, base)
         const CharLiteralExpr expr(L'\xf09eb888');
 
         EXPECT_EQ(ExprKind::CharLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_TRUE(expr.is<CharLiteralExpr>());
-        EXPECT_FALSE(expr.is<NumberLiteralExpr>());
         EXPECT_FALSE(expr.is<IntLiteralExpr>());
         EXPECT_EQ(0xf09eb888, expr.getValue());
     }
@@ -71,9 +65,7 @@ TEST(CharLiteralExpr, base)
         const CharLiteralExpr expr(L'\U0001EE08');
 
         EXPECT_EQ(ExprKind::CharLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_TRUE(expr.is<CharLiteralExpr>());
-        EXPECT_FALSE(expr.is<NumberLiteralExpr>());
         EXPECT_FALSE(expr.is<IntLiteralExpr>());
         EXPECT_EQ(0x0001EE08, expr.getValue());
     }
@@ -83,9 +75,7 @@ TEST(CharLiteralExpr, base)
         const CharLiteralExpr expr(0x10FFFF);
 
         EXPECT_EQ(ExprKind::CharLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_TRUE(expr.is<CharLiteralExpr>());
-        EXPECT_FALSE(expr.is<NumberLiteralExpr>());
         EXPECT_FALSE(expr.is<IntLiteralExpr>());
         EXPECT_EQ(0x10FFFF, expr.getValue());
     }
@@ -94,9 +84,7 @@ TEST(CharLiteralExpr, base)
         CharLiteralExpr expr(0);
 
         EXPECT_EQ(ExprKind::CharLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_TRUE(expr.is<CharLiteralExpr>());
-        EXPECT_FALSE(expr.is<NumberLiteralExpr>());
         EXPECT_FALSE(expr.is<IntLiteralExpr>());
         EXPECT_EQ(0, expr.getValue());
 
@@ -114,9 +102,7 @@ TEST(CharLiteralExpr, base)
         ASSERT_NE(nullptr, expr);
 
         EXPECT_EQ(ExprKind::CharLiteral, expr->getKind());
-        EXPECT_TRUE(expr->is<LiteralExpr>());
         EXPECT_TRUE(expr->is<CharLiteralExpr>());
-        EXPECT_FALSE(expr->is<NumberLiteralExpr>());
         EXPECT_FALSE(expr->is<IntLiteralExpr>());
         EXPECT_EQ('\0', expr->getValue());
     }

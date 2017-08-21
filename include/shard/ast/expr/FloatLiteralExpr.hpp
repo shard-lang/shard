@@ -37,7 +37,7 @@ namespace ast {
  *             15e456. The value can be accessed by calling `getValue` and
  *             changed by `setValue`.
  */
-class FloatLiteralExpr final : public NumberLiteralExpr
+class FloatLiteralExpr final : public LiteralExpr<float>
 {
 
 // Public Constants
@@ -46,14 +46,6 @@ public:
 
     /// Expression kind
     static constexpr ExprKind Kind = ExprKind::FloatLiteral;
-
-
-// Public Types
-public:
-
-
-    /// Float type.
-    using ValueType = float;
 
 
 // Public Ctors & Dtors
@@ -75,26 +67,6 @@ public:
     ~FloatLiteralExpr();
 
 
-// Public Accessors & Mutators
-public:
-
-
-    /**
-     * @brief      Returns literal value.
-     *
-     * @return     Literal value.
-     */
-    ValueType getValue() const noexcept;
-
-
-    /**
-     * @brief      Change literal value.
-     *
-     * @param      value  The new literal value.
-     */
-    void setValue(ValueType value);
-
-
 // Public Operations
 public:
 
@@ -109,23 +81,7 @@ public:
      */
     static UniquePtr<FloatLiteralExpr> make(ValueType value, SourceRange range = {});
 
-
-// Private Data Members
-private:
-
-    /// Literal value.
-    ValueType m_value;
-
 };
-
-/* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
-
-inline FloatLiteralExpr::ValueType FloatLiteralExpr::getValue() const noexcept
-{
-    return m_value;
-}
 
 /* ************************************************************************* */
 

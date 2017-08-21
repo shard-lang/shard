@@ -37,7 +37,7 @@ namespace ast {
  *             'á'. The value can be accessed by calling `getValue` and changed
  *             by `setValue`. Value is stored as a UNICODE code point.
  */
-class CharLiteralExpr final : public LiteralExpr
+class CharLiteralExpr final : public LiteralExpr<char32_t>
 {
 
 // Public Constants
@@ -46,14 +46,6 @@ public:
 
     /// Expression kind
     static constexpr ExprKind Kind = ExprKind::CharLiteral;
-
-
-// Public Types
-public:
-
-
-    /// Character type (UNICODE code point).
-    using ValueType = char32_t;
 
 
 // Public Ctors & Dtors
@@ -75,26 +67,6 @@ public:
     ~CharLiteralExpr();
 
 
-// Public Accessors & Mutators
-public:
-
-
-    /**
-     * @brief      Returns literal value.
-     *
-     * @return     Literal value.
-     */
-    ValueType getValue() const noexcept;
-
-
-    /**
-     * @brief      Change literal value.
-     *
-     * @param      value  The new literal value.
-     */
-    void setValue(ValueType value);
-
-
 // Public Operations
 public:
 
@@ -109,23 +81,7 @@ public:
      */
     static UniquePtr<CharLiteralExpr> make(ValueType value, SourceRange range = {});
 
-
-// Private Data Members
-private:
-
-    /// Literal value.
-    ValueType m_value;
-
 };
-
-/* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
-
-inline CharLiteralExpr::ValueType CharLiteralExpr::getValue() const noexcept
-{
-    return m_value;
-}
 
 /* ************************************************************************* */
 

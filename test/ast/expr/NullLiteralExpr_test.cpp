@@ -37,7 +37,6 @@ TEST(NullLiteralExpr, base)
         const NullLiteralExpr expr;
 
         EXPECT_EQ(ExprKind::NullLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_TRUE(expr.is<NullLiteralExpr>());
         EXPECT_FALSE(expr.is<BoolLiteralExpr>());
         EXPECT_EQ(SourceLocation{}, expr.getSourceStart());
@@ -48,7 +47,6 @@ TEST(NullLiteralExpr, base)
         const NullLiteralExpr expr({{123, 456}, {123, 458}});
 
         EXPECT_EQ(ExprKind::NullLiteral, expr.getKind());
-        EXPECT_TRUE(expr.is<LiteralExpr>());
         EXPECT_TRUE(expr.is<NullLiteralExpr>());
         EXPECT_FALSE(expr.is<BoolLiteralExpr>());
         EXPECT_EQ((SourceLocation{123, 456}), expr.getSourceStart());
@@ -60,7 +58,6 @@ TEST(NullLiteralExpr, base)
         ASSERT_NE(nullptr, expr);
 
         EXPECT_EQ(ExprKind::NullLiteral, expr->getKind());
-        EXPECT_TRUE(expr->is<LiteralExpr>());
         EXPECT_TRUE(expr->is<NullLiteralExpr>());
         EXPECT_FALSE(expr->is<BoolLiteralExpr>());
     }

@@ -29,7 +29,7 @@ namespace ast {
 /* ************************************************************************* */
 
 NullLiteralExpr::NullLiteralExpr(SourceRange range) noexcept
-    : LiteralExpr(Kind, range)
+    : Expr(Kind, range)
 {
     // Nothing to do
 }

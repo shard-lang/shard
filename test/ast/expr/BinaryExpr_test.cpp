@@ -40,7 +40,6 @@ TEST(BinaryExpr, base)
 
         EXPECT_EQ(ExprKind::Binary, expr.getKind());
         EXPECT_TRUE(expr.is<BinaryExpr>());
-        EXPECT_FALSE(expr.is<LiteralExpr>());
         EXPECT_EQ(BinaryExpr::OpKind::Add, expr.getOpKind());
         ASSERT_NE(nullptr, expr.getLhs());
         ASSERT_NE(nullptr, expr.getRhs());
@@ -56,7 +55,6 @@ TEST(BinaryExpr, base)
 
         EXPECT_EQ(ExprKind::Binary, expr.getKind());
         EXPECT_TRUE(expr.is<BinaryExpr>());
-        EXPECT_FALSE(expr.is<LiteralExpr>());
         EXPECT_EQ(BinaryExpr::OpKind::Mul, expr.getOpKind());
         ASSERT_NE(nullptr, expr.getLhs());
         ASSERT_NE(nullptr, expr.getRhs());
@@ -72,7 +70,6 @@ TEST(BinaryExpr, base)
 
         EXPECT_EQ(ExprKind::Binary, expr.getKind());
         EXPECT_TRUE(expr.is<BinaryExpr>());
-        EXPECT_FALSE(expr.is<LiteralExpr>());
         EXPECT_EQ(BinaryExpr::OpKind::Mul, expr.getOpKind());
         ASSERT_NE(nullptr, expr.getLhs());
         ASSERT_NE(nullptr, expr.getRhs());
@@ -128,7 +125,6 @@ TEST(BinaryExpr, base)
 
         EXPECT_EQ(ExprKind::Binary, expr->getKind());
         EXPECT_TRUE(expr->is<BinaryExpr>());
-        EXPECT_FALSE(expr->is<LiteralExpr>());
         EXPECT_EQ(BinaryExpr::OpKind::Add, expr->getOpKind());
         ASSERT_NE(nullptr, expr->getLhs());
         ASSERT_NE(nullptr, expr->getRhs());

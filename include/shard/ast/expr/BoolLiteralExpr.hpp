@@ -37,7 +37,7 @@ namespace ast {
  *             value can be accessed by calling `getValue` and changed by
  *             `setValue`.
  */
-class BoolLiteralExpr final : public LiteralExpr
+class BoolLiteralExpr final : public LiteralExpr<bool>
 {
 
 // Public Constants
@@ -46,14 +46,6 @@ public:
 
     /// Expression kind
     static constexpr ExprKind Kind = ExprKind::BoolLiteral;
-
-
-// Public Types
-public:
-
-
-    /// Boolean type.
-    using ValueType = bool;
 
 
 // Public Ctors & Dtors
@@ -75,26 +67,6 @@ public:
     ~BoolLiteralExpr();
 
 
-// Public Accessors & Mutators
-public:
-
-
-    /**
-     * @brief      Returns literal value.
-     *
-     * @return     Literal value.
-     */
-    ValueType getValue() const noexcept;
-
-
-    /**
-     * @brief      Change literal value.
-     *
-     * @param      value  The new literal value.
-     */
-    void setValue(ValueType value);
-
-
 // Public Operations
 public:
 
@@ -109,23 +81,7 @@ public:
      */
     static UniquePtr<BoolLiteralExpr> make(ValueType value, SourceRange range = {});
 
-
-// Private Data Members
-private:
-
-    /// Literal value.
-    ValueType m_value;
-
 };
-
-/* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
-
-inline BoolLiteralExpr::ValueType BoolLiteralExpr::getValue() const noexcept
-{
-    return m_value;
-}
 
 /* ************************************************************************* */
 

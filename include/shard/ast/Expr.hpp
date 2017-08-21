@@ -20,6 +20,7 @@
 
 // Shard
 #include "shard/Assert.hpp"
+#include "shard/utility.hpp"
 #include "shard/UniquePtr.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/ast/utility.hpp"
@@ -52,10 +53,6 @@ enum class ExprKind
     FunctionCall,
     MemberAccess,
     Subscript,
-    Literal_First       = NullLiteral,
-    Literal_Last        = StringLiteral,
-    NumberLiteral_First = IntLiteral,
-    NumberLiteral_Last  = FloatLiteral,
 };
 
 /* ************************************************************************* */
@@ -155,49 +152,59 @@ private:
 
 /**
  * @brief      Base class for all literal kinds.
- *
- * @details    It expression is a literal `expr.is<LiteralExpr>()` returns true.
  */
+template<typename ValueT>
 class LiteralExpr : public Expr
 {
 
-// Public Constants
+
+// Public Types
 public:
 
 
-    /// Expression kind
-    static constexpr KindRange<ExprKind> Kind{ExprKind::Literal_First, ExprKind::Literal_Last};
+    /// Value type.
+    using ValueType = ValueT;
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief      Returns literal value.
+     *
+     * @return     Literal value.
+     */
+    const ValueType& getValue() const noexcept;
+
+
+    /**
+     * @brief      Change literal value.
+     *
+     * @param      value  The new literal value.
+     */
+    void setValue(ValueType value);
 
 
 // Protected Ctors & Dtors
 protected:
 
 
-    using Expr::Expr;
-
-};
-
-/* ************************************************************************* */
-
-/**
- * @brief      Base class for all number literals.
- */
-class NumberLiteralExpr : public LiteralExpr
-{
-
-// Public Constants
-public:
+    /**
+     * @brief      Constructor.
+     *
+     * @param      kind   Expression kind.
+     * @param      value  The literal value.
+     * @param      range  Location in source.
+     */
+    explicit LiteralExpr(ExprKind kind, ValueType value, SourceRange range = {}) noexcept;
 
 
-    /// Expression kind
-    static constexpr KindRange<ExprKind> Kind{ExprKind::NumberLiteral_First, ExprKind::NumberLiteral_Last};
+// Private Data Members
+private:
 
-
-// Protected Ctors & Dtors
-protected:
-
-
-    using LiteralExpr::LiteralExpr;
+    /// Literal value.
+    ValueType m_value;
 
 };
 
@@ -234,6 +241,34 @@ inline const ExprType& Expr::cast() const noexcept
 {
     SHARD_ASSERT(is<ExprType>());
     return static_cast<const ExprType&>(*this);
+}
+
+/* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+
+template<typename ValueT>
+inline LiteralExpr<ValueT>::LiteralExpr(ExprKind kind, ValueType value, SourceRange range) noexcept
+    : Expr(kind, range)
+    , m_value(value)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************* */
+
+template<typename ValueT>
+inline const typename LiteralExpr<ValueT>::ValueType& LiteralExpr<ValueT>::getValue() const noexcept
+{
+    return m_value;
+}
+
+/* ************************************************************************* */
+
+template<typename ValueT>
+inline void LiteralExpr<ValueT>::setValue(ValueType value)
+{
+    m_value = moveValue(value);
 }
 
 /* ************************************************************************* */

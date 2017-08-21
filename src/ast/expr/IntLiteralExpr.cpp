@@ -29,8 +29,7 @@ namespace ast {
 /* ************************************************************************* */
 
 IntLiteralExpr::IntLiteralExpr(ValueType value, SourceRange range) noexcept
-    : NumberLiteralExpr(Kind, range)
-    , m_value(value)
+    : LiteralExpr(Kind, value, range)
 {
     // Nothing to do
 }
@@ -38,13 +37,6 @@ IntLiteralExpr::IntLiteralExpr(ValueType value, SourceRange range) noexcept
 /* ************************************************************************* */
 
 IntLiteralExpr::~IntLiteralExpr() = default;
-
-/* ************************************************************************* */
-
-void IntLiteralExpr::setValue(ValueType value)
-{
-    m_value = value;
-}
 
 /* ************************************************************************* */
 
