@@ -116,6 +116,33 @@ void interpretIfStmt(ViewPtr<const ast::IfStmt> stmt, Context& ctx)
     SHARD_ASSERT(stmt);
     CALL_PUSH;
 
+    bool cond = false;
+
+    // Evaluate condition
+    auto res = interpret(stmt->getCondExpr(), ctx);
+
+    if (res.isNull())
+    {
+        cond = false;
+    }
+    else if (res.getKind() == ValueKind::Bool)
+    {
+        cond = res.asBool();
+    }
+    else
+    {
+        throw Exception("Condition expression must evaluate to boolean");
+    }
+
+    if (cond)
+    {
+        interpret(stmt->getThenStmt(), ctx);
+    }
+    else
+    {
+        interpret(stmt->getElseStmt(), ctx);
+    }
+
     CALL_POP;
 }
 
@@ -125,6 +152,32 @@ void interpretWhileStmt(ViewPtr<const ast::WhileStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
     CALL_PUSH;
+
+    while (true)
+    {
+        bool cond = false;
+
+        // Evaluate condition
+        auto res = interpret(stmt->getCondExpr(), ctx);
+
+        if (res.isNull())
+        {
+            cond = false;
+        }
+        else if (res.getKind() == ValueKind::Bool)
+        {
+            cond = res.asBool();
+        }
+        else
+        {
+            throw Exception("Condition expression must evaluate to boolean");
+        }
+
+        if (!cond)
+            break;
+
+        interpret(stmt->getBodyStmt(), ctx);
+    }
 
     CALL_POP;
 }
@@ -136,6 +189,32 @@ void interpretDoWhileStmt(ViewPtr<const ast::DoWhileStmt> stmt, Context& ctx)
     SHARD_ASSERT(stmt);
     CALL_PUSH;
 
+    while (true)
+    {
+        interpret(stmt->getBodyStmt(), ctx);
+
+        bool cond = false;
+
+        // Evaluate condition
+        auto res = interpret(stmt->getCondExpr(), ctx);
+
+        if (res.isNull())
+        {
+            cond = false;
+        }
+        else if (res.getKind() == ValueKind::Bool)
+        {
+            cond = res.asBool();
+        }
+        else
+        {
+            throw Exception("Condition expression must evaluate to boolean");
+        }
+
+        if (!cond)
+            break;
+    }
+
     CALL_POP;
 }
 
@@ -145,6 +224,41 @@ void interpretForStmt(ViewPtr<const ast::ForStmt> stmt, Context& ctx)
 {
     SHARD_ASSERT(stmt);
     CALL_PUSH;
+
+    ctx.push();
+
+    // Init statement
+    interpret(stmt->getInitStmt(), ctx);
+
+    while (true)
+    {
+        bool cond = false;
+
+        // Evaluate condition
+        auto res = interpret(stmt->getCondExpr(), ctx);
+
+        if (res.isNull())
+        {
+            cond = false;
+        }
+        else if (res.getKind() == ValueKind::Bool)
+        {
+            cond = res.asBool();
+        }
+        else
+        {
+            throw Exception("Condition expression must evaluate to boolean");
+        }
+
+        if (!cond)
+            break;
+
+        interpret(stmt->getBodyStmt(), ctx);
+
+        interpret(stmt->getIncExpr(), ctx);
+    }
+
+    ctx.pop();
 
     CALL_POP;
 }
@@ -446,12 +560,6 @@ Value interpretFunctionCallExpr(ViewPtr<const ast::FunctionCallExpr> expr, Conte
     if (scope == nullptr)
         throw Exception("Unknown function declaration scope");
 
-    // Arguments context
-    ctx.push(scope->getScope());
-
-    // Return value
-    auto retSym = ctx.addSymbol("#return", SymbolKind::Variable);
-
     // Parameters & Arguments
     const auto& params = fn.getDecl()->getParameters();
     const auto& args = expr->getArguments();
@@ -459,13 +567,27 @@ Value interpretFunctionCallExpr(ViewPtr<const ast::FunctionCallExpr> expr, Conte
     if (args.size() != params.size())
         throw Exception("Function call argument count mismatch");
 
+    // Evaluate arguments in current context
+    DynamicArray<Value> values(args.size());
+
+    for (int i = 0; i < args.size(); ++i)
+    {
+        values[i] = interpret(makeView(args[i]), ctx);
+    }
+
+    // Function context
+    ctx.push(scope->getScope());
+
+    // Return value
+    auto retSym = ctx.addSymbol("#return", SymbolKind::Variable);
+
     // Register arguments
     for (int i = 0; i < params.size(); ++i)
     {
         auto param = ctx.addSymbol(params[i]->getName(), SymbolKind::Variable);
         SHARD_ASSERT(param);
 
-        param->setValue(interpret(makeView(args[i]), ctx));
+        param->setValue(values[i]);
     }
 
     // Intepret function body

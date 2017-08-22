@@ -95,6 +95,11 @@ int main(int argc, char** argv)
         std::cerr << "\033[31mERROR\033[0m: " << e.what() << "" << std::endl;
         return -1;
     }
+    catch (...)
+    {
+        std::cerr << "\033[31mERROR\033[0m: Unknown error" << std::endl;
+        return -1;
+    }
 }
 
 /* ************************************************************************* */

@@ -45,7 +45,7 @@ public:
      *
      * @param      decls  The declarations.
      */
-    explicit Unit(PtrDynamicArray<Decl> decls);
+    explicit Unit(PtrDynamicArray<Decl> decls = {});
 
 
     /**
