@@ -219,8 +219,8 @@ TEST(Tokenizer, string)
         {Token::StringLiteral("\n\r\t\"")}
     );
     test(
-        "\"\\'\\?\\b\\f\\t\\v\"",
-        {Token::StringLiteral("\'\?\b\f\t\v")}
+        "\"\\'\\t\"",
+        {Token::StringLiteral("\'\t")}
     );
 }
 TEST(Tokenizer, floats)
@@ -262,10 +262,6 @@ TEST(Tokenizer, chars)
     test(
         "+-'z'",
         {Token(TokenType::Plus), Token(TokenType::Minus), Token::CharLiteral('z')}
-    );
-    test(
-        "'\\\\''\\a'",
-        {Token::CharLiteral('\\'), Token::CharLiteral('\a')}
     );
     test(
         "'\\n''\\r''\\0'",
@@ -515,15 +511,11 @@ TEST(Tokenizer, location)
         {{1, 1}, {1, 4}}
     );
     test_location(
-        "\\\\bla",
-        {{1, 1}, {1, 2}, {1, 3}}
-    );
-    test_location(
         "\"\n\rabc\"v",
         {{1, 1}, {3, 5}}
     );
     test_location(
-        String("\"\n\r\t\0\\a\"a", 9),
+        String("\"\n\r\t\0\"a", 7),
         {{1, 1}, {3, 6}}
     );
 }
@@ -553,7 +545,7 @@ TEST(Tokenizer, exception)
         "Closing character for string literal not found at 3:4."
     );
     test_exception(
-        String("\"\n\r\t\0\\a", 7),
+        String("\"\n\r\t\0", 7),
         "Closing character for string literal not found at 3:5."
     );
     test_exception(

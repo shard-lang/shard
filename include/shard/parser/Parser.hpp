@@ -36,9 +36,6 @@ namespace shard {
 inline namespace v1 {
 namespace parser {
 
-using namespace tokenizer;
-using namespace ast;
-
 /* ************************************************************************* */
 
 /**
@@ -49,7 +46,7 @@ class Parser
 
 private:
 
-	Tokenizer m_tokenizer;
+	tokenizer::Tokenizer m_tokenizer;
 
 /* ************************************************************************* */
 
@@ -74,7 +71,7 @@ public:
     /**
      * @brief initiates syntax analysis on given source.
      */
-	UniquePtr<Unit> parseUnit();
+	UniquePtr<ast::Unit> parseUnit();
 
 /* ************************************************************************* */
 
@@ -83,22 +80,22 @@ private:
     /**
      * @brief parse declaration.
      */
-    PtrDynamicArray<Decl> parseDeclList();
+    PtrDynamicArray<ast::Decl> parseDeclList();
 
     /**
      * @brief parse class declaration.
      */
-    UniquePtr<ClassDecl> parseClassDecl();
+    UniquePtr<ast::ClassDecl> parseClassDecl();
 
     /**
      * @brief parse variable declaration.
      */
-    UniquePtr<VariableDecl> parseVariableDecl(const Type type);
+    UniquePtr<ast::VariableDecl> parseVariableDecl(const ast::Type type);
 
     /**
      * @brief parse fucntion or variable declaration.
      */
-    UniquePtr<Decl> parseFunctionOrVariableDecl(const Type type);
+    UniquePtr<ast::Decl> parseFunctionOrVariableDecl(const ast::Type type);
 
 /* ************************************************************************* */
 
@@ -107,17 +104,17 @@ private:
     /**
      * @brief parse variables init expr.
      */
-    UniquePtr<Expr> parseVariableInit();
+    UniquePtr<ast::Expr> parseVariableInit();
 
     /**
      * @brief parse function parameter pack.
      */
-    PtrDynamicArray<VariableDecl> parseDeclArray();
+    PtrDynamicArray<ast::VariableDecl> parseDeclArray();
 
     /**
      * @brief parse list of extressions.
      */
-    PtrDynamicArray<Expr> parseExprArray();
+    PtrDynamicArray<ast::Expr> parseExprArray();
 
 /* ************************************************************************* */
 
@@ -126,52 +123,52 @@ private:
     /**
      * @brief parse statement.
      */
-    UniquePtr<Stmt> parseStmt();
+    UniquePtr<ast::Stmt> parseStmt();
 
     /**
      * @brief parse If statement.
      */
-    UniquePtr<IfStmt> parseIfStmt();
+    UniquePtr<ast::IfStmt> parseIfStmt();
     
     /**
      * @brief parse For statement.
      */
-    UniquePtr<ForStmt> parseForStmt();
+    UniquePtr<ast::ForStmt> parseForStmt();
     
     /**
      * @brief parse While statement.
      */
-    UniquePtr<WhileStmt> parseWhileStmt();
+    UniquePtr<ast::WhileStmt> parseWhileStmt();
     
     /**
      * @brief parse Switch statement.
      */
-    UniquePtr<SwitchStmt> parseSwitchStmt();
+    UniquePtr<ast::SwitchStmt> parseSwitchStmt();
 
     /**
      * @brief parse case list.
      */
-    PtrDynamicArray<Stmt> parseCaseList();
+    PtrDynamicArray<ast::Stmt> parseCaseList();
     
     /**
      * @brief parse statement list for cases.
      */
-    PtrDynamicArray<Stmt> parseCaseStmtList();
+    PtrDynamicArray<ast::Stmt> parseCaseStmtList();
 
     /**
      * @brief parse Do-While statement.
      */
-    UniquePtr<DoWhileStmt> parseDoWhileStmt();
+    UniquePtr<ast::DoWhileStmt> parseDoWhileStmt();
     
     /**
      * @brief parse Compound statement.
      */
-    UniquePtr<CompoundStmt> parseCompoundStmt();
+    UniquePtr<ast::CompoundStmt> parseCompoundStmt();
 
     /**
      * @brief parse TryCatch statement.
      */
-    UniquePtr<CompoundStmt> parseTryCatchStmt();
+    UniquePtr<ast::CompoundStmt> parseTryCatchStmt();
 
 /* ************************************************************************* */
 
@@ -180,42 +177,42 @@ private:
     /**
      * @brief parse expression.
      */
-    UniquePtr<Expr> parseExpr();
+    UniquePtr<ast::Expr> parseExpr();
 
     /**
      * @brief parse relational expression.
      */
-    UniquePtr<Expr> parseRelationalExpr();
+    UniquePtr<ast::Expr> parseRelationalExpr();
 
     /**
      * @brief parse additive expression.
      */
-    UniquePtr<Expr> parseAdditiveExpr();
+    UniquePtr<ast::Expr> parseAdditiveExpr();
 
     /**
      * @brief parse multiplicative expression.
      */
-    UniquePtr<Expr> parseMultiplicativeExpr();
+    UniquePtr<ast::Expr> parseMultiplicativeExpr();
 
     /**
      * @brief parse prefix unary expression.
      */
-    UniquePtr<Expr> parsePrefixUnaryExpr();
+    UniquePtr<ast::Expr> parsePrefixUnaryExpr();
 
     /**
      * @brief parse postfix unary expression.
      */
-    UniquePtr<Expr> parsePostfixUnaryExpr();
+    UniquePtr<ast::Expr> parsePostfixUnaryExpr();
 
     /**
      * @brief parse primary expression.
      */
-    UniquePtr<Expr> parsePrimaryExpr();
+    UniquePtr<ast::Expr> parsePrimaryExpr();
 
     /**
      * @brief parse parenthesis expression.
      */
-    UniquePtr<Expr> parseParenExpr();
+    UniquePtr<ast::Expr> parseParenExpr();
 
 /* ************************************************************************* */
 
@@ -224,7 +221,7 @@ private:
     /**
      * @brief returns if current TokenType is tested TokenType.
      */
-    inline bool is(TokenType type) const noexcept
+    inline bool is(tokenizer::TokenType type) const noexcept
     {
         return m_tokenizer.get().getType() == type;
     }
@@ -250,7 +247,7 @@ private:
      * @brief returns if current TokenType is tested TokenType.
      * If so, moves to next token.
      */
-    inline bool match(TokenType type) noexcept
+    inline bool match(tokenizer::TokenType type) noexcept
     {
         if (is(type))
         {
@@ -288,7 +285,7 @@ private:
      */
     inline String getIdentifier() const
     {
-        if (!is(TokenType::Identifier))
+        if (!is(tokenizer::TokenType::Identifier))
         {
             throw ExpectedIdentifierException();
         }
