@@ -67,16 +67,12 @@ Token::CharType Tokenizer::getEscaped(const char value)
     {
         case '"': return '\"';
         case '\'': return '\'';
-        case '?': return '\?';
         case '\\': return '\\';
         case '0': return '\0';
-        case 'a': return '\a';
-        case 'b': return '\b';
-        case 'f': return '\f';
         case 'n': return '\n';
         case 'r': return '\r';
         case 't': return '\t';
-        case 'v': return '\v';
+        case 'u': //TODO
         default: throw InvalidEscapeSequenceException(m_src.getLocation());
     }
 }
