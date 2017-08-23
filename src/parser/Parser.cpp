@@ -22,6 +22,9 @@ namespace shard {
 inline namespace v1 {
 namespace parser {
 
+using namespace ast;
+using namespace tokenizer;
+
 /* ************************************************************************* */
 
 UniquePtr<Unit> Parser::parseUnit()
@@ -303,31 +306,31 @@ UniquePtr<Stmt> Parser::parseStmt()
 			return parseTryCatchStmt();
 		case TokenType::Auto:
 			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(Type(TypeKind::Auto)));
+			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Auto));
 			break;
 		case TokenType::Var:
 			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(Type(TypeKind::Var)));
+			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Var));
 			break;
 		case TokenType::Int:
 			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(Type(TypeKind::Int)));
+			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Int));
 			break;
 		case TokenType::Bool:
 			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(Type(TypeKind::Bool)));
+			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Bool));
 			break;
 		case TokenType::Char:
 			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(Type(TypeKind::Char)));
+			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Char));
 			break;
 		case TokenType::Float:
 			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(Type(TypeKind::Float)));
+			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Float));
 			break;
 		case TokenType::String:
 			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(Type(TypeKind::String)));
+			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::String));
 			break;
 		case TokenType::Identifier:
 			// TODO decision making
