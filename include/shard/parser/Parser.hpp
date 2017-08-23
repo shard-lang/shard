@@ -88,23 +88,23 @@ private:
     UniquePtr<ast::ClassDecl> parseClassDecl();
 
     /**
-     * @brief parse variable declaration.
+     * @brief parse function declaration.
      */
-    UniquePtr<ast::VariableDecl> parseVariableDecl(const ast::Type type);
+    UniquePtr<ast::FunctionDecl> parseFunctionDecl();
 
     /**
-     * @brief parse fucntion or variable declaration.
+     * @brief parse variable declaration.
      */
-    UniquePtr<ast::Decl> parseFunctionOrVariableDecl(const ast::Type type);
+    UniquePtr<ast::VariableDecl> parseVariableDecl();
 
 /* ************************************************************************* */
 
 private:
 
     /**
-     * @brief parse variables init expr.
+     * @brief parse type for declaration of function/variable
      */
-    UniquePtr<ast::Expr> parseVariableInit();
+    ast::Type parseDeclType();
 
     /**
      * @brief parse function parameter pack.
@@ -112,7 +112,7 @@ private:
     PtrDynamicArray<ast::VariableDecl> parseDeclArray();
 
     /**
-     * @brief parse list of extressions.
+     * @brief parse list of expresions.
      */
     PtrDynamicArray<ast::Expr> parseExprArray();
 

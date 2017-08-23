@@ -53,42 +53,18 @@ PtrDynamicArray<Decl> Parser::parseDeclList()
 				m_tokenizer.toss();  
 				list.push_back(parseClassDecl());
 				continue;
-			case TokenType::Auto:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::Auto)));
-				continue;
-			case TokenType::Var:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::Var)));
-				continue;
-			case TokenType::Int:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::Int)));
-				continue;
-			case TokenType::Bool:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::Bool)));
-				continue;
-			case TokenType::Char:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::Char)));
-				continue;
-			case TokenType::Float:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::Float)));
-				continue;
-			case TokenType::String:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::String)));
-				continue;
-			case TokenType::Identifier:
-			{
-				const Type type(getIdentifier());
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(type));
-				continue;
-			}
-
+            case TokenType::Function:
+                m_tokenizer.toss();
+                list.push_back(parseFunctionDecl());
+                continue;
+            case TokenType::Variable:
+                m_tokenizer.toss();
+                list.push_back(parseVariableDecl());
+                if (!match(TokenType::Semicolon))
+                {
+                    throw ExpectedSemicolonException();
+                }
+                continue;
 			default:
 				throw ExpectedDeclException();
 		}
@@ -121,65 +97,84 @@ UniquePtr<ClassDecl> Parser::parseClassDecl()
 
 /* ************************************************************************* */
 
-UniquePtr<VariableDecl> Parser::parseVariableDecl(const Type type)
+UniquePtr<FunctionDecl> Parser::parseFunctionDecl()
 {
-	String name = getIdentifier();
-	m_tokenizer.toss();
+    Type type = parseDeclType();
+    m_tokenizer.toss();
 
-	return makeUnique<VariableDecl>(type, name, parseVariableInit());
+    String name = getIdentifier();
+    m_tokenizer.toss();
+
+    if (!match(TokenType::ParenO))
+    {
+        throw ExpectedParenException();
+    }
+
+    PtrDynamicArray<VariableDecl> params;
+
+    if (!match(TokenType::ParenC))
+    {
+        params = parseDeclArray();
+
+        if (!match(TokenType::ParenC))
+        {
+            throw ExpectedClosingParenException();
+        }
+    }
+
+    if (!match(TokenType::BraceO))
+    {
+        throw ExpectedBraceException();
+    }
+
+    return makeUnique<FunctionDecl>(type, name, parseCompoundStmt(), std::move(params));
 }
 
 /* ************************************************************************* */
 
-UniquePtr<Decl> Parser::parseFunctionOrVariableDecl(const Type type)
+UniquePtr<VariableDecl> Parser::parseVariableDecl()
 {
+    Type type = parseDeclType();
+    m_tokenizer.toss();
+
 	String name = getIdentifier();
 	m_tokenizer.toss();
-	
-	if (match(TokenType::ParenO))
-	{
-		PtrDynamicArray<VariableDecl> params;
 
-		if (!match(TokenType::ParenC))
-		{
-			params = parseDeclArray();
+    UniquePtr<Expr> init = nullptr;
 
-			if (!match(TokenType::ParenC))
-			{
-				throw ExpectedClosingParenException();
-			}
-		}
+    if (match(TokenType::Equal))
+    {
+        init = parseExpr();
+    }
 
-		if (!match(TokenType::BraceO))
-		{
-			throw ExpectedBraceException();
-		}
-
-		return makeUnique<FunctionDecl>(type, name, parseCompoundStmt(), std::move(params));
-	}
-
-	auto init = parseVariableInit();
-
-	if (!match(TokenType::Semicolon))
-	{
-		throw ExpectedSemicolonException();
-	}
-
-	return makeUnique<VariableDecl>(type, name, std::move(init));
+    return makeUnique<VariableDecl>(type, name, init);
 }
 
 /* ************************************************************************* */
 
-UniquePtr<Expr> Parser::parseVariableInit()
+Type Parser::parseDeclType()
 {
-	UniquePtr<Expr> init = nullptr;
-
-	if (match(TokenType::Equal))
-	{
-		init = parseExpr();
-	}
-
-	return std::move(init);
+    switch (m_tokenizer.get().getType())
+    {
+        case TokenType::Auto:
+            return Type(TypeKind::Auto);
+        case TokenType::Any:
+            return Type(TypeKind::Any);
+        case TokenType::Int:
+            return Type(TypeKind::Int);
+        case TokenType::Bool:
+            return Type(TypeKind::Bool);
+        case TokenType::Char:
+            return Type(TypeKind::Char);
+        case TokenType::Float:
+            return Type(TypeKind::Float);
+        case TokenType::String:
+            return Type(TypeKind::String);
+        case TokenType::Identifier:
+            return Type(getIdentifier());
+        default:
+            throw ExpectedDeclException();
+    }
 }
 
 /* ************************************************************************* */
@@ -190,47 +185,8 @@ PtrDynamicArray<VariableDecl> Parser::parseDeclArray()
 
 	do
 	{
-		switch (m_tokenizer.get().getType())
-		{
-			case TokenType::Auto:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::Auto)));
-				break;
-			case TokenType::Var:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::Var)));
-				break;
-			case TokenType::Int:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::Int)));
-				break;
-			case TokenType::Bool:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::Bool)));
-				break;
-			case TokenType::Char:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::Char)));
-				break;
-			case TokenType::Float:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::Float)));
-				break;
-			case TokenType::String:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::String)));
-				break;
-			case TokenType::Identifier:
-			{
-				const Type type(getIdentifier());
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(type));
-				break;
-			}
-			default:
-				throw ExpectedDeclException();
-		}
-	}
+        temp.push_back(parseVariableDecl());
+    }
 	while (match(TokenType::Comma));
 
 	return std::move(temp);
@@ -304,37 +260,10 @@ UniquePtr<Stmt> Parser::parseStmt()
 		case TokenType::Try:
 			m_tokenizer.toss();
 			return parseTryCatchStmt();
-		case TokenType::Auto:
+		case TokenType::Variable:
 			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Auto));
+			temp = makeUnique<DeclStmt>(parseVariableDecl());
 			break;
-		case TokenType::Var:
-			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Var));
-			break;
-		case TokenType::Int:
-			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Int));
-			break;
-		case TokenType::Bool:
-			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Bool));
-			break;
-		case TokenType::Char:
-			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Char));
-			break;
-		case TokenType::Float:
-			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Float));
-			break;
-		case TokenType::String:
-			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::String));
-			break;
-		case TokenType::Identifier:
-			// TODO decision making
-
 		default:
 			temp = makeUnique<ExprStmt>(parseExpr());
 	}
