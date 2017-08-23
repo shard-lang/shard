@@ -36,7 +36,7 @@ enum class TypeKind
 {
     /// Special type which allows to store any type at runtime. It's universal
     /// variable type.
-    Var,
+    Any,
 
     /// Automatic variable type which is deduced by initializer expression. The
     /// type cannot be changed later and only values with same type can be
