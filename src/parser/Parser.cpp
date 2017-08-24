@@ -112,15 +112,15 @@ UniquePtr<FunctionDecl> Parser::parseFunctionDecl()
 
     PtrDynamicArray<VariableDecl> params;
 
-    if (!match(TokenType::ParenC))
-    {
-        params = parseDeclArray();
+	while (!match(TokenType::ParenC))
+	{
+		if (!match(TokenType::Variable))
+		{
+			throw ExpectedDeclException();
+		}
 
-        if (!match(TokenType::ParenC))
-        {
-            throw ExpectedClosingParenException();
-        }
-    }
+		params.push_back(parseVariableDecl());
+	}
 
     if (!match(TokenType::BraceO))
     {
@@ -147,7 +147,7 @@ UniquePtr<VariableDecl> Parser::parseVariableDecl()
         init = parseExpr();
     }
 
-    return makeUnique<VariableDecl>(type, name, init);
+    return makeUnique<VariableDecl>(type, name, std::move(init));
 }
 
 /* ************************************************************************* */
@@ -175,21 +175,6 @@ Type Parser::parseDeclType()
         default:
             throw ExpectedDeclException();
     }
-}
-
-/* ************************************************************************* */
-
-PtrDynamicArray<VariableDecl> Parser::parseDeclArray()
-{
-	PtrDynamicArray<VariableDecl> temp;
-
-	do
-	{
-        temp.push_back(parseVariableDecl());
-    }
-	while (match(TokenType::Comma));
-
-	return std::move(temp);
 }
 
 /* ************************************************************************* */
