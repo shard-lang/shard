@@ -108,6 +108,7 @@ TEST(BinaryExpr, base)
         EXPECT_FLOAT_EQ(1.0, expr.getLhs()->cast<FloatLiteralExpr>().getValue());
         EXPECT_FLOAT_EQ(4.0, expr.getRhs()->cast<FloatLiteralExpr>().getValue());
 
+        // 1.0 - 50.3
         expr.setRhs(FloatLiteralExpr::make(50.3));
         EXPECT_EQ(BinaryExpr::OpKind::Sub, expr.getOpKind());
         ASSERT_NE(nullptr, expr.getLhs());

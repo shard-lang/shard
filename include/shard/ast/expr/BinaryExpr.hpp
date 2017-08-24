@@ -78,13 +78,35 @@ public:
         Div,
         Rem,
 
+        // Bool operators
+        And,
+        Or,
+
+        // Bitwise operators
+        BwAnd,
+        BwOr,
+        BwXor,
+        LShift,
+        RShift,
+
         // Assignment operators
         Assign,
+
+        AddAssign,
+        SubAssign,
+
         MulAssign,
         DivAssign,
         RemAssign,
-        AddAssign,
-        SubAssign
+
+        AndAssign,
+        OrAssign,
+
+        BwAndAssign,
+        BwOrAssign,
+        BwXorAssign,
+        LShiftAssign,
+        RShiftAssign
     };
 
 
