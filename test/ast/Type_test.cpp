@@ -30,8 +30,8 @@ using namespace shard::ast;
 TEST(TypeInfo, construction)
 {
     {
-        const Type type(TypeKind::Var);
-        EXPECT_EQ(TypeKind::Var, type.getKind());
+        const Type type(TypeKind::Any);
+        EXPECT_EQ(TypeKind::Any, type.getKind());
     }
 
     {
@@ -51,8 +51,8 @@ TEST(TypeInfo, construction)
 TEST(TypeInfo, compare)
 {
     {
-        const Type type1(TypeKind::Var);
-        const Type type2(TypeKind::Var);
+        const Type type1(TypeKind::Any);
+        const Type type2(TypeKind::Any);
 
         EXPECT_EQ(type1, type2);
     }
