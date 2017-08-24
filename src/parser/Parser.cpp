@@ -630,13 +630,19 @@ UniquePtr<Expr> Parser::parseBitwiseExpr()
     {
         case TokenType::Amp:
             m_tokenizer.toss();
-            return BinaryExpr::make(BinaryExpr::OpKind::Mul, std::move(temp), parseExpr());
+            return BinaryExpr::make(BinaryExpr::OpKind::BwAnd, std::move(temp), parseExpr());
         case TokenType::Pipe:
             m_tokenizer.toss();
-            return BinaryExpr::make(BinaryExpr::OpKind::Div, std::move(temp), parseExpr());
+            return BinaryExpr::make(BinaryExpr::OpKind::BwOr, std::move(temp), parseExpr());
         case TokenType::Caret:
             m_tokenizer.toss();
-            return BinaryExpr::make(BinaryExpr::OpKind::Rem, std::move(temp), parseExpr());
+            return BinaryExpr::make(BinaryExpr::OpKind::BwXor, std::move(temp), parseExpr());
+        case TokenType::LessLess:
+            m_tokenizer.toss();
+            return BinaryExpr::make(BinaryExpr::OpKind::LShift, std::move(temp), parseExpr());
+        case TokenType::GreaterGreater:
+            m_tokenizer.toss();
+            return BinaryExpr::make(BinaryExpr::OpKind::RShift, std::move(temp), parseExpr());
 
         default:
             return std::move(temp);
