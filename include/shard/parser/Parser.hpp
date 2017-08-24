@@ -107,11 +107,6 @@ private:
     ast::Type parseDeclType();
 
     /**
-     * @brief parse function parameter pack.
-     */
-    PtrDynamicArray<ast::VariableDecl> parseDeclArray();
-
-    /**
      * @brief parse list of expresions.
      */
     PtrDynamicArray<ast::Expr> parseExprArray();
@@ -193,6 +188,11 @@ private:
      * @brief parse multiplicative expression.
      */
     UniquePtr<ast::Expr> parseMultiplicativeExpr();
+
+    /**
+     * @brief parse bitwise expression.
+     */
+    UniquePtr<ast::Expr> parseBitwiseExpr();
 
     /**
      * @brief parse prefix unary expression.

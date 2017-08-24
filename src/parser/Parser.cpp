@@ -85,14 +85,14 @@ UniquePtr<ClassDecl> Parser::parseClassDecl()
 		throw ExpectedBraceException();
 	}
 
-	auto decls = parseDeclList();
+	auto declList = parseDeclList();
 
 	if (!match(TokenType::BraceC))
 	{
 		throw ExpectedClosingBraceException();
 	}
 
-	return makeUnique<ClassDecl>(name, std::move(decls));
+	return ClassDecl::make(name, std::move(declList));
 }
 
 /* ************************************************************************* */
@@ -127,7 +127,7 @@ UniquePtr<FunctionDecl> Parser::parseFunctionDecl()
         throw ExpectedBraceException();
     }
 
-    return makeUnique<FunctionDecl>(type, name, parseCompoundStmt(), std::move(params));
+    return FunctionDecl::make(type, name, parseCompoundStmt(), std::move(params));
 }
 
 /* ************************************************************************* */
@@ -147,7 +147,7 @@ UniquePtr<VariableDecl> Parser::parseVariableDecl()
         init = parseExpr();
     }
 
-    return makeUnique<VariableDecl>(type, name, std::move(init));
+    return VariableDecl::make(type, name, std::move(init));
 }
 
 /* ************************************************************************* */
@@ -210,21 +210,21 @@ UniquePtr<Stmt> Parser::parseStmt()
 			m_tokenizer.toss();
 			if (match(TokenType::Semicolon))
 			{
-				return makeUnique<ReturnStmt>(nullptr);
+				return ReturnStmt::make(nullptr);
 			}
-			temp = makeUnique<ReturnStmt>(parseExpr());
+			temp = ReturnStmt::make(parseExpr());
 			break;
 		case TokenType::Break:
 			m_tokenizer.toss();
-			temp = makeUnique<BreakStmt>();
+			temp = BreakStmt::make();
 			break;
 		case TokenType::Continue: 
 			m_tokenizer.toss();
-			temp = makeUnique<ContinueStmt>();
+			temp = ContinueStmt::make();
 			break;
 		case TokenType::Throw: 
 			m_tokenizer.toss();
-			temp = makeUnique<ReturnStmt>(parseExpr());
+			temp = ReturnStmt::make(parseExpr());
 			break;
 		case TokenType::Do:
 			m_tokenizer.toss();
@@ -247,10 +247,10 @@ UniquePtr<Stmt> Parser::parseStmt()
 			return parseTryCatchStmt();
 		case TokenType::Variable:
 			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl());
+			temp = DeclStmt::make(parseVariableDecl());
 			break;
 		default:
-			temp = makeUnique<ExprStmt>(parseExpr());
+			temp = ExprStmt::make(parseExpr());
 	}
 
 	if (!match(TokenType::Semicolon))
@@ -286,7 +286,7 @@ UniquePtr<IfStmt> Parser::parseIfStmt()
 		elseStmt = parseStmt();
 	}
 
-	return makeUnique<IfStmt>(std::move(cond), std::move(thanStmt), std::move(elseStmt));
+	return IfStmt::make(std::move(cond), std::move(thanStmt), std::move(elseStmt));
 }
 
 /* ************************************************************************* */
@@ -324,7 +324,7 @@ UniquePtr<ForStmt> Parser::parseForStmt()
 		}
 	}
 
-	return makeUnique<ForStmt>(std::move(init), std::move(cond), std::move(incr), parseStmt());
+	return ForStmt::make(std::move(init), std::move(cond), std::move(incr), parseStmt());
 }
 
 /* ************************************************************************* */
@@ -343,7 +343,7 @@ UniquePtr<WhileStmt> Parser::parseWhileStmt()
 		throw ExpectedClosingParenException();
 	}
 
-	return makeUnique<WhileStmt>(std::move(cond), parseStmt());
+	return WhileStmt::make(std::move(cond), parseStmt());
 }
 
 /* ************************************************************************* */
@@ -367,14 +367,14 @@ UniquePtr<SwitchStmt> Parser::parseSwitchStmt()
 		throw ExpectedBraceException();
 	}
 
-	auto body = makeUnique<CompoundStmt>(parseCaseList());
+	auto body = CompoundStmt::make(parseCaseList());
 
 	if (!match(TokenType::BraceC))
 	{
 		throw ExpectedClosingBraceException();
 	}
 
-	return makeUnique<SwitchStmt>(std::move(cond), std::move(body));
+	return SwitchStmt::make(std::move(cond), std::move(body));
 }
 
 /* ************************************************************************* */
@@ -394,7 +394,7 @@ PtrDynamicArray<Stmt> Parser::parseCaseList()
 				throw ExpectedColonException();
 			}
 
-			temp.push_back(makeUnique<CaseStmt>(std::move(cond), parseCaseStmtList()));
+			temp.push_back(CaseStmt::make(std::move(cond), parseCaseStmtList()));
 			continue;
 		}
 		else if (match(TokenType::Default))
@@ -404,7 +404,7 @@ PtrDynamicArray<Stmt> Parser::parseCaseList()
 				throw ExpectedColonException();
 			}
 
-			temp.push_back(makeUnique<DefaultStmt>(parseCaseStmtList()));
+			temp.push_back(DefaultStmt::make(parseCaseStmtList()));
 			continue;
 		}
 
@@ -456,7 +456,7 @@ UniquePtr<DoWhileStmt> Parser::parseDoWhileStmt()
 		throw ExpectedClosingParenException();
 	}
 
-	return makeUnique<DoWhileStmt>(std::move(cond), std::move(body));
+	return DoWhileStmt::make(std::move(cond), std::move(body));
 }
 
 /* ************************************************************************* */
@@ -470,7 +470,7 @@ UniquePtr<CompoundStmt> Parser::parseCompoundStmt()
 		temp.push_back(parseStmt());
 	}
 
-	return makeUnique<CompoundStmt>(std::move(temp));
+	return CompoundStmt::make(std::move(temp));
 }
 
 /* ************************************************************************* */
@@ -496,29 +496,50 @@ UniquePtr<Expr> Parser::parseExpr()
 			throw ExpectedColonException();
 		}
 
-		return makeUnique<TernaryExpr>(std::move(temp), std::move(trueExpr), parseExpr());
+		return TernaryExpr::make(std::move(temp), std::move(trueExpr), parseExpr());
 	}
 
 	switch (m_tokenizer.get().getType())
 	{
 		case TokenType::Equal:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Assign, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::Assign, std::move(temp), parseExpr());
 		case TokenType::PlusEqual:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::AddAssign, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::AddAssign, std::move(temp), parseExpr());
 		case TokenType::MinusEqual:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::SubAssign, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::SubAssign, std::move(temp), parseExpr());
 		case TokenType::StarEqual:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::MulAssign, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::MulAssign, std::move(temp), parseExpr());
 		case TokenType::SlashEqual:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::DivAssign, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::DivAssign, std::move(temp), parseExpr());
 		case TokenType::PercentEqual:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::RemAssign, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::RemAssign, std::move(temp), parseExpr());
+        case TokenType::AmpEqual:
+            m_tokenizer.toss();
+            return BinaryExpr::make(BinaryExpr::OpKind::BwAndAssign, std::move(temp), parseExpr());
+        case TokenType::AmpAmpEqual:
+            m_tokenizer.toss();
+            return BinaryExpr::make(BinaryExpr::OpKind::AndAssign, std::move(temp), parseExpr());
+        case TokenType::PipeEqual:
+            m_tokenizer.toss();
+            return BinaryExpr::make(BinaryExpr::OpKind::BwOrAssign, std::move(temp), parseExpr());
+        case TokenType::PipePipeEqual:
+            m_tokenizer.toss();
+            return BinaryExpr::make(BinaryExpr::OpKind::OrAssign, std::move(temp), parseExpr());
+        case TokenType::CaretEqual:
+            m_tokenizer.toss();
+            return BinaryExpr::make(BinaryExpr::OpKind::BwXorAssign, std::move(temp), parseExpr());
+        case TokenType::LessLessEqual:
+            m_tokenizer.toss();
+            return BinaryExpr::make(BinaryExpr::OpKind::LShiftAssign, std::move(temp), parseExpr());
+        case TokenType::GreaterGreaterEqual:
+            m_tokenizer.toss();
+            return BinaryExpr::make(BinaryExpr::OpKind::RShiftAssign, std::move(temp), parseExpr());
 
 		default:
 			return std::move(temp);
@@ -535,22 +556,22 @@ UniquePtr<Expr> Parser::parseRelationalExpr()
 	{
 		case TokenType::EqualEqual:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::EQ, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::EQ, std::move(temp), parseExpr());
 		case TokenType::ExclaimEqual:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::NE, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::NE, std::move(temp), parseExpr());
 		case TokenType::Less:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::LT, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::LT, std::move(temp), parseExpr());
 		case TokenType::Greater:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::GT, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::GT, std::move(temp), parseExpr());
 		case TokenType::LessEqual:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::LE, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::LE, std::move(temp), parseExpr());
 		case TokenType::GreaterEqual:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::GE, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::GE, std::move(temp), parseExpr());
 
 		default: return std::move(temp);
 	}
@@ -566,10 +587,10 @@ UniquePtr<Expr> Parser::parseAdditiveExpr()
 	{
 		case TokenType::Plus:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Add, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::Add, std::move(temp), parseExpr());
 		case TokenType::Minus:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Sub, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::Sub, std::move(temp), parseExpr());
 
 		default:
 			return std::move(temp);
@@ -580,23 +601,46 @@ UniquePtr<Expr> Parser::parseAdditiveExpr()
 
 UniquePtr<Expr> Parser::parseMultiplicativeExpr()
 {
-	auto temp = parsePrefixUnaryExpr();
+	auto temp = parseBitwiseExpr();
 
 	switch (m_tokenizer.get().getType())
 	{
 		case TokenType::Star:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Mul, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::Mul, std::move(temp), parseExpr());
 		case TokenType::Slash:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Div, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::Div, std::move(temp), parseExpr());
 		case TokenType::Percent:
 			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Rem, std::move(temp), parseExpr());
+			return BinaryExpr::make(BinaryExpr::OpKind::Rem, std::move(temp), parseExpr());
 
 		default:
 			return std::move(temp);
 	}
+}
+
+/* ************************************************************************* */
+
+UniquePtr<Expr> Parser::parseBitwiseExpr()
+{
+    auto temp = parsePrefixUnaryExpr();
+
+    switch (m_tokenizer.get().getType())
+    {
+        case TokenType::Amp:
+            m_tokenizer.toss();
+            return BinaryExpr::make(BinaryExpr::OpKind::Mul, std::move(temp), parseExpr());
+        case TokenType::Pipe:
+            m_tokenizer.toss();
+            return BinaryExpr::make(BinaryExpr::OpKind::Div, std::move(temp), parseExpr());
+        case TokenType::Caret:
+            m_tokenizer.toss();
+            return BinaryExpr::make(BinaryExpr::OpKind::Rem, std::move(temp), parseExpr());
+
+        default:
+            return std::move(temp);
+    }
 }
 
 /* ************************************************************************* */
@@ -607,19 +651,19 @@ UniquePtr<Expr> Parser::parsePrefixUnaryExpr()
 	{
 		case TokenType::PlusPlus:
 			m_tokenizer.toss();
-			return makeUnique<UnaryExpr>(UnaryExpr::OpKind::PreInc, parsePrefixUnaryExpr());
+			return UnaryExpr::make(UnaryExpr::OpKind::PreInc, parsePrefixUnaryExpr());
 		case TokenType::MinusMinus: 
 			m_tokenizer.toss();
-			return makeUnique<UnaryExpr>(UnaryExpr::OpKind::PreDec, parsePrefixUnaryExpr());
+			return UnaryExpr::make(UnaryExpr::OpKind::PreDec, parsePrefixUnaryExpr());
 		case TokenType::Plus:       
 			m_tokenizer.toss();
-			return makeUnique<UnaryExpr>(UnaryExpr::OpKind::Plus, parsePrefixUnaryExpr());
+			return UnaryExpr::make(UnaryExpr::OpKind::Plus, parsePrefixUnaryExpr());
 		case TokenType::Minus:
 			m_tokenizer.toss();
-			return makeUnique<UnaryExpr>(UnaryExpr::OpKind::Minus, parsePrefixUnaryExpr());
+			return UnaryExpr::make(UnaryExpr::OpKind::Minus, parsePrefixUnaryExpr());
 		case TokenType::Exclaim:
 			m_tokenizer.toss();
-			return makeUnique<UnaryExpr>(UnaryExpr::OpKind::Not, parsePrefixUnaryExpr());
+			return UnaryExpr::make(UnaryExpr::OpKind::Not, parsePrefixUnaryExpr());
 
 		default:
 			return parsePostfixUnaryExpr();
@@ -637,24 +681,24 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
 		switch (m_tokenizer.get().getType())
 		{
 			case TokenType::PlusPlus:
-				temp = makeUnique<UnaryExpr>(UnaryExpr::OpKind::PostInc, std::move(temp));
+				temp = UnaryExpr::make(UnaryExpr::OpKind::PostInc, std::move(temp));
 				break;
 			case TokenType::MinusMinus:
-				temp = makeUnique<UnaryExpr>(UnaryExpr::OpKind::PostDec, std::move(temp));
+				temp = UnaryExpr::make(UnaryExpr::OpKind::PostDec, std::move(temp));
 				break;
 			case TokenType::Period:
 				m_tokenizer.toss();
-				temp = makeUnique<MemberAccessExpr>(std::move(temp), getIdentifier());
+				temp = MemberAccessExpr::make(std::move(temp), getIdentifier());
 				break;
 			case TokenType::ParenO:
 				m_tokenizer.toss();
 				if (is(TokenType::ParenC))
 				{
-					temp = makeUnique<FunctionCallExpr>(std::move(temp));
+					temp = FunctionCallExpr::make(std::move(temp));
 				}
 				else
 				{
-					temp = makeUnique<FunctionCallExpr>(std::move(temp), parseExprArray());
+					temp = FunctionCallExpr::make(std::move(temp), parseExprArray());
 					if (!is(TokenType::ParenC))
 					{
 						throw ExpectedClosingParenException();
@@ -663,7 +707,7 @@ UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
 				break;      
 			case TokenType::SquareO:
 				m_tokenizer.toss();
-				temp = makeUnique<SubscriptExpr>(std::move(temp), parseExprArray());
+				temp = SubscriptExpr::make(std::move(temp), parseExprArray());
 				if (!is(TokenType::SquareC))
 				{
 					throw ExpectedClosingSquareException();
@@ -686,23 +730,23 @@ UniquePtr<Expr> Parser::parsePrimaryExpr()
 	switch (token.getType())
 	{
 		case TokenType::Identifier:
-			return makeUnique<IdentifierExpr>(token.getValue<String>());
+			return IdentifierExpr::make(token.getValue<String>());
 		case TokenType::StringLiteral:
-			return makeUnique<StringLiteralExpr>(token.getValue<String>());
+			return StringLiteralExpr::make(token.getValue<String>());
 		case TokenType::FloatLiteral:
-			return makeUnique<FloatLiteralExpr>(token.getValue<Token::FloatType>());
+			return FloatLiteralExpr::make(token.getValue<Token::FloatType>());
 		case TokenType::CharLiteral:
-			return makeUnique<CharLiteralExpr>(token.getValue<Token::CharType>());
+			return CharLiteralExpr::make(token.getValue<Token::CharType>());
 		case TokenType::IntLiteral:
-			return makeUnique<IntLiteralExpr>(token.getValue<Token::IntType>());
+			return IntLiteralExpr::make(token.getValue<Token::IntType>());
 		case TokenType::ParenO:
 			return parseParenExpr();
-		case TokenType::Null:     
-			return makeUnique<NullLiteralExpr>();
+		case TokenType::Null:
+			return NullLiteralExpr::make();
 		case TokenType::True:   
-			return makeUnique<BoolLiteralExpr>(true);
+			return BoolLiteralExpr::make(true);
 		case TokenType::False: 
-			return makeUnique<BoolLiteralExpr>(false);
+			return BoolLiteralExpr::make(false);
 
 		default:
 			throw ExpectedExprException();
@@ -717,7 +761,7 @@ UniquePtr<Expr> Parser::parseParenExpr()
 
 	if (match(TokenType::ParenC))
 	{
-		return makeUnique<ParenExpr>(std::move(temp));
+		return ParenExpr::make(std::move(temp));
 	}
 
 	throw ExpectedClosingParenException();
