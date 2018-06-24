@@ -19,26 +19,27 @@
 /* ************************************************************************* */
 
 // C++
-#include <vector>
+#include "shard/Vector.hpp"
 
 /* ************************************************************************* */
 
 namespace shard {
-inline namespace v1 {
 
 /* ************************************************************************* */
 
 /**
  * @brief      Free storage allocated dynamic array.
+ *
  * @tparam     T          Element type.
  * @tparam     Allocator  Allocator type.
+ *
+ * @deprecated use Vector instead
  */
-template<typename T, typename Allocator = std::allocator<T>>
-using DynamicArray = std::vector<T, Allocator>;
+template<typename T>
+using DynamicArray [[deprecated("use Vector instead")]] = Vector<T>;
 
 /* ************************************************************************* */
 
-}
-}
+} // namespace shard
 
 /* ************************************************************************* */

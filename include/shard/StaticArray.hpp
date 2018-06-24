@@ -19,25 +19,26 @@
 /* ************************************************************************* */
 
 // C++
-#include <array>
+#include "shard/Array.hpp"
 
 /* ************************************************************************* */
 
 namespace shard {
-inline namespace v1 {
 
 /* ************************************************************************* */
 
 /**
- * @brief Static array.
- * @tparam T Element type.
+ * @brief      Static array.
+ *
+ * @tparam     T     Element type.
+ *
+ * @deprecated Use Array instead.
  */
 template<typename T, std::size_t N>
-using StaticArray = std::array<T, N>;
+using StaticArray [[deprecated("Use Array instead")]] = Array<T, N>;
 
 /* ************************************************************************* */
 
-}
-}
+} // namespace shard
 
 /* ************************************************************************* */

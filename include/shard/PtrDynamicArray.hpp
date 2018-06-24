@@ -19,27 +19,27 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
-#include "shard/DynamicArray.hpp"
+#include "shard/PtrVector.hpp"
 
 /* ************************************************************************* */
 
 namespace shard {
-inline namespace v1 {
 
 /* ************************************************************************* */
 
 /**
  * @brief      Free storage allocated dynamic array of unique pointers.
+ *
  * @tparam     T          Element type.
  * @tparam     Allocator  Allocator type.
+ *
+ * @deprecated "use PtrVector instead
  */
-template<typename T, typename Allocator = std::allocator<T>>
-using PtrDynamicArray = DynamicArray<UniquePtr<T>, Allocator>;
+template<typename T>
+using PtrDynamicArray [[deprecated("use PtrVector instead")]] = PtrVector<T>;
 
 /* ************************************************************************* */
 
-}
-}
+} // namespace shard
 
 /* ************************************************************************* */

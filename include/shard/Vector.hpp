@@ -19,7 +19,7 @@
 /* ************************************************************************* */
 
 // C++
-#include <experimental/string_view>
+#include <vector>
 
 /* ************************************************************************* */
 
@@ -28,9 +28,12 @@ namespace shard {
 /* ************************************************************************* */
 
 /**
- * @brief      String view type.
+ * @brief      Free storage allocated dynamic array.
+ *
+ * @tparam     T          Element type.
  */
-using StringView = std::experimental::string_view;
+template<typename T>
+using Vector = std::vector<T>;
 
 /* ************************************************************************* */
 

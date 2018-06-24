@@ -18,27 +18,26 @@
 
 /* ************************************************************************* */
 
-// C++
-#include <array>
+// Shard
+#include "shard/UniquePtr.hpp"
+#include "shard/Vector.hpp"
 
 /* ************************************************************************* */
 
 namespace shard {
-inline namespace v1 {
 
 /* ************************************************************************* */
 
 /**
- * @brief Local allocated fixed size array.
- * @tparam T Element type.
- * @tparam N Number of elements.
+ * @brief      Free storage allocated dynamic array of unique pointers.
+ *
+ * @tparam     T     Element type.
  */
-template<typename T, size_t N>
-using FixedArray = std::array<T, N>;
+template<typename T>
+using PtrVector = Vector<UniquePtr<T>>;
 
 /* ************************************************************************* */
 
-}
-}
+} // namespace shard
 
 /* ************************************************************************* */

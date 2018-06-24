@@ -24,23 +24,20 @@
 /* ************************************************************************* */
 
 namespace shard {
-inline namespace v1 {
 
 /* ************************************************************************* */
 
 /**
- * @brief Tree map.
- * @tparam Key Key type.
- * @tparam T Value type.
- * @tparam Compare
- * @tparam Allocator
+ * @brief      Map type.
+ *
+ * @tparam     Key   Key type.
+ * @tparam     T     Value type.
  */
-template<typename Key, typename T, typename Compare = std::less<Key>, class Allocator = std::allocator<std::pair<const Key, T>>>
-using Map = std::map<Key, T, Compare, Allocator>;
+template<typename Key, typename T>
+using Map = std::map<Key, T>;
 
 /* ************************************************************************* */
 
-}
-}
+} // namespace shard
 
 /* ************************************************************************* */

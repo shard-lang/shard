@@ -30,7 +30,7 @@ endif ()
 
 # Create test executable
 add_executable(shard-core_test
-    SourceLocation.cpp
+    SourceLocation_test.cpp
     ViewPtr.cpp
 )
 

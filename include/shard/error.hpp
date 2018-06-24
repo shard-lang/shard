@@ -24,19 +24,18 @@
 /* ************************************************************************* */
 
 namespace shard {
-inline namespace v1 {
 
 /* ************************************************************************* */
 
 /**
- * @brief Prints error and terminate application.
- * @param str Error string.
+ * @brief      Prints error and terminate application.
+ *
+ * @param      str   Error string.
  */
 [[noreturn]] void error(StringView str) noexcept;
 
 /* ************************************************************************* */
 
-}
-}
+} // namespace shard
 
 /* ************************************************************************* */

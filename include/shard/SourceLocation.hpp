@@ -19,34 +19,30 @@
 /* ************************************************************************* */
 
 namespace shard {
-inline namespace v1 {
 
 /* ************************************************************************* */
 
 /**
- * @brief Stores source file location.
+ * @brief      Stores source file location.
  *
- * Values should be in range:
- *   Line: [1, N]
- *   Column: [1, M]
+ * @details    Values should be in range: Line: [1, N] Column: [1, M]
  */
 class SourceLocation
 {
 
-// Public Ctors & Dtors
 public:
-
+    // Ctors & Dtors
 
     /**
-     * @brief Default constructor.
+     * @brief      Default constructor.
      */
     SourceLocation() = default;
 
-
     /**
-     * @brief Constructor.
-     * @param line   Line number.
-     * @param column Column number.
+     * @brief      Constructor.
+     *
+     * @param      line    Line number.
+     * @param      column  Column number.
      */
     SourceLocation(int line, int column) noexcept
         : m_line(line)
@@ -55,104 +51,216 @@ public:
         // Nothing to do
     }
 
-
-// Public Operators
 public:
-
+    // Operators
 
     /**
-     * @brief Bool operator.
-     * @return If location is valid.
+     * @brief      Bool operator.
+     *
+     * @return     If location is valid.
      */
     explicit operator bool() const noexcept
     {
         return m_line != 0 && m_column != 0;
     }
 
-
-// Public Accessors & Mutators
 public:
-
+    // Accessors & Mutators
 
     /**
-     * @brief Returns line number.
-     * @return Line number.
+     * @brief      Returns line number.
+     *
+     * @return     Line number.
      */
-    int getLine() const noexcept
+    int line() const noexcept
     {
         return m_line;
     }
 
-
     /**
-     * @brief Returns column number.
-     * @return Column number.
+     * @brief      Returns column number.
+     *
+     * @return     Column number.
      */
-    int getColumn() const noexcept
+    int column() const noexcept
     {
         return m_column;
     }
 
-
     /**
-     * @brief Increments line number and sets column number to 1.
+     * @brief      Increments line number and sets column number to 1.
      */
-    void addLine() noexcept
+    void incLine() noexcept
     {
         ++m_line;
         m_column = 1;
     }
 
-
     /**
-     * @brief Increments column number.
+     * @brief      Increments column number.
      */
-    void addColumn() noexcept
+    void incColumn() noexcept
     {
         ++m_column;
     }
 
+    /**
+     * @brief      Returns line number.
+     *
+     * @return     Line number.
+     */
+    [[deprecated]] int getLine() const noexcept
+    {
+        return m_line;
+    }
 
-// Private Data Members
+    /**
+     * @brief      Returns column number.
+     *
+     * @return     Column number.
+     */
+    [[deprecated]] int getColumn() const noexcept
+    {
+        return m_column;
+    }
+
+    /**
+     * @brief      Increments line number and sets column number to 1.
+     */
+    [[deprecated]] void addLine() noexcept
+    {
+        ++m_line;
+        m_column = 1;
+    }
+
+    /**
+     * @brief      Increments column number.
+     */
+    [[deprecated]] void addColumn() noexcept
+    {
+        ++m_column;
+    }
+
+    // Private Data Members
 private:
-
     /// Line number.
     int m_line = 0;
 
     /// Column number.
     int m_column = 0;
-
 };
 
 /* ************************************************************************* */
 
 /**
- * @brief Source location equals operator.
- * @param lhs The first source location.
- * @param rhs The second source location.
- * @return If source locations are equals.
+ * @brief      Source location equals operator.
+ *
+ * @param      lhs   The first source location.
+ * @param      rhs   The second source location.
+ *
+ * @return     If source locations are equals.
  */
-inline bool operator==(const SourceLocation& lhs, const SourceLocation& rhs) noexcept
+inline bool operator==(
+    const SourceLocation& lhs,
+    const SourceLocation& rhs) noexcept
 {
-    return lhs.getLine() == rhs.getLine() && lhs.getColumn() == rhs.getColumn();
+    return lhs.line() == rhs.line() && lhs.column() == rhs.column();
 }
 
 /* ************************************************************************* */
 
 /**
- * @brief Source location not equals operator.
- * @param lhs The first source location.
- * @param rhs The second source location.
- * @return If source locations not are equals.
+ * @brief      Source location not equals operator.
+ *
+ * @param      lhs   The first source location.
+ * @param      rhs   The second source location.
+ *
+ * @return     If source locations not are equals.
  */
-inline bool operator!=(const SourceLocation& lhs, const SourceLocation& rhs) noexcept
+inline bool operator!=(
+    const SourceLocation& lhs,
+    const SourceLocation& rhs) noexcept
 {
     return !operator==(lhs, rhs);
 }
 
 /* ************************************************************************* */
 
+/**
+ * @brief      Source location less operator.
+ *
+ * @param      lhs   The first source location.
+ * @param      rhs   The second source location.
+ *
+ * @return     Comparision result.
+ */
+inline bool operator<(
+    const SourceLocation& lhs,
+    const SourceLocation& rhs) noexcept
+{
+    if (lhs.line() < rhs.line())
+        return true;
+
+    if (lhs.line() > rhs.line())
+        return false;
+
+    // lhs.line() == rhs.line()
+    return lhs.column() < rhs.column();
 }
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Source location less operator.
+ *
+ * @param      lhs   The first source location.
+ * @param      rhs   The second source location.
+ *
+ * @return     Comparision result.
+ */
+inline bool operator>(
+    const SourceLocation& lhs,
+    const SourceLocation& rhs) noexcept
+{
+    return operator<(rhs, lhs);
 }
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Source location less equal operator.
+ *
+ * @param      lhs   The first source location.
+ * @param      rhs   The second source location.
+ *
+ * @return     Comparision result.
+ */
+inline bool operator<=(
+    const SourceLocation& lhs,
+    const SourceLocation& rhs) noexcept
+{
+    return !operator>(lhs, rhs);
+}
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Source location greater equal operator.
+ *
+ * @param      lhs   The first source location.
+ * @param      rhs   The second source location.
+ *
+ * @return     Comparision result.
+ */
+inline bool operator>=(
+    const SourceLocation& lhs,
+    const SourceLocation& rhs) noexcept
+{
+    return !operator<(lhs, rhs);
+}
+
+/* ************************************************************************* */
+
+} // namespace shard
 
 /* ************************************************************************* */

@@ -17,7 +17,7 @@
 // GTest
 #include "gtest/gtest.h"
 
-// CeCe
+// Shard
 #include "shard/SourceLocation.hpp"
 
 /* ************************************************************************ */
@@ -26,16 +26,23 @@ using namespace shard;
 
 /* ************************************************************************ */
 
+::std::ostream& operator<<(::std::ostream& os, const shard::SourceLocation& loc)
+{
+    return os << loc.line() << ":" << loc.column();
+}
+
+/* ************************************************************************ */
+
 TEST(SourceLocationTest, constructor)
 {
     SourceLocation loc1;
     SourceLocation loc2(100, 1000);
 
-    EXPECT_EQ(0, loc1.getLine());
-    EXPECT_EQ(0, loc1.getColumn());
+    EXPECT_EQ(0, loc1.line());
+    EXPECT_EQ(0, loc1.column());
 
-    EXPECT_EQ(100, loc2.getLine());
-    EXPECT_EQ(1000, loc2.getColumn());
+    EXPECT_EQ(100, loc2.line());
+    EXPECT_EQ(1000, loc2.column());
 }
 
 /* ************************************************************************ */
@@ -93,6 +100,20 @@ TEST(SourceLocationTest, relationalOperators)
     EXPECT_NE(loc5, loc2);
     EXPECT_NE(loc5, loc3);
     EXPECT_NE(loc5, loc4);
+
+    EXPECT_LE(loc2, loc3);
+    EXPECT_LE(loc4, loc2);
+    EXPECT_LE(loc5, loc4);
+
+    EXPECT_LT(loc4, loc2);
+    EXPECT_LT(loc5, loc4);
+
+    EXPECT_GE(loc2, loc3);
+    EXPECT_GE(loc2, loc4);
+    EXPECT_GE(loc3, loc5);
+
+    EXPECT_GT(loc2, loc4);
+    EXPECT_GT(loc3, loc5);
 }
 
 /* ************************************************************************ */

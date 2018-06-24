@@ -24,13 +24,13 @@
 /* ************************************************************************* */
 
 namespace shard {
-inline namespace v1 {
 
 /* ************************************************************************* */
 
 /**
- * @brief RAII pointer wrapper.
- * @tparam T Type the pointer points to.
+ * @brief      RAII pointer wrapper.
+ *
+ * @tparam     T     Type the pointer points to.
  */
 template<typename T>
 using UniquePtr = std::unique_ptr<T>;
@@ -38,10 +38,15 @@ using UniquePtr = std::unique_ptr<T>;
 /* ************************************************************************* */
 
 /**
- * @brief Helper function for UniquePtr creation.
- * @tparam Args
- * @param args List of arguments with which an instance of T will be constructed.
- * @return UniquePtr of an instance of type T.
+ * @brief      Helper function for UniquePtr creation.
+ *
+ * @param      args       List of arguments with which an instance of T will
+ *                        be constructed.
+ *
+ * @tparam     T          Constructed object type.
+ * @tparam     Args       Construction arguments types.
+ *
+ * @return     UniquePtr of an instance of type T.
  */
 template<typename T, typename... Args>
 UniquePtr<T> makeUnique(Args&&... args)
@@ -57,9 +62,13 @@ class ViewPtr;
 /* ************************************************************************* */
 
 /**
- * @brief Create view from unique pointer.
- * @param ptr Unique pointer.
- * @return View pointer.
+ * @brief      Create view from unique pointer.
+ *
+ * @param      ptr   Unique pointer.
+ *
+ * @tparam     T     Object type.
+ *
+ * @return     View pointer.
  */
 template<typename T>
 ViewPtr<T> makeView(const UniquePtr<T>& ptr) noexcept
@@ -69,7 +78,6 @@ ViewPtr<T> makeView(const UniquePtr<T>& ptr) noexcept
 
 /* ************************************************************************* */
 
-}
-}
+} // namespace shard
 
 /* ************************************************************************* */

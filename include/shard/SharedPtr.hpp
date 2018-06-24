@@ -24,13 +24,13 @@
 /* ************************************************************************* */
 
 namespace shard {
-inline namespace v1 {
 
 /* ************************************************************************* */
 
 /**
- * @brief Shared pointer.
- * @tparam T Type the pointer points to.
+ * @brief      Shared pointer.
+ *
+ * @tparam     T     Type the pointer points to.
  */
 template<typename T>
 using SharedPtr = std::shared_ptr<T>;
@@ -38,10 +38,16 @@ using SharedPtr = std::shared_ptr<T>;
 /* ************************************************************************* */
 
 /**
- * @brief Constructs an object of type T and wraps it in a SharedPtr using args as the parameter list for the constructor of T.
- * @tparam T
- * @param args List of arguments with which an instance of T will be constructed.
- * @return SharedPtr of an instance of type T.
+ * @brief      Constructs an object of type T and wraps it in a SharedPtr using
+ *             args as the parameter list for the constructor of T.
+ *
+ * @param      args  List of arguments with which an instance of T will be
+ *                   constructed.
+ *
+ * @tparam     T    Object type.
+ * @tparam     Args Argument types.
+ *
+ * @return     SharedPtr of an instance of type T.
  */
 template<typename T, typename... Args>
 SharedPtr<T> makeShared(Args&&... args)
@@ -51,7 +57,6 @@ SharedPtr<T> makeShared(Args&&... args)
 
 /* ************************************************************************* */
 
-}
-}
+} // namespace shard
 
 /* ************************************************************************* */

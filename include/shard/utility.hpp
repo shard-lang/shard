@@ -24,19 +24,20 @@
 /* ************************************************************************* */
 
 namespace shard {
-inline namespace v1 {
 
 /* ************************************************************************* */
 
 /**
- * @brief Mark object as `move from`.
- * @see std::move
- * @tparam The object type.
- * @param The object to be moved.
- * @return
+ * @brief      Mark object as `move from`.
+ * @see        std::move
+ * @tparam     The   object type.
+ * @param      The   object to be moved.
+ * @return     Rvalue reference.
  */
 template<typename T>
-constexpr typename std::remove_reference<T>::type&& moveValue(T&& t) noexcept
+[[deprecated("use std::move")]] constexpr
+    typename std::remove_reference<T>::type&&
+    moveValue(T&& t) noexcept
 {
     return static_cast<typename std::remove_reference<T>::type&&>(t);
 }
@@ -44,14 +45,15 @@ constexpr typename std::remove_reference<T>::type&& moveValue(T&& t) noexcept
 /* ************************************************************************* */
 
 /**
- * @brief When used according to the following recipe in a function template,
- * forwards the argument to another function with the value category it
- * had when passed to the calling function.
- * @param t The object to be forwarded.
- * @return
+ * @brief      When used according to the following recipe in a function
+ *             template, forwards the argument to another function with the
+ *             value category it had when passed to the calling function.
+ * @param      t     The object to be forwarded.
+ * @return     Reference.
  */
 template<typename T>
-constexpr T&& forwardValue(typename std::remove_reference<T>::type& t) noexcept
+[[deprecated("use std::forward")]] constexpr T&& forwardValue(
+    typename std::remove_reference<T>::type& t) noexcept
 {
     return static_cast<T&&>(t);
 }
@@ -59,31 +61,30 @@ constexpr T&& forwardValue(typename std::remove_reference<T>::type& t) noexcept
 /* ************************************************************************* */
 
 /**
- * @brief When used according to the following recipe in a function template,
- * forwards the argument to another function with the value category it
- * had when passed to the calling function.
- * @param t The object to be forwarded.
- * @return
+ * @brief      When used according to the following recipe in a function
+ *             template, forwards the argument to another function with the
+ *             value category it had when passed to the calling function.
+ * @param      t     The object to be forwarded.
+ * @return     Reference.
  */
 template<typename T>
-constexpr T&& forwardValue(typename std::remove_reference<T>::type&& t) noexcept
+[[deprecated("use std::forward")]] constexpr T&& forwardValue(
+    typename std::remove_reference<T>::type&& t) noexcept
 {
     return static_cast<T&&>(t);
 }
 
-
 /* ************************************************************************* */
 
 /**
- * @brief Variable contains number of template arguments.
- * @tparam... Args Types to count.
+ * @brief      Variable contains number of template arguments.
+ * @tparam     ...   Args Types to count.
  */
 template<typename... Args>
 constexpr unsigned int ARG_COUNT = sizeof...(Args);
 
 /* ************************************************************************* */
 
-}
-}
+} // namespace shard
 
 /* ************************************************************************* */

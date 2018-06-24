@@ -24,8 +24,9 @@
 /* ************************************************************************* */
 
 /**
- * @brief Assert macro.
- * @param expr
+ * @brief      Assert macro.
+ *
+ * @param      expr  The expression
  */
 #define SHARD_ASSERT(expr) assert(expr)
 

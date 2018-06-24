@@ -24,30 +24,28 @@
 /* ************************************************************************* */
 
 namespace shard {
-inline namespace v1 {
 
 /* ************************************************************************* */
 
 /**
- * @brief Range of source code locations.
+ * @brief      Range of source code locations.
  */
 class SourceRange
 {
 
-// Public Ctors & Dtors
 public:
-
+    // Ctors & Dtors
 
     /**
-     * @brief Default constructor.
+     * @brief      Default constructor.
      */
     SourceRange() = default;
 
-
     /**
-     * @brief Constructor.
-     * @param start Start location.
-     * @param end   End location.
+     * @brief      Constructor.
+     *
+     * @param      start  Start location.
+     * @param      end    End location.
      */
     SourceRange(SourceLocation start, SourceLocation end) noexcept
         : m_start(start)
@@ -56,45 +54,61 @@ public:
         // Nothing to do
     }
 
-
-// Public Accessors & Mutators
 public:
-
+    // Accessors & Mutators
 
     /**
-     * @brief Returns start location.
-     * @return Start location.
+     * @brief      Returns start location.
+     *
+     * @return     Start location.
      */
-    const SourceLocation& getStart() const noexcept
+    [[deprecated]] const SourceLocation& getStart() const noexcept
     {
         return m_start;
     }
 
+    /**
+     * @brief      Returns start location.
+     *
+     * @return     Start location.
+     */
+    const SourceLocation& start() const noexcept
+    {
+        return m_start;
+    }
 
     /**
-     * @brief Returns end location
-     * @return End location.
+     * @brief      Returns end location
+     *
+     * @return     End location.
      */
-    const SourceLocation& getEnd() const noexcept
+    [[deprecated]] const SourceLocation& getEnd() const noexcept
     {
         return m_end;
     }
 
+    /**
+     * @brief      Returns end location
+     *
+     * @return     End location.
+     */
+    const SourceLocation& end() const noexcept
+    {
+        return m_end;
+    }
 
-// Private Data Members
 private:
+    // Data Members
 
     /// Start location.
     SourceLocation m_start;
 
     /// End location.
     SourceLocation m_end;
-
 };
 
 /* ************************************************************************* */
 
-}
-}
+} // namespace shard
 
 /* ************************************************************************* */
