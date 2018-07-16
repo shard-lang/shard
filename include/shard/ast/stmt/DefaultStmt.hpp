@@ -21,7 +21,7 @@
 // Shard
 #include "shard/utility.hpp"
 #include "shard/UniquePtr.hpp"
-#include "shard/PtrDynamicArray.hpp"
+#include "shard/PtrVector.hpp"
 #include "shard/ast/Stmt.hpp"
 
 /* ************************************************************************* */
@@ -56,7 +56,7 @@ public:
      * @param      body      Body statements.
      * @param      range     Source range.
      */
-    explicit DefaultStmt(PtrDynamicArray<Stmt> body = {}, SourceRange range = {});
+    explicit DefaultStmt(PtrVector<Stmt> body = {}, SourceRange range = {});
 
 
     /**
@@ -74,7 +74,7 @@ public:
      *
      * @return     The statements.
      */
-    const PtrDynamicArray<Stmt>& getStmts() const noexcept;
+    const PtrVector<Stmt>& getStmts() const noexcept;
 
 
     /**
@@ -82,7 +82,7 @@ public:
      *
      * @param      stmt  The new statements.
      */
-    void setStmts(PtrDynamicArray<Stmt> stmts);
+    void setStmts(PtrVector<Stmt> stmts);
 
 
     /**
@@ -105,14 +105,14 @@ public:
      *
      * @return     Created unique pointer.
      */
-    static UniquePtr<DefaultStmt> make(PtrDynamicArray<Stmt> body = {}, SourceRange range = {});
+    static UniquePtr<DefaultStmt> make(PtrVector<Stmt> body = {}, SourceRange range = {});
 
 
 // Private Data Members
 private:
 
     /// The statements.
-    PtrDynamicArray<Stmt> m_statements;
+    PtrVector<Stmt> m_statements;
 
 };
 
@@ -120,7 +120,7 @@ private:
 /* ************************************************************************* */
 /* ************************************************************************* */
 
-inline const PtrDynamicArray<Stmt>& DefaultStmt::getStmts() const noexcept
+inline const PtrVector<Stmt>& DefaultStmt::getStmts() const noexcept
 {
     return m_statements;
 }

@@ -26,7 +26,7 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-SubscriptExpr::SubscriptExpr(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
+SubscriptExpr::SubscriptExpr(UniquePtr<Expr> expr, PtrVector<Expr> args, SourceRange range)
     : Expr(Kind, range)
     , m_expr(std::move(expr))
     , m_arguments(std::move(args))
@@ -48,14 +48,14 @@ void SubscriptExpr::setExpr(UniquePtr<Expr> expr)
 
 /* ************************************************************************* */
 
-void SubscriptExpr::setArguments(PtrDynamicArray<Expr> args)
+void SubscriptExpr::setArguments(PtrVector<Expr> args)
 {
     m_arguments = std::move(args);
 }
 
 /* ************************************************************************* */
 
-UniquePtr<SubscriptExpr> SubscriptExpr::make(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
+UniquePtr<SubscriptExpr> SubscriptExpr::make(UniquePtr<Expr> expr, PtrVector<Expr> args, SourceRange range)
 {
     return makeUnique<SubscriptExpr>(std::move(expr), std::move(args), std::move(range));
 }

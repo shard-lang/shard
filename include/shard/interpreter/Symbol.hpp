@@ -18,8 +18,10 @@
 
 /* ************************************************************************* */
 
+// C++
+#include <utility>
+
 // Shard
-#include "shard/utility.hpp"
 #include "shard/interpreter/Value.hpp"
 
 /* ************************************************************************* */
@@ -132,7 +134,7 @@ inline const Value& Symbol::getValue() const noexcept
 
 inline void Symbol::setValue(Value value) noexcept
 {
-    m_value = moveValue(value);
+    m_value = std::move(value);
 }
 
 /* ************************************************************************* */

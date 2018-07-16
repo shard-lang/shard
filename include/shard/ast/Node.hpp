@@ -101,14 +101,14 @@ inline const SourceRange& Node::getSourceRange() const noexcept
 
 inline const SourceLocation& Node::getSourceStart() const noexcept
 {
-    return getSourceRange().getStart();
+    return getSourceRange().start();
 }
 
 /* ************************************************************************* */
 
 inline const SourceLocation& Node::getSourceEnd() const noexcept
 {
-    return getSourceRange().getEnd();
+    return getSourceRange().end();
 }
 
 /* ************************************************************************* */

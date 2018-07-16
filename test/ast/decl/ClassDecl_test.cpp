@@ -64,12 +64,12 @@ TEST(ClassDecl, base)
         EXPECT_EQ("Point", decl.getName());
         EXPECT_TRUE(decl.getDecls().empty());
 
-        PtrDynamicArray<Decl> decls;
+        PtrVector<Decl> decls;
         decls.push_back(VariableDecl::make(TypeKind::Int, "x"));
         decls.push_back(VariableDecl::make(TypeKind::Int, "y"));
 
         // class Point { int x; int y; }
-        decl.setDecls(moveValue(decls));
+        decl.setDecls(std::move(decls));
 
         EXPECT_FALSE(decl.getDecls().empty());
         ASSERT_EQ(2, decl.getDecls().size());

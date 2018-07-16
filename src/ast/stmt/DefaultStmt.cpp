@@ -27,7 +27,7 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-DefaultStmt::DefaultStmt(PtrDynamicArray<Stmt> stmts, SourceRange range)
+DefaultStmt::DefaultStmt(PtrVector<Stmt> stmts, SourceRange range)
     : Stmt(Kind, range)
     , m_statements(std::move(stmts))
 {
@@ -40,7 +40,7 @@ DefaultStmt::~DefaultStmt() = default;
 
 /* ************************************************************************* */
 
-void DefaultStmt::setStmts(PtrDynamicArray<Stmt> stmts)
+void DefaultStmt::setStmts(PtrVector<Stmt> stmts)
 {
     m_statements = std::move(stmts);
 }
@@ -54,7 +54,7 @@ void DefaultStmt::addStmt(UniquePtr<Stmt> stmt)
 
 /* ************************************************************************* */
 
-UniquePtr<DefaultStmt> DefaultStmt::make(PtrDynamicArray<Stmt> body, SourceRange range)
+UniquePtr<DefaultStmt> DefaultStmt::make(PtrVector<Stmt> body, SourceRange range)
 {
     return makeUnique<DefaultStmt>(std::move(body), range);
 }

@@ -26,7 +26,7 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-FunctionCallExpr::FunctionCallExpr(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
+FunctionCallExpr::FunctionCallExpr(UniquePtr<Expr> expr, PtrVector<Expr> args, SourceRange range)
     : Expr(Kind, range)
     , m_expr(std::move(expr))
     , m_arguments(std::move(args))
@@ -48,14 +48,14 @@ void FunctionCallExpr::setExpr(UniquePtr<Expr> expr)
 
 /* ************************************************************************* */
 
-void FunctionCallExpr::setArguments(PtrDynamicArray<Expr> args)
+void FunctionCallExpr::setArguments(PtrVector<Expr> args)
 {
     m_arguments = std::move(args);
 }
 
 /* ************************************************************************* */
 
-UniquePtr<FunctionCallExpr> FunctionCallExpr::make(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
+UniquePtr<FunctionCallExpr> FunctionCallExpr::make(UniquePtr<Expr> expr, PtrVector<Expr> args, SourceRange range)
 {
     return makeUnique<FunctionCallExpr>(std::move(expr), std::move(args), std::move(range));
 }

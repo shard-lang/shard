@@ -26,7 +26,7 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-Unit::Unit(PtrDynamicArray<Decl> decls)
+Unit::Unit(PtrVector<Decl> decls)
     : m_declarations(std::move(decls))
 {
     // Nothing to do
@@ -38,7 +38,7 @@ Unit::~Unit() = default;
 
 /* ************************************************************************* */
 
-void Unit::setDeclarations(PtrDynamicArray<Decl> decls)
+void Unit::setDeclarations(PtrVector<Decl> decls)
 {
     m_declarations = std::move(decls);
 }

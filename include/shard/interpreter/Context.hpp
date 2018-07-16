@@ -22,7 +22,7 @@
 #include "shard/ViewPtr.hpp"
 #include "shard/String.hpp"
 #include "shard/StringView.hpp"
-#include "shard/DynamicArray.hpp"
+#include "shard/Vector.hpp"
 #include "shard/Map.hpp"
 #include "shard/ast/Type.hpp"
 #include "shard/interpreter/Symbol.hpp"
@@ -89,7 +89,7 @@ public:
 private:
 
     /// Scope based symbol table.
-    DynamicArray<Map<String, Symbol>> m_scopes;
+    Vector<Map<String, Symbol>> m_scopes;
 
 };
 

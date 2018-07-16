@@ -78,11 +78,11 @@ TEST(CaseStmt, base)
         EXPECT_TRUE(stmt.getExpr()->is<IntLiteralExpr>());
         ASSERT_TRUE(stmt.getStmts().empty());
 
-        PtrDynamicArray<Stmt> stmts;
+        PtrVector<Stmt> stmts;
         stmts.push_back(ExprStmt::make());
 
         // case 0: ;
-        stmt.setStmts(moveValue(stmts));
+        stmt.setStmts(std::move(stmts));
 
         EXPECT_EQ(StmtKind::Case, stmt.getKind());
         EXPECT_TRUE(stmt.is<CaseStmt>());

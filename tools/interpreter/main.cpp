@@ -62,7 +62,7 @@ UniquePtr<ast::Unit> createAst(StringView filename)
         std::back_inserter(input)
     );
 
-    return parser::Parser(moveValue(input)).parseUnit();
+    return parser::Parser(std::move(input)).parseUnit();
 }
 
 /* ************************************************************************* */

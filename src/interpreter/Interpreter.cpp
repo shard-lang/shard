@@ -18,6 +18,7 @@
 #include "shard/interpreter/Interpreter.hpp"
 
 // C++
+#include <utility>
 #include <cstdio>
 
 // Shard
@@ -184,7 +185,7 @@ void interpretReturnStmt(ViewPtr<const ast::ReturnStmt> stmt, Context& ctx)
 
     auto retSym = ctx.findSymbol("return");
     SHARD_ASSERT(retSym);
-    retSym->setValue(moveValue(ret));
+    retSym->setValue(std::move(ret));
 }
 
 /* ************************************************************************* */

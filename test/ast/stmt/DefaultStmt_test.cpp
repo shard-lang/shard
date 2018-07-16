@@ -80,11 +80,11 @@ TEST(DefaultStmt, base)
         EXPECT_TRUE(stmt.is<DefaultStmt>());
         ASSERT_TRUE(stmt.getStmts().empty());
 
-        PtrDynamicArray<Stmt> stmts;
+        PtrVector<Stmt> stmts;
         stmts.push_back(ExprStmt::make());
 
         // default: ;
-        stmt.setStmts(moveValue(stmts));
+        stmt.setStmts(std::move(stmts));
 
         EXPECT_EQ(StmtKind::Default, stmt.getKind());
         EXPECT_TRUE(stmt.is<DefaultStmt>());

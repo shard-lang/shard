@@ -21,7 +21,7 @@
 // Shard
 #include "shard/UniquePtr.hpp"
 #include "shard/String.hpp"
-#include "shard/PtrDynamicArray.hpp"
+#include "shard/PtrVector.hpp"
 #include "shard/ast/decl/CompoundDecl.hpp"
 
 /* ************************************************************************* */
@@ -55,7 +55,7 @@ public:
      * @param      decls  The list of declarations.
      * @param      range  The declaration location within the source.
      */
-   explicit NamespaceDecl(String name, PtrDynamicArray<Decl> decls = {}, SourceRange range = {});
+   explicit NamespaceDecl(String name, PtrVector<Decl> decls = {}, SourceRange range = {});
 
 
    /**
@@ -77,7 +77,7 @@ public:
      *
      * @return     Created unique pointer.
      */
-    static UniquePtr<NamespaceDecl> make(String name, PtrDynamicArray<Decl> decls = {}, SourceRange range = {});
+    static UniquePtr<NamespaceDecl> make(String name, PtrVector<Decl> decls = {}, SourceRange range = {});
 
 };
 

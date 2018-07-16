@@ -62,7 +62,7 @@ TEST(DoWhileStmt, base)
         auto body = CompoundStmt::make();
         body->addStmt(BreakStmt::make());
 
-        stmt.setBodyStmt(moveValue(body));
+        stmt.setBodyStmt(std::move(body));
 
         ASSERT_NE(nullptr, stmt.getCondExpr());
         EXPECT_TRUE(stmt.getCondExpr()->is<BoolLiteralExpr>());

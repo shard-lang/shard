@@ -19,7 +19,7 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/PtrDynamicArray.hpp"
+#include "shard/PtrVector.hpp"
 #include "shard/ast/Decl.hpp"
 
 /* ************************************************************************* */
@@ -43,7 +43,7 @@ public:
      *
      * @param      decls  The declarations.
      */
-    explicit Unit(PtrDynamicArray<Decl> decls);
+    explicit Unit(PtrVector<Decl> decls);
 
 
     /**
@@ -61,7 +61,7 @@ public:
      *
      * @return     The declarations.
      */
-    const PtrDynamicArray<Decl>& getDeclarations() const noexcept;
+    const PtrVector<Decl>& getDeclarations() const noexcept;
 
 
     /**
@@ -69,7 +69,7 @@ public:
      *
      * @param      decls  The declarations.
      */
-    void setDeclarations(PtrDynamicArray<Decl> decls);
+    void setDeclarations(PtrVector<Decl> decls);
 
 
     /**
@@ -84,7 +84,7 @@ public:
 private:
 
     /// Declarations
-    PtrDynamicArray<Decl> m_declarations;
+    PtrVector<Decl> m_declarations;
 
 };
 
@@ -92,7 +92,7 @@ private:
 /* ************************************************************************* */
 /* ************************************************************************* */
 
-inline const PtrDynamicArray<Decl>& Unit::getDeclarations() const noexcept
+inline const PtrVector<Decl>& Unit::getDeclarations() const noexcept
 {
     return m_declarations;
 }

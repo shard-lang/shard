@@ -42,12 +42,12 @@ TEST(CompoundStmt, base)
     }
 
     {
-        PtrDynamicArray<Stmt> stmts;
+        PtrVector<Stmt> stmts;
         stmts.push_back(ExprStmt::make());
         stmts.push_back(ExprStmt::make(IntLiteralExpr::make(789)));
 
         // { ; 789; }
-        const CompoundStmt stmt(moveValue(stmts));
+        const CompoundStmt stmt(std::move(stmts));
 
         EXPECT_EQ(StmtKind::Compound, stmt.getKind());
         EXPECT_TRUE(stmt.is<CompoundStmt>());
@@ -77,12 +77,12 @@ TEST(CompoundStmt, base)
         EXPECT_TRUE(stmt.is<CompoundStmt>());
         EXPECT_TRUE(stmt.getStmts().empty());
 
-        PtrDynamicArray<Stmt> stmts;
+        PtrVector<Stmt> stmts;
         stmts.push_back(ExprStmt::make());
         stmts.push_back(ExprStmt::make(IntLiteralExpr::make(789)));
 
         // { ; 789; }
-        stmt.setStmts(moveValue(stmts));
+        stmt.setStmts(std::move(stmts));
 
         EXPECT_EQ(StmtKind::Compound, stmt.getKind());
         EXPECT_TRUE(stmt.is<CompoundStmt>());
@@ -104,24 +104,24 @@ TEST(CompoundStmt, base)
 TEST(CompoundStmt, parent)
 {
     {
-        PtrDynamicArray<Stmt> stmts;
+        PtrVector<Stmt> stmts;
         stmts.push_back(ExprStmt::make());
         stmts.push_back(ExprStmt::make(IntLiteralExpr::make(789)));
 
         // { ; 789; }
-        const CompoundStmt stmt(moveValue(stmts));
+        const CompoundStmt stmt(std::move(stmts));
 
         EXPECT_FALSE(stmt.getStmts().empty());
         EXPECT_EQ(2, stmt.getStmts().size());
     }
 
     {
-        PtrDynamicArray<Stmt> stmts;
+        PtrVector<Stmt> stmts;
         stmts.push_back(ExprStmt::make());
         stmts.push_back(ExprStmt::make(IntLiteralExpr::make(789)));
 
         // { ; 789; }
-        CompoundStmt stmt(moveValue(stmts));
+        CompoundStmt stmt(std::move(stmts));
 
         EXPECT_FALSE(stmt.getStmts().empty());
         EXPECT_EQ(2, stmt.getStmts().size());

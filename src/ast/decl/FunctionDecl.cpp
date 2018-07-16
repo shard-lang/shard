@@ -30,7 +30,7 @@ namespace shard::ast {
 /* ************************************************************************* */
 
 FunctionDecl::FunctionDecl(Type retType, String name, UniquePtr<CompoundStmt> bodyStmt,
-    PtrDynamicArray<VariableDecl> params, SourceRange range)
+    PtrVector<VariableDecl> params, SourceRange range)
     : Decl(Kind, std::move(name), std::move(range))
     , m_retType(std::move(retType))
     , m_parameters(std::move(params))
@@ -60,7 +60,7 @@ void FunctionDecl::setBodyStmt(UniquePtr<CompoundStmt> stmt)
 
 /* ************************************************************************* */
 
-void FunctionDecl::setParameters(PtrDynamicArray<VariableDecl> params)
+void FunctionDecl::setParameters(PtrVector<VariableDecl> params)
 {
     m_parameters = std::move(params);
 }
@@ -68,7 +68,7 @@ void FunctionDecl::setParameters(PtrDynamicArray<VariableDecl> params)
 /* ************************************************************************* */
 
 UniquePtr<FunctionDecl> FunctionDecl::make(Type retType, String name, UniquePtr<CompoundStmt> bodyStmt,
-        PtrDynamicArray<VariableDecl> params, SourceRange range)
+        PtrVector<VariableDecl> params, SourceRange range)
 {
     return makeUnique<FunctionDecl>(std::move(retType), std::move(name), std::move(bodyStmt), std::move(params), std::move(range));
 }

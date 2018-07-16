@@ -66,9 +66,9 @@ TEST(SwitchStmt, base)
 
         caseStmt->addStmt(BreakStmt::make());
 
-        body->addStmt(moveValue(caseStmt));
+        body->addStmt(std::move(caseStmt));
 
-        stmt.setBodyStmt(moveValue(body));
+        stmt.setBodyStmt(std::move(body));
 
         ASSERT_NE(nullptr, stmt.getCondExpr());
         EXPECT_TRUE(stmt.getCondExpr()->is<IdentifierExpr>());

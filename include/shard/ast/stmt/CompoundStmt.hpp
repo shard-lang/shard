@@ -19,7 +19,7 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/PtrDynamicArray.hpp"
+#include "shard/PtrVector.hpp"
 #include "shard/ast/Stmt.hpp"
 
 /* ************************************************************************* */
@@ -55,7 +55,7 @@ public:
      * @param      stmts  A list of statements.
      * @param      range  Source range.
      */
-    explicit CompoundStmt(PtrDynamicArray<Stmt> stmts = {}, SourceRange range = {});
+    explicit CompoundStmt(PtrVector<Stmt> stmts = {}, SourceRange range = {});
 
 
     /**
@@ -73,7 +73,7 @@ public:
      *
      * @return     The statements.
      */
-    const PtrDynamicArray<Stmt>& getStmts() const noexcept;
+    const PtrVector<Stmt>& getStmts() const noexcept;
 
 
     /**
@@ -81,7 +81,7 @@ public:
      *
      * @param      stmt  The new statements.
      */
-    void setStmts(PtrDynamicArray<Stmt> stmts);
+    void setStmts(PtrVector<Stmt> stmts);
 
 
     /**
@@ -104,14 +104,14 @@ public:
      *
      * @return     Created unique pointer.
      */
-    static UniquePtr<CompoundStmt> make(PtrDynamicArray<Stmt> stmts = {}, SourceRange range = {});
+    static UniquePtr<CompoundStmt> make(PtrVector<Stmt> stmts = {}, SourceRange range = {});
 
 
 // Private Data Members
 private:
 
     /// Case statements.
-    PtrDynamicArray<Stmt> m_statements;
+    PtrVector<Stmt> m_statements;
 
 };
 
@@ -119,7 +119,7 @@ private:
 /* ************************************************************************* */
 /* ************************************************************************* */
 
-inline const PtrDynamicArray<Stmt>& CompoundStmt::getStmts() const noexcept
+inline const PtrVector<Stmt>& CompoundStmt::getStmts() const noexcept
 {
     return m_statements;
 }

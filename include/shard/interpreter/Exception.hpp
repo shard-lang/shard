@@ -18,8 +18,10 @@
 
 /* ************************************************************************* */
 
+// C++
+#include <utility>
+
 // Shard
-#include "shard/utility.hpp"
 #include "shard/String.hpp"
 #include "shard/Exception.hpp"
 
@@ -72,7 +74,7 @@ private:
 /* ************************************************************************* */
 
 inline Exception::Exception(String msg)
-    : m_message(moveValue(msg))
+    : m_message(std::move(msg))
 {
     // Nothing to do
 }

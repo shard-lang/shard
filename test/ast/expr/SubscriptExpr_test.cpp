@@ -66,11 +66,11 @@ TEST(SubscriptExpr, base)
         EXPECT_TRUE(expr.getArguments().empty());
 
         // val[x, y]
-        PtrDynamicArray<Expr> args;
+        PtrVector<Expr> args;
         args.push_back(IdentifierExpr::make("x"));
         args.push_back(IdentifierExpr::make("y"));
 
-        expr.setArguments(moveValue(args));
+        expr.setArguments(std::move(args));
         ASSERT_NE(nullptr, expr.getExpr());
         ASSERT_TRUE(expr.getExpr()->is<IdentifierExpr>());
         EXPECT_EQ("val", expr.getExpr()->cast<IdentifierExpr>().getName());

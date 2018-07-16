@@ -18,8 +18,10 @@
 
 /* ************************************************************************* */
 
+// C++
+#include <utility>
+
 // Shard
-#include "shard/utility.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/ast/decl/FunctionDecl.hpp"
 
@@ -84,7 +86,7 @@ private:
 /* ************************************************************************* */
 
 inline Function::Function(String name, ViewPtr<const ast::FunctionDecl> decl)
-    : m_name(moveValue(name))
+    : m_name(std::move(name))
     , m_decl(decl)
 {
     // Nothing to do

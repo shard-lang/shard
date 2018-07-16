@@ -75,10 +75,10 @@ TEST(FunctionDecl, base)
         EXPECT_TRUE(decl.getBodyStmt()->is<CompoundStmt>());
 
         // void bar(int x, int y) {}
-        PtrDynamicArray<VariableDecl> params;
+        PtrVector<VariableDecl> params;
         params.push_back(VariableDecl::make(TypeKind::Int, "x"));
         params.push_back(VariableDecl::make(TypeKind::Int, "y"));
-        decl.setParameters(moveValue(params));
+        decl.setParameters(std::move(params));
         EXPECT_EQ("bar", decl.getName());
         EXPECT_EQ(TypeKind::Void, decl.getRetType());
         EXPECT_FALSE(decl.getParameters().empty());

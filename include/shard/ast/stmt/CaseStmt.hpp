@@ -20,7 +20,7 @@
 
 // Shard
 #include "shard/UniquePtr.hpp"
-#include "shard/PtrDynamicArray.hpp"
+#include "shard/PtrVector.hpp"
 #include "shard/ast/Stmt.hpp"
 
 /* ************************************************************************* */
@@ -56,7 +56,7 @@ public:
      * @param      stmts  The statement list.
      * @param      range  Source range.
      */
-    explicit CaseStmt(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> stmts = {}, SourceRange range = {});
+    explicit CaseStmt(UniquePtr<Expr> expr, PtrVector<Stmt> stmts = {}, SourceRange range = {});
 
 
     /**
@@ -98,7 +98,7 @@ public:
      *
      * @return     The statements.
      */
-    const PtrDynamicArray<Stmt>& getStmts() const noexcept;
+    const PtrVector<Stmt>& getStmts() const noexcept;
 
 
     /**
@@ -106,7 +106,7 @@ public:
      *
      * @param      stmt  The new statements.
      */
-    void setStmts(PtrDynamicArray<Stmt> stmts);
+    void setStmts(PtrVector<Stmt> stmts);
 
 
     /**
@@ -130,7 +130,7 @@ public:
      *
      * @return     Created unique pointer.
      */
-    static UniquePtr<CaseStmt> make(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> stmts = {}, SourceRange range = {});
+    static UniquePtr<CaseStmt> make(UniquePtr<Expr> expr, PtrVector<Stmt> stmts = {}, SourceRange range = {});
 
 
 // Private Data Members
@@ -140,7 +140,7 @@ private:
     UniquePtr<Expr> m_expr;
 
     /// The statements.
-    PtrDynamicArray<Stmt> m_statements;
+    PtrVector<Stmt> m_statements;
 
 };
 
@@ -162,7 +162,7 @@ inline ViewPtr<const Expr> CaseStmt::getExpr() const noexcept
 
 /* ************************************************************************* */
 
-inline const PtrDynamicArray<Stmt>& CaseStmt::getStmts() const noexcept
+inline const PtrVector<Stmt>& CaseStmt::getStmts() const noexcept
 {
     return m_statements;
 }

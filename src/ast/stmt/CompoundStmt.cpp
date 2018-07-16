@@ -26,7 +26,7 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-CompoundStmt::CompoundStmt(PtrDynamicArray<Stmt> stmts, SourceRange range)
+CompoundStmt::CompoundStmt(PtrVector<Stmt> stmts, SourceRange range)
     : Stmt(Kind, range)
     , m_statements(std::move(stmts))
 {
@@ -39,7 +39,7 @@ CompoundStmt::~CompoundStmt() = default;
 
 /* ************************************************************************* */
 
-void CompoundStmt::setStmts(PtrDynamicArray<Stmt> stmts)
+void CompoundStmt::setStmts(PtrVector<Stmt> stmts)
 {
     m_statements = std::move(stmts);
 }
@@ -53,7 +53,7 @@ void CompoundStmt::addStmt(UniquePtr<Stmt> stmt)
 
 /* ************************************************************************* */
 
-UniquePtr<CompoundStmt> CompoundStmt::make(PtrDynamicArray<Stmt> stmts, SourceRange range)
+UniquePtr<CompoundStmt> CompoundStmt::make(PtrVector<Stmt> stmts, SourceRange range)
 {
     return makeUnique<CompoundStmt>(std::move(stmts), range);
 }

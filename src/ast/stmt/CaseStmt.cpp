@@ -29,7 +29,7 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-CaseStmt::CaseStmt(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> stmts, SourceRange range)
+CaseStmt::CaseStmt(UniquePtr<Expr> expr, PtrVector<Stmt> stmts, SourceRange range)
     : Stmt(Kind, range)
     , m_expr(std::move(expr))
     , m_statements(std::move(stmts))
@@ -51,7 +51,7 @@ void CaseStmt::setExpr(UniquePtr<Expr> expr)
 
 /* ************************************************************************* */
 
-void CaseStmt::setStmts(PtrDynamicArray<Stmt> stmts)
+void CaseStmt::setStmts(PtrVector<Stmt> stmts)
 {
     m_statements = std::move(stmts);
 }
@@ -65,7 +65,7 @@ void CaseStmt::addStmt(UniquePtr<Stmt> stmt)
 
 /* ************************************************************************* */
 
-UniquePtr<CaseStmt> CaseStmt::make(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> stmts, SourceRange range)
+UniquePtr<CaseStmt> CaseStmt::make(UniquePtr<Expr> expr, PtrVector<Stmt> stmts, SourceRange range)
 {
     return makeUnique<CaseStmt>(std::move(expr), std::move(stmts), range);
 }

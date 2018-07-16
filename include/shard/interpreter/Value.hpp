@@ -18,6 +18,9 @@
 
 /* ************************************************************************* */
 
+// C++
+#include <utility>
+
 // Shard
 #include "shard/ViewPtr.hpp"
 #include "shard/Any.hpp"
@@ -358,7 +361,7 @@ inline Value::Value(char32_t value) noexcept
 
 inline Value::Value(String value) noexcept
     : m_kind(ValueKind::String)
-    , m_value(moveValue(value))
+    , m_value(std::move(value))
 {
     // Nothing to do
 }

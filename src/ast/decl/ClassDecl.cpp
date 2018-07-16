@@ -26,7 +26,7 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-ClassDecl::ClassDecl(String name, PtrDynamicArray<Decl> decls, SourceRange range)
+ClassDecl::ClassDecl(String name, PtrVector<Decl> decls, SourceRange range)
     : CompoundDecl(Kind, std::move(name), std::move(decls), std::move(range))
 {
     // Nothing to do
@@ -38,7 +38,7 @@ ClassDecl::~ClassDecl() = default;
 
 /* ************************************************************************* */
 
-UniquePtr<ClassDecl> ClassDecl::make(String name, PtrDynamicArray<Decl> decls, SourceRange range)
+UniquePtr<ClassDecl> ClassDecl::make(String name, PtrVector<Decl> decls, SourceRange range)
 {
     return makeUnique<ClassDecl>(std::move(name), std::move(decls), std::move(range));
 }

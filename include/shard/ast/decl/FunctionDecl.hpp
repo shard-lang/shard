@@ -22,7 +22,7 @@
 #include "shard/UniquePtr.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/String.hpp"
-#include "shard/PtrDynamicArray.hpp"
+#include "shard/PtrVector.hpp"
 #include "shard/ast/Decl.hpp"
 #include "shard/ast/Type.hpp"
 
@@ -67,7 +67,7 @@ public:
      * @param      range     The declaration location within the source.
      */
     explicit FunctionDecl(Type retType, String name, UniquePtr<CompoundStmt> bodyStmt,
-        PtrDynamicArray<VariableDecl> params = {}, SourceRange range = {});
+        PtrVector<VariableDecl> params = {}, SourceRange range = {});
 
 
     /**
@@ -101,7 +101,7 @@ public:
      *
      * @return     A list of function parameters.
      */
-    const PtrDynamicArray<VariableDecl>& getParameters() const noexcept;
+    const PtrVector<VariableDecl>& getParameters() const noexcept;
 
 
     /**
@@ -109,7 +109,7 @@ public:
      *
      * @param      params  The function parameters.
      */
-    void setParameters(PtrDynamicArray<VariableDecl> params);
+    void setParameters(PtrVector<VariableDecl> params);
 
 
     /**
@@ -152,7 +152,7 @@ public:
      * @return     Created unique pointer.
      */
     static UniquePtr<FunctionDecl> make(Type retType, String name, UniquePtr<CompoundStmt> bodyStmt,
-        PtrDynamicArray<VariableDecl> params = {}, SourceRange range = {});
+        PtrVector<VariableDecl> params = {}, SourceRange range = {});
 
 
 // Private Data Members
@@ -162,7 +162,7 @@ private:
     Type m_retType;
 
     /// Function parameters.
-    PtrDynamicArray<VariableDecl> m_parameters;
+    PtrVector<VariableDecl> m_parameters;
 
     /// Function body.
     UniquePtr<CompoundStmt> m_bodyStmt;
@@ -181,7 +181,7 @@ inline const Type& FunctionDecl::getRetType() const noexcept
 
 /* ************************************************************************* */
 
-inline const PtrDynamicArray<VariableDecl>& FunctionDecl::getParameters() const noexcept
+inline const PtrVector<VariableDecl>& FunctionDecl::getParameters() const noexcept
 {
     return m_parameters;
 }

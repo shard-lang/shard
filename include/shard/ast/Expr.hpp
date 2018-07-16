@@ -18,9 +18,11 @@
 
 /* ************************************************************************* */
 
+// C++
+#include <utility>
+
 // Shard
 #include "shard/Assert.hpp"
-#include "shard/utility.hpp"
 #include "shard/UniquePtr.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/ast/utility.hpp"
@@ -266,7 +268,7 @@ inline const typename LiteralExpr<ValueT>::ValueType& LiteralExpr<ValueT>::getVa
 template<typename ValueT>
 inline void LiteralExpr<ValueT>::setValue(ValueType value)
 {
-    m_value = moveValue(value);
+    m_value = std::move(value);
 }
 
 /* ************************************************************************* */

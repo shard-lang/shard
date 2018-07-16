@@ -20,7 +20,7 @@
 
 // Shard
 #include "shard/UniquePtr.hpp"
-#include "shard/PtrDynamicArray.hpp"
+#include "shard/PtrVector.hpp"
 #include "shard/ast/Decl.hpp"
 
 /* ************************************************************************* */
@@ -55,7 +55,7 @@ public:
      *
      * @return     The declarations.
      */
-    const PtrDynamicArray<Decl>& getDecls() const noexcept;
+    const PtrVector<Decl>& getDecls() const noexcept;
 
 
     /**
@@ -63,7 +63,7 @@ public:
      *
      * @param      decls  The declarations.
      */
-    void setDecls(PtrDynamicArray<Decl> decls);
+    void setDecls(PtrVector<Decl> decls);
 
 
     /**
@@ -86,14 +86,14 @@ public:
      * @param      decls  The declarations.
      * @param      range  The declaration location within the source.
      */
-    explicit CompoundDecl(DeclKind kind, String name, PtrDynamicArray<Decl> decls, SourceRange range);
+    explicit CompoundDecl(DeclKind kind, String name, PtrVector<Decl> decls, SourceRange range);
 
 
 // Private Data Members
 private:
 
     /// Declarations
-    PtrDynamicArray<Decl> m_declarations;
+    PtrVector<Decl> m_declarations;
 
 };
 
@@ -101,7 +101,7 @@ private:
 /* ************************************************************************* */
 /* ************************************************************************* */
 
-inline const PtrDynamicArray<Decl>& CompoundDecl::getDecls() const noexcept
+inline const PtrVector<Decl>& CompoundDecl::getDecls() const noexcept
 {
     return m_declarations;
 }

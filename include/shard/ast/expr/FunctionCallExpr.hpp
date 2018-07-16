@@ -22,7 +22,7 @@
 #include "shard/String.hpp"
 #include "shard/UniquePtr.hpp"
 #include "shard/ViewPtr.hpp"
-#include "shard/PtrDynamicArray.hpp"
+#include "shard/PtrVector.hpp"
 #include "shard/ast/Expr.hpp"
 
 /* ************************************************************************* */
@@ -59,7 +59,7 @@ public:
      * @param      args   Call arguments.
      * @param      range  Location in source.
      */
-    explicit FunctionCallExpr(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args = {}, SourceRange range = {});
+    explicit FunctionCallExpr(UniquePtr<Expr> expr, PtrVector<Expr> args = {}, SourceRange range = {});
 
 
     /**
@@ -101,7 +101,7 @@ public:
      *
      * @return     The call arguments.
      */
-    const PtrDynamicArray<Expr>& getArguments() const noexcept;
+    const PtrVector<Expr>& getArguments() const noexcept;
 
 
     /**
@@ -109,7 +109,7 @@ public:
      *
      * @param      args  The call arguments.
      */
-    void setArguments(PtrDynamicArray<Expr> args);
+    void setArguments(PtrVector<Expr> args);
 
 
 // Public Operations
@@ -125,7 +125,7 @@ public:
      *
      * @return     Created unique pointer.
      */
-    static UniquePtr<FunctionCallExpr> make(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args = {}, SourceRange range = {});
+    static UniquePtr<FunctionCallExpr> make(UniquePtr<Expr> expr, PtrVector<Expr> args = {}, SourceRange range = {});
 
 
 // Private Data Members
@@ -135,7 +135,7 @@ private:
     UniquePtr<Expr> m_expr;
 
     /// Call arguments.
-    PtrDynamicArray<Expr> m_arguments;
+    PtrVector<Expr> m_arguments;
 
 };
 
@@ -157,7 +157,7 @@ inline ViewPtr<Expr> FunctionCallExpr::getExpr() noexcept
 
 /* ************************************************************************* */
 
-inline const PtrDynamicArray<Expr>& FunctionCallExpr::getArguments() const noexcept
+inline const PtrVector<Expr>& FunctionCallExpr::getArguments() const noexcept
 {
     return m_arguments;
 }
