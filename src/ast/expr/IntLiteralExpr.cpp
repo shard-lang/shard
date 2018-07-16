@@ -17,14 +17,9 @@
 // Declaration
 #include "shard/ast/expr/IntLiteralExpr.hpp"
 
-// Shard
-#include "shard/utility.hpp"
-
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
@@ -42,13 +37,11 @@ IntLiteralExpr::~IntLiteralExpr() = default;
 
 UniquePtr<IntLiteralExpr> IntLiteralExpr::make(ValueType value, SourceRange range)
 {
-    return makeUnique<IntLiteralExpr>(moveValue(value), moveValue(range));
+    return makeUnique<IntLiteralExpr>(std::move(value), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

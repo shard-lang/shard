@@ -18,20 +18,17 @@
 #include "shard/ast/expr/IdentifierExpr.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 IdentifierExpr::IdentifierExpr(String name, SourceRange range)
     : Expr(Kind, range)
-    , m_name(moveValue(name))
+    , m_name(std::move(name))
 {
     SHARD_ASSERT(!m_name.empty());
 }
@@ -45,20 +42,18 @@ IdentifierExpr::~IdentifierExpr() = default;
 void IdentifierExpr::setName(String name)
 {
     SHARD_ASSERT(!name.empty());
-    m_name = moveValue(name);
+    m_name = std::move(name);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<IdentifierExpr> IdentifierExpr::make(String name, SourceRange range)
 {
-    return makeUnique<IdentifierExpr>(moveValue(name), moveValue(range));
+    return makeUnique<IdentifierExpr>(std::move(name), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

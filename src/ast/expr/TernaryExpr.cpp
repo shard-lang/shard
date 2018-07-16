@@ -18,22 +18,19 @@
 #include "shard/ast/expr/TernaryExpr.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 TernaryExpr::TernaryExpr(UniquePtr<Expr> condExpr, UniquePtr<Expr> trueExpr, UniquePtr<Expr> falseExpr, SourceRange range)
     : Expr(Kind, range)
-    , m_condExpr(moveValue(condExpr))
-    , m_trueExpr(moveValue(trueExpr))
-    , m_falseExpr(moveValue(falseExpr))
+    , m_condExpr(std::move(condExpr))
+    , m_trueExpr(std::move(trueExpr))
+    , m_falseExpr(std::move(falseExpr))
 {
     // Nothing to do
 }
@@ -47,7 +44,7 @@ TernaryExpr::~TernaryExpr() = default;
 void TernaryExpr::setCondExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
-    m_condExpr = moveValue(expr);
+    m_condExpr = std::move(expr);
 }
 
 /* ************************************************************************* */
@@ -55,7 +52,7 @@ void TernaryExpr::setCondExpr(UniquePtr<Expr> expr)
 void TernaryExpr::setTrueExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
-    m_trueExpr = moveValue(expr);
+    m_trueExpr = std::move(expr);
 }
 
 /* ************************************************************************* */
@@ -63,20 +60,18 @@ void TernaryExpr::setTrueExpr(UniquePtr<Expr> expr)
 void TernaryExpr::setFalseExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
-    m_falseExpr = moveValue(expr);
+    m_falseExpr = std::move(expr);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<TernaryExpr> TernaryExpr::make(UniquePtr<Expr> condExpr, UniquePtr<Expr> trueExpr, UniquePtr<Expr> falseExpr, SourceRange range)
 {
-    return makeUnique<TernaryExpr>(moveValue(condExpr), moveValue(trueExpr), moveValue(falseExpr), moveValue(range));
+    return makeUnique<TernaryExpr>(std::move(condExpr), std::move(trueExpr), std::move(falseExpr), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

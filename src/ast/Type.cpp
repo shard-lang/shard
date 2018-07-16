@@ -19,13 +19,10 @@
 
 // Shard
 #include "shard/Assert.hpp"
-#include "shard/utility.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
@@ -39,7 +36,7 @@ Type::Type(TypeKind kind) noexcept
 
 Type::Type(String name)
     : m_kind(TypeKind::Typename)
-    , m_name(moveValue(name))
+    , m_name(std::move(name))
 {
     // Nothing to do
 }
@@ -56,8 +53,6 @@ bool operator==(const Type& lhs, const Type& rhs) noexcept
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

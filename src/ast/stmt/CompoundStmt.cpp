@@ -18,20 +18,17 @@
 #include "shard/ast/stmt/CompoundStmt.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/ast/Stmt.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 CompoundStmt::CompoundStmt(PtrDynamicArray<Stmt> stmts, SourceRange range)
-    : Stmt(Kind, moveValue(range))
-    , m_statements(moveValue(stmts))
+    : Stmt(Kind, range)
+    , m_statements(std::move(stmts))
 {
     // Nothing to do
 }
@@ -44,27 +41,25 @@ CompoundStmt::~CompoundStmt() = default;
 
 void CompoundStmt::setStmts(PtrDynamicArray<Stmt> stmts)
 {
-    m_statements = moveValue(stmts);
+    m_statements = std::move(stmts);
 }
 
 /* ************************************************************************* */
 
 void CompoundStmt::addStmt(UniquePtr<Stmt> stmt)
 {
-    m_statements.push_back(moveValue(stmt));
+    m_statements.push_back(std::move(stmt));
 }
 
 /* ************************************************************************* */
 
 UniquePtr<CompoundStmt> CompoundStmt::make(PtrDynamicArray<Stmt> stmts, SourceRange range)
 {
-    return makeUnique<CompoundStmt>(moveValue(stmts), moveValue(range));
+    return makeUnique<CompoundStmt>(std::move(stmts), range);
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

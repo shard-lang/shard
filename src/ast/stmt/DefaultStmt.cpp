@@ -18,21 +18,18 @@
 #include "shard/ast/stmt/DefaultStmt.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 #include "shard/ast/Stmt.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 DefaultStmt::DefaultStmt(PtrDynamicArray<Stmt> stmts, SourceRange range)
-    : Stmt(Kind, moveValue(range))
-    , m_statements(moveValue(stmts))
+    : Stmt(Kind, range)
+    , m_statements(std::move(stmts))
 {
     // Nothing to do
 }
@@ -45,27 +42,25 @@ DefaultStmt::~DefaultStmt() = default;
 
 void DefaultStmt::setStmts(PtrDynamicArray<Stmt> stmts)
 {
-    m_statements = moveValue(stmts);
+    m_statements = std::move(stmts);
 }
 
 /* ************************************************************************* */
 
 void DefaultStmt::addStmt(UniquePtr<Stmt> stmt)
 {
-    m_statements.push_back(moveValue(stmt));
+    m_statements.push_back(std::move(stmt));
 }
 
 /* ************************************************************************* */
 
 UniquePtr<DefaultStmt> DefaultStmt::make(PtrDynamicArray<Stmt> body, SourceRange range)
 {
-    return makeUnique<DefaultStmt>(moveValue(body), moveValue(range));
+    return makeUnique<DefaultStmt>(std::move(body), range);
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

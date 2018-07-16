@@ -23,14 +23,12 @@
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 StringLiteralExpr::StringLiteralExpr(ValueType value, SourceRange range)
-    : LiteralExpr(Kind, moveValue(value), range)
+    : LiteralExpr(Kind, std::move(value), range)
 {
     // Nothing to do
 }
@@ -43,13 +41,11 @@ StringLiteralExpr::~StringLiteralExpr() = default;
 
 UniquePtr<StringLiteralExpr> StringLiteralExpr::make(ValueType value, SourceRange range)
 {
-    return makeUnique<StringLiteralExpr>(moveValue(value), moveValue(range));
+    return makeUnique<StringLiteralExpr>(std::move(value), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

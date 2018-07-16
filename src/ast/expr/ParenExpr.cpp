@@ -18,20 +18,17 @@
 #include "shard/ast/expr/ParenExpr.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 ParenExpr::ParenExpr(UniquePtr<Expr> expr, SourceRange range)
     : Expr(Kind, range)
-    , m_expr(moveValue(expr))
+    , m_expr(std::move(expr))
 {
     SHARD_ASSERT(m_expr);
 }
@@ -45,20 +42,18 @@ ParenExpr::~ParenExpr() = default;
 void ParenExpr::setExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
-    m_expr = moveValue(expr);
+    m_expr = std::move(expr);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<ParenExpr> ParenExpr::make(UniquePtr<Expr> expr, SourceRange range)
 {
-    return makeUnique<ParenExpr>(moveValue(expr), moveValue(range));
+    return makeUnique<ParenExpr>(std::move(expr), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

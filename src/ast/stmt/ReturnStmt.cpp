@@ -18,21 +18,18 @@
 #include "shard/ast/stmt/ReturnStmt.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 #include "shard/ast/Expr.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 ReturnStmt::ReturnStmt(UniquePtr<Expr> resExpr, SourceRange range)
-    : Stmt(Kind, moveValue(range))
-    , m_resExpr(moveValue(resExpr))
+    : Stmt(Kind, range)
+    , m_resExpr(std::move(resExpr))
 {
     // Nothing to do
 }
@@ -45,20 +42,18 @@ ReturnStmt::~ReturnStmt() = default;
 
 void ReturnStmt::setResExpr(UniquePtr<Expr> expr)
 {
-    m_resExpr = moveValue(expr);
+    m_resExpr = std::move(expr);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<ReturnStmt> ReturnStmt::make(UniquePtr<Expr> resExpr, SourceRange range)
 {
-    return makeUnique<ReturnStmt>(moveValue(resExpr), moveValue(range));
+    return makeUnique<ReturnStmt>(std::move(resExpr), range);
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

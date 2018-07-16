@@ -18,23 +18,20 @@
 #include "shard/ast/stmt/DoWhileStmt.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 #include "shard/ast/Expr.hpp"
 #include "shard/ast/stmt/CompoundStmt.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 DoWhileStmt::DoWhileStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range)
-    : Stmt(Kind, moveValue(range))
-    , m_condExpr(moveValue(condExpr))
-    , m_bodyStmt(moveValue(bodyStmt))
+    : Stmt(Kind, range)
+    , m_condExpr(std::move(condExpr))
+    , m_bodyStmt(std::move(bodyStmt))
 {
     SHARD_ASSERT(m_condExpr);
     SHARD_ASSERT(m_bodyStmt);
@@ -49,7 +46,7 @@ DoWhileStmt::~DoWhileStmt() = default;
 void DoWhileStmt::setCondExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
-    m_condExpr = moveValue(expr);
+    m_condExpr = std::move(expr);
 }
 
 /* ************************************************************************* */
@@ -57,20 +54,18 @@ void DoWhileStmt::setCondExpr(UniquePtr<Expr> expr)
 void DoWhileStmt::setBodyStmt(UniquePtr<CompoundStmt> stmt)
 {
     SHARD_ASSERT(stmt);
-    m_bodyStmt = moveValue(stmt);
+    m_bodyStmt = std::move(stmt);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<DoWhileStmt> DoWhileStmt::make(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range)
 {
-    return makeUnique<DoWhileStmt>(moveValue(condExpr), moveValue(bodyStmt), moveValue(range));
+    return makeUnique<DoWhileStmt>(std::move(condExpr), std::move(bodyStmt), range);
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

@@ -18,21 +18,18 @@
 #include "shard/ast/decl/VariableDecl.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/ast/Expr.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 VariableDecl::VariableDecl(Type type, String name, UniquePtr<Expr> initExpr, SourceRange range)
-    : Decl(Kind, moveValue(name), moveValue(range))
-    , m_type(moveValue(type))
-    , m_initExpr(moveValue(initExpr))
+    : Decl(Kind, std::move(name), std::move(range))
+    , m_type(std::move(type))
+    , m_initExpr(std::move(initExpr))
 {
     // Nothing to do
 }
@@ -45,27 +42,25 @@ VariableDecl::~VariableDecl() = default;
 
 void VariableDecl::setType(Type type)
 {
-    m_type = moveValue(type);
+    m_type = std::move(type);
 }
 
 /* ************************************************************************* */
 
 void VariableDecl::setInitExpr(UniquePtr<Expr> expr)
 {
-    m_initExpr = moveValue(expr);
+    m_initExpr = std::move(expr);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<VariableDecl> VariableDecl::make(Type type, String name, UniquePtr<Expr> initExpr, SourceRange range)
 {
-    return makeUnique<VariableDecl>(moveValue(type), moveValue(name), moveValue(initExpr), moveValue(range));
+    return makeUnique<VariableDecl>(std::move(type), std::move(name), std::move(initExpr), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

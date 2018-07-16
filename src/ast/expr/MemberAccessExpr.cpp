@@ -18,21 +18,18 @@
 #include "shard/ast/expr/MemberAccessExpr.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 MemberAccessExpr::MemberAccessExpr(UniquePtr<Expr> expr, String name, SourceRange range)
     : Expr(Kind, range)
-    , m_expr(moveValue(expr))
-    , m_name(moveValue(name))
+    , m_expr(std::move(expr))
+    , m_name(std::move(name))
 {
     SHARD_ASSERT(!m_name.empty());
 }
@@ -46,7 +43,7 @@ MemberAccessExpr::~MemberAccessExpr() = default;
 void MemberAccessExpr::setExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
-    m_expr = moveValue(expr);
+    m_expr = std::move(expr);
 }
 
 /* ************************************************************************* */
@@ -54,20 +51,18 @@ void MemberAccessExpr::setExpr(UniquePtr<Expr> expr)
 void MemberAccessExpr::setName(String name)
 {
     SHARD_ASSERT(!name.empty());
-    m_name = moveValue(name);
+    m_name = std::move(name);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<MemberAccessExpr> MemberAccessExpr::make(UniquePtr<Expr> expr, String name, SourceRange range)
 {
-    return makeUnique<MemberAccessExpr>(moveValue(expr), moveValue(name), moveValue(range));
+    return makeUnique<MemberAccessExpr>(std::move(expr), std::move(name), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

@@ -17,21 +17,19 @@
 // Declaration
 #include "shard/ast/Decl.hpp"
 
-// Shard
-#include "shard/utility.hpp"
+// C++
+#include <utility>
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 Decl::Decl(DeclKind kind, String name, SourceRange range)
-    : Node(moveValue(range))
+    : Node(range)
     , m_kind(kind)
-    , m_name(moveValue(name))
+    , m_name(std::move(name))
 {
     // Nothing to do
 }
@@ -44,13 +42,11 @@ Decl::~Decl() = default;
 
 void Decl::setName(String name)
 {
-    m_name = moveValue(name);
+    m_name = std::move(name);
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

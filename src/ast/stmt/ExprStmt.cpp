@@ -18,21 +18,18 @@
 #include "shard/ast/stmt/ExprStmt.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 #include "shard/ast/Expr.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 ExprStmt::ExprStmt(UniquePtr<Expr> expr, SourceRange range)
-    : Stmt(Kind, moveValue(range))
-    , m_expr(moveValue(expr))
+    : Stmt(Kind, range)
+    , m_expr(std::move(expr))
 {
     // Nothing to do
 }
@@ -46,20 +43,18 @@ ExprStmt::~ExprStmt() = default;
 void ExprStmt::setExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
-    m_expr = moveValue(expr);
+    m_expr = std::move(expr);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<ExprStmt> ExprStmt::make(UniquePtr<Expr> expr, SourceRange range)
 {
-    return makeUnique<ExprStmt>(moveValue(expr), moveValue(range));
+    return makeUnique<ExprStmt>(std::move(expr), range);
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

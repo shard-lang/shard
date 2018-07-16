@@ -17,14 +17,9 @@
 // Declaration
 #include "shard/ast/expr/FloatLiteralExpr.hpp"
 
-// Shard
-#include "shard/utility.hpp"
-
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
@@ -42,13 +37,11 @@ FloatLiteralExpr::~FloatLiteralExpr() = default;
 
 UniquePtr<FloatLiteralExpr> FloatLiteralExpr::make(ValueType value, SourceRange range)
 {
-    return makeUnique<FloatLiteralExpr>(moveValue(value), moveValue(range));
+    return makeUnique<FloatLiteralExpr>(std::move(value), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

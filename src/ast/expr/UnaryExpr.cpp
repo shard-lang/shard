@@ -18,21 +18,18 @@
 #include "shard/ast/expr/UnaryExpr.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 UnaryExpr::UnaryExpr(OpKind op, UniquePtr<Expr> expr, SourceRange range)
     : Expr(Kind, range)
     , m_operator(op)
-    , m_expr(moveValue(expr))
+    , m_expr(std::move(expr))
 {
     // Nothing to do
 }
@@ -53,20 +50,18 @@ void UnaryExpr::setOpKind(OpKind op)
 void UnaryExpr::setExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
-    m_expr = moveValue(expr);
+    m_expr = std::move(expr);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<UnaryExpr> UnaryExpr::make(OpKind op, UniquePtr<Expr> expr, SourceRange range)
 {
-    return makeUnique<UnaryExpr>(op, moveValue(expr), moveValue(range));
+    return makeUnique<UnaryExpr>(op, std::move(expr), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

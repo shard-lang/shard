@@ -17,20 +17,15 @@
 // Declaration
 #include "shard/ast/decl/CompoundDecl.hpp"
 
-// Shard
-#include "shard/utility.hpp"
-
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 CompoundDecl::CompoundDecl(DeclKind kind, String name, PtrDynamicArray<Decl> decls, SourceRange range)
-    : Decl(kind, moveValue(name), moveValue(range))
-    , m_declarations(moveValue(decls))
+    : Decl(kind, std::move(name), std::move(range))
+    , m_declarations(std::move(decls))
 {
     // Nothing to do
 }
@@ -43,20 +38,18 @@ CompoundDecl::~CompoundDecl() = default;
 
 void CompoundDecl::setDecls(PtrDynamicArray<Decl> decls)
 {
-    m_declarations = moveValue(decls);
+    m_declarations = std::move(decls);
 }
 
 /* ************************************************************************* */
 
 void CompoundDecl::addDecl(UniquePtr<Decl> decl)
 {
-    m_declarations.push_back(moveValue(decl));
+    m_declarations.push_back(std::move(decl));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

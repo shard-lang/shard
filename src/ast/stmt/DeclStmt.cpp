@@ -18,21 +18,18 @@
 #include "shard/ast/stmt/DeclStmt.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 #include "shard/ast/Decl.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 DeclStmt::DeclStmt(UniquePtr<Decl> decl, SourceRange range)
-    : Stmt(Kind, moveValue(range))
-    , m_decl(moveValue(decl))
+    : Stmt(Kind, range)
+    , m_decl(std::move(decl))
 {
     SHARD_ASSERT(m_decl);
 }
@@ -46,20 +43,18 @@ DeclStmt::~DeclStmt() = default;
 void DeclStmt::setDecl(UniquePtr<Decl> decl)
 {
     SHARD_ASSERT(decl);
-    m_decl = moveValue(decl);
+    m_decl = std::move(decl);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<DeclStmt> DeclStmt::make(UniquePtr<Decl> decl, SourceRange range)
 {
-    return makeUnique<DeclStmt>(moveValue(decl), moveValue(range));
+    return makeUnique<DeclStmt>(std::move(decl), range);
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

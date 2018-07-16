@@ -18,22 +18,19 @@
 #include "shard/ast/expr/BinaryExpr.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 BinaryExpr::BinaryExpr(OpKind op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, SourceRange range)
     : Expr(Kind, range)
     , m_operator(op)
-    , m_lhs(moveValue(lhs))
-    , m_rhs(moveValue(rhs))
+    , m_lhs(std::move(lhs))
+    , m_rhs(std::move(rhs))
 {
     // Nothing to do
 }
@@ -54,7 +51,7 @@ void BinaryExpr::setOpKind(OpKind op)
 void BinaryExpr::setLhs(UniquePtr<Expr> lhs)
 {
     SHARD_ASSERT(lhs);
-    m_lhs = moveValue(lhs);
+    m_lhs = std::move(lhs);
 }
 
 /* ************************************************************************* */
@@ -62,20 +59,18 @@ void BinaryExpr::setLhs(UniquePtr<Expr> lhs)
 void BinaryExpr::setRhs(UniquePtr<Expr> rhs)
 {
     SHARD_ASSERT(rhs);
-    m_rhs = moveValue(rhs);
+    m_rhs = std::move(rhs);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<BinaryExpr> BinaryExpr::make(OpKind op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, SourceRange range)
 {
-    return makeUnique<BinaryExpr>(op, moveValue(lhs), moveValue(rhs), moveValue(range));
+    return makeUnique<BinaryExpr>(op, std::move(lhs), std::move(rhs), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

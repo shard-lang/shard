@@ -18,23 +18,20 @@
 #include "shard/ast/stmt/SwitchStmt.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 #include "shard/ast/Expr.hpp"
 #include "shard/ast/stmt/CompoundStmt.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 SwitchStmt::SwitchStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range)
-    : Stmt(Kind, moveValue(range))
-    , m_condExpr(moveValue(condExpr))
-    , m_bodyStmt(moveValue(bodyStmt))
+    : Stmt(Kind, range)
+    , m_condExpr(std::move(condExpr))
+    , m_bodyStmt(std::move(bodyStmt))
 {
     SHARD_ASSERT(m_condExpr);
     SHARD_ASSERT(m_bodyStmt);
@@ -49,7 +46,7 @@ SwitchStmt::~SwitchStmt() = default;
 void SwitchStmt::setCondExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
-    m_condExpr = moveValue(expr);
+    m_condExpr = std::move(expr);
 }
 
 /* ************************************************************************* */
@@ -57,20 +54,18 @@ void SwitchStmt::setCondExpr(UniquePtr<Expr> expr)
 void SwitchStmt::setBodyStmt(UniquePtr<CompoundStmt> stmt)
 {
     SHARD_ASSERT(stmt);
-    m_bodyStmt = moveValue(stmt);
+    m_bodyStmt = std::move(stmt);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<SwitchStmt> SwitchStmt::make(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range)
 {
-    return makeUnique<SwitchStmt>(moveValue(condExpr), moveValue(bodyStmt), moveValue(range));
+    return makeUnique<SwitchStmt>(std::move(condExpr), std::move(bodyStmt), range);
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

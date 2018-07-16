@@ -25,18 +25,16 @@
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 FunctionDecl::FunctionDecl(Type retType, String name, UniquePtr<CompoundStmt> bodyStmt,
     PtrDynamicArray<VariableDecl> params, SourceRange range)
-    : Decl(Kind, moveValue(name), moveValue(range))
-    , m_retType(moveValue(retType))
-    , m_parameters(moveValue(params))
-    , m_bodyStmt(moveValue(bodyStmt))
+    : Decl(Kind, std::move(name), std::move(range))
+    , m_retType(std::move(retType))
+    , m_parameters(std::move(params))
+    , m_bodyStmt(std::move(bodyStmt))
 {
     SHARD_ASSERT(m_bodyStmt);
 }
@@ -49,7 +47,7 @@ FunctionDecl::~FunctionDecl() = default;
 
 void FunctionDecl::setRetType(Type info)
 {
-    m_retType = moveValue(info);
+    m_retType = std::move(info);
 }
 
 /* ************************************************************************* */
@@ -57,14 +55,14 @@ void FunctionDecl::setRetType(Type info)
 void FunctionDecl::setBodyStmt(UniquePtr<CompoundStmt> stmt)
 {
     SHARD_ASSERT(stmt);
-    m_bodyStmt = moveValue(stmt);
+    m_bodyStmt = std::move(stmt);
 }
 
 /* ************************************************************************* */
 
 void FunctionDecl::setParameters(PtrDynamicArray<VariableDecl> params)
 {
-    m_parameters = moveValue(params);
+    m_parameters = std::move(params);
 }
 
 /* ************************************************************************* */
@@ -72,13 +70,11 @@ void FunctionDecl::setParameters(PtrDynamicArray<VariableDecl> params)
 UniquePtr<FunctionDecl> FunctionDecl::make(Type retType, String name, UniquePtr<CompoundStmt> bodyStmt,
         PtrDynamicArray<VariableDecl> params, SourceRange range)
 {
-    return makeUnique<FunctionDecl>(moveValue(retType), moveValue(name), moveValue(bodyStmt), moveValue(params), moveValue(range));
+    return makeUnique<FunctionDecl>(std::move(retType), std::move(name), std::move(bodyStmt), std::move(params), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

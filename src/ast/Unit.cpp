@@ -22,14 +22,12 @@
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 Unit::Unit(PtrDynamicArray<Decl> decls)
-    : m_declarations(moveValue(decls))
+    : m_declarations(std::move(decls))
 {
     // Nothing to do
 }
@@ -42,20 +40,18 @@ Unit::~Unit() = default;
 
 void Unit::setDeclarations(PtrDynamicArray<Decl> decls)
 {
-    m_declarations = moveValue(decls);
+    m_declarations = std::move(decls);
 }
 
 /* ************************************************************************* */
 
 void Unit::addDeclaration(UniquePtr<Decl> decl)
 {
-    m_declarations.push_back(moveValue(decl));
+    m_declarations.push_back(std::move(decl));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

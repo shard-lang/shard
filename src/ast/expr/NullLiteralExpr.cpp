@@ -22,9 +22,7 @@
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
@@ -42,13 +40,11 @@ NullLiteralExpr::~NullLiteralExpr() = default;
 
 UniquePtr<NullLiteralExpr> NullLiteralExpr::make(SourceRange range)
 {
-    return makeUnique<NullLiteralExpr>(moveValue(range));
+    return makeUnique<NullLiteralExpr>(std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

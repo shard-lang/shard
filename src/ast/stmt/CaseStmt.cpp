@@ -25,16 +25,14 @@
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 CaseStmt::CaseStmt(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> stmts, SourceRange range)
-    : Stmt(Kind, moveValue(range))
-    , m_expr(moveValue(expr))
-    , m_statements(moveValue(stmts))
+    : Stmt(Kind, range)
+    , m_expr(std::move(expr))
+    , m_statements(std::move(stmts))
 {
     SHARD_ASSERT(m_expr);
 }
@@ -48,34 +46,32 @@ CaseStmt::~CaseStmt() = default;
 void CaseStmt::setExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
-    m_expr = moveValue(expr);
+    m_expr = std::move(expr);
 }
 
 /* ************************************************************************* */
 
 void CaseStmt::setStmts(PtrDynamicArray<Stmt> stmts)
 {
-    m_statements = moveValue(stmts);
+    m_statements = std::move(stmts);
 }
 
 /* ************************************************************************* */
 
 void CaseStmt::addStmt(UniquePtr<Stmt> stmt)
 {
-    m_statements.push_back(moveValue(stmt));
+    m_statements.push_back(std::move(stmt));
 }
 
 /* ************************************************************************* */
 
 UniquePtr<CaseStmt> CaseStmt::make(UniquePtr<Expr> expr, PtrDynamicArray<Stmt> stmts, SourceRange range)
 {
-    return makeUnique<CaseStmt>(moveValue(expr), moveValue(stmts), moveValue(range));
+    return makeUnique<CaseStmt>(std::move(expr), std::move(stmts), range);
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

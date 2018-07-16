@@ -18,24 +18,21 @@
 #include "shard/ast/stmt/IfStmt.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 #include "shard/ast/Expr.hpp"
 #include "shard/ast/Stmt.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 IfStmt::IfStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stmt> elseStmt, SourceRange range)
-    : Stmt(Kind, moveValue(range))
-    , m_condExpr(moveValue(condExpr))
-    , m_thenStmt(moveValue(thenStmt))
-    , m_elseStmt(moveValue(elseStmt))
+    : Stmt(Kind, range)
+    , m_condExpr(std::move(condExpr))
+    , m_thenStmt(std::move(thenStmt))
+    , m_elseStmt(std::move(elseStmt))
 {
     SHARD_ASSERT(m_condExpr);
     SHARD_ASSERT(m_thenStmt);
@@ -50,7 +47,7 @@ IfStmt::~IfStmt() = default;
 void IfStmt::setCondExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
-    m_condExpr = moveValue(expr);
+    m_condExpr = std::move(expr);
 }
 
 /* ************************************************************************* */
@@ -58,27 +55,25 @@ void IfStmt::setCondExpr(UniquePtr<Expr> expr)
 void IfStmt::setThenStmt(UniquePtr<Stmt> stmt)
 {
     SHARD_ASSERT(stmt);
-    m_thenStmt = moveValue(stmt);
+    m_thenStmt = std::move(stmt);
 }
 
 /* ************************************************************************* */
 
 void IfStmt::setElseStmt(UniquePtr<Stmt> stmt)
 {
-    m_elseStmt = moveValue(stmt);
+    m_elseStmt = std::move(stmt);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<IfStmt> IfStmt::make(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stmt> elseStmt, SourceRange range)
 {
-    return makeUnique<IfStmt>(moveValue(condExpr), moveValue(thenStmt), moveValue(elseStmt), moveValue(range));
+    return makeUnique<IfStmt>(std::move(condExpr), std::move(thenStmt), std::move(elseStmt), range);
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

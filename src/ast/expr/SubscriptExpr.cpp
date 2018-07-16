@@ -18,21 +18,18 @@
 #include "shard/ast/expr/SubscriptExpr.hpp"
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/Assert.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 SubscriptExpr::SubscriptExpr(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
     : Expr(Kind, range)
-    , m_expr(moveValue(expr))
-    , m_arguments(moveValue(args))
+    , m_expr(std::move(expr))
+    , m_arguments(std::move(args))
 {
     SHARD_ASSERT(m_expr);
 }
@@ -46,27 +43,25 @@ SubscriptExpr::~SubscriptExpr() = default;
 void SubscriptExpr::setExpr(UniquePtr<Expr> expr)
 {
     SHARD_ASSERT(expr);
-    m_expr = moveValue(expr);
+    m_expr = std::move(expr);
 }
 
 /* ************************************************************************* */
 
 void SubscriptExpr::setArguments(PtrDynamicArray<Expr> args)
 {
-    m_arguments = moveValue(args);
+    m_arguments = std::move(args);
 }
 
 /* ************************************************************************* */
 
 UniquePtr<SubscriptExpr> SubscriptExpr::make(UniquePtr<Expr> expr, PtrDynamicArray<Expr> args, SourceRange range)
 {
-    return makeUnique<SubscriptExpr>(moveValue(expr), moveValue(args), moveValue(range));
+    return makeUnique<SubscriptExpr>(std::move(expr), std::move(args), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

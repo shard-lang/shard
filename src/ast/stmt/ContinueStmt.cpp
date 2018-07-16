@@ -17,19 +17,14 @@
 // Declaration
 #include "shard/ast/stmt/ContinueStmt.hpp"
 
-// Shard
-#include "shard/utility.hpp"
-
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 ContinueStmt::ContinueStmt(SourceRange range)
-    : Stmt(Kind, moveValue(range))
+    : Stmt(Kind, range)
 {
     // Nothing to do
 }
@@ -42,13 +37,11 @@ ContinueStmt::~ContinueStmt() = default;
 
 UniquePtr<ContinueStmt> ContinueStmt::make(SourceRange range)
 {
-    return makeUnique<ContinueStmt>(moveValue(range));
+    return makeUnique<ContinueStmt>(range);
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

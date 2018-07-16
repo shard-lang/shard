@@ -17,19 +17,14 @@
 // Declaration
 #include "shard/ast/decl/NamespaceDecl.hpp"
 
-// Shard
-#include "shard/utility.hpp"
-
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 NamespaceDecl::NamespaceDecl(String name, PtrDynamicArray<Decl> decls, SourceRange range)
-    : CompoundDecl(Kind, moveValue(name), moveValue(decls), moveValue(range))
+    : CompoundDecl(Kind, std::move(name), std::move(decls), std::move(range))
 {
     // Nothing to do
 }
@@ -42,13 +37,11 @@ NamespaceDecl::~NamespaceDecl() = default;
 
 UniquePtr<NamespaceDecl> NamespaceDecl::make(String name, PtrDynamicArray<Decl> decls, SourceRange range)
 {
-    return makeUnique<NamespaceDecl>(moveValue(name), moveValue(decls), moveValue(range));
+    return makeUnique<NamespaceDecl>(std::move(name), std::move(decls), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

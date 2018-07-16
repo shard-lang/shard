@@ -17,19 +17,14 @@
 // Declaration
 #include "shard/ast/stmt/BreakStmt.hpp"
 
-// Shard
-#include "shard/utility.hpp"
-
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 BreakStmt::BreakStmt(SourceRange range)
-    : Stmt(Kind, moveValue(range))
+    : Stmt(Kind, range)
 {
     // Nothing to do
 }
@@ -42,13 +37,11 @@ BreakStmt::~BreakStmt() = default;
 
 UniquePtr<BreakStmt> BreakStmt::make(SourceRange range)
 {
-    return makeUnique<BreakStmt>(moveValue(range));
+    return makeUnique<BreakStmt>(range);
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

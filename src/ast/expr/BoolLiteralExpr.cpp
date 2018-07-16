@@ -17,19 +17,14 @@
 // Declaration
 #include "shard/ast/expr/BoolLiteralExpr.hpp"
 
-// Shard
-#include "shard/utility.hpp"
-
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
 BoolLiteralExpr::BoolLiteralExpr(ValueType value, SourceRange range) noexcept
-    : LiteralExpr(Kind, value, range)
+    : LiteralExpr(Kind, value, std::move(range))
 {
     // Nothing to do
 }
@@ -42,13 +37,11 @@ BoolLiteralExpr::~BoolLiteralExpr() = default;
 
 UniquePtr<BoolLiteralExpr> BoolLiteralExpr::make(ValueType value, SourceRange range)
 {
-    return makeUnique<BoolLiteralExpr>(moveValue(value), moveValue(range));
+    return makeUnique<BoolLiteralExpr>(std::move(value), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */

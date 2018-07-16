@@ -17,14 +17,9 @@
 // Declaration
 #include "shard/ast/expr/CharLiteralExpr.hpp"
 
-// Shard
-#include "shard/utility.hpp"
-
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace ast {
+namespace shard::ast {
 
 /* ************************************************************************* */
 
@@ -42,13 +37,11 @@ CharLiteralExpr::~CharLiteralExpr() = default;
 
 UniquePtr<CharLiteralExpr> CharLiteralExpr::make(ValueType value, SourceRange range)
 {
-    return makeUnique<CharLiteralExpr>(moveValue(value), moveValue(range));
+    return makeUnique<CharLiteralExpr>(std::move(value), std::move(range));
 }
 
 /* ************************************************************************* */
 
-}
-}
 }
 
 /* ************************************************************************* */
