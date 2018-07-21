@@ -18,12 +18,8 @@
 
 /* ************************************************************************* */
 
-// C++
-#if __has_include(<filesystem>)
-#include <filesystem>
-#else
-#include <experimental/filesystem>
-#endif
+// Shard
+#include "shard/FilePath.hpp"
 
 /* ************************************************************************* */
 
@@ -34,11 +30,7 @@ namespace shard {
 /**
  * @brief      File system path.
  */
-#if __has_include(<filesystem>)
-    using Path = std::filesystem::path;
-#else
-using Path = std::experimental::filesystem::path;
-#endif
+using Path [[deprecated]] = FilePath;
 
 /* ************************************************************************* */
 

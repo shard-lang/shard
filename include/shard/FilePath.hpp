@@ -19,7 +19,11 @@
 /* ************************************************************************* */
 
 // C++
+#if __has_include(<filesystem>)
 #include <filesystem>
+#else
+#include <experimental/filesystem>
+#endif
 
 /* ************************************************************************* */
 
@@ -28,9 +32,13 @@ namespace shard {
 /* ************************************************************************* */
 
 /**
- * @brief File path.
+ * @brief      File system path.
  */
+#if __has_include(<filesystem>)
 using FilePath = std::filesystem::path;
+#else
+using FilePath = std::experimental::filesystem::path;
+#endif
 
 /* ************************************************************************* */
 
