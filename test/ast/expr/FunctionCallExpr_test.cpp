@@ -38,48 +38,53 @@ TEST(FunctionCallExpr, base)
         // obj()
         const FunctionCallExpr expr(IdentifierExpr::make("obj"), {});
 
-        EXPECT_EQ(ExprKind::FunctionCall, expr.getKind());
         EXPECT_TRUE(expr.is<FunctionCallExpr>());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<IdentifierExpr>());
-        EXPECT_EQ("obj", expr.getExpr()->cast<IdentifierExpr>().getName());
-        EXPECT_TRUE(expr.getArguments().empty());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<IdentifierExpr>());
+        EXPECT_EQ("obj", expr.expr()->cast<IdentifierExpr>().name());
+        EXPECT_EQ("obj", expr.expr<IdentifierExpr>().name());
+        EXPECT_TRUE(expr.args().empty());
+        EXPECT_EQ(0, expr.argsCount());
     }
 
     {
         // obj()
         FunctionCallExpr expr(IdentifierExpr::make("obj"), {});
 
-        EXPECT_EQ(ExprKind::FunctionCall, expr.getKind());
         EXPECT_TRUE(expr.is<FunctionCallExpr>());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<IdentifierExpr>());
-        EXPECT_EQ("obj", expr.getExpr()->cast<IdentifierExpr>().getName());
-        EXPECT_TRUE(expr.getArguments().empty());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<IdentifierExpr>());
+        EXPECT_EQ("obj", expr.expr()->cast<IdentifierExpr>().name());
+        EXPECT_TRUE(expr.args().empty());
 
         // val()
         expr.setExpr(IdentifierExpr::make("val"));
         EXPECT_TRUE(expr.is<FunctionCallExpr>());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<IdentifierExpr>());
-        EXPECT_EQ("val", expr.getExpr()->cast<IdentifierExpr>().getName());
-        EXPECT_TRUE(expr.getArguments().empty());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<IdentifierExpr>());
+        EXPECT_EQ("val", expr.expr()->cast<IdentifierExpr>().name());
+        EXPECT_EQ("val", expr.expr<IdentifierExpr>().name());
+        EXPECT_TRUE(expr.args().empty());
 
         // val(x, y)
-        PtrVector<Expr> args;
+        ExprPtrVector args;
         args.push_back(IdentifierExpr::make("x"));
         args.push_back(IdentifierExpr::make("y"));
 
         expr.setArguments(std::move(args));
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<IdentifierExpr>());
-        EXPECT_EQ("val", expr.getExpr()->cast<IdentifierExpr>().getName());
-        EXPECT_FALSE(expr.getArguments().empty());
-        ASSERT_EQ(2, expr.getArguments().size());
-        ASSERT_TRUE(expr.getArguments()[0]->is<IdentifierExpr>());
-        ASSERT_TRUE(expr.getArguments()[1]->is<IdentifierExpr>());
-        EXPECT_EQ("x", expr.getArguments()[0]->cast<IdentifierExpr>().getName());
-        EXPECT_EQ("y", expr.getArguments()[1]->cast<IdentifierExpr>().getName());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<IdentifierExpr>());
+        EXPECT_EQ("val", expr.expr()->cast<IdentifierExpr>().name());
+        EXPECT_FALSE(expr.args().empty());
+        ASSERT_EQ(2, expr.args().size());
+        ASSERT_TRUE(expr.args()[0]->is<IdentifierExpr>());
+        ASSERT_TRUE(expr.args()[1]->is<IdentifierExpr>());
+        ASSERT_TRUE(expr.arg(0)->is<IdentifierExpr>());
+        ASSERT_TRUE(expr.arg(1)->is<IdentifierExpr>());
+        EXPECT_EQ("x", expr.args()[0]->cast<IdentifierExpr>().name());
+        EXPECT_EQ("y", expr.args()[1]->cast<IdentifierExpr>().name());
+        EXPECT_EQ("x", expr.arg<IdentifierExpr>(0).name());
+        EXPECT_EQ("y", expr.arg<IdentifierExpr>(1).name());
     }
 
     {
@@ -87,12 +92,12 @@ TEST(FunctionCallExpr, base)
         const auto expr = FunctionCallExpr::make(IdentifierExpr::make("obj"), {});
         ASSERT_NE(nullptr, expr);
 
-        EXPECT_EQ(ExprKind::FunctionCall, expr->getKind());
         EXPECT_TRUE(expr->is<FunctionCallExpr>());
-        ASSERT_NE(nullptr, expr->getExpr());
-        ASSERT_TRUE(expr->getExpr()->is<IdentifierExpr>());
-        EXPECT_EQ("obj", expr->getExpr()->cast<IdentifierExpr>().getName());
-        EXPECT_TRUE(expr->getArguments().empty());
+        ASSERT_NE(nullptr, expr->expr());
+        ASSERT_TRUE(expr->expr()->is<IdentifierExpr>());
+        EXPECT_EQ("obj", expr->expr()->cast<IdentifierExpr>().name());
+        EXPECT_EQ("obj", expr->expr<IdentifierExpr>().name());
+        EXPECT_TRUE(expr->args().empty());
     }
 }
 

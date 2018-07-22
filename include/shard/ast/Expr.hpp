@@ -25,8 +25,9 @@
 #include "shard/Assert.hpp"
 #include "shard/UniquePtr.hpp"
 #include "shard/ViewPtr.hpp"
-#include "shard/ast/utility.hpp"
+#include "shard/PtrVector.hpp"
 #include "shard/ast/Node.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -37,8 +38,7 @@ namespace shard::ast {
 /**
  * @brief      Type of expression.
  */
-enum class ExprKind
-{
+[[deprecated]] enum class ExprKind {
     NullLiteral,
     BoolLiteral,
     IntLiteral,
@@ -68,68 +68,29 @@ enum class ExprKind
 class Expr : public Node
 {
 
-// Public Ctors & Dtors
 public:
-
+    // Ctors & Dtors
 
     /**
      * @brief Destructor.
      */
-    virtual ~Expr() = 0;
+    virtual ~Expr() = default;
 
-
-// Public Accessors & Mutators
 public:
-
+    // Accessors & Mutators
 
     /**
      * @brief      Returns expression kind.
      *
      * @return     Expression kind.
      */
-    ExprKind getKind() const noexcept;
+    [[deprecated]] ExprKind getKind() const noexcept
+    {
+        return m_kind;
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Test if expression match required kind.
-     *
-     * @tparam     ExprType  Expression type.
-     *
-     * @return     Returns `true` if this is `ExprType`, `false` otherwise.
-     */
-    template<typename ExprType>
-    bool is() const noexcept;
-
-
-    /**
-     * @brief      Cast this to required expression type.
-     *
-     * @tparam     ExprType  Expression type.
-     *
-     * @return     Reference to required expression type.
-     */
-    template<typename ExprType>
-    ExprType& cast() noexcept;
-
-
-    /**
-     * @brief      Cast this to required expression type.
-     *
-     * @tparam     ExprType  Expression type.
-     *
-     * @return     Reference to required expression type.
-     */
-    template<typename ExprType>
-    const ExprType& cast() const noexcept;
-
-
-// Protected Ctors & Dtors
 protected:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -137,58 +98,74 @@ protected:
      * @param      kind   Expression kind.
      * @param      range  Source range.
      */
-    explicit Expr(ExprKind kind, SourceRange range) noexcept;
+    explicit Expr(ExprKind kind, SourceRange range) noexcept
+        : Node(range)
+        , m_kind(kind)
+    {
+        // Nothing to do
+    }
 
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Expression kind.
     ExprKind m_kind;
-
 };
 
 /* ************************************************************************* */
 
 /**
  * @brief      Base class for all literal kinds.
+ *
+ * @tparam     T     Literal value type.
  */
-template<typename ValueT>
+template<typename T>
 class LiteralExpr : public Expr
 {
-
-
-// Public Types
 public:
-
+    // Types
 
     /// Value type.
-    using ValueType = ValueT;
+    using Value = T;
 
+    /// Value type.
+    using ValueType [[deprecated]] = T;
 
-// Public Accessors & Mutators
 public:
-
+    // Accessors & Mutators
 
     /**
-     * @brief      Returns literal value.
+     * @brief      Returns the literal value.
      *
-     * @return     Literal value.
+     * @return     The literal value.
      */
-    const ValueType& getValue() const noexcept;
-
+    const Value& value() const noexcept
+    {
+        return m_value;
+    }
 
     /**
-     * @brief      Change literal value.
+     * @brief      Returns the literal value.
+     *
+     * @return     The literal value.
+     */
+    [[deprecated]] const Value& getValue() const noexcept
+    {
+        return m_value;
+    }
+
+    /**
+     * @brief      Change the literal value.
      *
      * @param      value  The new literal value.
      */
-    void setValue(ValueType value);
+    void setValue(Value value)
+    {
+        m_value = std::move(value);
+    }
 
-
-// Protected Ctors & Dtors
 protected:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -197,82 +174,39 @@ protected:
      * @param      value  The literal value.
      * @param      range  Location in source.
      */
-    explicit LiteralExpr(ExprKind kind, ValueType value, SourceRange range = {}) noexcept;
+    explicit LiteralExpr(
+        ExprKind kind,
+        Value value,
+        SourceRange range = {}) noexcept
+        : Expr(kind, range)
+        , m_value(value)
+    {
+        // Nothing to do
+    }
 
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Literal value.
-    ValueType m_value;
-
+    Value m_value;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline ExprKind Expr::getKind() const noexcept
-{
-    return m_kind;
-}
+/**
+ * @brief A pointer to expression.
+ */
+using ExprPtr = UniquePtr<Expr>;
 
 /* ************************************************************************* */
 
-template<typename ExprType>
-inline bool Expr::is() const noexcept
-{
-    return getKind() == ExprType::Kind;
-}
+/**
+ * @brief A vector of expressions.
+ */
+using ExprPtrVector = Vector<ExprPtr>;
 
 /* ************************************************************************* */
 
-template<typename ExprType>
-inline ExprType& Expr::cast() noexcept
-{
-    SHARD_ASSERT(is<ExprType>());
-    return static_cast<ExprType&>(*this);
-}
-
-/* ************************************************************************* */
-
-template<typename ExprType>
-inline const ExprType& Expr::cast() const noexcept
-{
-    SHARD_ASSERT(is<ExprType>());
-    return static_cast<const ExprType&>(*this);
-}
-
-/* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
-
-template<typename ValueT>
-inline LiteralExpr<ValueT>::LiteralExpr(ExprKind kind, ValueType value, SourceRange range) noexcept
-    : Expr(kind, range)
-    , m_value(value)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-template<typename ValueT>
-inline const typename LiteralExpr<ValueT>::ValueType& LiteralExpr<ValueT>::getValue() const noexcept
-{
-    return m_value;
-}
-
-/* ************************************************************************* */
-
-template<typename ValueT>
-inline void LiteralExpr<ValueT>::setValue(ValueType value)
-{
-    m_value = std::move(value);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

@@ -17,12 +17,8 @@
 // GTest
 #include "gtest/gtest.h"
 
-// C++
-#include <limits>
-
 // Shard
 #include "shard/ast/expr/BoolLiteralExpr.hpp"
-#include "shard/ast/expr/NullLiteralExpr.hpp"
 
 /* ************************************************************************ */
 
@@ -31,50 +27,61 @@ using namespace shard::ast;
 
 /* ************************************************************************ */
 
+namespace {
+
+/* ************************************************************************ */
+
+struct TestExpr : public Expr
+{
+
+};
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
 TEST(BoolLiteralExpr, base)
 {
     {
         const BoolLiteralExpr expr(true);
 
-        EXPECT_EQ(ExprKind::BoolLiteral, expr.getKind());
-        EXPECT_FALSE(expr.is<NullLiteralExpr>());
+        EXPECT_FALSE(expr.is<TestExpr>());
         EXPECT_TRUE(expr.is<BoolLiteralExpr>());
-        EXPECT_TRUE(expr.getValue());
+        EXPECT_TRUE(expr.value());
     }
 
     {
         const BoolLiteralExpr expr(false);
 
-        EXPECT_EQ(ExprKind::BoolLiteral, expr.getKind());
-        EXPECT_FALSE(expr.is<NullLiteralExpr>());
+        EXPECT_FALSE(expr.is<TestExpr>());
         EXPECT_TRUE(expr.is<BoolLiteralExpr>());
-        EXPECT_FALSE(expr.getValue());
+        EXPECT_FALSE(expr.value());
     }
 
     {
         BoolLiteralExpr expr(false);
 
-        EXPECT_EQ(ExprKind::BoolLiteral, expr.getKind());
-        EXPECT_FALSE(expr.is<NullLiteralExpr>());
+        EXPECT_FALSE(expr.is<TestExpr>());
         EXPECT_TRUE(expr.is<BoolLiteralExpr>());
-        EXPECT_FALSE(expr.getValue());
+        EXPECT_FALSE(expr.value());
 
         // Try to change value
         expr.setValue(true);
-        EXPECT_TRUE(expr.getValue());
+        EXPECT_TRUE(expr.value());
 
         expr.setValue(false);
-        EXPECT_FALSE(expr.getValue());
+        EXPECT_FALSE(expr.value());
     }
 
     {
         const auto expr = BoolLiteralExpr::make(true);
         ASSERT_NE(nullptr, expr);
 
-        EXPECT_EQ(ExprKind::BoolLiteral, expr->getKind());
-        EXPECT_FALSE(expr->is<NullLiteralExpr>());
+        EXPECT_FALSE(expr->is<TestExpr>());
         EXPECT_TRUE(expr->is<BoolLiteralExpr>());
-        EXPECT_TRUE(expr->getValue());
+        EXPECT_TRUE(expr->value());
     }
 }
 

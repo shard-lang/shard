@@ -38,38 +38,38 @@ TEST(MemberAccessExpr, base)
         // obj.x
         const MemberAccessExpr expr(IdentifierExpr::make("obj"), "x");
 
-        EXPECT_EQ(ExprKind::MemberAccess, expr.getKind());
         EXPECT_TRUE(expr.is<MemberAccessExpr>());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<IdentifierExpr>());
-        EXPECT_EQ("obj", expr.getExpr()->cast<IdentifierExpr>().getName());
-        EXPECT_EQ("x", expr.getName());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<IdentifierExpr>());
+        EXPECT_EQ("obj", expr.expr()->cast<IdentifierExpr>().name());
+        EXPECT_EQ("obj", expr.expr<IdentifierExpr>().name());
+        EXPECT_EQ("x", expr.name());
     }
 
     {
         // obj.x
         MemberAccessExpr expr(IdentifierExpr::make("obj"), "x");
 
-        EXPECT_EQ(ExprKind::MemberAccess, expr.getKind());
         EXPECT_TRUE(expr.is<MemberAccessExpr>());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<IdentifierExpr>());
-        EXPECT_EQ("obj", expr.getExpr()->cast<IdentifierExpr>().getName());
-        EXPECT_EQ("x", expr.getName());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<IdentifierExpr>());
+        EXPECT_EQ("obj", expr.expr()->cast<IdentifierExpr>().name());
+        EXPECT_EQ("obj", expr.expr<IdentifierExpr>().name());
+        EXPECT_EQ("x", expr.name());
 
         // (obj).x
         expr.setExpr(ParenExpr::make(IdentifierExpr::make("obj")));
         EXPECT_TRUE(expr.is<MemberAccessExpr>());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<ParenExpr>());
-        EXPECT_EQ("x", expr.getName());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<ParenExpr>());
+        EXPECT_EQ("x", expr.name());
 
         // (obj).y
         expr.setName("y");
         EXPECT_TRUE(expr.is<MemberAccessExpr>());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<ParenExpr>());
-        EXPECT_EQ("y", expr.getName());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<ParenExpr>());
+        EXPECT_EQ("y", expr.name());
     }
 
     {
@@ -77,12 +77,11 @@ TEST(MemberAccessExpr, base)
         const auto expr = MemberAccessExpr::make(IdentifierExpr::make("obj"), "x");
         ASSERT_NE(nullptr, expr);
 
-        EXPECT_EQ(ExprKind::MemberAccess, expr->getKind());
         EXPECT_TRUE(expr->is<MemberAccessExpr>());
-        ASSERT_NE(nullptr, expr->getExpr());
-        ASSERT_TRUE(expr->getExpr()->is<IdentifierExpr>());
-        EXPECT_EQ("obj", expr->getExpr()->cast<IdentifierExpr>().getName());
-        EXPECT_EQ("x", expr->getName());
+        ASSERT_NE(nullptr, expr->expr());
+        ASSERT_TRUE(expr->expr()->is<IdentifierExpr>());
+        EXPECT_EQ("obj", expr->expr()->cast<IdentifierExpr>().name());
+        EXPECT_EQ("x", expr->name());
     }
 }
 

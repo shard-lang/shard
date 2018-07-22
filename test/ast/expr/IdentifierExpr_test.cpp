@@ -17,9 +17,6 @@
 // GTest
 #include "gtest/gtest.h"
 
-// C++
-#include <limits>
-
 // Shard
 #include "shard/ast/expr/IdentifierExpr.hpp"
 
@@ -36,10 +33,9 @@ TEST(IdentifierExpr, base)
         // id
         const IdentifierExpr expr("id");
 
-        EXPECT_EQ(ExprKind::Identifier, expr.getKind());
         EXPECT_TRUE(expr.is<IdentifierExpr>());
-        ASSERT_FALSE(expr.getName().empty());
-        EXPECT_EQ("id", expr.getName());
+        ASSERT_FALSE(expr.name().empty());
+        EXPECT_EQ("id", expr.name());
     }
 
 #if !defined(NDEBUG) && !defined(_WIN32)
@@ -53,13 +49,12 @@ TEST(IdentifierExpr, base)
         // id
         IdentifierExpr expr("id");
 
-        EXPECT_EQ(ExprKind::Identifier, expr.getKind());
         EXPECT_TRUE(expr.is<IdentifierExpr>());
-        ASSERT_FALSE(expr.getName().empty());
-        EXPECT_EQ("id", expr.getName());
+        ASSERT_FALSE(expr.name().empty());
+        EXPECT_EQ("id", expr.name());
 
         expr.setName("my_id");
-        EXPECT_EQ("my_id", expr.getName());
+        EXPECT_EQ("my_id", expr.name());
     }
 
     {
@@ -67,10 +62,9 @@ TEST(IdentifierExpr, base)
         const auto expr = IdentifierExpr::make("id");
         ASSERT_NE(nullptr, expr);
 
-        EXPECT_EQ(ExprKind::Identifier, expr->getKind());
         EXPECT_TRUE(expr->is<IdentifierExpr>());
-        ASSERT_FALSE(expr->getName().empty());
-        EXPECT_EQ("id", expr->getName());
+        ASSERT_FALSE(expr->name().empty());
+        EXPECT_EQ("id", expr->name());
     }
 }
 

@@ -20,8 +20,8 @@
 
 // Shard
 #include "shard/String.hpp"
-#include "shard/UniquePtr.hpp"
 #include "shard/ast/Expr.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -33,22 +33,14 @@ namespace shard::ast {
  * @brief      String literal.
  *
  * @details    In the language it represents a string literal like
- *             "hello world". The value can be accessed by calling `getValue`
+ *             "hello world". The value can be accessed by calling `value`
  *             and changed by `setValue`.
  */
-class StringLiteralExpr final : public LiteralExpr<String>
+class StringLiteralExpr final : public LiteralExpr<String>,
+                                public PtrBuilder<StringLiteralExpr, String>
 {
-
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr ExprKind Kind = ExprKind::StringLiteral;
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -56,33 +48,15 @@ public:
      * @param      value  The string literal value.
      * @param      range  Location in source.
      */
-    explicit StringLiteralExpr(ValueType value, SourceRange range = {});
-
-
-    /**
-     * @brief      Destructor.
-     */
-    ~StringLiteralExpr();
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      value  The string literal value.
-     * @param      range  Location in source.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<StringLiteralExpr> make(ValueType value, SourceRange range = {});
-
+    explicit StringLiteralExpr(String value, SourceRange range = {})
+        : LiteralExpr<String>(ExprKind::StringLiteral, std::move(value), range)
+    {
+        // Nothing to do
+    }
 };
 
 /* ************************************************************************* */
 
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

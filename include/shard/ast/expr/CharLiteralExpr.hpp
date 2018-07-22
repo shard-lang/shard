@@ -19,8 +19,8 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
 #include "shard/ast/Expr.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -32,23 +32,14 @@ namespace shard::ast {
  * @brief      The character literal.
  *
  * @details    In the language it represents a character literal like '0', 'x',
- *             'á'. The value can be accessed by calling `getValue` and changed
+ *             'á'. The value can be accessed by calling `value` and changed
  *             by `setValue`. Value is stored as a UNICODE code point.
  */
-class CharLiteralExpr final : public LiteralExpr<char32_t>
+class CharLiteralExpr final : public LiteralExpr<char32_t>,
+                              public PtrBuilder<CharLiteralExpr, char32_t>
 {
-
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr ExprKind Kind = ExprKind::CharLiteral;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -56,33 +47,15 @@ public:
      * @param      value  The character UNICODE code point.
      * @param      range  Location in source.
      */
-    explicit CharLiteralExpr(ValueType value, SourceRange range = {}) noexcept;
-
-
-    /**
-     * @brief      Destructor.
-     */
-    ~CharLiteralExpr();
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      value  The character UNICODE code point.
-     * @param      range  Location in source.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<CharLiteralExpr> make(ValueType value, SourceRange range = {});
-
+    explicit CharLiteralExpr(char32_t value, SourceRange range = {}) noexcept
+        : LiteralExpr<char32_t>(ExprKind::CharLiteral, value, range)
+    {
+        // Nothing to do
+    }
 };
 
 /* ************************************************************************* */
 
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

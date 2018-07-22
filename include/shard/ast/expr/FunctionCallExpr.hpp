@@ -19,11 +19,9 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/String.hpp"
-#include "shard/UniquePtr.hpp"
-#include "shard/ViewPtr.hpp"
-#include "shard/PtrVector.hpp"
+#include "shard/Assert.hpp"
 #include "shard/ast/Expr.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -37,20 +35,12 @@ namespace shard::ast {
  * @details    In the source it represents following expression:
  *             `<expr>(<args>)`.
  */
-class FunctionCallExpr final : public Expr
+class FunctionCallExpr final
+    : public Expr,
+      public PtrBuilder<FunctionCallExpr, ExprPtr, ExprPtrVector>
 {
-
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr ExprKind Kind = ExprKind::FunctionCall;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -59,111 +49,211 @@ public:
      * @param      args   Call arguments.
      * @param      range  Location in source.
      */
-    explicit FunctionCallExpr(UniquePtr<Expr> expr, PtrVector<Expr> args = {}, SourceRange range = {});
+    explicit FunctionCallExpr(
+        ExprPtr expr,
+        ExprPtrVector args = {},
+        SourceRange range  = {})
+        : Expr(ExprKind::FunctionCall, range)
+        , m_expr(std::move(expr))
+        , m_arguments(std::move(args))
+    {
+        SHARD_ASSERT(m_expr);
+    }
 
-
-    /**
-     * @brief      Destructor.
-     */
-    ~FunctionCallExpr();
-
-
-// Public Accessors & Mutators
 public:
-
-
-    /**
-     * @brief      Returns callee expression.
-     *
-     * @return     The callee expression.
-     */
-    ViewPtr<const Expr> getExpr() const noexcept;
-
+    // Accessors & Mutators
 
     /**
      * @brief      Returns callee expression.
      *
      * @return     The callee expression.
      */
-    ViewPtr<Expr> getExpr() noexcept;
+    const ExprPtr& expr() const noexcept
+    {
+        return m_expr;
+    }
 
+    /**
+     * @brief      Returns callee expression.
+     *
+     * @return     The callee expression.
+     */
+    ExprPtr& expr() noexcept
+    {
+        return m_expr;
+    }
+
+    /**
+     * @brief      Returns the callee expression.
+     *
+     * @tparam     ExprType  The required expression type.
+     *
+     * @return     The callee expression.
+     *
+     * @pre        `expr()->is<ExprType>()`
+     */
+    template<typename ExprType>
+    const ExprType& expr() const noexcept
+    {
+        return m_expr->cast<ExprType>();
+    }
+
+    /**
+     * @brief      Returns the callee expression.
+     *
+     * @tparam     ExprType  The required expression type.
+     *
+     * @return     The callee expression.
+     *
+     * @pre        `expr()->is<ExprType>()`
+     */
+    template<typename ExprType>
+    ExprType& expr() noexcept
+    {
+        return m_expr->cast<ExprType>();
+    }
+
+    /**
+     * @brief      Returns callee expression.
+     *
+     * @return     The callee expression.
+     */
+    [[deprecated]] ViewPtr<const Expr> getExpr() const noexcept
+    {
+        return makeView(m_expr);
+    }
+
+    /**
+     * @brief      Returns callee expression.
+     *
+     * @return     The callee expression.
+     */
+    [[deprecated]] ViewPtr<Expr> getExpr() noexcept
+    {
+        return makeView(m_expr);
+    }
 
     /**
      * @brief      Change expression.
      *
      * @param      expr  The new expression.
      */
-    void setExpr(UniquePtr<Expr> expr);
-
+    void setExpr(ExprPtr expr) noexcept
+    {
+        SHARD_ASSERT(expr);
+        m_expr = std::move(expr);
+    }
 
     /**
      * @brief      Returns call arguments.
      *
      * @return     The call arguments.
      */
-    const PtrVector<Expr>& getArguments() const noexcept;
+    const ExprPtrVector& args() const noexcept
+    {
+        return m_arguments;
+    }
 
+    /**
+     * @brief      Returns number of arguments.
+     *
+     * @return     The number of arguments.
+     */
+    size_t argsCount() const noexcept
+    {
+        return m_arguments.size();
+    }
+
+    /**
+     * @brief      Returns call argument.
+     *
+     * @param      pos   The argument position.
+     *
+     * @return     The call arguments.
+     *
+     * @pre        `pos < argsCount()`.
+     */
+    const ExprPtr& arg(size_t pos) const noexcept
+    {
+        return m_arguments[pos];
+    }
+
+    /**
+     * @brief      Returns call argument.
+     *
+     * @param      pos   The argument position.
+     *
+     * @return     The call arguments.
+     *
+     * @pre        `pos < args().size()`.
+     */
+    ExprPtr& arg(size_t pos) noexcept
+    {
+        return m_arguments[pos];
+    }
+
+    /**
+     * @brief      Returns call argument.
+     *
+     * @param      pos   The argument position.
+     *
+     * @return     The call arguments.
+     *
+     * @pre        `pos < argsCount()`.
+     */
+    template<typename ExprType>
+    const ExprType& arg(size_t pos) const noexcept
+    {
+        return arg(pos)->cast<ExprType>();
+    }
+
+    /**
+     * @brief      Returns call argument.
+     *
+     * @param      pos   The argument position.
+     *
+     * @return     The call arguments.
+     *
+     * @pre        `pos < args().size()`.
+     */
+    template<typename ExprType>
+    ExprType& arg(size_t pos) noexcept
+    {
+        return arg(pos)->cast<ExprType>();
+    }
+
+    /**
+     * @brief      Returns call arguments.
+     *
+     * @return     The call arguments.
+     */
+    const ExprPtrVector& getArguments() const noexcept
+    {
+        return m_arguments;
+    }
 
     /**
      * @brief      Change call arguments.
      *
      * @param      args  The call arguments.
      */
-    void setArguments(PtrVector<Expr> args);
+    void setArguments(ExprPtrVector args) noexcept
+    {
+        m_arguments = std::move(args);
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      expr   Callee expression.
-     * @param      args   Call arguments.
-     * @param      range  Location in source.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<FunctionCallExpr> make(UniquePtr<Expr> expr, PtrVector<Expr> args = {}, SourceRange range = {});
-
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Callee expression.
-    UniquePtr<Expr> m_expr;
+    ExprPtr m_expr;
 
     /// Call arguments.
-    PtrVector<Expr> m_arguments;
-
+    ExprPtrVector m_arguments;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline ViewPtr<const Expr> FunctionCallExpr::getExpr() const noexcept
-{
-    return makeView(m_expr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<Expr> FunctionCallExpr::getExpr() noexcept
-{
-    return makeView(m_expr);
-}
-
-/* ************************************************************************* */
-
-inline const PtrVector<Expr>& FunctionCallExpr::getArguments() const noexcept
-{
-    return m_arguments;
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

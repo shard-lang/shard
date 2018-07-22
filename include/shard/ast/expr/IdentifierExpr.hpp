@@ -19,9 +19,10 @@
 /* ************************************************************************* */
 
 // Shard
+#include "shard/Assert.hpp"
 #include "shard/String.hpp"
-#include "shard/UniquePtr.hpp"
 #include "shard/ast/Expr.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -33,20 +34,11 @@ namespace shard::ast {
  * @brief      Identifier expression - represents usage of variable, function or
  *             anything that can be declared.
  */
-class IdentifierExpr final : public Expr
+class IdentifierExpr final : public Expr,
+                             public PtrBuilder<IdentifierExpr, String>
 {
-
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr ExprKind Kind = ExprKind::Identifier;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -54,69 +46,55 @@ public:
      * @param      name   Identifier name.
      * @param      range  Location in source.
      */
-    explicit IdentifierExpr(String name, SourceRange range = {});
+    explicit IdentifierExpr(String name, SourceRange range = {})
+        : Expr(ExprKind::Identifier, range)
+        , m_name(std::move(name))
+    {
+        SHARD_ASSERT(!m_name.empty());
+    }
 
-
-    /**
-     * @brief      Destructor.
-     */
-    ~IdentifierExpr();
-
-
-// Public Accessors & Mutators
+    // Public Accessors & Mutators
 public:
-
+    /**
+     * @brief      Returns identifier name.
+     *
+     * @return     Identifier name.
+     */
+    const String& name() const noexcept
+    {
+        return m_name;
+    }
 
     /**
      * @brief      Returns identifier name.
      *
      * @return     Identifier name.
      */
-    const String& getName() const noexcept;
-
+    [[deprecated]] const String& getName() const noexcept
+    {
+        return m_name;
+    }
 
     /**
      * @brief      Change identifier name.
      *
      * @param      name  The new identifier name.
      */
-    void setName(String name);
+    void setName(String name)
+    {
+        SHARD_ASSERT(!name.empty());
+        m_name = std::move(name);
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      name   Identifier name.
-     * @param      range  Location in source.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<IdentifierExpr> make(String name, SourceRange range = {});
-
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Identifier name.
     String m_name;
-
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline const String& IdentifierExpr::getName() const noexcept
-{
-    return m_name;
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

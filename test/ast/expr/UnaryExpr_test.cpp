@@ -17,9 +17,6 @@
 // GTest
 #include "gtest/gtest.h"
 
-// C++
-#include <limits>
-
 // Shard
 #include "shard/ast/expr/UnaryExpr.hpp"
 #include "shard/ast/expr/BoolLiteralExpr.hpp"
@@ -38,78 +35,78 @@ TEST(UnaryExpr, base)
         // !true
         const UnaryExpr expr(UnaryExpr::OpKind::Not, BoolLiteralExpr::make(true));
 
-        EXPECT_EQ(ExprKind::Unary, expr.getKind());
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::Not, expr.getOpKind());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<BoolLiteralExpr>());
-        EXPECT_TRUE(expr.getExpr()->cast<BoolLiteralExpr>().getValue());
+        EXPECT_EQ(UnaryExpr::OpKind::Not, expr.op());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<BoolLiteralExpr>());
+        EXPECT_TRUE(expr.expr()->cast<BoolLiteralExpr>().value());
+        EXPECT_TRUE(expr.expr<BoolLiteralExpr>().value());
     }
 
     {
         // -10
         const UnaryExpr expr(UnaryExpr::OpKind::Minus, IntLiteralExpr::make(10));
 
-        EXPECT_EQ(ExprKind::Unary, expr.getKind());
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::Minus, expr.getOpKind());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<IntLiteralExpr>());
-        EXPECT_EQ(10, expr.getExpr()->cast<IntLiteralExpr>().getValue());
+        EXPECT_EQ(UnaryExpr::OpKind::Minus, expr.op());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<IntLiteralExpr>());
+        EXPECT_EQ(10, expr.expr()->cast<IntLiteralExpr>().value());
+        EXPECT_EQ(10, expr.expr<IntLiteralExpr>().value());
     }
 
     {
         // 5++
         const UnaryExpr expr(UnaryExpr::OpKind::PostInc, IntLiteralExpr::make(5));
 
-        EXPECT_EQ(ExprKind::Unary, expr.getKind());
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::PostInc, expr.getOpKind());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<IntLiteralExpr>());
-        EXPECT_EQ(5, expr.getExpr()->cast<IntLiteralExpr>().getValue());
+        EXPECT_EQ(UnaryExpr::OpKind::PostInc, expr.op());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<IntLiteralExpr>());
+        EXPECT_EQ(5, expr.expr()->cast<IntLiteralExpr>().value());
+        EXPECT_EQ(5, expr.expr<IntLiteralExpr>().value());
     }
 
     {
         // true--
         const UnaryExpr expr(UnaryExpr::OpKind::PostDec, BoolLiteralExpr::make(true));
 
-        EXPECT_EQ(ExprKind::Unary, expr.getKind());
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::PostDec, expr.getOpKind());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<BoolLiteralExpr>());
-        EXPECT_TRUE(expr.getExpr()->cast<BoolLiteralExpr>().getValue());
+        EXPECT_EQ(UnaryExpr::OpKind::PostDec, expr.op());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<BoolLiteralExpr>());
+        EXPECT_TRUE(expr.expr()->cast<BoolLiteralExpr>().value());
+        EXPECT_TRUE(expr.expr<BoolLiteralExpr>().value());
     }
 
     {
         // -10
         UnaryExpr expr(UnaryExpr::OpKind::Minus, IntLiteralExpr::make(0));
 
-        EXPECT_EQ(ExprKind::Unary, expr.getKind());
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::Minus, expr.getOpKind());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<IntLiteralExpr>());
-        EXPECT_EQ(0, expr.getExpr()->cast<IntLiteralExpr>().getValue());
+        EXPECT_EQ(UnaryExpr::OpKind::Minus, expr.op());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<IntLiteralExpr>());
+        EXPECT_EQ(0, expr.expr()->cast<IntLiteralExpr>().value());
+        EXPECT_EQ(0, expr.expr<IntLiteralExpr>().value());
 
         // !0
-        expr.setOpKind(UnaryExpr::OpKind::Not);
-        EXPECT_EQ(ExprKind::Unary, expr.getKind());
+        expr.setOp(UnaryExpr::OpKind::Not);
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::Not, expr.getOpKind());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<IntLiteralExpr>());
-        EXPECT_EQ(0, expr.getExpr()->cast<IntLiteralExpr>().getValue());
+        EXPECT_EQ(UnaryExpr::OpKind::Not, expr.op());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<IntLiteralExpr>());
+        EXPECT_EQ(0, expr.expr()->cast<IntLiteralExpr>().value());
+        EXPECT_EQ(0, expr.expr<IntLiteralExpr>().value());
 
         // !true
         expr.setExpr(BoolLiteralExpr::make(true));
-        EXPECT_EQ(ExprKind::Unary, expr.getKind());
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::Not, expr.getOpKind());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<BoolLiteralExpr>());
-        EXPECT_TRUE(expr.getExpr()->cast<BoolLiteralExpr>().getValue());
+        EXPECT_EQ(UnaryExpr::OpKind::Not, expr.op());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<BoolLiteralExpr>());
+        EXPECT_TRUE(expr.expr()->cast<BoolLiteralExpr>().value());
+        EXPECT_TRUE(expr.expr<BoolLiteralExpr>().value());
     }
 
     {
@@ -117,12 +114,12 @@ TEST(UnaryExpr, base)
         const auto expr = UnaryExpr::make(UnaryExpr::OpKind::Not, BoolLiteralExpr::make(true));
         ASSERT_NE(nullptr, expr);
 
-        EXPECT_EQ(ExprKind::Unary, expr->getKind());
         EXPECT_TRUE(expr->is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::Not, expr->getOpKind());
-        ASSERT_NE(nullptr, expr->getExpr());
-        ASSERT_TRUE(expr->getExpr()->is<BoolLiteralExpr>());
-        EXPECT_TRUE(expr->getExpr()->cast<BoolLiteralExpr>().getValue());
+        EXPECT_EQ(UnaryExpr::OpKind::Not, expr->op());
+        ASSERT_NE(nullptr, expr->expr());
+        ASSERT_TRUE(expr->expr()->is<BoolLiteralExpr>());
+        EXPECT_TRUE(expr->expr()->cast<BoolLiteralExpr>().value());
+        EXPECT_TRUE(expr->expr<BoolLiteralExpr>().value());
     }
 }
 

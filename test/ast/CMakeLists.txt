@@ -22,6 +22,7 @@ endif ()
 
 # Create test executable
 add_executable(shard-ast_test
+    Node_test.cpp
     Type_test.cpp
 
     # Expr

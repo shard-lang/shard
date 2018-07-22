@@ -19,6 +19,7 @@
 /* ************************************************************************* */
 
 // Shard
+#include "shard/Assert.hpp"
 #include "shard/SourceLocation.hpp"
 #include "shard/SourceRange.hpp"
 
@@ -30,89 +31,131 @@ namespace shard::ast {
 
 /**
  * @brief      Base class for all AST nodes.
+ *
+ * @details    Base class for all AST nodes which cannot be used directly. It
+ *             just store information needed by all AST nodes.
  */
 class Node
 {
-
-// Public Accessors & Mutators
 public:
-
+    // Accessors & Mutators
 
     /**
      * @brief      Returns source range.
      *
      * @return     The source range.
      */
-    const SourceRange& getSourceRange() const noexcept;
+    constexpr const SourceRange& sourceRange() const noexcept
+    {
+        return m_sourceRange;
+    }
 
+    /**
+     * @brief      Returns source range.
+     *
+     * @return     The source range.
+     */
+    [[deprecated]] const SourceRange& getSourceRange() const noexcept
+    {
+        return m_sourceRange;
+    }
 
     /**
      * @brief      Returns source range start.
      *
      * @return     The source start.
      */
-    const SourceLocation& getSourceStart() const noexcept;
-
+    [[deprecated]] const SourceLocation& getSourceStart() const noexcept
+    {
+        return m_sourceRange.start();
+    }
 
     /**
      * @brief      Returns source range end.
      *
      * @return     The source end.
      */
-    const SourceLocation& getSourceEnd() const noexcept;
+    [[deprecated]] const SourceLocation& getSourceEnd() const noexcept
+    {
+        return m_sourceRange.end();
+    }
 
+public:
+    // Operations
 
-// Protected Ctors & Dtors
+    /**
+     * @brief      Test if current node match required node type.
+     *
+     * @tparam     NodeType  Node type.
+     *
+     * @return     Returns `true` if this is `NodeType`, `false` otherwise.
+     */
+    template<typename NodeType>
+    bool is() const noexcept
+    {
+        return dynamic_cast<const NodeType*>(this) != nullptr;
+    }
+
+    /**
+     * @brief      Cast this to required node type.
+     *
+     * @tparam     NodeType  Node type.
+     *
+     * @return     Reference to required node type.
+     *
+     * @pre        `is<NodeType>()`
+     */
+    template<typename NodeType>
+    NodeType& cast() noexcept
+    {
+        SHARD_ASSERT(is<NodeType>());
+        return static_cast<NodeType&>(*this);
+    }
+
+    /**
+     * @brief      Cast this to required node type.
+     *
+     * @tparam     NodeType  Node type.
+     *
+     * @return     Reference to required node type.
+     *
+     * @pre        `is<NodeType>()`
+     */
+    template<typename NodeType>
+    const NodeType& cast() const noexcept
+    {
+        SHARD_ASSERT(is<NodeType>());
+        return static_cast<const NodeType&>(*this);
+    }
+
 protected:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
      *
      * @param      range  Source range.
      */
-    Node(SourceRange range) noexcept;
-
+    constexpr Node(SourceRange range) noexcept
+        : m_sourceRange(range)
+    {
+        // Nothing to do
+    }
 
     /**
      * @brief      Destructor.
      */
-    ~Node() = default;
+    virtual ~Node() = default;
 
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Source range.
-    SourceRange m_range;
-
+    SourceRange m_sourceRange;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline const SourceRange& Node::getSourceRange() const noexcept
-{
-    return m_range;
-}
-
-/* ************************************************************************* */
-
-inline const SourceLocation& Node::getSourceStart() const noexcept
-{
-    return getSourceRange().start();
-}
-
-/* ************************************************************************* */
-
-inline const SourceLocation& Node::getSourceEnd() const noexcept
-{
-    return getSourceRange().end();
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

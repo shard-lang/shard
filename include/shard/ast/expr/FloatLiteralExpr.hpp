@@ -19,8 +19,8 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
 #include "shard/ast/Expr.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -35,20 +35,11 @@ namespace shard::ast {
  *             15e456. The value can be accessed by calling `getValue` and
  *             changed by `setValue`.
  */
-class FloatLiteralExpr final : public LiteralExpr<float>
+class FloatLiteralExpr final : public LiteralExpr<float>,
+                               public PtrBuilder<FloatLiteralExpr, float>
 {
-
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr ExprKind Kind = ExprKind::FloatLiteral;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -56,33 +47,15 @@ public:
      * @param      value  The float value.
      * @param      range  Location in source.
      */
-    explicit FloatLiteralExpr(ValueType value, SourceRange range = {}) noexcept;
-
-
-    /**
-     * @brief      Destructor.
-     */
-    ~FloatLiteralExpr();
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      value  The float value.
-     * @param      range  Location in source.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<FloatLiteralExpr> make(ValueType value, SourceRange range = {});
-
+    explicit FloatLiteralExpr(float value, SourceRange range = {}) noexcept
+        : LiteralExpr<float>(ExprKind::FloatLiteral, value, range)
+    {
+        // Nothing to do
+    }
 };
 
 /* ************************************************************************* */
 
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

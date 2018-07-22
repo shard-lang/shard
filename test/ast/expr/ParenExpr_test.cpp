@@ -17,9 +17,6 @@
 // GTest
 #include "gtest/gtest.h"
 
-// C++
-#include <limits>
-
 // Shard
 #include "shard/ast/expr/ParenExpr.hpp"
 #include "shard/ast/expr/IntLiteralExpr.hpp"
@@ -38,42 +35,43 @@ TEST(ParenExpr, base)
         // (5)
         const ParenExpr expr(IntLiteralExpr::make(5));
 
-        EXPECT_EQ(ExprKind::Paren, expr.getKind());
         EXPECT_TRUE(expr.is<ParenExpr>());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<IntLiteralExpr>());
-        EXPECT_EQ(5, expr.getExpr()->cast<IntLiteralExpr>().getValue());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<IntLiteralExpr>());
+        EXPECT_EQ(5, expr.expr()->cast<IntLiteralExpr>().value());
+        EXPECT_EQ(5, expr.expr<IntLiteralExpr>().value());
     }
 
     {
         // ((true))
         const ParenExpr expr(ParenExpr::make(BoolLiteralExpr::make(true)));
 
-        EXPECT_EQ(ExprKind::Paren, expr.getKind());
         EXPECT_TRUE(expr.is<ParenExpr>());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<ParenExpr>());
-        ASSERT_TRUE(expr.getExpr()->cast<ParenExpr>().getExpr());
-        EXPECT_TRUE(expr.getExpr()->cast<ParenExpr>().getExpr()->cast<BoolLiteralExpr>().getValue());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<ParenExpr>());
+        ASSERT_TRUE(expr.expr()->cast<ParenExpr>().expr());
+        ASSERT_TRUE(expr.expr<ParenExpr>().expr());
+        EXPECT_TRUE(expr.expr()->cast<ParenExpr>().expr()->cast<BoolLiteralExpr>().value());
+        EXPECT_TRUE(expr.expr<ParenExpr>().expr<BoolLiteralExpr>().value());
     }
 
     {
         // (5)
         ParenExpr expr(IntLiteralExpr::make(5));
 
-        EXPECT_EQ(ExprKind::Paren, expr.getKind());
         EXPECT_TRUE(expr.is<ParenExpr>());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<IntLiteralExpr>());
-        EXPECT_EQ(5, expr.getExpr()->cast<IntLiteralExpr>().getValue());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<IntLiteralExpr>());
+        EXPECT_EQ(5, expr.expr()->cast<IntLiteralExpr>().value());
+        EXPECT_EQ(5, expr.expr<IntLiteralExpr>().value());
 
         // (true)
         expr.setExpr(BoolLiteralExpr::make(true));
-        EXPECT_EQ(ExprKind::Paren, expr.getKind());
         EXPECT_TRUE(expr.is<ParenExpr>());
-        ASSERT_NE(nullptr, expr.getExpr());
-        ASSERT_TRUE(expr.getExpr()->is<BoolLiteralExpr>());
-        EXPECT_TRUE(expr.getExpr()->cast<BoolLiteralExpr>().getValue());
+        ASSERT_NE(nullptr, expr.expr());
+        ASSERT_TRUE(expr.expr()->is<BoolLiteralExpr>());
+        EXPECT_TRUE(expr.expr()->cast<BoolLiteralExpr>().value());
+        EXPECT_TRUE(expr.expr<BoolLiteralExpr>().value());
     }
 
     {
@@ -81,11 +79,11 @@ TEST(ParenExpr, base)
         const auto expr = ParenExpr::make(IntLiteralExpr::make(5));
         ASSERT_NE(nullptr, expr);
 
-        EXPECT_EQ(ExprKind::Paren, expr->getKind());
         EXPECT_TRUE(expr->is<ParenExpr>());
-        ASSERT_NE(nullptr, expr->getExpr());
-        ASSERT_TRUE(expr->getExpr()->is<IntLiteralExpr>());
-        EXPECT_EQ(5, expr->getExpr()->cast<IntLiteralExpr>().getValue());
+        ASSERT_NE(nullptr, expr->expr());
+        ASSERT_TRUE(expr->expr()->is<IntLiteralExpr>());
+        EXPECT_EQ(5, expr->expr()->cast<IntLiteralExpr>().value());
+        EXPECT_EQ(5, expr->expr<IntLiteralExpr>().value());
     }
 }
 

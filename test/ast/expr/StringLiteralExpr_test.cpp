@@ -17,9 +17,6 @@
 // GTest
 #include "gtest/gtest.h"
 
-// C++
-#include <limits>
-
 // Shard
 #include "shard/ast/expr/StringLiteralExpr.hpp"
 
@@ -30,59 +27,74 @@ using namespace shard::ast;
 
 /* ************************************************************************ */
 
+namespace {
+
+/* ************************************************************************ */
+
+struct TestExpr : public Expr
+{
+
+};
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
 TEST(StringLiteralExpr, base)
 {
     {
         const StringLiteralExpr expr({});
 
-        EXPECT_EQ(ExprKind::StringLiteral, expr.getKind());
         EXPECT_TRUE(expr.is<StringLiteralExpr>());
-        EXPECT_TRUE(expr.getValue().empty());
-        EXPECT_EQ(StringLiteralExpr::ValueType{}, expr.getValue());
+        EXPECT_FALSE(expr.is<TestExpr>());
+        EXPECT_TRUE(expr.value().empty());
+        EXPECT_EQ(StringLiteralExpr::ValueType{}, expr.value());
     }
 
     {
         const StringLiteralExpr expr("");
 
-        EXPECT_EQ(ExprKind::StringLiteral, expr.getKind());
         EXPECT_TRUE(expr.is<StringLiteralExpr>());
-        EXPECT_TRUE(expr.getValue().empty());
-        EXPECT_EQ("", expr.getValue());
+        EXPECT_FALSE(expr.is<TestExpr>());
+        EXPECT_TRUE(expr.value().empty());
+        EXPECT_EQ("", expr.value());
     }
 
     {
         const StringLiteralExpr expr("Hello world");
 
-        EXPECT_EQ(ExprKind::StringLiteral, expr.getKind());
         EXPECT_TRUE(expr.is<StringLiteralExpr>());
-        EXPECT_FALSE(expr.getValue().empty());
-        EXPECT_EQ("Hello world", expr.getValue());
+        EXPECT_FALSE(expr.is<TestExpr>());
+        EXPECT_FALSE(expr.value().empty());
+        EXPECT_EQ("Hello world", expr.value());
     }
 
     {
         StringLiteralExpr expr({});
 
-        EXPECT_EQ(ExprKind::StringLiteral, expr.getKind());
         EXPECT_TRUE(expr.is<StringLiteralExpr>());
-        EXPECT_TRUE(expr.getValue().empty());
-        EXPECT_EQ(StringLiteralExpr::ValueType{}, expr.getValue());
+        EXPECT_FALSE(expr.is<TestExpr>());
+        EXPECT_TRUE(expr.value().empty());
+        EXPECT_EQ(StringLiteralExpr::ValueType{}, expr.value());
 
         // Try to change values
         expr.setValue("Hello world");
-        EXPECT_EQ("Hello world", expr.getValue());
+        EXPECT_EQ("Hello world", expr.value());
 
         expr.setValue("Maybe");
-        EXPECT_EQ("Maybe", expr.getValue());
+        EXPECT_EQ("Maybe", expr.value());
     }
 
     {
         const auto expr = StringLiteralExpr::make({});
         ASSERT_NE(nullptr, expr);
 
-        EXPECT_EQ(ExprKind::StringLiteral, expr->getKind());
         EXPECT_TRUE(expr->is<StringLiteralExpr>());
-        EXPECT_TRUE(expr->getValue().empty());
-        EXPECT_EQ(StringLiteralExpr::ValueType{}, expr->getValue());
+        EXPECT_FALSE(expr->is<TestExpr>());
+        EXPECT_TRUE(expr->value().empty());
+        EXPECT_EQ(StringLiteralExpr::ValueType{}, expr->value());
     }
 }
 

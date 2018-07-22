@@ -19,8 +19,8 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
 #include "shard/ast/Expr.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -35,20 +35,11 @@ namespace shard::ast {
  *             value can be accessed by calling `getValue` and changed by
  *             `setValue`.
  */
-class BoolLiteralExpr final : public LiteralExpr<bool>
+class BoolLiteralExpr final : public LiteralExpr<bool>,
+                              public PtrBuilder<BoolLiteralExpr, bool>
 {
-
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr ExprKind Kind = ExprKind::BoolLiteral;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -56,33 +47,15 @@ public:
      * @param      value  The literal value, can be `true` or `false`.
      * @param      range  Location in source.
      */
-    explicit BoolLiteralExpr(ValueType value, SourceRange range = {}) noexcept;
-
-
-    /**
-     * @brief      Destructor.
-     */
-    ~BoolLiteralExpr();
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      value  The literal value, can be `true` or `false`.
-     * @param      range  Location in source.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<BoolLiteralExpr> make(ValueType value, SourceRange range = {});
-
+    explicit BoolLiteralExpr(bool value, SourceRange range = {}) noexcept
+        : LiteralExpr<bool>(ExprKind::BoolLiteral, value, range)
+    {
+        // Nothing to do
+    }
 };
 
 /* ************************************************************************* */
 
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

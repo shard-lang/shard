@@ -19,13 +19,32 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
+#include "shard/Assert.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/ast/Expr.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Unary operation kind.
+ *
+ * @todo       Support dynamic specification.
+ */
+enum class UnaryOpKind
+{
+    PostInc,
+    PostDec,
+    PreInc,
+    PreDec,
+    Plus,
+    Minus,
+    Not
+};
 
 /* ************************************************************************* */
 
@@ -37,39 +56,20 @@ namespace shard::ast {
  *             decrement. In the source it can be identified as: `<op><expr>` or
  *             `<expr><op>`.
  */
-class UnaryExpr final : public Expr
+class UnaryExpr final : public Expr,
+                        public PtrBuilder<UnaryExpr, UnaryOpKind, ExprPtr>
 {
 
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr ExprKind Kind = ExprKind::Unary;
-
-
-// Public Enums
-public:
-
+    // Enums
 
     /**
      * @brief      Unary operation kind.
      */
-    enum class OpKind
-    {
-        PostInc,
-        PostDec,
-        PreInc,
-        PreDec,
-        Plus,
-        Minus,
-        Not
-    };
+    using OpKind = UnaryOpKind;
 
-
-// Public Ctors & Dtors
 public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -78,110 +78,147 @@ public:
      * @param      expr   Operand expression.
      * @param      range  Location in source.
      */
-    explicit UnaryExpr(OpKind op, UniquePtr<Expr> expr, SourceRange range = {});
+    explicit UnaryExpr(UnaryOpKind op, ExprPtr expr, SourceRange range = {})
+        : Expr(ExprKind::Unary, range)
+        , m_operator(op)
+        , m_expr(std::move(expr))
+    {
+        // Nothing to do
+    }
 
+public:
+    // Accessors & Mutators
 
     /**
-     * @brief      Destructor.
+     * @brief      Returns the operator.
+     *
+     * @return     The operator.
      */
-    ~UnaryExpr();
-
-
-// Public Accessors & Mutators
-public:
-
+    UnaryOpKind op() const noexcept
+    {
+        return m_operator;
+    }
 
     /**
      * @brief      Returns operation kind.
      *
      * @return     Operation kind.
      */
-    OpKind getOpKind() const noexcept;
+    [[deprecated]] UnaryOpKind getOpKind() const noexcept
+    {
+        return m_operator;
+    }
 
+    /**
+     * @brief      Change operator.
+     *
+     * @param      op    The new operator.
+     */
+    void setOp(UnaryOpKind op) noexcept
+    {
+        m_operator = op;
+    }
 
     /**
      * @brief      Change operation kind.
      *
      * @param      op    The new operation kind.
      */
-    void setOpKind(OpKind op);
+    [[deprecated]] void setOpKind(UnaryOpKind op) { m_operator = op; }
 
+    /**
+     * @brief      Returns the inner expression.
+     *
+     * @return     The inner expression.
+     */
+    const ExprPtr& expr() const noexcept
+    {
+        return m_expr;
+    }
+
+    /**
+     * @brief      Returns the inner expression.
+     *
+     * @return     The inner expression.
+     */
+    ExprPtr& expr() noexcept
+    {
+        return m_expr;
+    }
+
+    /**
+     * @brief      Returns the inner expression.
+     *
+     * @tparam     ExprType  The required expression type.
+     *
+     * @return     The inner expression.
+     *
+     * @pre        `expr()->is<ExprType>()`
+     */
+    template<typename ExprType>
+    const ExprType& expr() const noexcept
+    {
+        return m_expr->cast<ExprType>();
+    }
+
+    /**
+     * @brief      Returns the inner expression.
+     *
+     * @tparam     ExprType  The required expression type.
+     *
+     * @return     The inner expression.
+     *
+     * @pre        `expr()->is<ExprType>()`
+     */
+    template<typename ExprType>
+    ExprType& expr() noexcept
+    {
+        return m_expr->cast<ExprType>();
+    }
 
     /**
      * @brief      Returns subexpression.
      *
      * @return     Subexpression.
      */
-    ViewPtr<const Expr> getExpr() const noexcept;
-
+    [[deprecated]] ViewPtr<const Expr> getExpr() const noexcept
+    {
+        return makeView(m_expr);
+    }
 
     /**
      * @brief      Returns subexpression.
      *
      * @return     Subexpression.
      */
-    ViewPtr<Expr> getExpr() noexcept;
-
+    [[deprecated]] ViewPtr<Expr> getExpr() noexcept
+    {
+        return makeView(m_expr);
+    }
 
     /**
      * @brief      Change subexpression.
      *
      * @param      expr  The new subexpression.
      */
-    void setExpr(UniquePtr<Expr> expr);
+    void setExpr(ExprPtr expr)
+    {
+        SHARD_ASSERT(expr);
+        m_expr = std::move(expr);
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      op     Operation kind.
-     * @param      expr   Operand expression.
-     * @param      range  Location in source.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<UnaryExpr> make(OpKind op, UniquePtr<Expr> expr, SourceRange range = {});
-
-
-// Private Data Members
 private:
+    // Data Members
 
     /// OpKind.
     OpKind m_operator;
 
     /// Operand.
-    UniquePtr<Expr> m_expr;
+    ExprPtr m_expr;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline UnaryExpr::OpKind UnaryExpr::getOpKind() const noexcept
-{
-    return m_operator;
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Expr> UnaryExpr::getExpr() const noexcept
-{
-    return makeView(m_expr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<Expr> UnaryExpr::getExpr() noexcept
-{
-    return makeView(m_expr);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

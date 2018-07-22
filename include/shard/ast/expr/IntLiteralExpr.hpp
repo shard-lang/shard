@@ -19,8 +19,8 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
 #include "shard/ast/Expr.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -30,25 +30,12 @@ namespace shard::ast {
 
 /**
  * @brief      The integer literal.
- *
- * @details    In the language it represents an integer literal like 0, 5624,
- *             0x12345. The value can be accessed by calling `getValue` and
- *             changed by `setValue`.
  */
-class IntLiteralExpr final : public LiteralExpr<int>
+class IntLiteralExpr final : public LiteralExpr<int>,
+                             public PtrBuilder<IntLiteralExpr, int>
 {
-
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr ExprKind Kind = ExprKind::IntLiteral;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -56,33 +43,15 @@ public:
      * @param      value  Integer value.
      * @param      range  Location in source.
      */
-    explicit IntLiteralExpr(ValueType value, SourceRange range = {}) noexcept;
-
-
-    /**
-     * @brief      Destructor.
-     */
-    ~IntLiteralExpr();
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      value  Integer value.
-     * @param      range  Location in source.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<IntLiteralExpr> make(ValueType value, SourceRange range = {});
-
+    explicit IntLiteralExpr(int value, SourceRange range = {}) noexcept
+        : LiteralExpr<int>(ExprKind::IntLiteral, value, range)
+    {
+        // Nothing to do
+    }
 };
 
 /* ************************************************************************* */
 
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

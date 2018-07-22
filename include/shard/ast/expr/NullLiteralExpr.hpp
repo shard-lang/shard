@@ -19,8 +19,8 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
 #include "shard/ast/Expr.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -33,52 +33,25 @@ namespace shard::ast {
  *
  * @details    In the language it represents `null` keyword.
  */
-class NullLiteralExpr final : public Expr
+class NullLiteralExpr final : public Expr, public PtrBuilder<NullLiteralExpr>
 {
-
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr ExprKind Kind = ExprKind::NullLiteral;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
      *
      * @param      range  Location in source.
      */
-    explicit NullLiteralExpr(SourceRange range = {}) noexcept;
-
-
-    /**
-     * @brief      Destructor.
-     */
-    ~NullLiteralExpr();
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      range  Location in source.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<NullLiteralExpr> make(SourceRange range = {});
-
+    explicit NullLiteralExpr(SourceRange range = {}) noexcept
+        : Expr(ExprKind::NullLiteral, range)
+    {
+        // Nothing to do
+    }
 };
 
 /* ************************************************************************* */
 
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

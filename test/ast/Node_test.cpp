@@ -14,46 +14,44 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-// Declaration
-#include "shard/ast/expr/IdentifierExpr.hpp"
+// GTest
+#include "gtest/gtest.h"
+
+// C++
+#include <limits>
 
 // Shard
-#include "shard/Assert.hpp"
+#include "shard/ast/Node.hpp"
 
-/* ************************************************************************* */
+/* ************************************************************************ */
 
-namespace shard::ast {
+using namespace shard;
+using namespace shard::ast;
 
-/* ************************************************************************* */
+/* ************************************************************************ */
 
-IdentifierExpr::IdentifierExpr(String name, SourceRange range)
-    : Expr(Kind, range)
-    , m_name(std::move(name))
+namespace {
+
+/* ************************************************************************ */
+
+struct TestNode : public Node
 {
-    SHARD_ASSERT(!m_name.empty());
+    constexpr TestNode(SourceRange range) noexcept
+        : Node(range) {}
+};
+
+/* ************************************************************************ */
+
 }
 
-/* ************************************************************************* */
+/* ************************************************************************ */
 
-IdentifierExpr::~IdentifierExpr() = default;
-
-/* ************************************************************************* */
-
-void IdentifierExpr::setName(String name)
+TEST(Node, basic)
 {
-    SHARD_ASSERT(!name.empty());
-    m_name = std::move(name);
+    TestNode node{{SourceLocation{0, 0}, SourceLocation{10, 0}}};
+
+    EXPECT_EQ(node.sourceRange().start(), (SourceLocation{0, 0}));
+    EXPECT_EQ(node.sourceRange().end(), (SourceLocation{10, 0}));
 }
 
-/* ************************************************************************* */
-
-UniquePtr<IdentifierExpr> IdentifierExpr::make(String name, SourceRange range)
-{
-    return makeUnique<IdentifierExpr>(std::move(name), std::move(range));
-}
-
-/* ************************************************************************* */
-
-}
-
-/* ************************************************************************* */
+/* ************************************************************************ */

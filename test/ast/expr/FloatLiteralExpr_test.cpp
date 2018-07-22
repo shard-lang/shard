@@ -22,7 +22,6 @@
 
 // Shard
 #include "shard/ast/expr/FloatLiteralExpr.hpp"
-#include "shard/ast/expr/IntLiteralExpr.hpp"
 
 /* ************************************************************************ */
 
@@ -31,73 +30,82 @@ using namespace shard::ast;
 
 /* ************************************************************************ */
 
+namespace {
+
+/* ************************************************************************ */
+
+struct TestExpr : public Expr
+{
+
+};
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
 TEST(FloatLiteralExpr, base)
 {
     {
         // Zero value
-        const FloatLiteralExpr expr(0);
+        const FloatLiteralExpr expr(0.0f);
 
-        EXPECT_EQ(ExprKind::FloatLiteral, expr.getKind());
         EXPECT_TRUE(expr.is<FloatLiteralExpr>());
-        EXPECT_FALSE(expr.is<IntLiteralExpr>());
-        EXPECT_FLOAT_EQ(0, expr.getValue());
+        EXPECT_FALSE(expr.is<TestExpr>());
+        EXPECT_FLOAT_EQ(0.0f, expr.value());
     }
 
     {
         // Random value
-        const FloatLiteralExpr expr(0.111);
+        const FloatLiteralExpr expr(0.111f);
 
-        EXPECT_EQ(ExprKind::FloatLiteral, expr.getKind());
         EXPECT_TRUE(expr.is<FloatLiteralExpr>());
-        EXPECT_FALSE(expr.is<IntLiteralExpr>());
-        EXPECT_FLOAT_EQ(0.111, expr.getValue());
+        EXPECT_FALSE(expr.is<TestExpr>());
+        EXPECT_FLOAT_EQ(0.111f, expr.value());
     }
 
     {
         // Min value
         const FloatLiteralExpr expr(std::numeric_limits<FloatLiteralExpr::ValueType>::min());
 
-        EXPECT_EQ(ExprKind::FloatLiteral, expr.getKind());
         EXPECT_TRUE(expr.is<FloatLiteralExpr>());
-        EXPECT_FALSE(expr.is<IntLiteralExpr>());
-        EXPECT_FLOAT_EQ(std::numeric_limits<FloatLiteralExpr::ValueType>::min(), expr.getValue());
+        EXPECT_FALSE(expr.is<TestExpr>());
+        EXPECT_FLOAT_EQ(std::numeric_limits<FloatLiteralExpr::ValueType>::min(), expr.value());
     }
 
     {
         // Max value
         const FloatLiteralExpr expr(std::numeric_limits<FloatLiteralExpr::ValueType>::max());
 
-        EXPECT_EQ(ExprKind::FloatLiteral, expr.getKind());
         EXPECT_TRUE(expr.is<FloatLiteralExpr>());
-        EXPECT_FALSE(expr.is<IntLiteralExpr>());
-        EXPECT_FLOAT_EQ(std::numeric_limits<FloatLiteralExpr::ValueType>::max(), expr.getValue());
+        EXPECT_FALSE(expr.is<TestExpr>());
+        EXPECT_FLOAT_EQ(std::numeric_limits<FloatLiteralExpr::ValueType>::max(), expr.value());
     }
 
     {
-        FloatLiteralExpr expr(0);
+        FloatLiteralExpr expr(0.0f);
 
-        EXPECT_EQ(ExprKind::FloatLiteral, expr.getKind());
         EXPECT_TRUE(expr.is<FloatLiteralExpr>());
-        EXPECT_FALSE(expr.is<IntLiteralExpr>());
-        EXPECT_FLOAT_EQ(0, expr.getValue());
+        EXPECT_FALSE(expr.is<TestExpr>());
+        EXPECT_FLOAT_EQ(0.0f, expr.value());
 
         // Try to change values
-        expr.setValue(0.456e5);
-        EXPECT_FLOAT_EQ(0.456e5, expr.getValue());
+        expr.setValue(0.456e5f);
+        EXPECT_FLOAT_EQ(0.456e5f, expr.value());
 
-        expr.setValue(-756e45);
-        EXPECT_FLOAT_EQ(-756e45, expr.getValue());
+        expr.setValue(-756e45f);
+        EXPECT_FLOAT_EQ(-7560e45f, expr.value());
     }
 
     {
         // Zero value
-        const auto expr = FloatLiteralExpr::make(0);
+        const auto expr = FloatLiteralExpr::make(0.0f);
         ASSERT_NE(nullptr, expr);
 
-        EXPECT_EQ(ExprKind::FloatLiteral, expr->getKind());
         EXPECT_TRUE(expr->is<FloatLiteralExpr>());
-        EXPECT_FALSE(expr->is<IntLiteralExpr>());
-        EXPECT_FLOAT_EQ(0, expr->getValue());
+        EXPECT_FALSE(expr->is<TestExpr>());
+        EXPECT_FLOAT_EQ(0.0f, expr->value());
     }
 }
 

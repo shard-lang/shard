@@ -19,9 +19,9 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
-#include "shard/ViewPtr.hpp"
+#include "shard/Assert.hpp"
 #include "shard/ast/Expr.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -34,20 +34,10 @@ namespace shard::ast {
  *
  * @details    Represents a parenthesis aroud another expression: `(<expr>)`.
  */
-class ParenExpr final : public Expr
+class ParenExpr final : public Expr, public PtrBuilder<ParenExpr, ExprPtr>
 {
-
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr ExprKind Kind = ExprKind::Paren;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -55,84 +45,106 @@ public:
      * @param      expr   Inner expression.
      * @param      range  Location in source.
      */
-    explicit ParenExpr(UniquePtr<Expr> expr, SourceRange range = {});
+    explicit ParenExpr(ExprPtr expr, SourceRange range = {})
+        : Expr(ExprKind::Paren, range)
+        , m_expr(std::move(expr))
+    {
+        SHARD_ASSERT(m_expr);
+    }
 
+public:
+    // Accessors & Mutators
 
     /**
-     * @brief      Destructor.
+     * @brief      Returns the inner expression.
+     *
+     * @return     The inner expression.
      */
-    ~ParenExpr();
+    const ExprPtr& expr() const noexcept
+    {
+        return m_expr;
+    }
 
+    /**
+     * @brief      Returns the inner expression.
+     *
+     * @return     The inner expression.
+     */
+    ExprPtr& expr() noexcept
+    {
+        return m_expr;
+    }
 
-// Public Accessors & Mutators
-public:
+    /**
+     * @brief      Returns the inner expression.
+     *
+     * @tparam     ExprType  The required expression type.
+     *
+     * @return     The inner expression.
+     *
+     * @pre        `expr()->is<ExprType>()`
+     */
+    template<typename ExprType>
+    const ExprType& expr() const noexcept
+    {
+        return m_expr->cast<ExprType>();
+    }
 
+    /**
+     * @brief      Returns the inner expression.
+     *
+     * @tparam     ExprType  The required expression type.
+     *
+     * @return     The inner expression.
+     *
+     * @pre        `expr()->is<ExprType>()`
+     */
+    template<typename ExprType>
+    ExprType& expr() noexcept
+    {
+        return m_expr->cast<ExprType>();
+    }
 
     /**
      * @brief      Returns inner expression.
      *
      * @return     Inner expression.
      */
-    ViewPtr<const Expr> getExpr() const noexcept;
-
+    [[deprecated]] ViewPtr<const Expr> getExpr() const noexcept
+    {
+        return makeView(m_expr);
+    }
 
     /**
      * @brief      Returns inner expression.
      *
      * @return     Inner expression.
      */
-    ViewPtr<Expr> getExpr() noexcept;
-
-
-    /**
-     * @brief      Change expression.
-     *
-     * @param      expr  The new expression.
-     */
-    void setExpr(UniquePtr<Expr> expr);
-
-
-// Public Operations
-public:
-
+    [[deprecated]] ViewPtr<Expr> getExpr() noexcept
+    {
+        return makeView(m_expr);
+    }
 
     /**
-     * @brief      Construct object.
+     * @brief      Change the inner expression.
      *
-     * @param      expr   Inner expression.
-     * @param      range  Location in source.
-     *
-     * @return     Created unique pointer.
+     * @param      expr  The new inner expression.
      */
-    static UniquePtr<ParenExpr> make(UniquePtr<Expr> expr, SourceRange range = {});
+    void setExpr(ExprPtr expr)
+    {
+        SHARD_ASSERT(expr);
+        m_expr = std::move(expr);
+    }
 
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Inner expression.
-    UniquePtr<Expr> m_expr;
-
+    ExprPtr m_expr;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline ViewPtr<const Expr> ParenExpr::getExpr() const noexcept
-{
-    return makeView(m_expr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<Expr> ParenExpr::getExpr() noexcept
-{
-    return makeView(m_expr);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

@@ -18,131 +18,41 @@
 
 /* ************************************************************************* */
 
+// C++
+#include <utility>
+
+// Shard
+#include "shard/UniquePtr.hpp"
+#include "shard/SourceRange.hpp"
+
+/* ************************************************************************* */
+
 namespace shard::ast {
 
 /* ************************************************************************* */
 
-template<typename Kind>
-class KindRange
+/**
+ * @brief      Helper class for UniquePtr builder.
+ *
+ * @tparam     T     Node type.
+ * @tparam     Args  Arguments.
+ */
+template<typename T, typename... Args>
+struct PtrBuilder
 {
-
-// Public Ctors & Dtors
-public:
-
-
     /**
-     * @brief      Constructor.
+     * @brief      Build Node function.
      *
-     * @param      first  The first value.
-     * @param      last   The last value.
-     */
-    constexpr KindRange(Kind first, Kind last) noexcept;
-
-
-// Public Accessors & Mutators
-public:
-
-
-    /**
-     * @brief      Returns the first value.
+     * @param      args   The arguments.
+     * @param      range  The range.
      *
-     * @return     The first value.
+     * @return     UniquePtr<T>.
      */
-    Kind getFirst() const noexcept;
-
-
-    /**
-     * @brief      Returns the last value.
-     *
-     * @return     The last value.
-     */
-    Kind getLast() const noexcept;
-
-
-// Private Data Members
-private:
-
-    /// The first value.
-    Kind m_first;
-
-    /// The last value.
-    Kind m_last;
-
+    static UniquePtr<T> make(Args&&... args, SourceRange range = {})
+    {
+        return makeUnique<T>(std::forward<Args>(args)..., range);
+    }
 };
-
-/* ************************************************************************* */
-
-/**
- * @brief      Compare operator.
- *
- * @param      rng   The kind range.
- * @param      kind  The kind.
- *
- * @tparam     Kind  Kind type.
- *
- * @return     Comparision result.
- */
-template<typename Kind>
-constexpr bool operator==(KindRange<Kind> rng, Kind kind);
-
-/* ************************************************************************* */
-
-/**
- * @brief      Compare operator.
- *
- * @param      kind  The kind.
- * @param      rng   The kind range.
- *
- * @tparam     Kind  Kind type.
- *
- * @return     Comparision result.
- */
-template<typename Kind>
-constexpr bool operator==(Kind kind, KindRange<Kind> rng);
-
-/* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
-
-template<typename Kind>
-inline constexpr KindRange<Kind>::KindRange(Kind first, Kind last) noexcept
-    : m_first(first)
-    , m_last(last)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-template<typename Kind>
-inline Kind KindRange<Kind>::getFirst() const noexcept
-{
-    return m_first;
-}
-
-/* ************************************************************************* */
-
-template<typename Kind>
-inline Kind KindRange<Kind>::getLast() const noexcept
-{
-    return m_last;
-}
-
-/* ************************************************************************* */
-
-template<typename Kind>
-inline constexpr bool operator==(KindRange<Kind> rng, Kind kind)
-{
-    return kind >= rng.getFirst() && kind <= rng.getLast();
-}
-
-/* ************************************************************************* */
-
-template<typename Kind>
-inline constexpr bool operator==(Kind kind, KindRange<Kind> rng)
-{
-    return operator==(rng, kind);
-}
 
 /* ************************************************************************* */
 

@@ -19,12 +19,12 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/utility.hpp"
+#include "shard/PtrDynamicArray.hpp"
 #include "shard/UniquePtr.hpp"
 #include "shard/ViewPtr.hpp"
-#include "shard/PtrDynamicArray.hpp"
-#include "shard/ast/utility.hpp"
 #include "shard/ast/Node.hpp"
+#include "shard/ast/utility.hpp"
+#include "shard/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -40,8 +40,7 @@ class Decl;
 /**
  * @brief      Statement kind.
  */
-enum class StmtKind
-{
+[[deprecated]] enum class StmtKind {
     Expr,
     Decl,
     Compound,
@@ -65,68 +64,29 @@ enum class StmtKind
 class Stmt : public Node
 {
 
-// Public Ctors & Dtors
 public:
-
+    // Ctors & Dtors
 
     /**
      * @brief Destructor.
      */
     virtual ~Stmt() = 0;
 
-
-// Public Accessors & Mutators
 public:
-
+    // Accessors & Mutators
 
     /**
      * @brief      Returns statement kind.
      *
      * @return     Statement kind.
      */
-    StmtKind getKind() const noexcept;
+    [[deprecated]] StmtKind getKind() const noexcept
+    {
+        return m_kind;
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Test if statement match required kind.
-     *
-     * @tparam     StmtType  Statement type.
-     *
-     * @return     Returns `true` if this is `StmtType`, `false` otherwise.
-     */
-    template<typename StmtType>
-    bool is() const noexcept;
-
-
-    /**
-     * @brief      Cast this to required statement type.
-     *
-     * @tparam     StmtType  Statement type.
-     *
-     * @return     Reference to required statement type.
-     */
-    template<typename StmtType>
-    StmtType& cast() noexcept;
-
-
-    /**
-     * @brief      Cast this to required statement type.
-     *
-     * @tparam     StmtType  Statement type.
-     *
-     * @return     Reference to required statement type.
-     */
-    template<typename StmtType>
-    const StmtType& cast() const noexcept;
-
-
-// Protected Ctors & Dtors
 protected:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -134,54 +94,17 @@ protected:
      * @param      kind   Statement kind.
      * @param      range  Source range.
      */
-    explicit Stmt(StmtKind kind, SourceRange range);
+    [[deprecated]] explicit Stmt(StmtKind kind, SourceRange range);
 
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Statement kind.
     StmtKind m_kind;
-
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline StmtKind Stmt::getKind() const noexcept
-{
-    return m_kind;
-}
-
-/* ************************************************************************* */
-
-template<typename StmtType>
-inline bool Stmt::is() const noexcept
-{
-    return getKind() == StmtType::Kind;
-}
-
-/* ************************************************************************* */
-
-template<typename StmtType>
-inline StmtType& Stmt::cast() noexcept
-{
-    SHARD_ASSERT(is<StmtType>());
-    return static_cast<StmtType&>(*this);
-}
-
-/* ************************************************************************* */
-
-template<typename StmtType>
-inline const StmtType& Stmt::cast() const noexcept
-{
-    SHARD_ASSERT(is<StmtType>());
-    return static_cast<const StmtType&>(*this);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

@@ -17,12 +17,8 @@
 // GTest
 #include "gtest/gtest.h"
 
-// C++
-#include <limits>
-
 // Shard
 #include "shard/ast/expr/NullLiteralExpr.hpp"
-#include "shard/ast/expr/BoolLiteralExpr.hpp"
 
 /* ************************************************************************ */
 
@@ -31,14 +27,28 @@ using namespace shard::ast;
 
 /* ************************************************************************ */
 
+namespace {
+
+/* ************************************************************************ */
+
+struct TestExpr : public Expr
+{
+
+};
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
 TEST(NullLiteralExpr, base)
 {
     {
         const NullLiteralExpr expr;
 
-        EXPECT_EQ(ExprKind::NullLiteral, expr.getKind());
         EXPECT_TRUE(expr.is<NullLiteralExpr>());
-        EXPECT_FALSE(expr.is<BoolLiteralExpr>());
+        EXPECT_FALSE(expr.is<TestExpr>());
         EXPECT_EQ(SourceLocation{}, expr.getSourceStart());
         EXPECT_EQ(SourceLocation{}, expr.getSourceEnd());
     }
@@ -46,20 +56,18 @@ TEST(NullLiteralExpr, base)
     {
         const NullLiteralExpr expr({{123, 456}, {123, 458}});
 
-        EXPECT_EQ(ExprKind::NullLiteral, expr.getKind());
         EXPECT_TRUE(expr.is<NullLiteralExpr>());
-        EXPECT_FALSE(expr.is<BoolLiteralExpr>());
-        EXPECT_EQ((SourceLocation{123, 456}), expr.getSourceStart());
-        EXPECT_EQ((SourceLocation{123, 458}), expr.getSourceEnd());
+        EXPECT_FALSE(expr.is<TestExpr>());
+        EXPECT_EQ((SourceLocation{123, 456}), expr.sourceRange().start());
+        EXPECT_EQ((SourceLocation{123, 458}), expr.sourceRange().end());
     }
 
     {
         const auto expr = NullLiteralExpr::make();
         ASSERT_NE(nullptr, expr);
 
-        EXPECT_EQ(ExprKind::NullLiteral, expr->getKind());
         EXPECT_TRUE(expr->is<NullLiteralExpr>());
-        EXPECT_FALSE(expr->is<BoolLiteralExpr>());
+        EXPECT_FALSE(expr->is<TestExpr>());
     }
 }
 

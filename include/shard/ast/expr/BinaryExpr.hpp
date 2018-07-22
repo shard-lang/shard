@@ -22,10 +22,46 @@
 #include "shard/UniquePtr.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/ast/Expr.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Binary expression operation kind.
+ */
+enum class BinaryOpKind
+{
+    //  Equality operators
+    EQ,
+    NE,
+
+    // Relational operators
+    LT,
+    LE,
+    GT,
+    GE,
+
+    // Additive operators
+    Add,
+    Sub,
+
+    // Multiplicative operators
+    Mul,
+    Div,
+    Rem,
+
+    // Assignment operators
+    Assign,
+    MulAssign,
+    DivAssign,
+    RemAssign,
+    AddAssign,
+    SubAssign
+};
 
 /* ************************************************************************* */
 
@@ -37,58 +73,21 @@ namespace shard::ast {
  *             relation. In the source it can be identified as:
  *             `<lhs><op><rhs>`.
  */
-class BinaryExpr final : public Expr
+class BinaryExpr final
+    : public Expr,
+      public PtrBuilder<BinaryExpr, BinaryOpKind, ExprPtr, ExprPtr>
 {
 
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr ExprKind Kind = ExprKind::Binary;
-
-
-// Public Enums
-public:
-
+    // Enums
 
     /**
      * @brief      Binary expression operation kind.
      */
-    enum class OpKind
-    {
-        //  Equality operators
-        EQ,
-        NE,
+    using OpKind[[deprecated]] = BinaryOpKind;
 
-        // Relational operators
-        LT,
-        LE,
-        GT,
-        GE,
-
-        // Additive operators
-        Add,
-        Sub,
-
-        // Multiplicative operators
-        Mul,
-        Div,
-        Rem,
-
-        // Assignment operators
-        Assign,
-        MulAssign,
-        DivAssign,
-        RemAssign,
-        AddAssign,
-        SubAssign
-    };
-
-
-// Public Ctors & Dtors
 public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -98,152 +97,239 @@ public:
      * @param      rhs    Right operand expression.
      * @param      range  Location in source.
      */
-    explicit BinaryExpr(OpKind op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, SourceRange range = {});
+    explicit BinaryExpr(
+        BinaryOpKind op,
+        ExprPtr lhs,
+        ExprPtr rhs,
+        SourceRange range = {})
+        : Expr(ExprKind::Binary, range)
+        , m_operator(op)
+        , m_lhs(std::move(lhs))
+        , m_rhs(std::move(rhs))
+    {
+        // Nothing to do
+    }
 
+public:
+    // Accessors & Mutators
 
     /**
-     * @brief      Destructor.
+     * @brief      Returns the operator.
+     *
+     * @return     The operator.
      */
-    ~BinaryExpr();
-
-
-// Public Accessors & Mutators
-public:
-
+    BinaryOpKind op() const noexcept
+    {
+        return m_operator;
+    }
 
     /**
      * @brief      Returns operation kind.
      *
      * @return     Operation kind.
      */
-    OpKind getOpKind() const noexcept;
+    [[deprecated]] BinaryOpKind getOpKind() const noexcept
+    {
+        return m_operator;
+    }
 
+    /**
+     * @brief      Change the operator.
+     *
+     * @param      op    The new operator.
+     */
+    void setOp(BinaryOpKind op) noexcept
+    {
+        m_operator = op;
+    }
 
     /**
      * @brief      Change operation kind.
      *
      * @param      op    The new operation kind.
      */
-    void setOpKind(OpKind op);
+    [[deprecated]] void setOpKind(BinaryOpKind op) noexcept
+    {
+        m_operator = op;
+    }
 
+    /**
+     * @brief      Returns LHS expression.
+     *
+     * @return     The LHS expression.
+     */
+    const ExprPtr& lhs() const noexcept
+    {
+        return m_lhs;
+    }
+
+    /**
+     * @brief      Returns LHS expression.
+     *
+     * @return     The LHS expression.
+     */
+    ExprPtr& lhs() noexcept
+    {
+        return m_lhs;
+    }
+
+    /**
+     * @brief      Returns the inner expression.
+     *
+     * @tparam     ExprType  The required expression type.
+     *
+     * @return     The inner expression.
+     *
+     * @pre        `lhs()->is<ExprType>()`
+     */
+    template<typename ExprType>
+    const ExprType& lhs() const noexcept
+    {
+        return m_lhs->cast<ExprType>();
+    }
+
+    /**
+     * @brief      Returns the inner expression.
+     *
+     * @tparam     ExprType  The required expression type.
+     *
+     * @return     The inner expression.
+     *
+     * @pre        `lhs()->is<ExprType>()`
+     */
+    template<typename ExprType>
+    ExprType& lhs() noexcept
+    {
+        return m_lhs->cast<ExprType>();
+    }
 
     /**
      * @brief      Returns LHS expression.
      *
      * @return     LHS expression.
      */
-    ViewPtr<const Expr> getLhs() const noexcept;
-
+    [[deprecated]] ViewPtr<const Expr> getLhs() const noexcept
+    {
+        return makeView(m_lhs);
+    }
 
     /**
      * @brief      Returns LHS expression.
      *
      * @return     LHS expression.
      */
-    ViewPtr<Expr> getLhs() noexcept;
-
+    [[deprecated]] ViewPtr<Expr> getLhs() noexcept
+    {
+        return makeView(m_lhs);
+    }
 
     /**
      * @brief      Change LHS expression.
      *
      * @param      lhs   The LHS expression.
      */
-    void setLhs(UniquePtr<Expr> lhs);
-
-
-    /**
-     * @brief      Returns RHS expression.
-     *
-     * @return     RHS expression.
-     */
-    ViewPtr<const Expr> getRhs() const noexcept;
-
+    void setLhs(ExprPtr lhs)
+    {
+        SHARD_ASSERT(lhs);
+        m_lhs = std::move(lhs);
+    }
 
     /**
      * @brief      Returns RHS expression.
      *
      * @return     RHS expression.
      */
-    ViewPtr<Expr> getRhs() noexcept;
+    [[deprecated]] ViewPtr<const Expr> getRhs() const noexcept
+    {
+        return makeView(m_rhs);
+    }
 
+    /**
+     * @brief      Returns RHS expression.
+     *
+     * @return     RHS expression.
+     */
+    [[deprecated]] ViewPtr<Expr> getRhs() noexcept
+    {
+        return makeView(m_rhs);
+    }
+
+    /**
+     * @brief      Returns RHS expression.
+     *
+     * @return     The RHS expression.
+     */
+    const ExprPtr& rhs() const noexcept
+    {
+        return m_rhs;
+    }
+
+    /**
+     * @brief      Returns RHS expression.
+     *
+     * @return     The RHS expression.
+     */
+    ExprPtr& rhs() noexcept
+    {
+        return m_rhs;
+    }
+
+    /**
+     * @brief      Returns the inner expression.
+     *
+     * @tparam     ExprType  The required expression type.
+     *
+     * @return     The inner expression.
+     *
+     * @pre        `rhs()->is<ExprType>()`
+     */
+    template<typename ExprType>
+    const ExprType& rhs() const noexcept
+    {
+        return m_rhs->cast<ExprType>();
+    }
+
+    /**
+     * @brief      Returns the inner expression.
+     *
+     * @tparam     ExprType  The required expression type.
+     *
+     * @return     The inner expression.
+     *
+     * @pre        `rhs()->is<ExprType>()`
+     */
+    template<typename ExprType>
+    ExprType& rhs() noexcept
+    {
+        return m_rhs->cast<ExprType>();
+    }
 
     /**
      * @brief      Change RHS expression.
      *
      * @param      rhs   The RHS expression.
      */
-    void setRhs(UniquePtr<Expr> rhs);
+    void setRhs(ExprPtr rhs)
+    {
+        SHARD_ASSERT(rhs);
+        m_rhs = std::move(rhs);
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      op     Operation kind.
-     * @param      lhs    Left operand expression.
-     * @param      rhs    Right operand expression.
-     * @param      range  Location in source.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<BinaryExpr> make(OpKind op, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs, SourceRange range = {});
-
-
-// Private Data Members
 private:
+    // Data Members
 
-    /// Operation kind.
-    OpKind m_operator;
+    /// The operator.
+    BinaryOpKind m_operator;
 
     /// LHS expression.
-    UniquePtr<Expr> m_lhs;
+    ExprPtr m_lhs;
 
     /// RHS expression.
-    UniquePtr<Expr> m_rhs;
+    ExprPtr m_rhs;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline BinaryExpr::OpKind BinaryExpr::getOpKind() const noexcept
-{
-    return m_operator;
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Expr> BinaryExpr::getLhs() const noexcept
-{
-    return makeView(m_lhs);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<Expr> BinaryExpr::getLhs() noexcept
-{
-    return makeView(m_lhs);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Expr> BinaryExpr::getRhs() const noexcept
-{
-    return makeView(m_rhs);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<Expr> BinaryExpr::getRhs() noexcept
-{
-    return makeView(m_rhs);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

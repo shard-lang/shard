@@ -19,6 +19,7 @@
 /* ************************************************************************* */
 
 // Shard
+#include "shard/Assert.hpp"
 #include "shard/UniquePtr.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/ast/Expr.hpp"
@@ -35,20 +36,16 @@ namespace shard::ast {
  * @details    This expression is used for ternary operator: `<condExpr> ?
  *             <trueExpr> : <falseExpr>`.
  */
-class TernaryExpr final : public Expr
+[[deprecated]] class TernaryExpr final : public Expr
 {
-
-// Public Constants
 public:
-
+    // Constants
 
     /// Expression kind
     static constexpr ExprKind Kind = ExprKind::Ternary;
 
-
-// Public Ctors & Dtors
 public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -58,94 +55,117 @@ public:
      * @param      falseExpr  Right operand expression.
      * @param      range      Location in source.
      */
-    explicit TernaryExpr(UniquePtr<Expr> condExpr, UniquePtr<Expr> trueExpr, UniquePtr<Expr> falseExpr, SourceRange range = {});
+    explicit TernaryExpr(
+        ExprPtr condExpr,
+        ExprPtr trueExpr,
+        ExprPtr falseExpr,
+        SourceRange range = {})
+        : Expr(Kind, range)
+        , m_condExpr(std::move(condExpr))
+        , m_trueExpr(std::move(trueExpr))
+        , m_falseExpr(std::move(falseExpr))
+    {
+        // Nothing to do
+    }
 
-
-    /**
-     * @brief      Destructor.
-     */
-    ~TernaryExpr();
-
-
-// Public Accessors & Mutators
 public:
-
-
-    /**
-     * @brief      Returns condition expression.
-     *
-     * @return     Condition expression.
-     */
-    ViewPtr<const Expr> getCondExpr() const noexcept;
-
+    // Accessors & Mutators
 
     /**
      * @brief      Returns condition expression.
      *
      * @return     Condition expression.
      */
-    ViewPtr<Expr> getCondExpr() noexcept;
+    ViewPtr<const Expr> getCondExpr() const noexcept
+    {
+        return makeView(m_condExpr);
+    }
 
+    /**
+     * @brief      Returns condition expression.
+     *
+     * @return     Condition expression.
+     */
+    ViewPtr<Expr> getCondExpr() noexcept
+    {
+        return makeView(m_condExpr);
+    }
 
     /**
      * @brief      Change condition expression.
      *
      * @param      expr  The new expression.
      */
-    void setCondExpr(UniquePtr<Expr> expr);
-
-
-    /**
-     * @brief      Returns true expression.
-     *
-     * @return     True expression.
-     */
-    ViewPtr<const Expr> getTrueExpr() const noexcept;
-
+    void setCondExpr(ExprPtr expr)
+    {
+        SHARD_ASSERT(expr);
+        m_condExpr = std::move(expr);
+    }
 
     /**
      * @brief      Returns true expression.
      *
      * @return     True expression.
      */
-    ViewPtr<Expr> getTrueExpr() noexcept;
+    ViewPtr<const Expr> getTrueExpr() const noexcept
+    {
+        return makeView(m_trueExpr);
+    }
 
+    /**
+     * @brief      Returns true expression.
+     *
+     * @return     True expression.
+     */
+    ViewPtr<Expr> getTrueExpr() noexcept
+    {
+        return makeView(m_trueExpr);
+    }
 
     /**
      * @brief      Change true branch expression.
      *
      * @param      expr  The new expression.
      */
-    void setTrueExpr(UniquePtr<Expr> expr);
-
-
-    /**
-     * @brief      Returns false expression.
-     *
-     * @return     False expression.
-     */
-    ViewPtr<const Expr> getFalseExpr() const noexcept;
-
+    void setTrueExpr(ExprPtr expr)
+    {
+        SHARD_ASSERT(expr);
+        m_trueExpr = std::move(expr);
+    }
 
     /**
      * @brief      Returns false expression.
      *
      * @return     False expression.
      */
-    ViewPtr<Expr> getFalseExpr() noexcept;
+    ViewPtr<const Expr> getFalseExpr() const noexcept
+    {
+        return makeView(m_falseExpr);
+    }
 
+    /**
+     * @brief      Returns false expression.
+     *
+     * @return     False expression.
+     */
+    ViewPtr<Expr> getFalseExpr() noexcept
+    {
+        return makeView(m_falseExpr);
+    }
 
     /**
      * @brief      Change false branch expression.
      *
      * @param      expr  The new expression.
      */
-    void setFalseExpr(UniquePtr<Expr> expr);
+    void setFalseExpr(ExprPtr expr)
+    {
+        SHARD_ASSERT(expr);
+        m_falseExpr = std::move(expr);
+    }
 
-
-// Public Operations
 public:
-
+    // Operations
 
     /**
      * @brief      Construct object.
@@ -157,68 +177,34 @@ public:
      *
      * @return     Created unique pointer.
      */
-    static UniquePtr<TernaryExpr> make(UniquePtr<Expr> condExpr, UniquePtr<Expr> trueExpr, UniquePtr<Expr> falseExpr, SourceRange range = {});
+    static UniquePtr<TernaryExpr> make(
+        ExprPtr condExpr,
+        ExprPtr trueExpr,
+        ExprPtr falseExpr,
+        SourceRange range = {})
+    {
+        return makeUnique<TernaryExpr>(
+            std::move(condExpr),
+            std::move(trueExpr),
+            std::move(falseExpr),
+            std::move(range));
+    }
 
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Condition expression.
-    UniquePtr<Expr> m_condExpr;
+    ExprPtr m_condExpr;
 
     /// True expression.
-    UniquePtr<Expr> m_trueExpr;
+    ExprPtr m_trueExpr;
 
     /// False expression.
-    UniquePtr<Expr> m_falseExpr;
+    ExprPtr m_falseExpr;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline ViewPtr<const Expr> TernaryExpr::getCondExpr() const noexcept
-{
-    return makeView(m_condExpr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<Expr> TernaryExpr::getCondExpr() noexcept
-{
-    return makeView(m_condExpr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Expr> TernaryExpr::getTrueExpr() const noexcept
-{
-    return makeView(m_trueExpr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<Expr> TernaryExpr::getTrueExpr() noexcept
-{
-    return makeView(m_trueExpr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Expr> TernaryExpr::getFalseExpr() const noexcept
-{
-    return makeView(m_falseExpr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<Expr> TernaryExpr::getFalseExpr() noexcept
-{
-    return makeView(m_falseExpr);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */
