@@ -20,7 +20,7 @@
 // GTest
 #include "gtest/gtest.h"
 
-// CeCe
+// Shard
 #include "shard/ViewPtr.hpp"
 
 /* ************************************************************************ */
@@ -50,7 +50,6 @@ static_assert(std::is_constructible<ViewPtr<Base>, ViewPtr<Base>>::value, "");
 static_assert(std::is_constructible<ViewPtr<Base>, ViewPtr<Derived>>::value, "");
 static_assert(!std::is_constructible<ViewPtr<Base>, ViewPtr<Other>>::value, "");
 
-//static_assert(!std::is_assignable<ViewPtr<Nontrivial>, Nontrivial*>::value, "");
 static_assert(std::is_assignable<ViewPtr<Nontrivial>, ViewPtr<Nontrivial>>::value, "");
 static_assert(std::is_assignable<ViewPtr<Base>, ViewPtr<Base>>::value, "");
 static_assert(std::is_assignable<ViewPtr<Base>, ViewPtr<Derived>>::value, "");

@@ -31,7 +31,7 @@ endif ()
 # Create test executable
 add_executable(shard-core_test
     SourceLocation_test.cpp
-    ViewPtr.cpp
+    ViewPtr_test.cpp
 )
 
 # Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
