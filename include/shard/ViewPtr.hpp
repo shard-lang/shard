@@ -31,20 +31,13 @@ namespace shard {
 /**
  * @brief      View pointer - non-owning pointer.
  *
- *             Implementation based on GCC libstdc++ version.
+ * @details    Implementation based on GCC libstdc++ version.
  *
  * @tparam     T     Pointer type.
  */
 template<typename T>
 class ViewPtr
 {
-
-public:
-    // Types
-
-    // publish our template parameter and variations thereof
-    using element_type = T;
-
 public:
     // Ctors & Dtors
 

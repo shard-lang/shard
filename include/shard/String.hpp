@@ -29,15 +29,20 @@ namespace shard {
 /* ************************************************************************* */
 
 /**
- * @brief Basic string.
+ * @brief      Basic string.
  */
 using String = std::string;
 
 /* ************************************************************************* */
 
 /**
- * @brief Convert arithmetic value to string.
- * @param value
+ * @brief      Convert arithmetic value to string.
+ *
+ * @param      value      The value
+ *
+ * @tparam     T          Value type.
+ *
+ * @return     String representation of the object.
  */
 template<typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value>>
 String toString(T value)

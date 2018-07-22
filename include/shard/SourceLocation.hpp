@@ -44,7 +44,7 @@ public:
      * @param      line    Line number.
      * @param      column  Column number.
      */
-    SourceLocation(int line, int column) noexcept
+    constexpr SourceLocation(int line, int column) noexcept
         : m_line(line)
         , m_column(column)
     {
@@ -59,7 +59,7 @@ public:
      *
      * @return     If location is valid.
      */
-    explicit operator bool() const noexcept
+    constexpr explicit operator bool() const noexcept
     {
         return m_line != 0 && m_column != 0;
     }
@@ -72,7 +72,7 @@ public:
      *
      * @return     Line number.
      */
-    int line() const noexcept
+    constexpr int line() const noexcept
     {
         return m_line;
     }
@@ -82,7 +82,7 @@ public:
      *
      * @return     Column number.
      */
-    int column() const noexcept
+    constexpr int column() const noexcept
     {
         return m_column;
     }
@@ -90,7 +90,7 @@ public:
     /**
      * @brief      Increments line number and sets column number to 1.
      */
-    void incLine() noexcept
+    constexpr void incLine() noexcept
     {
         ++m_line;
         m_column = 1;
@@ -99,7 +99,7 @@ public:
     /**
      * @brief      Increments column number.
      */
-    void incColumn() noexcept
+    constexpr void incColumn() noexcept
     {
         ++m_column;
     }
@@ -160,7 +160,7 @@ private:
  *
  * @return     If source locations are equals.
  */
-inline bool operator==(
+inline constexpr bool operator==(
     const SourceLocation& lhs,
     const SourceLocation& rhs) noexcept
 {
@@ -177,7 +177,7 @@ inline bool operator==(
  *
  * @return     If source locations not are equals.
  */
-inline bool operator!=(
+inline constexpr bool operator!=(
     const SourceLocation& lhs,
     const SourceLocation& rhs) noexcept
 {
@@ -194,7 +194,7 @@ inline bool operator!=(
  *
  * @return     Comparision result.
  */
-inline bool operator<(
+inline constexpr bool operator<(
     const SourceLocation& lhs,
     const SourceLocation& rhs) noexcept
 {
@@ -218,7 +218,7 @@ inline bool operator<(
  *
  * @return     Comparision result.
  */
-inline bool operator>(
+inline constexpr bool operator>(
     const SourceLocation& lhs,
     const SourceLocation& rhs) noexcept
 {
@@ -235,7 +235,7 @@ inline bool operator>(
  *
  * @return     Comparision result.
  */
-inline bool operator<=(
+inline constexpr bool operator<=(
     const SourceLocation& lhs,
     const SourceLocation& rhs) noexcept
 {
@@ -252,7 +252,7 @@ inline bool operator<=(
  *
  * @return     Comparision result.
  */
-inline bool operator>=(
+inline constexpr bool operator>=(
     const SourceLocation& lhs,
     const SourceLocation& rhs) noexcept
 {

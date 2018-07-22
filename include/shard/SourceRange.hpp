@@ -47,7 +47,7 @@ public:
      * @param      start  Start location.
      * @param      end    End location.
      */
-    SourceRange(SourceLocation start, SourceLocation end) noexcept
+    constexpr SourceRange(SourceLocation start, SourceLocation end) noexcept
         : m_start(start)
         , m_end(end)
     {
@@ -72,7 +72,7 @@ public:
      *
      * @return     Start location.
      */
-    const SourceLocation& start() const noexcept
+    constexpr const SourceLocation& start() const noexcept
     {
         return m_start;
     }
@@ -92,7 +92,7 @@ public:
      *
      * @return     End location.
      */
-    const SourceLocation& end() const noexcept
+    constexpr const SourceLocation& end() const noexcept
     {
         return m_end;
     }

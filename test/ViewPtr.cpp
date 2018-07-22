@@ -58,10 +58,6 @@ static_assert(!std::is_assignable<ViewPtr<Base>, ViewPtr<Other>>::value, "");
 static_assert(std::is_assignable<ViewPtr<const int>, ViewPtr<int>>::value, "");
 static_assert(!std::is_assignable<ViewPtr<int>, ViewPtr<const int>>::value, "");
 
-static_assert(std::is_same<ViewPtr<int>::element_type, int>::value, "");
-static_assert(std::is_same<ViewPtr<const int>::element_type, const int>::value, "");
-static_assert(std::is_same<ViewPtr<volatile int>::element_type, volatile int>::value, "");
-
 /* ************************************************************************ */
 
 constexpr bool assignHelper(ViewPtr<const int> a, ViewPtr<const int> b)
