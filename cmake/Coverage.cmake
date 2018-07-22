@@ -32,7 +32,13 @@ function (add_coverage_target NAME)
 
             # Capturing lcov counters and generating report
             COMMAND ${LCOV} --directory . --capture --output-file coverage0.info
-            COMMAND ${LCOV} -r coverage0.info 'vendor/*' 'test/*' '/usr/*' 'Token.def' --output-file coverage.info
+            COMMAND ${LCOV}
+                -r coverage0.info
+                '*/vendor/*'
+                '*/test/*'
+                '/usr/*'
+                'Token.def'
+                --output-file coverage.info
 
             DEPENDS ${NAME}
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
