@@ -19,6 +19,7 @@
 /* ************************************************************************* */
 
 // Shard
+#include "shard/ViewPtr.hpp"
 #include "shard/UniquePtr.hpp"
 #include "shard/PtrVector.hpp"
 #include "shard/ast/Stmt.hpp"
@@ -29,12 +30,16 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+class Expr;
+
+/* ************************************************************************* */
+
 /**
  * @brief      Case statement.
  *
  * @details    In the source it appears as: `case <expr>: <bodyStmt>`.
  */
-class CaseStmt final : public Stmt
+[[deprecated]] class CaseStmt final : public Stmt
 {
 
 // Public Constants

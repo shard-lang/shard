@@ -41,7 +41,7 @@ class Expr;
  * @details    In the source it appears as: `<type> <name>` or `<type> <name> =
  *             <initExpr>`.
  */
-class VariableDecl final : public Decl
+[[deprecated]] class VariableDecl final : public Decl
 {
 
 // Public Constants

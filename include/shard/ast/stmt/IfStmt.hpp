@@ -30,13 +30,17 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+class Expr;
+
+/* ************************************************************************* */
+
 /**
  * @brief      If branch statement.
  *
  * @details    In the source it appears as: `if (<condExpr>) <thenStmt>` or `if
  *             (<condExpr>) <thenStmt> else <elseStmt>`.
  */
-class IfStmt final : public Stmt
+[[deprecated]] class IfStmt final : public Stmt
 {
 
 // Public Constants

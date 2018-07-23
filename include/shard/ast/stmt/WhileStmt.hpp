@@ -29,12 +29,16 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+class Expr;
+
+/* ************************************************************************* */
+
 /**
  * @brief      While loop statement.
  *
  * @details    In the source it appears as: `while (<condExpr>) <bodyStmt>`.
  */
-class WhileStmt final : public Stmt
+[[deprecated]] class WhileStmt final : public Stmt
 {
 
 // Public Constants

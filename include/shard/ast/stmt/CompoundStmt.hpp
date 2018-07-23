@@ -19,8 +19,8 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/PtrVector.hpp"
 #include "shard/ast/Stmt.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -34,20 +34,11 @@ namespace shard::ast {
  * @details    It's a container for other statements. In the source is looks
  *             like this: `{ <stmts> }`.
  */
-class CompoundStmt final : public Stmt
+class CompoundStmt final : public Stmt,
+                           public PtrBuilder<CompoundStmt, StmtPtrVector>
 {
-
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr StmtKind Kind = StmtKind::Compound;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -55,77 +46,65 @@ public:
      * @param      stmts  A list of statements.
      * @param      range  Source range.
      */
-    explicit CompoundStmt(PtrVector<Stmt> stmts = {}, SourceRange range = {});
+    explicit CompoundStmt(StmtPtrVector stmts = {}, SourceRange range = {})
+        : Stmt(StmtKind::Compound, range)
+        , m_statements(std::move(stmts))
+    {
+        // Nothing to do
+    }
 
-
-    /**
-     * @brief      Destructor.
-     */
-    ~CompoundStmt();
-
-
-// Public Accessors & Mutators
 public:
-
+    // Accessors & Mutators
 
     /**
      * @brief      Returns the statements.
      *
      * @return     The statements.
      */
-    const PtrVector<Stmt>& getStmts() const noexcept;
+    const StmtPtrVector& stmts() const noexcept
+    {
+        return m_statements;
+    }
 
+    /**
+     * @brief      Returns the statements.
+     *
+     * @return     The statements.
+     */
+    [[deprecated]] const StmtPtrVector& getStmts() const noexcept
+    {
+        return m_statements;
+    }
 
     /**
      * @brief      Change the statements.
      *
-     * @param      stmt  The new statements.
+     * @param      stmts  The new statements.
      */
-    void setStmts(PtrVector<Stmt> stmts);
-
+    void setStmts(StmtPtrVector stmts)
+    {
+        m_statements = std::move(stmts);
+    }
 
     /**
      * @brief      Add statement to body statement list.
      *
      * @param      stmt  Statement to be added.
      */
-    void addStmt(UniquePtr<Stmt> stmt);
+    void addStmt(StmtPtr stmt)
+    {
+        m_statements.push_back(std::move(stmt));
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      stmts  A list of statements.
-     * @param      range  Source range.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<CompoundStmt> make(PtrVector<Stmt> stmts = {}, SourceRange range = {});
-
-
-// Private Data Members
 private:
+    // Data Members
 
-    /// Case statements.
-    PtrVector<Stmt> m_statements;
-
+    /// The statements.
+    StmtPtrVector m_statements;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline const PtrVector<Stmt>& CompoundStmt::getStmts() const noexcept
-{
-    return m_statements;
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

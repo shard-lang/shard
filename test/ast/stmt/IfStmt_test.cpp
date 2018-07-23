@@ -36,7 +36,7 @@ TEST(IfStmt, base)
 {
     {
         // if (true) {}
-        const IfStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make());
+        const IfStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make({}));
 
         EXPECT_EQ(StmtKind::If, stmt.getKind());
         EXPECT_TRUE(stmt.is<IfStmt>());
@@ -49,7 +49,7 @@ TEST(IfStmt, base)
 
     {
         // if (true) {} else ;
-        const IfStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make(), ExprStmt::make());
+        const IfStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make({}), ExprStmt::make(nullptr));
 
         EXPECT_EQ(StmtKind::If, stmt.getKind());
         EXPECT_TRUE(stmt.is<IfStmt>());
@@ -63,7 +63,7 @@ TEST(IfStmt, base)
 
     {
         // if (true) {} else ;
-        IfStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make(), ExprStmt::make());
+        IfStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make({}), ExprStmt::make(nullptr));
 
         EXPECT_EQ(StmtKind::If, stmt.getKind());
         EXPECT_TRUE(stmt.is<IfStmt>());
@@ -88,7 +88,7 @@ TEST(IfStmt, base)
 
     {
         // if (true) {}
-        const auto stmt = IfStmt::make(BoolLiteralExpr::make(true), CompoundStmt::make());
+        const auto stmt = IfStmt::make(BoolLiteralExpr::make(true), CompoundStmt::make({}));
 
         EXPECT_EQ(StmtKind::If, stmt->getKind());
         EXPECT_TRUE(stmt->is<IfStmt>());

@@ -19,11 +19,9 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/Assert.hpp"
-#include "shard/utility.hpp"
-#include "shard/UniquePtr.hpp"
-#include "shard/ViewPtr.hpp"
 #include "shard/String.hpp"
+#include "shard/Vector.hpp"
+#include "shard/UniquePtr.hpp"
 #include "shard/ast/Node.hpp"
 
 /* ************************************************************************* */
@@ -35,8 +33,7 @@ namespace shard::ast {
 /**
  * @brief      Kind of Declaration.
  */
-enum class DeclKind
-{
+enum class [[deprecated]] DeclKind {
     Variable,
     Function,
     Class,
@@ -76,27 +73,22 @@ enum class DeclAccessSpecifier
  *             types as variable, function and class declaration. It's not
  *             possible to create an object of this class directly (pure virtual
  *             destructor, protected constructor), the only way is to create an
- *             object of child class. Type of the declaration can be obtained by
- *             calling `getKind`. All declarations are named so can be
+ *             object of child class. All declarations are named so can be
  *             identified later. The name should represents declaration scope
  *             naming scheme not FQN scheme.
  */
 class Decl : public Node
 {
-
-// Public Ctors & Dtors
 public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Destructor.
      */
-    virtual ~Decl() = 0;
+    virtual ~Decl() = default;
 
-
-// Public Accessors & Mutators
 public:
-
+    // Accessors & Mutators
 
     /**
      * @brief      Returns the declaration kind.
@@ -105,81 +97,73 @@ public:
      *
      * @return     The declaration kind.
      */
-    DeclKind getKind() const noexcept;
-
+    [[deprecated]] DeclKind getKind() const noexcept
+    {
+        return m_kind;
+    }
 
     /**
      * @brief      Returns the declaration name in local scope naming scheme.
      *
      * @return     The declaration name.
      */
-    const String& getName() const noexcept;
+    const String& name() const noexcept
+    {
+        return m_name;
+    }
 
+    /**
+     * @brief      Returns the declaration name in local scope naming scheme.
+     *
+     * @return     The declaration name.
+     */
+    [[deprecated]] const String& getName() const noexcept
+    {
+        return m_name;
+    }
 
     /**
      * @brief      Change the declaration name.
      *
      * @return     The declaration name in local scope naming scheme.
      */
-    void setName(String name);
-
+    void setName(String name)
+    {
+        m_name = std::move(name);
+    }
 
     /**
      * @brief      Returns the declaration access specifier.
      *
      * @return     The access specifier.
      */
-    DeclAccessSpecifier getAccessSpecifier() const noexcept;
+    DeclAccessSpecifier accessSpecifier() const noexcept
+    {
+        return m_accessSpecifier;
+    }
 
+    /**
+     * @brief      Returns the declaration access specifier.
+     *
+     * @return     The access specifier.
+     */
+    [[deprecated]] DeclAccessSpecifier getAccessSpecifier() const noexcept
+    {
+        return m_accessSpecifier;
+    }
 
     /**
      * @brief      Change the declaration access specifier.
      *
      * @param      spec  The access specifier.
      */
-    void setAccessSpecifier(DeclAccessSpecifier spec) noexcept;
+    void setAccessSpecifier(DeclAccessSpecifier spec) noexcept
+    {
+        m_accessSpecifier = spec;
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Test if declaration match required kind.
-     *
-     * @tparam     DeclType  Declaration type.
-     *
-     * @return     Returns `true` if this is `DeclType`, `false` otherwise.
-     */
-    template<typename DeclType>
-    bool is() const noexcept;
-
-
-    /**
-     * @brief      Cast this to required declaration type.
-     *
-     * @tparam     DeclType  Declaration type.
-     *
-     * @return     Reference to required declaration type.
-     */
-    template<typename DeclType>
-    DeclType& cast() noexcept;
-
-
-    /**
-     * @brief      Cast this to required declaration type.
-     *
-     * @tparam     DeclType  Declaration type.
-     *
-     * @return     Reference to required declaration type.
-     */
-    template<typename DeclType>
-    const DeclType& cast() const noexcept;
-
-
-// Protected Ctors & Dtors
 protected:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -188,11 +172,16 @@ protected:
      * @param      name   The declaration name in local scope naming scheme.
      * @param      range  The declaration location within the source.
      */
-    explicit Decl(DeclKind kind, String name, SourceRange range);
+    explicit Decl(DeclKind kind, String name, SourceRange range)
+        : Node(range)
+        , m_kind(kind)
+        , m_name(std::move(name))
+    {
+        // Nothing to do
+    }
 
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Declaration kind.
     DeclKind m_kind;
@@ -205,63 +194,21 @@ private:
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline DeclKind Decl::getKind() const noexcept
-{
-    return m_kind;
-}
+/**
+ * @brief A pointer to declaration.
+ */
+using DeclPtr = UniquePtr<Decl>;
 
 /* ************************************************************************* */
 
-inline const String& Decl::getName() const noexcept
-{
-    return m_name;
-}
+/**
+ * @brief A vector of declarations.
+ */
+using DeclPtrVector = Vector<DeclPtr>;
 
 /* ************************************************************************* */
 
-inline DeclAccessSpecifier Decl::getAccessSpecifier() const noexcept
-{
-    return m_accessSpecifier;
-}
-
-/* ************************************************************************* */
-
-inline void Decl::setAccessSpecifier(DeclAccessSpecifier spec) noexcept
-{
-    m_accessSpecifier = spec;
-}
-
-/* ************************************************************************* */
-
-template<typename DeclType>
-inline bool Decl::is() const noexcept
-{
-    return getKind() == DeclType::Kind;
-}
-
-/* ************************************************************************* */
-
-template<typename DeclType>
-inline DeclType& Decl::cast() noexcept
-{
-    SHARD_ASSERT(is<DeclType>());
-    return static_cast<DeclType&>(*this);
-}
-
-/* ************************************************************************* */
-
-template<typename DeclType>
-inline const DeclType& Decl::cast() const noexcept
-{
-    SHARD_ASSERT(is<DeclType>());
-    return static_cast<const DeclType&>(*this);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

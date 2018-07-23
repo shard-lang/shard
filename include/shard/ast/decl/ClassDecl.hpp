@@ -35,7 +35,7 @@ namespace shard::ast {
  *
  * @details    In the source it appears as: `class <name> { <decls> }`.
  */
-class ClassDecl final : public CompoundDecl
+[[deprecated]] class ClassDecl final : public CompoundDecl
 {
 
 // Public Constants

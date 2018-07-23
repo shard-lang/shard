@@ -68,7 +68,7 @@ TEST(ExprStmt, base)
 
     {
         // ;
-        const auto stmt = ExprStmt::make();
+        const auto stmt = ExprStmt::make(nullptr);
 
         EXPECT_EQ(StmtKind::Expr, stmt->getKind());
         EXPECT_TRUE(stmt->is<ExprStmt>());

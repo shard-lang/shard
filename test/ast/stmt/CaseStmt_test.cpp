@@ -37,7 +37,7 @@ TEST(CaseStmt, base)
         // case 0: ;
         CaseStmt stmt(IntLiteralExpr::make(0));
 
-        stmt.addStmt(ExprStmt::make());
+        stmt.addStmt(ExprStmt::make(nullptr));
 
         EXPECT_EQ(StmtKind::Case, stmt.getKind());
         EXPECT_TRUE(stmt.is<CaseStmt>());
@@ -50,7 +50,7 @@ TEST(CaseStmt, base)
         // case 0: ;
         CaseStmt stmt(IntLiteralExpr::make(0));
 
-        stmt.addStmt(ExprStmt::make());
+        stmt.addStmt(ExprStmt::make(nullptr));
 
         EXPECT_EQ(StmtKind::Case, stmt.getKind());
         EXPECT_TRUE(stmt.is<CaseStmt>());
@@ -79,7 +79,7 @@ TEST(CaseStmt, base)
         ASSERT_TRUE(stmt.getStmts().empty());
 
         PtrVector<Stmt> stmts;
-        stmts.push_back(ExprStmt::make());
+        stmts.push_back(ExprStmt::make(nullptr));
 
         // case 0: ;
         stmt.setStmts(std::move(stmts));

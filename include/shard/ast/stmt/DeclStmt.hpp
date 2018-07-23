@@ -19,17 +19,15 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
+#include "shard/Assert.hpp"
 #include "shard/ViewPtr.hpp"
+#include "shard/ast/Decl.hpp"
 #include "shard/ast/Stmt.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
-
-/* ************************************************************************* */
-
-class Decl;
 
 /* ************************************************************************* */
 
@@ -39,20 +37,10 @@ class Decl;
  * @details    Statement which declares a variable. In the source it appears as:
  *             `<decl>;`.
  */
-class DeclStmt final : public Stmt
+class DeclStmt final : public Stmt, public PtrBuilder<DeclStmt, DeclPtr>
 {
-
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr StmtKind Kind = StmtKind::Decl;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -60,83 +48,106 @@ public:
      * @param      decl   Declaration.
      * @param      range  Source range.
      */
-    explicit DeclStmt(UniquePtr<Decl> decl, SourceRange range = {});
+    explicit DeclStmt(DeclPtr decl, SourceRange range = {})
+        : Stmt(StmtKind::Decl, range)
+        , m_decl(std::move(decl))
+    {
+        SHARD_ASSERT(m_decl);
+    }
 
-
-    /**
-     * @brief      Destructor.
-     */
-    ~DeclStmt();
-
-
-// Public Accessors & Mutators
 public:
-
-
-    /**
-     * @brief      Returns declaration.
-     *
-     * @return     Declaration.
-     */
-    ViewPtr<Decl> getDecl() noexcept;
-
+    // Accessors & Mutators
 
     /**
      * @brief      Returns declaration.
      *
      * @return     Declaration.
      */
-    ViewPtr<const Decl> getDecl() const noexcept;
+    DeclPtr& decl() noexcept
+    {
+        return m_decl;
+    }
+
+    /**
+     * @brief      Returns declaration.
+     *
+     * @return     Declaration.
+     */
+    const DeclPtr& decl() const noexcept
+    {
+        return m_decl;
+    }
+
+    /**
+     * @brief      Returns declaration.
+     *
+     * @tparam     DeclType  Declaration type.
+     *
+     * @return     Declaration.
+     *
+     * @pre        `decl().is<DeclType>()`
+     */
+    template<typename DeclType>
+    DeclType& decl() noexcept
+    {
+        return m_decl->cast<DeclType>();
+    }
+
+    /**
+     * @brief      Returns declaration.
+     *
+     * @tparam     DeclType  Declaration type.
+     *
+     * @return     Declaration.
+     *
+     * @pre        `decl().is<DeclType>()`
+     */
+    template<typename DeclType>
+    const DeclType& decl() const noexcept
+    {
+        return m_decl->cast<DeclType>();
+    }
+
+    /**
+     * @brief      Returns declaration.
+     *
+     * @return     Declaration.
+     */
+    [[deprecated]] ViewPtr<Decl> getDecl() noexcept
+    {
+        return makeView(m_decl);
+    }
+
+    /**
+     * @brief      Returns declaration.
+     *
+     * @return     Declaration.
+     */
+    [[deprecated]] ViewPtr<const Decl> getDecl() const noexcept
+    {
+        return makeView(m_decl);
+    }
 
     /**
      * @brief      Change declaration.
      *
      * @param      decl  The new declaration.
      */
-    void setDecl(UniquePtr<Decl> decl);
+    void setDecl(DeclPtr decl)
+    {
+        SHARD_ASSERT(decl);
+        m_decl = std::move(decl);
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      decl   Declaration.
-     * @param      range  Source range.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<DeclStmt> make(UniquePtr<Decl> decl, SourceRange range = {});
-
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Declaration.
-    UniquePtr<Decl> m_decl;
-
+    DeclPtr m_decl;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline ViewPtr<Decl> DeclStmt::getDecl() noexcept
-{
-    return makeView(m_decl);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Decl> DeclStmt::getDecl() const noexcept
-{
-    return makeView(m_decl);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

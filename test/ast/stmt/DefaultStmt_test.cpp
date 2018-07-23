@@ -46,7 +46,7 @@ TEST(DefaultStmt, base)
         // default: ;
         DefaultStmt stmt;
 
-        stmt.addStmt(ExprStmt::make());
+        stmt.addStmt(ExprStmt::make(nullptr));
 
         EXPECT_EQ(StmtKind::Default, stmt.getKind());
         EXPECT_TRUE(stmt.is<DefaultStmt>());
@@ -58,7 +58,7 @@ TEST(DefaultStmt, base)
         // default: ;
         DefaultStmt stmt;
 
-        stmt.addStmt(ExprStmt::make());
+        stmt.addStmt(ExprStmt::make(nullptr));
 
         EXPECT_EQ(StmtKind::Default, stmt.getKind());
         EXPECT_TRUE(stmt.is<DefaultStmt>());
@@ -81,7 +81,7 @@ TEST(DefaultStmt, base)
         ASSERT_TRUE(stmt.getStmts().empty());
 
         PtrVector<Stmt> stmts;
-        stmts.push_back(ExprStmt::make());
+        stmts.push_back(ExprStmt::make(nullptr));
 
         // default: ;
         stmt.setStmts(std::move(stmts));

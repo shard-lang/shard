@@ -38,7 +38,7 @@ TEST(ForStmt, base)
 {
     {
         // for (; true; ) {}
-        const ForStmt stmt(ExprStmt::make(), BoolLiteralExpr::make(true), nullptr, CompoundStmt::make());
+        const ForStmt stmt(ExprStmt::make(nullptr), BoolLiteralExpr::make(true), nullptr, CompoundStmt::make({}));
 
         EXPECT_EQ(StmtKind::For, stmt.getKind());
         EXPECT_TRUE(stmt.is<ForStmt>());
@@ -53,7 +53,7 @@ TEST(ForStmt, base)
 
     {
         // for (; true; 5) {}
-        const ForStmt stmt(ExprStmt::make(), BoolLiteralExpr::make(true), IntLiteralExpr::make(5), CompoundStmt::make());
+        const ForStmt stmt(ExprStmt::make(nullptr), BoolLiteralExpr::make(true), IntLiteralExpr::make(5), CompoundStmt::make({}));
 
         EXPECT_EQ(StmtKind::For, stmt.getKind());
         EXPECT_TRUE(stmt.is<ForStmt>());
@@ -69,7 +69,7 @@ TEST(ForStmt, base)
 
     {
         // for (; true; 5) {}
-        ForStmt stmt(ExprStmt::make(), BoolLiteralExpr::make(true), IntLiteralExpr::make(5), CompoundStmt::make());
+        ForStmt stmt(ExprStmt::make(nullptr), BoolLiteralExpr::make(true), IntLiteralExpr::make(5), CompoundStmt::make({}));
 
         EXPECT_EQ(StmtKind::For, stmt.getKind());
         EXPECT_TRUE(stmt.is<ForStmt>());
@@ -100,7 +100,7 @@ TEST(ForStmt, base)
 
     {
         // for (; true; ) {}
-        const auto stmt = ForStmt::make(ExprStmt::make(), BoolLiteralExpr::make(true), nullptr, CompoundStmt::make());
+        const auto stmt = ForStmt::make(ExprStmt::make(nullptr), BoolLiteralExpr::make(true), nullptr, CompoundStmt::make({}));
 
         EXPECT_EQ(StmtKind::For, stmt->getKind());
         EXPECT_TRUE(stmt->is<ForStmt>());

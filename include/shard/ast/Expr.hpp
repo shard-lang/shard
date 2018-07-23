@@ -38,7 +38,7 @@ namespace shard::ast {
 /**
  * @brief      Type of expression.
  */
-[[deprecated]] enum class ExprKind {
+enum class [[deprecated]] ExprKind {
     NullLiteral,
     BoolLiteral,
     IntLiteral,

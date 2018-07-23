@@ -18,7 +18,7 @@
 #include "gtest/gtest.h"
 
 // Shard
-#include "shard/ast/Expr.hpp"
+#include "shard/ast/Source.hpp"
 #include "shard/ast/utility.hpp"
 
 /* ************************************************************************ */
@@ -32,17 +32,18 @@ namespace {
 
 /* ************************************************************************ */
 
-struct TestExpr : public Expr, public PtrBuilder<TestExpr>
+struct TestStmt : public Stmt, public PtrBuilder<TestStmt>
 {
-    explicit TestExpr(SourceRange range = {}) noexcept
-        : Expr(ExprKind::NullLiteral, range) {}
+    TestStmt(SourceRange range = {}) noexcept
+        : Stmt(StmtKind::Expr, range) {}
 };
 
 /* ************************************************************************ */
 
-struct TestExpr2 : public Expr
+struct TestStmt2 : public Stmt, public PtrBuilder<TestStmt2>
 {
-
+    TestStmt2(SourceRange range = {}) noexcept
+        : Stmt(StmtKind::Expr, range) {}
 };
 
 /* ************************************************************************ */
@@ -51,22 +52,31 @@ struct TestExpr2 : public Expr
 
 /* ************************************************************************ */
 
-TEST(Expr, basic)
+TEST(Source, basic)
 {
-    TestExpr expr;
+    Source source;
 
-    EXPECT_TRUE(expr.is<TestExpr>());
-    EXPECT_FALSE(expr.is<TestExpr2>());
-}
+    source.addStmt(TestStmt::make());
+    source.addStmt(TestStmt2::make());
 
-/* ************************************************************************ */
+    ASSERT_EQ(2, source.stmts().size());
+    EXPECT_TRUE(source.stmts()[0]->is<TestStmt>());
+    EXPECT_TRUE(source.stmts()[1]->is<TestStmt2>());
 
-TEST(Expr, vtable)
-{
-    ExprPtr expr = TestExpr::make();
+    StmtPtrVector stmts;
+    stmts.push_back(TestStmt2::make());
 
-    EXPECT_TRUE(expr->is<TestExpr>());
-    EXPECT_FALSE(expr->is<TestExpr2>());
+    source = Source(std::move(stmts));
+
+    ASSERT_EQ(1, source.stmts().size());
+    EXPECT_TRUE(source.stmts()[0]->is<TestStmt2>());
+
+    stmts.push_back(TestStmt::make());
+
+    source.setStmts(std::move(stmts));
+
+    ASSERT_EQ(1, source.stmts().size());
+    EXPECT_TRUE(source.stmts()[0]->is<TestStmt>());
 }
 
 /* ************************************************************************ */

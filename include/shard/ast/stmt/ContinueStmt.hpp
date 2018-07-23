@@ -33,7 +33,7 @@ namespace shard::ast {
  *
  * @details    In the source it appears as: `continue;`.
  */
-class ContinueStmt final : public Stmt
+[[deprecated]] class ContinueStmt final : public Stmt
 {
 
 // Public Constants

@@ -14,47 +14,59 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-// Declaration
-#include "shard/ast/stmt/ExprStmt.hpp"
+// GTest
+#include "gtest/gtest.h"
 
 // Shard
-#include "shard/Assert.hpp"
-#include "shard/ast/Expr.hpp"
+#include "shard/ast/Stmt.hpp"
+#include "shard/ast/utility.hpp"
 
-/* ************************************************************************* */
+/* ************************************************************************ */
 
-namespace shard::ast {
+using namespace shard;
+using namespace shard::ast;
 
-/* ************************************************************************* */
+/* ************************************************************************ */
 
-ExprStmt::ExprStmt(UniquePtr<Expr> expr, SourceRange range)
-    : Stmt(Kind, range)
-    , m_expr(std::move(expr))
+namespace {
+
+/* ************************************************************************ */
+
+struct TestStmt : public Stmt, public PtrBuilder<TestStmt>
 {
-    // Nothing to do
-}
+    TestStmt(SourceRange range = {}) noexcept
+        : Stmt(StmtKind::Expr, range) {}
+};
 
-/* ************************************************************************* */
+/* ************************************************************************ */
 
-ExprStmt::~ExprStmt() = default;
-
-/* ************************************************************************* */
-
-void ExprStmt::setExpr(UniquePtr<Expr> expr)
+struct TestStmt2 : public Stmt
 {
-    SHARD_ASSERT(expr);
-    m_expr = std::move(expr);
+
+};
+
+/* ************************************************************************ */
+
 }
 
-/* ************************************************************************* */
+/* ************************************************************************ */
 
-UniquePtr<ExprStmt> ExprStmt::make(UniquePtr<Expr> expr, SourceRange range)
+TEST(Stmt, basic)
 {
-    return makeUnique<ExprStmt>(std::move(expr), range);
+    TestStmt stmt;
+
+    EXPECT_TRUE(stmt.is<TestStmt>());
+    EXPECT_FALSE(stmt.is<TestStmt2>());
 }
 
-/* ************************************************************************* */
+/* ************************************************************************ */
 
+TEST(Stmt, vtable)
+{
+    StmtPtr stmt = TestStmt::make();
+
+    EXPECT_TRUE(stmt->is<TestStmt>());
+    EXPECT_FALSE(stmt->is<TestStmt2>());
 }
 
-/* ************************************************************************* */
+/* ************************************************************************ */

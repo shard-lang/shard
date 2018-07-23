@@ -31,7 +31,6 @@ add_library(shard-ast
     Unit.cpp
 
     # Decl
-    Decl.cpp
     decl/ClassDecl.cpp
     decl/CompoundDecl.cpp
     decl/FunctionDecl.cpp
@@ -39,15 +38,11 @@ add_library(shard-ast
     decl/VariableDecl.cpp
 
     # Stmt
-    Stmt.cpp
     stmt/BreakStmt.cpp
     stmt/CaseStmt.cpp
-    stmt/CompoundStmt.cpp
     stmt/ContinueStmt.cpp
-    stmt/DeclStmt.cpp
     stmt/DefaultStmt.cpp
     stmt/DoWhileStmt.cpp
-    stmt/ExprStmt.cpp
     stmt/ForStmt.cpp
     stmt/IfStmt.cpp
     stmt/ReturnStmt.cpp

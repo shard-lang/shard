@@ -31,6 +31,7 @@ namespace shard::ast {
 /* ************************************************************************* */
 
 class CompoundStmt;
+class Expr;
 
 /* ************************************************************************* */
 
@@ -39,7 +40,7 @@ class CompoundStmt;
  *
  * @details    In the source it appears as: `do <bodyStmt> while (<condExpr>);`.
  */
-class DoWhileStmt final : public Stmt
+[[deprecated]] class DoWhileStmt final : public Stmt
 {
 
 // Public Constants

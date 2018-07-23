@@ -36,65 +36,59 @@ TEST(CompoundStmt, base)
         // {}
         const CompoundStmt stmt;
 
-        EXPECT_EQ(StmtKind::Compound, stmt.getKind());
         EXPECT_TRUE(stmt.is<CompoundStmt>());
-        EXPECT_TRUE(stmt.getStmts().empty());
+        EXPECT_TRUE(stmt.stmts().empty());
     }
 
     {
-        PtrVector<Stmt> stmts;
-        stmts.push_back(ExprStmt::make());
+        StmtPtrVector stmts;
+        stmts.push_back(ExprStmt::make(nullptr));
         stmts.push_back(ExprStmt::make(IntLiteralExpr::make(789)));
 
         // { ; 789; }
         const CompoundStmt stmt(std::move(stmts));
 
-        EXPECT_EQ(StmtKind::Compound, stmt.getKind());
         EXPECT_TRUE(stmt.is<CompoundStmt>());
-        EXPECT_FALSE(stmt.getStmts().empty());
-        EXPECT_EQ(2, stmt.getStmts().size());
+        EXPECT_FALSE(stmt.stmts().empty());
+        EXPECT_EQ(2, stmt.stmts().size());
     }
 
     {
         // {}
         CompoundStmt stmt;
 
-        EXPECT_EQ(StmtKind::Compound, stmt.getKind());
         EXPECT_TRUE(stmt.is<CompoundStmt>());
-        EXPECT_TRUE(stmt.getStmts().empty());
+        EXPECT_TRUE(stmt.stmts().empty());
 
         // { ; 789; }
-        stmt.addStmt(ExprStmt::make());
+        stmt.addStmt(ExprStmt::make(nullptr));
         stmt.addStmt(ExprStmt::make(IntLiteralExpr::make(789)));
-        EXPECT_EQ(2, stmt.getStmts().size());
+        EXPECT_EQ(2, stmt.stmts().size());
     }
 
     {
         // { }
         CompoundStmt stmt;
 
-        EXPECT_EQ(StmtKind::Compound, stmt.getKind());
         EXPECT_TRUE(stmt.is<CompoundStmt>());
-        EXPECT_TRUE(stmt.getStmts().empty());
+        EXPECT_TRUE(stmt.stmts().empty());
 
-        PtrVector<Stmt> stmts;
-        stmts.push_back(ExprStmt::make());
+        StmtPtrVector stmts;
+        stmts.push_back(ExprStmt::make(nullptr));
         stmts.push_back(ExprStmt::make(IntLiteralExpr::make(789)));
 
         // { ; 789; }
         stmt.setStmts(std::move(stmts));
 
-        EXPECT_EQ(StmtKind::Compound, stmt.getKind());
         EXPECT_TRUE(stmt.is<CompoundStmt>());
-        EXPECT_FALSE(stmt.getStmts().empty());
-        EXPECT_EQ(2, stmt.getStmts().size());
+        EXPECT_FALSE(stmt.stmts().empty());
+        EXPECT_EQ(2, stmt.stmts().size());
     }
 
     {
         // {}
-        const auto stmt = CompoundStmt::make();
+        const auto stmt = CompoundStmt::make({});
 
-        EXPECT_EQ(StmtKind::Compound, stmt->getKind());
         EXPECT_TRUE(stmt->is<CompoundStmt>());
    }
 }
@@ -104,38 +98,38 @@ TEST(CompoundStmt, base)
 TEST(CompoundStmt, parent)
 {
     {
-        PtrVector<Stmt> stmts;
-        stmts.push_back(ExprStmt::make());
+        StmtPtrVector stmts;
+        stmts.push_back(ExprStmt::make(nullptr));
         stmts.push_back(ExprStmt::make(IntLiteralExpr::make(789)));
 
         // { ; 789; }
         const CompoundStmt stmt(std::move(stmts));
 
-        EXPECT_FALSE(stmt.getStmts().empty());
-        EXPECT_EQ(2, stmt.getStmts().size());
+        EXPECT_FALSE(stmt.stmts().empty());
+        EXPECT_EQ(2, stmt.stmts().size());
     }
 
     {
-        PtrVector<Stmt> stmts;
-        stmts.push_back(ExprStmt::make());
+        StmtPtrVector stmts;
+        stmts.push_back(ExprStmt::make(nullptr));
         stmts.push_back(ExprStmt::make(IntLiteralExpr::make(789)));
 
         // { ; 789; }
         CompoundStmt stmt(std::move(stmts));
 
-        EXPECT_FALSE(stmt.getStmts().empty());
-        EXPECT_EQ(2, stmt.getStmts().size());
+        EXPECT_FALSE(stmt.stmts().empty());
+        EXPECT_EQ(2, stmt.stmts().size());
 
-        stmt.addStmt(ExprStmt::make());
-        EXPECT_FALSE(stmt.getStmts().empty());
-        EXPECT_EQ(3, stmt.getStmts().size());
+        stmt.addStmt(ExprStmt::make(nullptr));
+        EXPECT_FALSE(stmt.stmts().empty());
+        EXPECT_EQ(3, stmt.stmts().size());
     }
 
     {
         // { ; 789; }
-        const auto stmt = CompoundStmt::make();
+        const auto stmt = CompoundStmt::make({});
 
-        EXPECT_TRUE(stmt->getStmts().empty());
+        EXPECT_TRUE(stmt->stmts().empty());
     }
 }
 

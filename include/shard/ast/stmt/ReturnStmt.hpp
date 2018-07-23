@@ -30,12 +30,16 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+class Expr;
+
+/* ************************************************************************* */
+
 /**
  * @brief Return statement.
  *
  * @details    In the source it appears as: `return <resExpr>;` or `return;`.
  */
-class ReturnStmt final : public Stmt
+[[deprecated]] class ReturnStmt final : public Stmt
 {
 
 // Public Constants

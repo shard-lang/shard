@@ -30,7 +30,7 @@ namespace shard::ast {
 /**
  * @brief      Type of the type.
  */
-enum class TypeKind
+enum class [[deprecated]] TypeKind
 {
     /// Special type which allows to store any type at runtime. It's universal
     /// variable type.
@@ -72,7 +72,7 @@ enum class TypeKind
  *             function return type and parameters) type. Variable type can be
  *             one of the builtin types or user defined type.
  */
-class Type
+[[deprecated]] class Type
 {
 
 // Public Ctors & Dtors

@@ -19,12 +19,9 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/PtrDynamicArray.hpp"
+#include "shard/PtrVector.hpp"
 #include "shard/UniquePtr.hpp"
-#include "shard/ViewPtr.hpp"
 #include "shard/ast/Node.hpp"
-#include "shard/ast/utility.hpp"
-#include "shard/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -32,15 +29,10 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-class Expr;
-class Decl;
-
-/* ************************************************************************* */
-
 /**
  * @brief      Statement kind.
  */
-[[deprecated]] enum class StmtKind {
+enum class [[deprecated]] StmtKind {
     Expr,
     Decl,
     Compound,
@@ -70,7 +62,7 @@ public:
     /**
      * @brief Destructor.
      */
-    virtual ~Stmt() = 0;
+    virtual ~Stmt() = default;
 
 public:
     // Accessors & Mutators
@@ -94,7 +86,12 @@ protected:
      * @param      kind   Statement kind.
      * @param      range  Source range.
      */
-    [[deprecated]] explicit Stmt(StmtKind kind, SourceRange range);
+    [[deprecated]] explicit Stmt(StmtKind kind, SourceRange range)
+        : Node(range)
+        , m_kind(kind)
+    {
+        // Nothing to do
+    }
 
 private:
     // Data Members
@@ -102,6 +99,20 @@ private:
     /// Statement kind.
     StmtKind m_kind;
 };
+
+/* ************************************************************************* */
+
+/**
+ * @brief A pointer to statement.
+ */
+using StmtPtr = UniquePtr<Stmt>;
+
+/* ************************************************************************* */
+
+/**
+ * @brief A vector of statements.
+ */
+using StmtPtrVector = Vector<StmtPtr>;
 
 /* ************************************************************************* */
 

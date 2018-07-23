@@ -19,17 +19,14 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
 #include "shard/ViewPtr.hpp"
+#include "shard/ast/Expr.hpp"
 #include "shard/ast/Stmt.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
-
-/* ************************************************************************* */
-
-class Expr;
 
 /* ************************************************************************* */
 
@@ -39,20 +36,10 @@ class Expr;
  * @details    In the source it represents: `;` or `<expr>;`. When the `expr` is
  *             `nullptr` it's an empty statement.
  */
-class ExprStmt final : public Stmt
+class ExprStmt final : public Stmt, public PtrBuilder<ExprStmt, ExprPtr>
 {
-
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr StmtKind Kind = StmtKind::Expr;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -60,84 +47,75 @@ public:
      * @param      expr   Expression.
      * @param      range  Source range.
      */
-    explicit ExprStmt(UniquePtr<Expr> expr = nullptr, SourceRange range = {});
+    explicit ExprStmt(ExprPtr expr = nullptr, SourceRange range = {})
+        : Stmt(StmtKind::Expr, range)
+        , m_expr(std::move(expr))
+    {
+        // Nothing to do
+    }
 
-
-    /**
-     * @brief      Destructor.
-     */
-    ~ExprStmt();
-
-
-// Public Accessors & Mutators
 public:
-
-
-    /**
-     * @brief      Returns expression.
-     *
-     * @return     Expression.
-     */
-    ViewPtr<Expr> getExpr() noexcept;
-
+    // Accessors & Mutators
 
     /**
      * @brief      Returns expression.
      *
      * @return     Expression.
      */
-    ViewPtr<const Expr> getExpr() const noexcept;
+    ExprPtr& expr() noexcept
+    {
+        return m_expr;
+    }
 
+    /**
+     * @brief      Returns expression.
+     *
+     * @return     Expression.
+     */
+    const ExprPtr& expr() const noexcept
+    {
+        return m_expr;
+    }
+
+    /**
+     * @brief      Returns expression.
+     *
+     * @return     Expression.
+     */
+    [[deprecated]] ViewPtr<Expr> getExpr() noexcept
+    {
+        return makeView(m_expr);
+    }
+
+    /**
+     * @brief      Returns expression.
+     *
+     * @return     Expression.
+     */
+    [[deprecated]] ViewPtr<const Expr> getExpr() const noexcept
+    {
+        return makeView(m_expr);
+    }
 
     /**
      * @brief      Change the expression.
      *
      * @param      expr  The new expression.
      */
-    void setExpr(UniquePtr<Expr> expr);
+    void setExpr(ExprPtr expr)
+    {
+        m_expr = std::move(expr);
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      expr   Expression.
-     * @param      range  Source range.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<ExprStmt> make(UniquePtr<Expr> expr = nullptr, SourceRange range = {});
-
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Expression.
-    UniquePtr<Expr> m_expr;
-
+    ExprPtr m_expr;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline ViewPtr<Expr> ExprStmt::getExpr() noexcept
-{
-    return makeView(m_expr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Expr> ExprStmt::getExpr() const noexcept
-{
-    return makeView(m_expr);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

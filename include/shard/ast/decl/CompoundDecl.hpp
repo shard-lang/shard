@@ -33,7 +33,7 @@ namespace shard::ast {
  * @brief      Base class for declaration which are compound of other
  *             declarations (class, namespace, ...).
  */
-class CompoundDecl : public Decl
+[[deprecated]] class CompoundDecl : public Decl
 {
 
 // Public Ctors & Dtors

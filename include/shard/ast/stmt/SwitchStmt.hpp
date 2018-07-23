@@ -30,6 +30,7 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+class Expr;
 class CompoundStmt;
 
 /* ************************************************************************* */
@@ -39,7 +40,7 @@ class CompoundStmt;
  *
  * @details    In the source it appears as: `switch (<condExpr>) <bodyStmt>`.
  */
-class SwitchStmt final : public Stmt
+[[deprecated]] class SwitchStmt final : public Stmt
 {
 
 // Public Constants

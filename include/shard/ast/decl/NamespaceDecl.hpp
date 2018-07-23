@@ -33,7 +33,7 @@ namespace shard::ast {
 /**
  * @brief      Namespace declaration.
  */
-class NamespaceDecl final : public CompoundDecl
+[[deprecated]] class NamespaceDecl final : public CompoundDecl
 {
 
 // Public Constants

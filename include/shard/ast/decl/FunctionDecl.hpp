@@ -42,7 +42,7 @@ class CompoundStmt;
  *
  * @details    In the source it appears as: `<retType> <name> (<params>) <bodyStmt>`.
  */
-class FunctionDecl final : public Decl
+[[deprecated]] class FunctionDecl final : public Decl
 {
 
 // Public Constants

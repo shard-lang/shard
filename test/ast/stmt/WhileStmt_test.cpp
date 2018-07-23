@@ -35,7 +35,7 @@ TEST(WhileStmt, base)
 {
     {
         // while (true);
-        const WhileStmt stmt(BoolLiteralExpr::make(true), ExprStmt::make());
+        const WhileStmt stmt(BoolLiteralExpr::make(true), ExprStmt::make(nullptr));
 
         EXPECT_EQ(StmtKind::While, stmt.getKind());
         EXPECT_TRUE(stmt.is<WhileStmt>());
@@ -47,7 +47,7 @@ TEST(WhileStmt, base)
 
     {
         // while (true);
-        WhileStmt stmt(BoolLiteralExpr::make(true), ExprStmt::make());
+        WhileStmt stmt(BoolLiteralExpr::make(true), ExprStmt::make(nullptr));
 
         EXPECT_EQ(StmtKind::While, stmt.getKind());
         EXPECT_TRUE(stmt.is<WhileStmt>());
@@ -68,7 +68,7 @@ TEST(WhileStmt, base)
 
     {
         // while (true);
-        const auto stmt = WhileStmt::make(BoolLiteralExpr::make(true), ExprStmt::make());
+        const auto stmt = WhileStmt::make(BoolLiteralExpr::make(true), ExprStmt::make(nullptr));
 
         EXPECT_EQ(StmtKind::While, stmt->getKind());
         EXPECT_TRUE(stmt->is<WhileStmt>());

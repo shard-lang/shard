@@ -30,13 +30,17 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+class Expr;
+
+/* ************************************************************************* */
+
 /**
  * @brief      For loop statement.
  *
  * @details    In the source it appears as: `for (<initStmt> <condExpr> ;
  *             <incExpr>) <bodyStmt>`.
  */
-class ForStmt final : public Stmt
+[[deprecated]] class ForStmt final : public Stmt
 {
 
 // Public Constants

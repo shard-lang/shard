@@ -14,11 +14,12 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-// Declaration
-#include "shard/ast/Decl.hpp"
+#pragma once
 
-// C++
-#include <utility>
+/* ************************************************************************* */
+
+// Shard
+#include "shard/ast/Stmt.hpp"
 
 /* ************************************************************************* */
 
@@ -26,27 +27,82 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-Decl::Decl(DeclKind kind, String name, SourceRange range)
-    : Node(range)
-    , m_kind(kind)
-    , m_name(std::move(name))
+/**
+ * @brief      The top level AST container.
+ */
+class Source
 {
-    // Nothing to do
-}
+public:
+    // Ctors & Dtors
+
+    /**
+     * @brief      Default constructor.
+     */
+    Source() = default;
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      stmts  The statements.
+     */
+    explicit Source(StmtPtrVector stmts)
+        : m_statements(std::move(stmts))
+    {
+        // Nothing to do
+    }
+
+public:
+    // Accessors & Mutators
+
+    /**
+     * @brief      Returns statements.
+     *
+     * @return     The statements.
+     */
+    StmtPtrVector& stmts() noexcept
+    {
+        return m_statements;
+    }
+
+    /**
+     * @brief      Returns statements.
+     *
+     * @return     The statements.
+     */
+    const StmtPtrVector& stmts() const noexcept
+    {
+        return m_statements;
+    }
+
+    /**
+     * @brief      Set statements.
+     *
+     * @param      stmts  The statements.
+     */
+    void setStmts(StmtPtrVector stmts)
+    {
+        m_statements = std::move(stmts);
+    }
+
+    /**
+     * @brief      Add statement.
+     *
+     * @param      stmt  The statement to add.
+     */
+    void addStmt(StmtPtr stmt)
+    {
+        m_statements.push_back(std::move(stmt));
+    }
+
+private:
+    // Data Members
+
+    /// Statements
+    StmtPtrVector m_statements;
+};
 
 /* ************************************************************************* */
 
-Decl::~Decl() = default;
-
-/* ************************************************************************* */
-
-void Decl::setName(String name)
-{
-    m_name = std::move(name);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

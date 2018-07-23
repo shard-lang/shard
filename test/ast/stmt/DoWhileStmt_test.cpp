@@ -35,7 +35,7 @@ TEST(DoWhileStmt, base)
 {
     {
         // do {} while (true);
-        const DoWhileStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make());
+        const DoWhileStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make({}));
 
         EXPECT_EQ(StmtKind::DoWhile, stmt.getKind());
         EXPECT_TRUE(stmt.is<DoWhileStmt>());
@@ -47,7 +47,7 @@ TEST(DoWhileStmt, base)
 
     {
         // do {} while (true);
-        DoWhileStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make());
+        DoWhileStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make({}));
 
         EXPECT_EQ(StmtKind::DoWhile, stmt.getKind());
         EXPECT_TRUE(stmt.is<DoWhileStmt>());
@@ -59,7 +59,7 @@ TEST(DoWhileStmt, base)
         // do { break; } while (false);
         stmt.setCondExpr(BoolLiteralExpr::make(false));
 
-        auto body = CompoundStmt::make();
+        auto body = CompoundStmt::make({});
         body->addStmt(BreakStmt::make());
 
         stmt.setBodyStmt(std::move(body));
@@ -74,7 +74,7 @@ TEST(DoWhileStmt, base)
 
     {
         // do {} while (true);
-        const auto stmt = DoWhileStmt::make(BoolLiteralExpr::make(true), CompoundStmt::make());
+        const auto stmt = DoWhileStmt::make(BoolLiteralExpr::make(true), CompoundStmt::make({}));
 
         EXPECT_EQ(StmtKind::DoWhile, stmt->getKind());
         EXPECT_TRUE(stmt->is<DoWhileStmt>());

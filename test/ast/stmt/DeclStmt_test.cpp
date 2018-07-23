@@ -20,7 +20,6 @@
 // Shard
 #include "shard/ast/stmt/DeclStmt.hpp"
 #include "shard/ast/Expr.hpp"
-#include "shard/ast/decl/VariableDecl.hpp"
 
 /* ************************************************************************ */
 
@@ -29,46 +28,56 @@ using namespace shard::ast;
 
 /* ************************************************************************ */
 
+namespace {
+
+/* ************************************************************************ */
+
+struct TestDecl : Decl, public PtrBuilder<TestDecl, String>
+{
+    TestDecl(String name, SourceRange range) : Decl(DeclKind::Variable, std::move(name), range) {}
+};
+
+/* ************************************************************************ */
+
+struct TestDecl2 : Decl
+{
+
+};
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
 TEST(DeclStmt, base)
 {
     {
         // int foo;
-        const DeclStmt stmt(VariableDecl::make(TypeKind::Int, "foo"));
+        const DeclStmt stmt(TestDecl::make("foo"));
 
-        EXPECT_EQ(StmtKind::Decl, stmt.getKind());
         EXPECT_TRUE(stmt.is<DeclStmt>());
-        ASSERT_NE(nullptr, stmt.getDecl());
-        ASSERT_TRUE(stmt.getDecl()->is<VariableDecl>());
+        ASSERT_NE(nullptr, stmt.decl());
+        ASSERT_TRUE(stmt.decl()->is<TestDecl>());
+        ASSERT_FALSE(stmt.decl()->is<TestDecl2>());
     }
 
     {
-        // int foo;
-        DeclStmt stmt(VariableDecl::make(TypeKind::Int, "foo"));
+        DeclStmt stmt(TestDecl::make("foo"));
 
-        EXPECT_EQ(StmtKind::Decl, stmt.getKind());
         EXPECT_TRUE(stmt.is<DeclStmt>());
-        ASSERT_NE(nullptr, stmt.getDecl());
-        ASSERT_TRUE(stmt.getDecl()->is<VariableDecl>());
-        ASSERT_EQ("foo", stmt.getDecl()->cast<VariableDecl>().getName());
-        ASSERT_EQ(TypeKind::Int, stmt.getDecl()->cast<VariableDecl>().getType());
-
-        // float bar;
-        stmt.setDecl(VariableDecl::make(TypeKind::Float, "bar"));
-        EXPECT_TRUE(stmt.is<DeclStmt>());
-        ASSERT_NE(nullptr, stmt.getDecl());
-        ASSERT_TRUE(stmt.getDecl()->is<VariableDecl>());
-        ASSERT_EQ("bar", stmt.getDecl()->cast<VariableDecl>().getName());
-        ASSERT_EQ(TypeKind::Float, stmt.getDecl()->cast<VariableDecl>().getType());
+        ASSERT_NE(nullptr, stmt.decl());
+        ASSERT_TRUE(stmt.decl()->is<TestDecl>());
+        ASSERT_EQ("foo", stmt.decl()->cast<TestDecl>().name());
+        ASSERT_EQ("foo", stmt.decl<TestDecl>().name());
     }
 
     {
-        // int foo;
-        const auto stmt = DeclStmt::make(VariableDecl::make(TypeKind::Int, "foo"));
+        const auto stmt = DeclStmt::make(TestDecl::make("foo"));
 
-        EXPECT_EQ(StmtKind::Decl, stmt->getKind());
         EXPECT_TRUE(stmt->is<DeclStmt>());
-        ASSERT_NE(nullptr, stmt->getDecl());
-        ASSERT_TRUE(stmt->getDecl()->is<VariableDecl>());
+        ASSERT_NE(nullptr, stmt->decl());
+        ASSERT_TRUE(stmt->decl()->is<TestDecl>());
     }
 }
 
