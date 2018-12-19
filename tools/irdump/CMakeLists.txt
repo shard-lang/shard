@@ -14,22 +14,23 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-option(SHARD_BUILD_TOOLS "Build tools" On)
+# Create shard IR dump
+add_executable(shard-irdump
+    main.cpp
+)
 
-# ************************************************************************* #
+target_link_libraries(shard-irdump
+    PUBLIC shard-ir
+)
 
-if (NOT SHARD_BUILD_TOOLS)
-    return ()
-endif ()
+# Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
+target_compile_features(shard-core
+    PUBLIC cxx_std_17
+)
 
-# ************************************************************************* #
-
-if (SHARD_BUILD_INTERPRETER)
-    add_subdirectory(interpreter)
-endif()
-
-if (SHARD_BUILD_IR)
-    add_subdirectory(irdump)
-endif ()
+set_target_properties(shard-irdump PROPERTIES
+    OUTPUT_NAME shard-irdump
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
 
 # ************************************************************************* #

@@ -58,5 +58,6 @@ add_test(shard-core_test shard-core_test)
 add_subdirectory(tokenizer)
 add_subdirectory(ast)
 add_subdirectory(parser)
+add_subdirectory(ir)
 
 # ************************************************************************* #

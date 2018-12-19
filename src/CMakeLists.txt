@@ -46,6 +46,7 @@ endif ()
 add_subdirectory(tokenizer)
 add_subdirectory(ast)
 add_subdirectory(parser)
+add_subdirectory(ir)
 add_subdirectory(interpreter)
 
 # ************************************************************************* #

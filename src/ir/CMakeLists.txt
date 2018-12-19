@@ -14,22 +14,43 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-option(SHARD_BUILD_TOOLS "Build tools" On)
+# Build IR part
+option(SHARD_BUILD_IR "Build IR" On)
 
 # ************************************************************************* #
 
-if (NOT SHARD_BUILD_TOOLS)
+if (NOT SHARD_BUILD_IR)
     return ()
 endif ()
 
 # ************************************************************************* #
 
-if (SHARD_BUILD_INTERPRETER)
-    add_subdirectory(interpreter)
-endif()
+# Create Shard part
+add_library(shard-ir
+    Function.cpp
+    Serializer_read.cpp
+    Serializer_write.cpp
+)
 
-if (SHARD_BUILD_IR)
-    add_subdirectory(irdump)
+# Include directories
+target_include_directories(shard-ir
+    PUBLIC ../../include
+)
+
+# Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
+target_compile_features(shard-ir
+    PUBLIC cxx_std_17
+)
+
+# Link to libraries
+target_link_libraries(shard-ir
+    PUBLIC shard-core
+)
+
+# Enable coverage
+if (SHARD_COVERAGE)
+    include(Coverage)
+    target_coverage(shard-ir)
 endif ()
 
 # ************************************************************************* #

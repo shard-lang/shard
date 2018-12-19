@@ -14,22 +14,39 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.      #
 # ************************************************************************* #
 
-option(SHARD_BUILD_TOOLS "Build tools" On)
-
-# ************************************************************************* #
-
-if (NOT SHARD_BUILD_TOOLS)
+if (NOT SHARD_BUILD_IR)
     return ()
 endif ()
 
 # ************************************************************************* #
 
-if (SHARD_BUILD_INTERPRETER)
-    add_subdirectory(interpreter)
-endif()
+# Create test executable
+add_executable(shard-ir_test
+    Type_test.cpp
+    Constant_test.cpp
+    Instruction_test.cpp
+    Block_test.cpp
+    Function_test.cpp
+    Module_test.cpp
+)
 
-if (SHARD_BUILD_IR)
-    add_subdirectory(irdump)
+# Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
+target_compile_features(shard-ir_test
+    PUBLIC cxx_std_17
+)
+
+target_link_libraries(shard-ir_test
+    PRIVATE shard-ir
+    PRIVATE gtest_main
+)
+
+if (SHARD_COVERAGE)
+    include(Coverage)
+    target_coverage(shard-ir_test)
 endif ()
+
+# ************************************************************************* #
+
+add_test(shard-ir_test shard-ir_test)
 
 # ************************************************************************* #
