@@ -28,6 +28,7 @@ endif ()
 # Create Shard part
 add_library(shard-ir
     Function.cpp
+    Module.cpp
     Serializer_read.cpp
     Serializer_write.cpp
 )

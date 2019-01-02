@@ -28,6 +28,7 @@ add_executable(shard-ir_test
     Block_test.cpp
     Function_test.cpp
     Module_test.cpp
+    Serializer_test.cpp
 )
 
 # Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)

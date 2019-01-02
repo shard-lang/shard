@@ -279,7 +279,7 @@ Vector<ELEMENT> readList(std::istream& input, FN fn)
 
     // Read elements
     for (uint16_t i = 0; i < size; ++i)
-        result.push_back(fn(input));
+        result.push_back(fn(input, i));
 
     return result;
 }
@@ -613,6 +613,11 @@ UniquePtr<InstructionAdd> readInstructionAdd(
         throw std::runtime_error("Unknown instruction code");
     }
 
+    int16_t result = readInt16(input);
+
+    // Register value
+    mapping.values.emplace(result, instr->result());
+
     return instr;
 }
 
@@ -659,6 +664,11 @@ UniquePtr<InstructionSub> readInstructionSub(
         throw std::runtime_error("Unknown instruction code");
     }
 
+    int16_t result = readInt16(input);
+
+    // Register value
+    mapping.values.emplace(result, instr->result());
+
     return instr;
 }
 
@@ -695,6 +705,11 @@ UniquePtr<InstructionMul> readInstructionMul(
     {
         throw std::runtime_error("Unknown instruction code");
     }
+
+    int16_t result = readInt16(input);
+
+    // Register value
+    mapping.values.emplace(result, instr->result());
 
     return instr;
 }
@@ -742,6 +757,11 @@ UniquePtr<InstructionDiv> readInstructionDiv(
         throw std::runtime_error("Unknown instruction code");
     }
 
+    int16_t result = readInt16(input);
+
+    // Register value
+    mapping.values.emplace(result, instr->result());
+
     return instr;
 }
 
@@ -788,6 +808,11 @@ UniquePtr<InstructionRem> readInstructionRem(
         throw std::runtime_error("Unknown instruction code");
     }
 
+    int16_t result = readInt16(input);
+
+    // Register value
+    mapping.values.emplace(result, instr->result());
+
     return instr;
 }
 
@@ -825,6 +850,11 @@ UniquePtr<InstructionCmp> readInstructionCmp(
     {
         throw std::runtime_error("Unknown instruction code");
     }
+
+    int16_t result = readInt16(input);
+
+    // Register value
+    mapping.values.emplace(result, instr->result());
 
     return instr;
 }
@@ -872,6 +902,11 @@ UniquePtr<InstructionAnd> readInstructionAnd(
         throw std::runtime_error("Unknown instruction code");
     }
 
+    int16_t result = readInt16(input);
+
+    // Register value
+    mapping.values.emplace(result, instr->result());
+
     return instr;
 }
 
@@ -917,6 +952,11 @@ UniquePtr<InstructionOr> readInstructionOr(
     {
         throw std::runtime_error("Unknown instruction code");
     }
+
+    int16_t result = readInt16(input);
+
+    // Register value
+    mapping.values.emplace(result, instr->result());
 
     return instr;
 }
@@ -964,6 +1004,11 @@ UniquePtr<InstructionXor> readInstructionXor(
         throw std::runtime_error("Unknown instruction code");
     }
 
+    int16_t result = readInt16(input);
+
+    // Register value
+    mapping.values.emplace(result, instr->result());
+
     return instr;
 }
 
@@ -979,10 +1024,7 @@ UniquePtr<InstructionBranch> readInstructionBranch(
 
     auto lab = readUint16(input);
 
-    // TODO: create block??
-    mapping.blocks.emplace();
-
-    return makeUnique<InstructionBranch>(nullptr);
+    return makeUnique<InstructionBranch>(mapBlock(mapping, lab));
 }
 
 /* ************************************************************************* */
@@ -1000,10 +1042,8 @@ UniquePtr<InstructionBranchCondition> readInstructionBranchCondition(
     auto lab1  = readUint16(input);
     auto lab2  = readUint16(input);
 
-    // TODO: create blocks??
-    mapping.blocks.emplace();
-
-    return makeUnique<InstructionBranchCondition>(value, nullptr, nullptr);
+    return makeUnique<InstructionBranchCondition>(
+        value, mapBlock(mapping, lab1), mapBlock(mapping, lab2));
 }
 
 /* ************************************************************************* */
@@ -1023,12 +1063,22 @@ UniquePtr<InstructionCall> readInstructionCall(
     if (code == 0xD0)
     {
         auto types = readList<ViewPtr<Type>>(
-            input, [&](auto& input) { return readType(input, module); });
+            input, [&](auto& input, auto) { return readType(input, module); });
 
         auto name = readString(input);
 
-        auto args = readList<ViewPtr<Value>>(
-            input, [&](auto& input) { return readValue(input, mapping); });
+        auto args = readList<ViewPtr<Value>>(input, [&](auto& input, auto index) {
+            auto flag = readByte(input);
+
+            if (flag == Byte(0x01))
+            {
+                return readConst(input, types[index], module);
+            }
+            else
+            {
+                return readValue(input, mapping);
+            }
+        });
 
         instr = makeUnique<InstructionCall>(name, args);
     }
@@ -1036,14 +1086,29 @@ UniquePtr<InstructionCall> readInstructionCall(
     {
         auto type  = readType(input, module);
         auto types = readList<ViewPtr<Type>>(
-            input, [&](auto& input) { return readType(input, module); });
+            input, [&](auto& input, auto) { return readType(input, module); });
 
         auto name = readString(input);
 
-        auto args = readList<ViewPtr<Value>>(
-            input, [&](auto& input) { return readValue(input, mapping); });
+        auto args = readList<ViewPtr<Value>>(input, [&](auto& input, auto index) {
+            auto flag = readByte(input);
+
+            if (flag == Byte(0x01))
+            {
+                return readConst(input, types[index], module);
+            }
+            else
+            {
+                return readValue(input, mapping);
+            }
+        });
 
         instr = makeUnique<InstructionCall>(name, type, args);
+
+        int16_t result = readInt16(input);
+
+        // Register value
+        mapping.values.emplace(result, instr->result());
     }
     else
     {
@@ -1131,23 +1196,24 @@ readInstruction(std::istream& input, Module& module, Mapping& mapping)
     case 0xE1: return readInstructionReturn(input, code, module, mapping);
     case 0xE0: return readInstructionReturnVoid(input, code, module, mapping);
     }
+
+    throw std::runtime_error("Unknown instruction code");
 }
 
 /* ************************************************************************* */
 
-UniquePtr<Block>
-readBlock(std::istream& input, Module& module, Mapping& mapping)
+void readBlock(
+    ViewPtr<Block> block,
+    std::istream& input,
+    Module& module,
+    Mapping& mapping)
 {
-    auto block = makeUnique<Block>();
-
     auto instructions =
-        readList<UniquePtr<Instruction>>(input, [&](auto& input) {
+        readList<UniquePtr<Instruction>>(input, [&](auto& input, auto) {
             return readInstruction(input, module, mapping);
         });
 
     block->setInstructions(std::move(instructions));
-
-    return block;
 }
 
 /* ************************************************************************* */
@@ -1162,16 +1228,33 @@ UniquePtr<Function> readFunction(std::istream& input, Module& module)
 
     // Parameter types
     auto types = readList<ViewPtr<Type>>(
-        input, [&](auto& input) { return readType(input, module); });
+        input, [&](auto& input, auto) { return readType(input, module); });
+
+    // Create result function
+    auto fn = makeUnique<Function>(std::move(name), retType, std::move(types));
 
     // Blocks
     Mapping mapping;
-    auto blocks = readList<UniquePtr<Block>>(
-        input, [&](auto& input) { return readBlock(input, module, mapping); });
 
-    auto fn = makeUnique<Function>(std::move(name), retType, std::move(types));
+    // Map function arguments
+    for (auto& arg : fn->arguments())
+        mapping.values.emplace(mapping.values.size() + 1, arg.get());
 
-    fn->setBlocks(std::move(blocks));
+    // Read number of blocks
+    const uint16_t size = readUint16(input);
+
+    // Create blocks (required for referencing)
+    for (uint16_t i = 0; i < size; ++i)
+    {
+        auto block = fn->createBlock();
+
+        // Register block
+        mapping.blocks.emplace(i, block);
+    }
+
+    // Read blocks
+    for (const auto& block : fn->blocks())
+        readBlock(block.get(), input, module, mapping);
 
     return fn;
 }
@@ -1204,10 +1287,11 @@ Module deserialize(std::istream& input)
         throw std::runtime_error("unsupported version");
 
     // TODO: read structures
+    readUint16(input);
 
     // Read functions
     auto functions = readList<UniquePtr<Function>>(
-        input, [&](auto& input) { return readFunction(input, module); });
+        input, [&](auto& input, auto) { return readFunction(input, module); });
 
     module.setFunctions(std::move(functions));
 

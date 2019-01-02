@@ -208,6 +208,18 @@ public:
             makeUnique<Function>(std::move(name), std::move(parameterTypes)));
     }
 
+    /**
+     * @brief      Try to find function by name.
+     *
+     * @param      name            The function name.
+     * @param      parameterTypes  The parameter types for overload selection.
+     *
+     * @return     Function pointer or nullptr.
+     */
+    ViewPtr<Function> findFunction(
+        const String& name,
+        Vector<ViewPtr<Type>> parameterTypes) const;
+
 private:
     // Data Members
 

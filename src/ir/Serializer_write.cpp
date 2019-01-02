@@ -538,6 +538,8 @@ void writeInstruction(
         writeValue(out, mapping, instr.value1());
         writeConst(out, instr.value2());
     }
+
+    writeValue(out, mapping, instr.result());
 }
 
 /* ************************************************************************* */
@@ -576,6 +578,8 @@ void writeInstruction(
         writeValue(out, mapping, instr.value1());
         writeConst(out, instr.value2());
     }
+
+    writeValue(out, mapping, instr.result());
 }
 
 /* ************************************************************************* */
@@ -603,6 +607,8 @@ void writeInstruction(
         writeValue(out, mapping, instr.value1());
         writeConst(out, instr.value2());
     }
+
+    writeValue(out, mapping, instr.result());
 }
 
 /* ************************************************************************* */
@@ -641,6 +647,8 @@ void writeInstruction(
         writeValue(out, mapping, instr.value1());
         writeConst(out, instr.value2());
     }
+
+    writeValue(out, mapping, instr.result());
 }
 
 /* ************************************************************************* */
@@ -679,6 +687,8 @@ void writeInstruction(
         writeValue(out, mapping, instr.value1());
         writeConst(out, instr.value2());
     }
+
+    writeValue(out, mapping, instr.result());
 }
 
 /* ************************************************************************* */
@@ -708,6 +718,8 @@ void writeInstruction(
         writeValue(out, mapping, instr.value1());
         writeConst(out, instr.value2());
     }
+
+    writeValue(out, mapping, instr.result());
 }
 
 /* ************************************************************************* */
@@ -784,6 +796,8 @@ void writeInstruction(
         writeValue(out, mapping, instr.value1());
         writeConst(out, instr.value2());
     }
+
+    writeValue(out, mapping, instr.result());
 }
 
 /* ************************************************************************* */
@@ -822,6 +836,8 @@ void writeInstruction(
         writeValue(out, mapping, instr.value1());
         writeConst(out, instr.value2());
     }
+
+    writeValue(out, mapping, instr.result());
 }
 
 /* ************************************************************************* */
@@ -866,7 +882,7 @@ void writeInstruction(
 
     if (instr.resultType() != nullptr)
     {
-        writeByte(out, Byte{0xD0});
+        writeByte(out, Byte{0xD1});
         writeType(out, *instr.resultType());
         writeList(out, instr.arguments(), [](auto& out, const auto& arg) {
             writeType(out, *arg->type());
@@ -876,12 +892,23 @@ void writeInstruction(
         writeString(out, instr.name());
 
         writeList(out, instr.arguments(), [&](auto& out, const auto& arg) {
-            writeValue(out, mapping, arg);
+            if (arg->isConst())
+            {
+                writeByte(out, Byte(0x01));
+                writeConst(out, arg);
+            }
+            else
+            {
+                writeByte(out, Byte(0x00));
+                writeValue(out, mapping, arg);
+            }
         });
+
+        writeValue(out, mapping, instr.result());
     }
     else
     {
-        writeByte(out, Byte{0xD1});
+        writeByte(out, Byte{0xD0});
         writeList(out, instr.arguments(), [](auto& out, const auto& arg) {
             writeType(out, *arg->type());
         });
@@ -890,7 +917,16 @@ void writeInstruction(
         writeString(out, instr.name());
 
         writeList(out, instr.arguments(), [&](auto& out, const auto& arg) {
-            writeValue(out, mapping, arg);
+            if (arg->isConst())
+            {
+                writeByte(out, Byte(0x01));
+                writeConst(out, arg);
+            }
+            else
+            {
+                writeByte(out, Byte(0x00));
+                writeValue(out, mapping, arg);
+            }
         });
     }
 }
@@ -1043,6 +1079,7 @@ void serialize(std::ostream& output, const Module& module)
     writeByte(output, Byte(0x01));
 
     // TODO: write structures
+    writeUint16(output, 0);
 
     // Write functions
     writeList(
