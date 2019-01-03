@@ -409,7 +409,7 @@ ViewPtr<Value> mapValue(Mapping& mapping, uint16_t value)
     if (it != end(mapping.values))
         return it->second;
 
-    throw std::runtime_error("Unable to map value");
+    throw std::runtime_error("Unable to map value: %" + std::to_string(value));
 }
 
 /* ************************************************************************* */
@@ -429,7 +429,7 @@ ViewPtr<Block> mapBlock(Mapping& mapping, uint16_t block)
     if (it != end(mapping.blocks))
         return it->second;
 
-    throw std::runtime_error("Unable to map block");
+    throw std::runtime_error("Unable to map block: %" + std::to_string(block));
 }
 
 /* ************************************************************************* */
