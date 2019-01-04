@@ -121,7 +121,7 @@ public:
     {
         try
         {
-            std::get<T>(m_data);
+            return std::get<T>(m_data);
         }
         catch (std::bad_variant_access&)
         {
