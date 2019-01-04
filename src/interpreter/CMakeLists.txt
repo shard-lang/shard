@@ -26,8 +26,8 @@ endif ()
 # ************************************************************************* #
 
 # Check conditions
-if (NOT SHARD_BUILD_PARSER OR NOT SHARD_BUILD_AST)
-    message(WARNING "Option to build interpreter requires building AST and parser, turning interpreter off.")
+if (NOT SHARD_BUILD_IR)
+    message(WARNING "Option to build interpreter requires building IR, turning interpreter off.")
     set(SHARD_BUILD_INTERPRETER Off)
     return ()
 endif()
@@ -36,10 +36,7 @@ endif()
 
 # Create Shard part
 add_library(shard-interpreter
-    Context.cpp
     Interpreter.cpp
-    Symbol.cpp
-    Value.cpp
 )
 
 # Include directories
@@ -55,7 +52,7 @@ target_compile_features(shard-interpreter
 # Link to libraries
 target_link_libraries(shard-interpreter
     PUBLIC shard-core
-    PUBLIC shard-ast
+    PUBLIC shard-ir
 )
 
 # Enable coverage

@@ -1,4 +1,3 @@
-
 /* ************************************************************************* */
 /* This file is part of Shard.                                               */
 /*                                                                           */
@@ -15,28 +14,32 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-// Declaration
-#include "shard/interpreter/Symbol.hpp"
+// GTest
+#include "gtest/gtest.h"
 
 // Shard
-#include "shard/Assert.hpp"
-#include "shard/ast/Expr.hpp"
+#include "shard/interpreter/Frame.hpp"
+#include "shard/ir/Constant.hpp"
 
-/* ************************************************************************* */
+/* ************************************************************************ */
 
-namespace shard::interpreter {
+using namespace shard;
+using namespace shard::interpreter;
 
-/* ************************************************************************* */
+/* ************************************************************************ */
 
-Symbol::Symbol(SymbolKind kind) noexcept
-    : m_kind(kind)
-    , m_value{}
+TEST(Frame, test1)
 {
-    // Nothing to do
+    Frame frame;
+
+    frame.result() = int32_t{5};
+    EXPECT_EQ(5, frame.result().get<int32_t>());
+
+    ir::ConstInt32 val1{3};
+
+    // Store value
+    frame.value(val1) = val1.value();
+    EXPECT_EQ(3, frame.value(val1).get<int32_t>());
 }
 
-/* ************************************************************************* */
-
-}
-
-/* ************************************************************************* */
+/* ************************************************************************ */

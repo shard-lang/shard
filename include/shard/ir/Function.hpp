@@ -173,6 +173,20 @@ public:
         return m_arguments[pos].get();
     }
 
+    /**
+     * @brief      Returns argument value.
+     *
+     * @param      pos   The position.
+     *
+     * @return     Argument value.
+     *
+     * @pre        `pos < parameterTypes().size()`
+     */
+    ViewPtr<const Value> arg(size_t pos) const
+    {
+        return m_arguments[pos].get();
+    }
+
 private:
     // Data Members
 

@@ -22,12 +22,13 @@
 #include <ios>
 
 // Shard
-#include "shard/Path.hpp"
+#include "shard/FilePath.hpp"
 #include "shard/String.hpp"
 #include "shard/StringView.hpp"
 #include "shard/Exception.hpp"
 #include "shard/ast/Unit.hpp"
 #include "shard/parser/Parser.hpp"
+#include "shard/ir/Module.hpp"
 #include "shard/interpreter/Interpreter.hpp"
 
 /* ************************************************************************* */
@@ -50,7 +51,7 @@ namespace {
 UniquePtr<ast::Unit> createAst(StringView filename)
 {
     if (filename != "-")
-        return parser::Parser(Path(String(filename))).parseUnit();
+        return parser::Parser(FilePath(String(filename))).parseUnit();
 
     String input;
     input.reserve(4096);
@@ -67,6 +68,43 @@ UniquePtr<ast::Unit> createAst(StringView filename)
 
 /* ************************************************************************* */
 
+ir::Module createModule()
+{
+    ir::Module module;
+
+    auto const1 = module.createConstant<ir::ConstInt32>(5);
+    auto const2 = module.createConstant<ir::ConstInt32>(3);
+
+    {
+        auto main = module.createFunction("main", {});
+        auto block = main->createBlock();
+
+        auto add = block->createInstruction<ir::InstructionCall>("add", ir::TypeInt32::instance(), Vector<ViewPtr<ir::Value>>{const1, const2});
+
+        auto print = block->createInstruction<ir::InstructionCall>("print", Vector<ViewPtr<ir::Value>>{add->result()});
+
+        block->createInstruction<ir::InstructionReturnVoid>();
+    }
+
+    {
+        auto add = module.createFunction("add", ir::TypeInt32::instance(), Vector<ViewPtr<ir::Type>>{ir::TypeInt32::instance(), ir::TypeInt32::instance()});
+
+        auto block = add->createBlock();
+
+        // Result variable
+        auto result = block->createInstruction<ir::InstructionAdd>(
+            ir::TypeInt32::instance(), add->arg(0), add->arg(1));
+
+        // Return result
+        block->createInstruction<ir::InstructionReturn>(
+            ir::TypeInt32::instance(), result->result());
+    }
+
+    return module;
+}
+
+/* ************************************************************************* */
+
 }
 
 /* ************************************************************************* */
@@ -79,16 +117,23 @@ UniquePtr<ast::Unit> createAst(StringView filename)
  */
 int main(int argc, char** argv)
 {
+    /*
     if (argc < 2)
     {
         std::cerr << "no input file" << std::endl;
         return -1;
     }
+    */
 
     try
     {
-        auto ast = createAst(argv[1]);
-        interpreter::interpret(makeView(ast));
+        //auto ast = createAst(argv[1]);
+        auto module = createModule();
+        //interpreter::interpret(makeView(ast));
+
+        interpreter::Interpreter interp;
+        interp.load(module);
+        interp.call("main", {});
     }
     catch (const Exception& e)
     {

@@ -20,6 +20,8 @@
 
 // C++
 #include "shard/PtrVector.hpp"
+#include "shard/String.hpp"
+#include "shard/StringView.hpp"
 #include "shard/ir/Constant.hpp"
 #include "shard/ir/Function.hpp"
 #include "shard/ir/Type.hpp"
@@ -217,7 +219,7 @@ public:
      * @return     Function pointer or nullptr.
      */
     ViewPtr<Function> findFunction(
-        const String& name,
+        StringView name,
         Vector<ViewPtr<Type>> parameterTypes) const;
 
 private:

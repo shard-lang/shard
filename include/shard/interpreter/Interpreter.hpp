@@ -18,23 +18,46 @@
 
 /* ************************************************************************* */
 
+// C++
+#include <stack>
+
 // Shard
 #include "shard/ViewPtr.hpp"
+#include "shard/StringView.hpp"
+#include "shard/interpreter/Frame.hpp"
 #include "shard/interpreter/Value.hpp"
 
 /* ************************************************************************* */
 
-namespace shard::ast {
+namespace shard::ir {
 
 /* ************************************************************************* */
 
-class Expr;
-class Stmt;
-class Unit;
+class Module;
+class Function;
+class Block;
+class Instruction;
+class InstructionAlloc;
+class InstructionStore;
+class InstructionLoad;
+class InstructionAdd;
+class InstructionSub;
+class InstructionMul;
+class InstructionDiv;
+class InstructionRem;
+class InstructionCmp;
+class InstructionAnd;
+class InstructionOr;
+class InstructionXor;
+class InstructionBranch;
+class InstructionBranchCondition;
+class InstructionCall;
+class InstructionReturn;
+class InstructionReturnVoid;
 
 /* ************************************************************************* */
 
-}
+} // namespace shard::ir
 
 /* ************************************************************************* */
 
@@ -42,49 +65,220 @@ namespace shard::interpreter {
 
 /* ************************************************************************* */
 
-class Context;
-
-/* ************************************************************************* */
-
 /**
- * @brief      Interpret a compilation module.
- *
- * @param      unit  The unit.
- * @param      ctx   The context.
+ * @brief      Shard IR interpreter.
  */
-extern void interpret(ViewPtr<const ast::Unit> unit, Context& ctx);
+class Interpreter
+{
+
+public:
+    // Accessors & Mutators
+
+    /**
+     * @brief      Returns current frame.
+     *
+     * @return     The frame.
+     */
+    Frame& currentFrame()
+    {
+        return m_stack.top();
+    }
+
+    /**
+     * @brief      Returns current frame.
+     *
+     * @return     The frame.
+     */
+    const Frame& currentFrame() const
+    {
+        return m_stack.top();
+    }
+
+public:
+    // Operations
+
+    /**
+     * @brief      Load module into interpreter.
+     *
+     * @details    This function imports symbols from the module into
+     *             interpreter so they can be used.
+     *
+     * @param      module  The module.
+     */
+    void load(const ir::Module& module);
+
+    /**
+     * @brief      Call given function with given arguments.
+     *
+     * @details    It create a new stack frame where the function is executed.
+     *
+     * @param      name  The function name.
+     * @param      args  The arguments.
+     *
+     * @return     The returned value. Might be nothing if function returning null.
+     */
+    Value call(StringView name, const Vector<Value>& args);
+
+private:
+    // Operations
+
+    /**
+     * @brief      Convert IR value to runtime value.
+     *
+     * @details    The IR value can be reference to runtime value or constant.
+     *             This function converts to usable value.
+     *
+     * @param      value  The value.
+     *
+     * @return     The value.
+     */
+    Value fetchValue(const ir::Value& value);
+
+    /**
+     * @brief      Evaluate block in current frame.
+     *
+     * @param      block  The block.
+     */
+    void evalBlock(const ir::Block& block);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::Instruction& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionAlloc& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionStore& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionLoad& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionAdd& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionSub& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionMul& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionDiv& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionRem& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionCmp& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionAnd& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionOr& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionXor& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionBranch& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionBranchCondition& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionCall& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionReturn& instr);
+
+    /**
+     * @brief      Evaluate instruction in current frame.
+     *
+     * @param      instr  The instruction.
+     */
+    void evalInstruction(const ir::InstructionReturnVoid& instr);
+
+private:
+    // Data Members
+
+    /// Frame stack.
+    std::stack<Frame> m_stack;
+
+    /// Loaded modules.
+    Vector<ViewPtr<const ir::Module>> m_modules;
+};
 
 /* ************************************************************************* */
 
-/**
- * @brief      Interpret a compilation unit.
- *
- * @param      unit  The unit.
- */
-extern void interpret(ViewPtr<const ast::Unit> unit);
-
-/* ************************************************************************* */
-
-/**
- * @brief      Interpret a statement.
- *
- * @param      stmt  The statement.
- * @param      ctx   The context.
- */
-extern void interpret(ViewPtr<const ast::Stmt> stmt, Context& ctx);
-
-/* ************************************************************************* */
-
-/**
- * @brief      Interpret an expression.
- *
- * @param      expr  The expression.
- * @param      ctx   The context.
- */
-extern Value interpret(ViewPtr<const ast::Expr> expr, Context& ctx);
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::interpreter
 
 /* ************************************************************************* */

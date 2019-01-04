@@ -24,10 +24,10 @@ namespace shard::ir {
 /* ************************************************************************* */
 
 ViewPtr<Function> Module::findFunction(
-    const String& name,
+    StringView name,
     Vector<ViewPtr<Type>> parameterTypes) const
 {
-    for (auto& fn : m_functions)
+    for (const auto& fn : m_functions)
     {
         // Name and types match
         if (fn->name() == name && fn->parameterTypes() == parameterTypes)

@@ -19,33 +19,14 @@
 /* ************************************************************************* */
 
 // C++
-#include <utility>
+#include <variant>
 
 // Shard
-#include "shard/ViewPtr.hpp"
-#include "shard/Any.hpp"
-#include "shard/String.hpp"
-#include "shard/interpreter/Function.hpp"
+#include "shard/interpreter/Exception.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::interpreter {
-
-/* ************************************************************************* */
-
-/**
- * @brief      Stored value kind.
- */
-enum class ValueKind
-{
-    Null,
-    Bool,
-    Int,
-    Float,
-    Char,
-    String,
-    Function
-};
 
 /* ************************************************************************* */
 
@@ -55,418 +36,121 @@ enum class ValueKind
 class Value
 {
 
-// Public Ctors & Dtors
 public:
+    // Types
+
+    /// Alias for data.
+    using Data = std::variant<
+        std::monostate,
+        bool,
+        int8_t,
+        int16_t,
+        int32_t,
+        int64_t,
+        float,
+        double>;
 
 
-    /**
-     * @brief      Constructor.
-     */
-    Value() noexcept;
-
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      value  The value.
-     */
-    Value(bool value) noexcept;
-
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      value  The value.
-     */
-    Value(int value) noexcept;
-
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      value  The value.
-     */
-    Value(float value) noexcept;
-
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      value  The value.
-     */
-    Value(char32_t value) noexcept;
-
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      value  The value.
-     */
-    Value(String value) noexcept;
-
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      value  The value.
-     */
-    Value(Function value) noexcept;
-
-
-// Public Accessors & Mutators
 public:
-
+    // Ctors & Dtors
 
     /**
-     * @brief      Returns stored value kind.
-     *
-     * @return     The kind.
+     * @brief      Constructor.
      */
-    ValueKind getKind() const noexcept;
-
+    Value() = default;
 
     /**
-     * @brief      Determines if value is null.
+     * @brief      Constructor.
      *
-     * @return     True if null, False otherwise.
+     * @param      value  The value.
      */
-    bool isNull() const noexcept;
+    template<typename T>
+    Value(T value) noexcept
+        : m_data{value}
+    {
+        // Nothing
+    }
 
+public:
+    // Accessors & Mutators
 
     /**
-     * @brief      Returns as bool.
+     * @brief      Return underlying data.
+     *
+     * @return     The data.
+     */
+    const Data& data() const noexcept
+    {
+        return m_data;
+    }
+
+    /**
+     * @brief      If value is nothing.
+     *
+     * @return     True if nothing, False otherwise.
+     */
+    bool isNothing() const noexcept
+    {
+        return std::holds_alternative<std::monostate>(m_data);
+    }
+
+    /**
+     * @brief      Check if value has given type.
+     *
+     * @tparam     T     The type.
+     *
+     * @return     If value have given type.
+     */
+    template<typename T>
+    bool is() const noexcept
+    {
+        return std::holds_alternative<T>(m_data);
+    }
+
+    /**
+     * @brief      Returns value of given type.
+     *
+     * @tparam     T     The type.
      *
      * @return     The value.
+     *
+     * @pre        `is<T>()`
      */
-    bool asBool() const noexcept;
-
+    template<typename T>
+    const T& get() const
+    {
+        try
+        {
+            std::get<T>(m_data);
+        }
+        catch (std::bad_variant_access&)
+        {
+            throw Exception("Invalid variable type");
+        }
+    }
 
     /**
-     * @brief      Returns as integer.
+     * @brief      Store value.
      *
-     * @return     The value.
-     */
-    int asInt() const noexcept;
-
-
-    /**
-     * @brief      Returns as float.
+     * @param      value  The value.
      *
-     * @return     The value.
+     * @tparam     T      The type.
      */
-    float asFloat() const noexcept;
+    template<typename T>
+    void set(T value) noexcept
+    {
+        m_data = value;
+    }
 
-
-    /**
-     * @brief      Returns as character.
-     *
-     * @return     The value.
-     */
-    char32_t asChar() const noexcept;
-
-
-    /**
-     * @brief      Returns as string.
-     *
-     * @return     The value.
-     */
-    String asString() const noexcept;
-
-
-    /**
-     * @brief      Returns as function.
-     *
-     * @return     The value.
-     */
-    Function asFunction() const noexcept;
-
-
-// Private Data Members
 private:
+    // Data Members
 
-    /// Stored value kind.
-    ValueKind m_kind = ValueKind::Null;
-
-    /// Variable value.
-    Any m_value;
-
+    /// The current value.
+    Data m_data;
 };
 
 /* ************************************************************************* */
 
-/**
- * @brief      Compare values.
- *
- * @param      lhs   The left hand side
- * @param      rhs   The right hand side
- *
- * @return     Comparision result.
- */
-bool operator==(const Value& lhs, const Value& rhs);
-
-/* ************************************************************************* */
-
-/**
- * @brief      Compare values.
- *
- * @param      lhs   The left hand side
- * @param      rhs   The right hand side
- *
- * @return     Comparision result.
- */
-bool operator!=(const Value& lhs, const Value& rhs);
-
-/* ************************************************************************* */
-
-/**
- * @brief      Compare values.
- *
- * @param      lhs   The left hand side
- * @param      rhs   The right hand side
- *
- * @return     Comparision result.
- */
-bool operator<(const Value& lhs, const Value& rhs);
-
-/* ************************************************************************* */
-
-/**
- * @brief      Compare values.
- *
- * @param      lhs   The left hand side
- * @param      rhs   The right hand side
- *
- * @return     Comparision result.
- */
-bool operator>(const Value& lhs, const Value& rhs);
-
-/* ************************************************************************* */
-
-/**
- * @brief      Compare values.
- *
- * @param      lhs   The left hand side
- * @param      rhs   The right hand side
- *
- * @return     Comparision result.
- */
-bool operator<=(const Value& lhs, const Value& rhs);
-
-/* ************************************************************************* */
-
-/**
- * @brief      Compare values.
- *
- * @param      lhs   The left hand side
- * @param      rhs   The right hand side
- *
- * @return     Comparision result.
- */
-bool operator>=(const Value& lhs, const Value& rhs);
-
-/* ************************************************************************* */
-
-/**
- * @brief      Add values.
- *
- * @param      lhs   The left hand side
- * @param      rhs   The right hand side
- *
- * @return     Operation result.
- */
-Value operator+(const Value& lhs, const Value& rhs);
-
-/* ************************************************************************* */
-
-/**
- * @brief      Subtract values.
- *
- * @param      lhs   The left hand side
- * @param      rhs   The right hand side
- *
- * @return     Operation result.
- */
-Value operator-(const Value& lhs, const Value& rhs);
-
-/* ************************************************************************* */
-
-/**
- * @brief      Multiply values.
- *
- * @param      lhs   The left hand side
- * @param      rhs   The right hand side
- *
- * @return     Operation result.
- */
-Value operator*(const Value& lhs, const Value& rhs);
-
-/* ************************************************************************* */
-
-/**
- * @brief      Divide values.
- *
- * @param      lhs   The left hand side
- * @param      rhs   The right hand side
- *
- * @return     Operation result.
- */
-Value operator/(const Value& lhs, const Value& rhs);
-
-/* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
-
-inline Value::Value() noexcept
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-inline Value::Value(bool value) noexcept
-    : m_kind(ValueKind::Bool)
-    , m_value(value)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-inline Value::Value(int value) noexcept
-    : m_kind(ValueKind::Int)
-    , m_value(value)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-inline Value::Value(float value) noexcept
-    : m_kind(ValueKind::Float)
-    , m_value(value)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-inline Value::Value(char32_t value) noexcept
-    : m_kind(ValueKind::Char)
-    , m_value(value)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-inline Value::Value(String value) noexcept
-    : m_kind(ValueKind::String)
-    , m_value(std::move(value))
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-inline Value::Value(Function value) noexcept
-    : m_kind(ValueKind::Function)
-    , m_value(value)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-inline ValueKind Value::getKind() const noexcept
-{
-    return m_kind;
-}
-
-/* ************************************************************************* */
-
-inline bool Value::isNull() const noexcept
-{
-    return getKind() == ValueKind::Null;
-}
-
-/* ************************************************************************* */
-
-inline bool Value::asBool() const noexcept
-{
-    SHARD_ASSERT(getKind() == ValueKind::Bool);
-    return m_value.get<bool>();
-}
-
-/* ************************************************************************* */
-
-inline int Value::asInt() const noexcept
-{
-    SHARD_ASSERT(getKind() == ValueKind::Int);
-    return m_value.get<int>();
-}
-
-/* ************************************************************************* */
-
-inline float Value::asFloat() const noexcept
-{
-    SHARD_ASSERT(getKind() == ValueKind::Float);
-    return m_value.get<float>();
-}
-
-/* ************************************************************************* */
-
-inline char32_t Value::asChar() const noexcept
-{
-    SHARD_ASSERT(getKind() == ValueKind::Char);
-    return m_value.get<char32_t>();
-}
-
-/* ************************************************************************* */
-
-inline String Value::asString() const noexcept
-{
-    SHARD_ASSERT(getKind() == ValueKind::String);
-    return m_value.get<String>();
-}
-
-/* ************************************************************************* */
-
-inline Function Value::asFunction() const noexcept
-{
-    SHARD_ASSERT(getKind() == ValueKind::Function);
-    return m_value.get<Function>();
-}
-
-/* ************************************************************************* */
-
-inline bool operator!=(const Value& lhs, const Value& rhs)
-{
-    return !operator==(lhs, rhs);
-}
-
-/* ************************************************************************* */
-
-inline bool operator>(const Value& lhs, const Value& rhs)
-{
-    return operator<(rhs, lhs);
-}
-
-/* ************************************************************************* */
-
-inline bool operator<=(const Value& lhs, const Value& rhs)
-{
-    return !operator>(lhs, rhs);
-}
-
-/* ************************************************************************* */
-
-inline bool operator>=(const Value& lhs, const Value& rhs)
-{
-    return !operator<(lhs, rhs);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::interpreter
 
 /* ************************************************************************* */

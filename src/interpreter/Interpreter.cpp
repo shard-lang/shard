@@ -18,22 +18,15 @@
 #include "shard/interpreter/Interpreter.hpp"
 
 // C++
-#include <utility>
-#include <cstdio>
+#include <iostream>
 
 // Shard
-#include "shard/Assert.hpp"
-#include "shard/ast/Decls.hpp"
-#include "shard/ast/Stmts.hpp"
-#include "shard/ast/Exprs.hpp"
-#include "shard/ast/Unit.hpp"
 #include "shard/interpreter/Exception.hpp"
-#include "shard/interpreter/Context.hpp"
-
-/* ************************************************************************* */
-
-//#define PRINT_CALL printf("%s\n", __PRETTY_FUNCTION__);
-#define PRINT_CALL
+#include "shard/ir/Block.hpp"
+#include "shard/ir/Constant.hpp"
+#include "shard/ir/Function.hpp"
+#include "shard/ir/Instruction.hpp"
+#include "shard/ir/Module.hpp"
 
 /* ************************************************************************* */
 
@@ -45,552 +38,626 @@ namespace {
 
 /* ************************************************************************* */
 
-void interpretExprStmt(ViewPtr<const ast::ExprStmt> stmt, Context& ctx)
+/**
+ * @brief      Convert interpreter value to IR type.
+ *
+ * @param      value  The value.
+ *
+ * @return     IR type.
+ */
+ViewPtr<ir::Type> fetchType(const Value& value)
 {
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
+    if (value.is<bool>())
+        return ir::TypeInt1::instance();
+    else if (value.is<int8_t>())
+        return ir::TypeInt8::instance();
+    else if (value.is<int16_t>())
+        return ir::TypeInt16::instance();
+    else if (value.is<int32_t>())
+        return ir::TypeInt32::instance();
+    else if (value.is<int64_t>())
+        return ir::TypeInt64::instance();
+    else if (value.is<float>())
+        return ir::TypeFloat32::instance();
+    else if (value.is<double>())
+        return ir::TypeFloat64::instance();
 
-    interpret(stmt->getExpr(), ctx);
+    throw Exception("Unknown value type");
 }
 
 /* ************************************************************************* */
 
-void interpretDeclStmt(ViewPtr<const ast::DeclStmt> stmt, Context& ctx)
+/**
+ * @brief      Cast value to type.
+ *
+ * @param      value  The value.
+ * @param      type   The type.
+ *
+ * @tparam     T      The value type.
+ *
+ * @return     The result value.
+ */
+template<typename T>
+Value castTo(T value, const ir::Type& type)
 {
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
-
-    // Get declaration
-    const auto& decl = stmt->getDecl();
-    SHARD_ASSERT(decl);
-
-    // Only variable is supported
-    if (!decl->is<ast::VariableDecl>())
-        throw Exception("Only variable can be declared in statement");
-
-    auto& varDecl = decl->cast<ast::VariableDecl>();
-
-    // Create variable
-    auto var = ctx.addSymbol(varDecl.getName(), SymbolKind::Variable);
-
-    if (varDecl.getInitExpr())
-        var->setValue(interpret(varDecl.getInitExpr(), ctx));
-}
-
-/* ************************************************************************* */
-
-void interpretCompoundStmt(ViewPtr<const ast::CompoundStmt> stmt, Context& ctx)
-{
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
-
-    ctx.push();
-
-    for (const auto& s : stmt->getStmts())
-        interpret(makeView(s), ctx);
-
-    ctx.pop();
-}
-
-/* ************************************************************************* */
-
-void interpretIfStmt(ViewPtr<const ast::IfStmt> stmt, Context& ctx)
-{
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
-
-}
-
-/* ************************************************************************* */
-
-void interpretWhileStmt(ViewPtr<const ast::WhileStmt> stmt, Context& ctx)
-{
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
-
-}
-
-/* ************************************************************************* */
-
-void interpretDoWhileStmt(ViewPtr<const ast::DoWhileStmt> stmt, Context& ctx)
-{
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
-
-}
-
-/* ************************************************************************* */
-
-void interpretForStmt(ViewPtr<const ast::ForStmt> stmt, Context& ctx)
-{
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
-
-}
-
-/* ************************************************************************* */
-
-void interpretSwitchStmt(ViewPtr<const ast::SwitchStmt> stmt, Context& ctx)
-{
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
-
-}
-
-/* ************************************************************************* */
-
-void interpretCaseStmt(ViewPtr<const ast::CaseStmt> stmt, Context& ctx)
-{
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
-
-}
-
-/* ************************************************************************* */
-
-void interpretDefaultStmt(ViewPtr<const ast::DefaultStmt> stmt, Context& ctx)
-{
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
-
-}
-
-/* ************************************************************************* */
-
-void interpretContinueStmt(ViewPtr<const ast::ContinueStmt> stmt, Context& ctx)
-{
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
-
-}
-
-/* ************************************************************************* */
-
-void interpretBreakStmt(ViewPtr<const ast::BreakStmt> stmt, Context& ctx)
-{
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
-
-}
-
-/* ************************************************************************* */
-
-void interpretReturnStmt(ViewPtr<const ast::ReturnStmt> stmt, Context& ctx)
-{
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
-
-    // Evaluate return expr
-    auto ret = interpret(stmt->getResExpr(), ctx);
-
-    auto retSym = ctx.findSymbol("return");
-    SHARD_ASSERT(retSym);
-    retSym->setValue(std::move(ret));
-}
-
-/* ************************************************************************* */
-
-Value interpretNullLiteralExpr(ViewPtr<const ast::NullLiteralExpr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    return {};
-}
-
-/* ************************************************************************* */
-
-Value interpretBoolLiteralExpr(ViewPtr<const ast::BoolLiteralExpr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    return Value(expr->getValue());
-}
-
-/* ************************************************************************* */
-
-Value interpretIntLiteralExpr(ViewPtr<const ast::IntLiteralExpr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    return Value(expr->getValue());
-}
-
-/* ************************************************************************* */
-
-Value interpretFloatLiteralExpr(ViewPtr<const ast::FloatLiteralExpr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    return Value(expr->getValue());
-}
-
-/* ************************************************************************* */
-
-Value interpretCharLiteralExpr(ViewPtr<const ast::CharLiteralExpr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    return Value(expr->getValue());
-}
-
-/* ************************************************************************* */
-
-Value interpretStringLiteralExpr(ViewPtr<const ast::StringLiteralExpr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    return Value(expr->getValue());
-}
-
-/* ************************************************************************* */
-
-Value interpretBinaryExpr(ViewPtr<const ast::BinaryExpr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    // Evaluate operands
-    auto lhs = interpret(expr->getLhs(), ctx);
-    auto rhs = interpret(expr->getRhs(), ctx);
-
-    switch (expr->getOpKind())
+    switch (type.kind())
     {
-    //  Equality operators
-    case ast::BinaryExpr::OpKind::EQ: return Value(lhs == rhs);
-    case ast::BinaryExpr::OpKind::NE: return Value(lhs != rhs);
+    case ir::TypeKind::Int8: return Value{int8_t(value)};
 
-    // Relational operators
-    case ast::BinaryExpr::OpKind::LT: return Value(lhs < rhs);
-    case ast::BinaryExpr::OpKind::LE: return Value(lhs <= rhs);
-    case ast::BinaryExpr::OpKind::GT: return Value(lhs > rhs);
-    case ast::BinaryExpr::OpKind::GE: return Value(lhs >= rhs);
+    case ir::TypeKind::Int16: return Value{int16_t(value)};
 
-    // Additive operators
-    case ast::BinaryExpr::OpKind::Add: return lhs + rhs;
-    case ast::BinaryExpr::OpKind::Sub: return lhs - rhs;
+    case ir::TypeKind::Int32: return Value{int32_t(value)};
 
-    // Multiplicative operators
-    case ast::BinaryExpr::OpKind::Mul: return lhs * rhs;
-    case ast::BinaryExpr::OpKind::Div: return lhs / rhs;
-    case ast::BinaryExpr::OpKind::Rem: break;
+    case ir::TypeKind::Int64: return Value{int64_t(value)};
 
-    // Assignment operators
-    case ast::BinaryExpr::OpKind::Assign: break;
-    case ast::BinaryExpr::OpKind::MulAssign: break;
-    case ast::BinaryExpr::OpKind::DivAssign: break;
-    case ast::BinaryExpr::OpKind::RemAssign: break;
-    case ast::BinaryExpr::OpKind::AddAssign: break;
-    case ast::BinaryExpr::OpKind::SubAssign: break;
+    case ir::TypeKind::Float32: return Value{float(value)};
+
+    case ir::TypeKind::Float64: return Value{double(value)};
+
+    default: throw Exception("Unsupported operand types");
+    }
+}
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Cast value to type.
+ *
+ * @param      value  The value.
+ * @param      type   The type.
+ *
+ * @return     The result value.
+ */
+Value castTo(const Value& value, const ir::Type& type)
+{
+    if (value.is<bool>())
+        return castTo<bool>(value.get<bool>(), type);
+    else if (value.is<int8_t>())
+        return castTo<int8_t>(value.get<int8_t>(), type);
+    else if (value.is<int16_t>())
+        return castTo<int16_t>(value.get<int16_t>(), type);
+    else if (value.is<int32_t>())
+        return castTo<int32_t>(value.get<int32_t>(), type);
+    else if (value.is<int64_t>())
+        return castTo<int64_t>(value.get<int64_t>(), type);
+    else if (value.is<float>())
+        return castTo<float>(value.get<float>(), type);
+    else if (value.is<double>())
+        return castTo<double>(value.get<double>(), type);
+
+    throw Exception("Unknown value type");
+}
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Perform binary operation.
+ *
+ * @param      type  The values type.
+ * @param      val1  The first value.
+ * @param      val2  The second value.
+ * @param      op    The operation.
+ *
+ * @tparam     OP    Operation type.
+ *
+ * @return     The result.
+ */
+template<typename OP>
+Value binaryOperation(
+    const ir::Type& type,
+    const Value& val1,
+    const Value& val2,
+    OP op)
+{
+    switch (type.kind())
+    {
+    case ir::TypeKind::Int8:
+        return Value{op(val1.get<int8_t>(), val2.get<int8_t>())};
+
+    case ir::TypeKind::Int16:
+        return Value{op(val1.get<int16_t>(), val2.get<int16_t>())};
+
+    case ir::TypeKind::Int32:
+        return Value{op(val1.get<int32_t>(), val2.get<int32_t>())};
+
+    case ir::TypeKind::Int64:
+        return Value{op(val1.get<int64_t>(), val2.get<int64_t>())};
+
+    default: throw Exception("Unsupported operand types");
+    }
+}
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Perform binary operation.
+ *
+ * @param      type  The values type.
+ * @param      val1  The first value.
+ * @param      val2  The second value.
+ * @param      op    The operation.
+ *
+ * @tparam     OP    Operation type.
+ *
+ * @return     The result.
+ */
+template<typename OP>
+Value binaryOperationFloat(
+    const ir::Type& type,
+    const Value& val1,
+    const Value& val2,
+    OP op)
+{
+    switch (type.kind())
+    {
+    case ir::TypeKind::Int8:
+        return Value{op(val1.get<int8_t>(), val2.get<int8_t>())};
+
+    case ir::TypeKind::Int16:
+        return Value{op(val1.get<int16_t>(), val2.get<int16_t>())};
+
+    case ir::TypeKind::Int32:
+        return Value{op(val1.get<int32_t>(), val2.get<int32_t>())};
+
+    case ir::TypeKind::Int64:
+        return Value{op(val1.get<int64_t>(), val2.get<int64_t>())};
+
+    case ir::TypeKind::Float32:
+        return Value{op(val1.get<float>(), val2.get<float>())};
+
+    case ir::TypeKind::Float64:
+        return Value{op(val1.get<double>(), val2.get<double>())};
+
+    default: throw Exception("Unsupported operand types");
+    }
+}
+
+/* ************************************************************************* */
+
+struct PrintVisitor
+{
+    void operator()(bool arg) const
+    {
+        std::cout << (arg ? "true" : "false") << '\n';
     }
 
-    return {};
-}
-
-/* ************************************************************************* */
-
-Value interpretUnaryExpr(ViewPtr<const ast::UnaryExpr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    // Evaluate
-    auto res = interpret(expr->getExpr(), ctx);
-
-    switch (expr->getOpKind())
+    void operator()(std::monostate) const
     {
-    case ast::UnaryExpr::OpKind::PostInc: break;
-    case ast::UnaryExpr::OpKind::PostDec: break;
-    case ast::UnaryExpr::OpKind::PreInc: break;
-    case ast::UnaryExpr::OpKind::PreDec: break;
-    case ast::UnaryExpr::OpKind::Plus: break;
-    case ast::UnaryExpr::OpKind::Minus: break;
-    case ast::UnaryExpr::OpKind::Not: break;
+        // Nothing
     }
 
-    return {};
-}
-
-/* ************************************************************************* */
-
-Value interpretTernaryExpr(ViewPtr<const ast::TernaryExpr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    return {};
-}
-
-/* ************************************************************************* */
-
-Value interpretParenExpr(ViewPtr<const ast::ParenExpr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    return interpret(expr->getExpr(), ctx);
-}
-
-/* ************************************************************************* */
-
-Value interpretIdentifierExpr(ViewPtr<const ast::IdentifierExpr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    // Try to find required symbol
-    auto sym = ctx.findSymbol(expr->getName());
-
-    if (sym == nullptr)
-        throw Exception("Symbol '" + expr->getName() + "' not defined in within current scope");
-
-    return sym->getValue();
-}
-
-/* ************************************************************************* */
-
-Value interpretFunctionCallExpr(ViewPtr<const ast::FunctionCallExpr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    // Evaluate expr before arguments
-    auto res = interpret(expr->getExpr(), ctx);
-
-    if (res.getKind() != ValueKind::Function)
-        throw Exception("Not a function");
-
-    // Get function info
-    auto fn = res.asFunction();
-
-    // Builtin function
-    if (fn.getName() == "print")
+    template<typename T>
+    void operator()(T&& arg) const
     {
-        for (auto& arg : expr->getArguments())
-        {
-            // Evaluate argument
-            auto val = interpret(makeView(arg), ctx);
+        std::cout << arg << '\n';
+    }
+};
 
-            switch (val.getKind())
-            {
-            case ValueKind::Null:       printf("null"); break;
-            case ValueKind::Bool:       printf("%s", val.asBool() ? "true" : "false"); break;
-            case ValueKind::Int:        printf("%d", val.asInt()); break;
-            case ValueKind::Float:      printf("%f", val.asFloat()); break;
-            case ValueKind::Char:       printf("%c", static_cast<char>(val.asChar())); break;
-            case ValueKind::String:     printf("%s", val.asString().c_str()); break;
-            case ValueKind::Function:   printf("<callable>"); break;
-            }
-        }
+/* ************************************************************************* */
 
-        printf("\n");
+} // namespace
+
+/* ************************************************************************* */
+
+void Interpreter::load(const ir::Module& module)
+{
+    // Register module
+    m_modules.push_back(&module);
+}
+
+/* ************************************************************************* */
+
+Value Interpreter::call(StringView name, const Vector<Value>& args)
+{
+    // TODO: remove
+    if (name == "print")
+    {
+        for (const auto& arg : args)
+            std::visit(PrintVisitor{}, arg.data());
 
         return {};
     }
 
-    if (fn.getDecl() == nullptr)
-        throw Exception("Missing function declaration");
+    // Find function
+    ViewPtr<const ir::Function> function;
 
-    // FIXME: Function context
+    Vector<ViewPtr<ir::Type>> types;
+    for (const auto& arg : args)
+        types.push_back(fetchType(arg));
 
-    // Arguments context
-    ctx.push();
-
-    // Return value
-    auto retSym = ctx.addSymbol("return", SymbolKind::Variable);
-
-    // Parameters & Arguments
-    const auto& params = fn.getDecl()->getParameters();
-    const auto& args = expr->getArguments();
-
-    if (args.size() != params.size())
-        throw Exception("Function call argument count mismatch");
-
-    // Register arguments
-    for (int i = 0; i < params.size(); ++i)
+    for (auto module : m_modules)
     {
-        auto param = ctx.addSymbol(params[i]->getName(), SymbolKind::Variable);
-        SHARD_ASSERT(param);
+        function = module->findFunction(name, types);
 
-        param->setValue(interpret(makeView(args[i]), ctx));
+        if (function)
+            break;
     }
 
-    // Intepret function body
-    interpretCompoundStmt(fn.getDecl()->getBodyStmt(), ctx);
+    if (function == nullptr)
+        throw Exception("Unable to find function: " + String(name));
 
-    // Get return value
-    auto ret = retSym->getValue();
+    // Create new stack
+    m_stack.push({});
 
-    ctx.pop();
+    // Copy arguments to the frame
+    for (size_t i = 0; i < args.size(); ++i)
+        currentFrame().value(*function->arg(i)) = args[i];
 
-    return ret;
+    // Eval the first block
+    evalBlock(*function->blocks().front());
+
+    // Copy result from stack
+    auto result = castTo(m_stack.top().result(), *function->returnType());
+
+    m_stack.pop();
+
+    return result;
 }
 
 /* ************************************************************************* */
 
-Value interpretMemberAccessExpr(ViewPtr<const ast::MemberAccessExpr> expr, Context& ctx)
+Value Interpreter::fetchValue(const ir::Value& value)
 {
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    return {};
-}
-
-/* ************************************************************************* */
-
-Value interpretSubscriptExpr(ViewPtr<const ast::SubscriptExpr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-    return {};
-}
-
-/* ************************************************************************* */
-
-}
-
-/* ************************************************************************* */
-
-void interpret(ViewPtr<const ast::Unit> unit, Context& ctx)
-{
-    SHARD_ASSERT(unit);
-    PRINT_CALL;
-
-    // Register declarations
-    for (const auto& decl : unit->getDeclarations())
+    if (!value.isConst())
     {
-        SHARD_ASSERT(decl);
-
-        // Is variable
-        if (decl->is<ast::VariableDecl>())
+        return currentFrame().value(value);
+    }
+    else
+    {
+        switch (value.type()->kind())
         {
-            const auto& varDecl = decl->cast<ast::VariableDecl>();
-
-            // Register symbol as variable
-            auto var = ctx.addSymbol(varDecl.getName(), SymbolKind::Variable);
-            SHARD_ASSERT(var);
-
-            // Define variable initial value
-            if (varDecl.getInitExpr())
-                var->setValue(interpret(varDecl.getInitExpr(), ctx));
+        case ir::TypeKind::Int1:
+        {
+            const auto& val = static_cast<const ir::ConstInt1&>(value);
+            return val.value();
         }
-        else if (decl->is<ast::FunctionDecl>())
+
+        case ir::TypeKind::Int8:
         {
-            const auto& fnDecl = decl->cast<ast::FunctionDecl>();
-
-            // Register symbol as function
-            auto fn = ctx.addSymbol(fnDecl.getName(), SymbolKind::Function);
-            SHARD_ASSERT(fn);
-
-            // Store function definition
-            fn->setValue(Function(fnDecl.getName(), &fnDecl));
+            const auto& val = static_cast<const ir::ConstInt8&>(value);
+            return val.value();
         }
-        else
+
+        case ir::TypeKind::Int16:
         {
-            throw Exception("Unknown declaration type");
+            const auto& val = static_cast<const ir::ConstInt16&>(value);
+            return val.value();
+        }
+
+        case ir::TypeKind::Int32:
+        {
+            const auto& val = static_cast<const ir::ConstInt32&>(value);
+            return val.value();
+        }
+
+        case ir::TypeKind::Int64:
+        {
+            const auto& val = static_cast<const ir::ConstInt64&>(value);
+            return val.value();
+        }
+
+        case ir::TypeKind::Float32:
+        {
+            const auto& val = static_cast<const ir::ConstFloat32&>(value);
+            return val.value();
+        }
+
+        case ir::TypeKind::Float64:
+        {
+            const auto& val = static_cast<const ir::ConstFloat64&>(value);
+            return val.value();
+        }
+
+        default: throw Exception("Unsupported constant type");
         }
     }
+}
 
-    // Find main function
-    auto main = ctx.findSymbol("main");
+/* ************************************************************************* */
 
-    if (main == nullptr || main->getValue().getKind() != ValueKind::Function)
-        throw Exception("No 'main' function in the compilation unit");
+void Interpreter::evalBlock(const ir::Block& block)
+{
+    // Just evaluate all instructions
+    for (const auto& instr : block.instructions())
+        evalInstruction(*instr);
+}
 
-    // Parameters
-    ctx.push();
+/* ************************************************************************* */
 
-    // Main function info
-    auto mainFn = main->getValue().asFunction();
-    SHARD_ASSERT(mainFn.getDecl());
+void Interpreter::evalInstruction(const ir::Instruction& instr)
+{
+    switch (instr.kind())
+    {
+    case ir::InstructionKind::Alloc:
+        evalInstruction(instr.as<ir::InstructionAlloc>());
+        break;
+    case ir::InstructionKind::Store:
+        evalInstruction(instr.as<ir::InstructionStore>());
+        break;
+    case ir::InstructionKind::Load:
+        evalInstruction(instr.as<ir::InstructionLoad>());
+        break;
+    case ir::InstructionKind::Add:
+        evalInstruction(instr.as<ir::InstructionAdd>());
+        break;
+    case ir::InstructionKind::Sub:
+        evalInstruction(instr.as<ir::InstructionSub>());
+        break;
+    case ir::InstructionKind::Mul:
+        evalInstruction(instr.as<ir::InstructionMul>());
+        break;
+    case ir::InstructionKind::Div:
+        evalInstruction(instr.as<ir::InstructionDiv>());
+        break;
+    case ir::InstructionKind::Rem:
+        evalInstruction(instr.as<ir::InstructionRem>());
+        break;
+    case ir::InstructionKind::Cmp:
+        evalInstruction(instr.as<ir::InstructionCmp>());
+        break;
+    case ir::InstructionKind::And:
+        evalInstruction(instr.as<ir::InstructionAnd>());
+        break;
+    case ir::InstructionKind::Or:
+        evalInstruction(instr.as<ir::InstructionOr>());
+        break;
+    case ir::InstructionKind::Xor:
+        evalInstruction(instr.as<ir::InstructionXor>());
+        break;
+    case ir::InstructionKind::Branch:
+        evalInstruction(instr.as<ir::InstructionBranch>());
+        break;
+    case ir::InstructionKind::BranchCondition:
+        evalInstruction(instr.as<ir::InstructionBranchCondition>());
+        break;
+    case ir::InstructionKind::Call:
+        evalInstruction(instr.as<ir::InstructionCall>());
+        break;
+    case ir::InstructionKind::Return:
+        evalInstruction(instr.as<ir::InstructionReturn>());
+        break;
+    case ir::InstructionKind::ReturnVoid:
+        evalInstruction(instr.as<ir::InstructionReturnVoid>());
+        break;
+    default: throw Exception("Unsupported instruction");
+    }
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionAlloc& instr)
+{
+    // TODO: implement size allocation
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionStore& instr)
+{
+    // TODO: implement index
+
+    // Store value
+    currentFrame().value(*instr.pointer()) = fetchValue(*instr.value());
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionLoad& instr)
+{
+    // TODO: implement index
+
+    // Load value
+    currentFrame().value(*instr.result()) = fetchValue(*instr.pointer());
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionAdd& instr)
+{
+    const Value val1 = fetchValue(*instr.value1());
+    const Value val2 = fetchValue(*instr.value2());
+
+    const Value res =
+        binaryOperationFloat(*instr.type(), val1, val2, std::plus<>{});
+
+    // Store result
+    currentFrame().value(*instr.result()) = res;
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionSub& instr)
+{
+    const Value val1 = fetchValue(*instr.value1());
+    const Value val2 = fetchValue(*instr.value2());
+
+    const Value res =
+        binaryOperationFloat(*instr.type(), val1, val2, std::minus<>{});
+
+    // Store result
+    currentFrame().value(*instr.result()) = res;
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionMul& instr)
+{
+    const Value val1 = fetchValue(*instr.value1());
+    const Value val2 = fetchValue(*instr.value2());
+
+    const Value res =
+        binaryOperationFloat(*instr.type(), val1, val2, std::multiplies<>{});
+
+    // Store result
+    currentFrame().value(*instr.result()) = res;
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionDiv& instr)
+{
+    const Value val1 = fetchValue(*instr.value1());
+    const Value val2 = fetchValue(*instr.value2());
+
+    const Value res =
+        binaryOperationFloat(*instr.type(), val1, val2, std::divides<>{});
+
+    // Store result
+    currentFrame().value(*instr.result()) = res;
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionRem& instr)
+{
+    const Value val1 = fetchValue(*instr.value1());
+    const Value val2 = fetchValue(*instr.value2());
+
+    const Value res =
+        binaryOperation(*instr.type(), val1, val2, std::modulus<>{});
+
+    // Store result
+    currentFrame().value(*instr.result()) = res;
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionCmp& instr)
+{
+    const Value val1 = fetchValue(*instr.value1());
+    const Value val2 = fetchValue(*instr.value2());
+    Value res;
+
+    switch (instr.operation())
+    {
+    case ir::InstructionCmp::Operation::Equal:
+        res =
+            binaryOperationFloat(*instr.type(), val1, val2, std::equal_to<>{});
+        break;
+    case ir::InstructionCmp::Operation::NotEqual:
+        res = binaryOperationFloat(
+            *instr.type(), val1, val2, std::not_equal_to<>{});
+        break;
+    case ir::InstructionCmp::Operation::GreaterThan:
+        res = binaryOperationFloat(*instr.type(), val1, val2, std::greater<>{});
+        break;
+    case ir::InstructionCmp::Operation::GreaterEqual:
+        res = binaryOperationFloat(
+            *instr.type(), val1, val2, std::greater_equal<>{});
+        break;
+    case ir::InstructionCmp::Operation::LessThan:
+        res = binaryOperationFloat(*instr.type(), val1, val2, std::less<>{});
+        break;
+    case ir::InstructionCmp::Operation::LessEqual:
+        res = binaryOperationFloat(
+            *instr.type(), val1, val2, std::less_equal<>{});
+        break;
+    }
+
+    // Store result
+    currentFrame().value(*instr.result()) = res;
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionAnd& instr)
+{
+    const Value val1 = fetchValue(*instr.value1());
+    const Value val2 = fetchValue(*instr.value2());
+    const Value res =
+        binaryOperation(*instr.type(), val1, val2, std::bit_and<>{});
+
+    // Store result
+    currentFrame().value(*instr.result()) = res;
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionOr& instr)
+{
+    const Value val1 = fetchValue(*instr.value1());
+    const Value val2 = fetchValue(*instr.value2());
+    const Value res =
+        binaryOperation(*instr.type(), val1, val2, std::bit_or<>{});
+
+    // Store result
+    currentFrame().value(*instr.result()) = res;
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionXor& instr)
+{
+    const Value val1 = fetchValue(*instr.value1());
+    const Value val2 = fetchValue(*instr.value2());
+    const Value res =
+        binaryOperation(*instr.type(), val1, val2, std::bit_xor<>{});
+
+    // Store result
+    currentFrame().value(*instr.result()) = res;
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionBranch& instr)
+{
+    // Jump to other block
+    evalBlock(*instr.block());
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionBranchCondition& instr)
+{
+    const Value cond = fetchValue(*instr.condition());
+
+    if (cond.get<bool>())
+    {
+        evalBlock(*instr.blockTrue());
+    }
+    else
+    {
+        evalBlock(*instr.blockFalse());
+    }
+}
+
+/* ************************************************************************* */
+
+void Interpreter::evalInstruction(const ir::InstructionCall& instr)
+{
+    Vector<Value> args;
+    args.reserve(instr.arguments().size());
+
+    for (auto arg : instr.arguments())
+        args.push_back(fetchValue(*arg));
 
     // Call function
-    interpret(mainFn.getDecl()->getBodyStmt(), ctx);
+    auto res = call(instr.name(), args);
+
+    // Store result value
+    currentFrame().value(*instr.result()) = res;
 }
 
 /* ************************************************************************* */
 
-void interpret(ViewPtr<const ast::Unit> unit)
+void Interpreter::evalInstruction(const ir::InstructionReturn& instr)
 {
-    SHARD_ASSERT(unit);
-    PRINT_CALL;
+    if (m_stack.empty())
+        throw Exception("Invalid return instruction");
 
-    Context ctx;
-
-    interpret(unit, ctx);
+    // Store result value
+    currentFrame().result() = fetchValue(*instr.value());
 }
 
 /* ************************************************************************* */
 
-void interpret(ViewPtr<const ast::Stmt> stmt, Context& ctx)
+void Interpreter::evalInstruction(const ir::InstructionReturnVoid& instr)
 {
-    SHARD_ASSERT(stmt);
-    PRINT_CALL;
-
-#define CASE(name) \
-    case ast::StmtKind::name: interpret ## name ## Stmt(&stmt->cast<ast::name ## Stmt>(), ctx); break;
-
-    switch (stmt->getKind())
-    {
-    CASE(Expr)
-    CASE(Decl)
-    CASE(Compound)
-    CASE(If)
-    CASE(While)
-    CASE(DoWhile)
-    CASE(For)
-    CASE(Switch)
-    CASE(Case)
-    CASE(Default)
-    CASE(Continue)
-    CASE(Break)
-    CASE(Return)
-    }
-
-#undef CASE
+    // Nothing
 }
 
 /* ************************************************************************* */
 
-Value interpret(ViewPtr<const ast::Expr> expr, Context& ctx)
-{
-    SHARD_ASSERT(expr);
-    PRINT_CALL;
-
-#define CASE(name) \
-    case ast::ExprKind::name: return interpret ## name ## Expr(&expr->cast<ast::name ## Expr>(), ctx);
-
-    switch (expr->getKind())
-    {
-    CASE(NullLiteral)
-    CASE(BoolLiteral)
-    CASE(IntLiteral)
-    CASE(FloatLiteral)
-    CASE(CharLiteral)
-    CASE(StringLiteral)
-    CASE(Binary)
-    CASE(Unary)
-    CASE(Ternary)
-    CASE(Paren)
-    CASE(Identifier)
-    CASE(FunctionCall)
-    CASE(MemberAccess)
-    CASE(Subscript)
-    }
-
-#undef CASE
-
-    return {};
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::interpreter
 
 /* ************************************************************************* */

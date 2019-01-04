@@ -19,13 +19,9 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/ViewPtr.hpp"
-#include "shard/String.hpp"
-#include "shard/StringView.hpp"
-#include "shard/Vector.hpp"
 #include "shard/Map.hpp"
-#include "shard/ast/Type.hpp"
-#include "shard/interpreter/Symbol.hpp"
+#include "shard/ir/Value.hpp"
+#include "shard/interpreter/Value.hpp"
 
 /* ************************************************************************* */
 
@@ -34,67 +30,48 @@ namespace shard::interpreter {
 /* ************************************************************************* */
 
 /**
- * @brief      Shard interpreter context.
+ * @brief      Stack frame.
  */
-class Context
+class Frame
 {
 
-// Public Ctors & Dtors
 public:
-
-
-    Context();
-
-
-// Public Operations
-public:
-
+    // Operations
 
     /**
-     * @brief      Push new scope.
+     * @brief      Returns frame value.
+     *
+     * @param      val   IR value.
+     *
+     * @return     Reference to value.
      */
-    void push();
-
+    Value& value(const ir::Value& val)
+    {
+        return m_values[&val];
+    }
 
     /**
-     * @brief      Pop current scope.
+     * @brief      Returns frame result value.
+     *
+     * @return     Reference to value.
      */
-    void pop();
+    Value& result() noexcept
+    {
+        return m_result;
+    }
 
-
-    /**
-     * @brief      Find a variable.
-     *
-     * @param      name  The variable name.
-     *
-     * @return     Pointer to variable or nullptr.
-     */
-    ViewPtr<Symbol> findSymbol(StringView name) noexcept;
-
-
-    /**
-     * @brief      Creates a symbol.
-     *
-     * @param      name  The symbol name.
-     * @param      kind  The symbol kind.
-     *
-     * @return     Pointer to symbol.
-     *
-     * @throws     Exception  If symbol already exists.
-     */
-    ViewPtr<Symbol> addSymbol(StringView name, SymbolKind kind);
-
-
-// Private Data Members
 private:
+    // Data Members
 
-    /// Scope based symbol table.
-    Vector<Map<String, Symbol>> m_scopes;
+    /// Frame values.
+    Map<ViewPtr<const ir::Value>, Value> m_values;
 
+    /// Result value.
+    Value m_result;
 };
 
 /* ************************************************************************* */
 
-}
+} // namespace shard::interpreter
 
 /* ************************************************************************* */
