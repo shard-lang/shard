@@ -22,6 +22,7 @@ endif ()
 
 # Create test executable
 add_executable(shard-interpreter_test
+    Exception_test.cpp
     Value_test.cpp
     Frame_test.cpp
     Interpreter_test.cpp

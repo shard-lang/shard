@@ -50,7 +50,6 @@ public:
         float,
         double>;
 
-
 public:
     // Ctors & Dtors
 
@@ -73,16 +72,6 @@ public:
 
 public:
     // Accessors & Mutators
-
-    /**
-     * @brief      Return underlying data.
-     *
-     * @return     The data.
-     */
-    const Data& data() const noexcept
-    {
-        return m_data;
-    }
 
     /**
      * @brief      If value is nothing.
@@ -140,6 +129,19 @@ public:
     void set(T value) noexcept
     {
         m_data = value;
+    }
+
+    /**
+     * @brief      Visit value using visitor.
+     *
+     * @param      visitor  The visitor.
+     *
+     * @tparam     VISITOR  The visitor type.
+     */
+    template<typename VISITOR>
+    decltype(auto) visit(VISITOR&& visitor) const
+    {
+        return std::visit(visitor, m_data);
     }
 
 private:

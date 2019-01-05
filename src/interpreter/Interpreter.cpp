@@ -253,7 +253,7 @@ Value Interpreter::call(StringView name, const Vector<Value>& args)
     if (name == "print")
     {
         for (const auto& arg : args)
-            std::visit(PrintVisitor{}, arg.data());
+            arg.visit(PrintVisitor{});
 
         return {};
     }

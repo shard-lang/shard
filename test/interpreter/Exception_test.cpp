@@ -14,65 +14,29 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#pragma once
-
-/* ************************************************************************* */
-
-// C++
-#include <utility>
+// GTest
+#include "gtest/gtest.h"
 
 // Shard
-#include "shard/Exception.hpp"
-#include "shard/String.hpp"
+#include "shard/UniquePtr.hpp"
+#include "shard/interpreter/Exception.hpp"
 
-/* ************************************************************************* */
+/* ************************************************************************ */
 
-namespace shard::interpreter {
+using namespace shard;
+using namespace shard::interpreter;
 
-/* ************************************************************************* */
+/* ************************************************************************ */
 
-/**
- * @brief      Interpreter exception.
- */
-class Exception : public shard::Exception
+TEST(Exception, test1)
 {
+    interpreter::Exception except("Error");
+    EXPECT_STREQ("Error", except.what());
 
-public:
-    // Ctors & Dtors
+    // Test virtual destructor
+    auto ptr = makeUnique<interpreter::Exception>("Message");
 
-    /**
-     * @brief      Constructor.
-     *
-     * @param      msg   The message
-     */
-    explicit Exception(String msg)
-        : m_message(std::move(msg))
-    {
-        // Nothing to do
-    }
+    EXPECT_STREQ("Message", ptr->what());
+}
 
-public:
-    // Accessors & Mutators
-
-    /**
-     * @brief      Returns error message.
-     *
-     * @return     The message.
-     */
-    const char* what() const noexcept override
-    {
-        return m_message.c_str();
-    }
-
-private:
-    // Data Members
-
-    /// Exception message.
-    String m_message;
-};
-
-/* ************************************************************************* */
-
-} // namespace shard::interpreter
-
-/* ************************************************************************* */
+/* ************************************************************************ */
