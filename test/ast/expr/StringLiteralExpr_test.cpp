@@ -50,7 +50,7 @@ TEST(StringLiteralExpr, base)
         EXPECT_TRUE(expr.is<StringLiteralExpr>());
         EXPECT_FALSE(expr.is<TestExpr>());
         EXPECT_TRUE(expr.value().empty());
-        EXPECT_EQ(StringLiteralExpr::ValueType{}, expr.value());
+        EXPECT_EQ(StringLiteralExpr::Value{}, expr.value());
     }
 
     {
@@ -77,7 +77,7 @@ TEST(StringLiteralExpr, base)
         EXPECT_TRUE(expr.is<StringLiteralExpr>());
         EXPECT_FALSE(expr.is<TestExpr>());
         EXPECT_TRUE(expr.value().empty());
-        EXPECT_EQ(StringLiteralExpr::ValueType{}, expr.value());
+        EXPECT_EQ(StringLiteralExpr::Value{}, expr.value());
 
         // Try to change values
         expr.setValue("Hello world");
@@ -94,7 +94,7 @@ TEST(StringLiteralExpr, base)
         EXPECT_TRUE(expr->is<StringLiteralExpr>());
         EXPECT_FALSE(expr->is<TestExpr>());
         EXPECT_TRUE(expr->value().empty());
-        EXPECT_EQ(StringLiteralExpr::ValueType{}, expr->value());
+        EXPECT_EQ(StringLiteralExpr::Value{}, expr->value());
     }
 }
 

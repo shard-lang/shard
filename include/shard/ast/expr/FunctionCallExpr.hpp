@@ -53,7 +53,7 @@ public:
         ExprPtr expr,
         ExprPtrVector args = {},
         SourceRange range  = {})
-        : Expr(ExprKind::FunctionCall, range)
+        : Expr(range)
         , m_expr(std::move(expr))
         , m_arguments(std::move(args))
     {
@@ -86,51 +86,31 @@ public:
     /**
      * @brief      Returns the callee expression.
      *
-     * @tparam     ExprType  The required expression type.
+     * @tparam     EXPR  The required expression type.
      *
      * @return     The callee expression.
      *
-     * @pre        `expr()->is<ExprType>()`
+     * @pre        `expr()->is<EXPR>()`
      */
-    template<typename ExprType>
-    const ExprType& expr() const noexcept
+    template<typename EXPR>
+    const EXPR& expr() const noexcept
     {
-        return m_expr->cast<ExprType>();
+        return m_expr->cast<EXPR>();
     }
 
     /**
      * @brief      Returns the callee expression.
      *
-     * @tparam     ExprType  The required expression type.
+     * @tparam     EXPR  The required expression type.
      *
      * @return     The callee expression.
      *
-     * @pre        `expr()->is<ExprType>()`
+     * @pre        `expr()->is<EXPR>()`
      */
-    template<typename ExprType>
-    ExprType& expr() noexcept
+    template<typename EXPR>
+    EXPR& expr() noexcept
     {
-        return m_expr->cast<ExprType>();
-    }
-
-    /**
-     * @brief      Returns callee expression.
-     *
-     * @return     The callee expression.
-     */
-    [[deprecated]] ViewPtr<const Expr> getExpr() const noexcept
-    {
-        return makeView(m_expr);
-    }
-
-    /**
-     * @brief      Returns callee expression.
-     *
-     * @return     The callee expression.
-     */
-    [[deprecated]] ViewPtr<Expr> getExpr() noexcept
-    {
-        return makeView(m_expr);
+        return m_expr->cast<EXPR>();
     }
 
     /**
@@ -201,10 +181,10 @@ public:
      *
      * @pre        `pos < argsCount()`.
      */
-    template<typename ExprType>
-    const ExprType& arg(size_t pos) const noexcept
+    template<typename EXPR>
+    const EXPR& arg(size_t pos) const noexcept
     {
-        return arg(pos)->cast<ExprType>();
+        return arg(pos)->cast<EXPR>();
     }
 
     /**
@@ -216,10 +196,10 @@ public:
      *
      * @pre        `pos < args().size()`.
      */
-    template<typename ExprType>
-    ExprType& arg(size_t pos) noexcept
+    template<typename EXPR>
+    EXPR& arg(size_t pos) noexcept
     {
-        return arg(pos)->cast<ExprType>();
+        return arg(pos)->cast<EXPR>();
     }
 
     /**
@@ -227,7 +207,7 @@ public:
      *
      * @return     The call arguments.
      */
-    const ExprPtrVector& getArguments() const noexcept
+    const ExprPtrVector& arguments() const noexcept
     {
         return m_arguments;
     }

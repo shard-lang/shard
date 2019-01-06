@@ -19,10 +19,10 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/utility.hpp"
 #include "shard/UniquePtr.hpp"
-#include "shard/ViewPtr.hpp"
+#include "shard/ast/Expr.hpp"
 #include "shard/ast/Stmt.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -30,7 +30,11 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-class Expr;
+class IfStmt;
+
+/* ************************************************************************* */
+
+using IfStmtPtr = UniquePtr<IfStmt>;
 
 /* ************************************************************************* */
 
@@ -40,20 +44,12 @@ class Expr;
  * @details    In the source it appears as: `if (<condExpr>) <thenStmt>` or `if
  *             (<condExpr>) <thenStmt> else <elseStmt>`.
  */
-[[deprecated]] class IfStmt final : public Stmt
+class IfStmt final : public Stmt,
+                     public PtrBuilder<IfStmt, ExprPtr, StmtPtr, StmtPtr>
 {
 
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr StmtKind Kind = StmtKind::If;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -63,168 +59,188 @@ public:
      * @param      elseStmt  Else branch statement.
      * @param      range     Source range.
      */
-    explicit IfStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stmt> elseStmt = nullptr, SourceRange range = {});
+    explicit IfStmt(
+        ExprPtr condExpr,
+        StmtPtr thenStmt,
+        StmtPtr elseStmt  = nullptr,
+        SourceRange range = {})
+        : Stmt(range)
+        , m_condExpr(std::move(condExpr))
+        , m_thenStmt(std::move(thenStmt))
+        , m_elseStmt(std::move(elseStmt))
+    {
+        SHARD_ASSERT(m_condExpr);
+        SHARD_ASSERT(m_thenStmt);
+    }
 
-
-    /**
-     * @brief      Destructor.
-     */
-    ~IfStmt();
-
-
-// Public Accessors & Mutators
 public:
-
-
-    /**
-     * @brief      Return condition expression.
-     *
-     * @return     Condition expression.
-     */
-    ViewPtr<Expr> getCondExpr() noexcept;
-
+    // Accessors & Mutators
 
     /**
      * @brief      Return condition expression.
      *
      * @return     Condition expression.
      */
-    ViewPtr<const Expr> getCondExpr() const noexcept;
+    const ExprPtr& condExpr() const noexcept
+    {
+        return m_condExpr;
+    }
 
+    /**
+     * @brief      Return condition expression.
+     *
+     * @tparam     EXPR  Expression type.
+     *
+     * @return     Condition expression.
+     *
+     * @pre        `condExpr()->is<EXPR>()`.
+     */
+    template<typename EXPR>
+    EXPR& condExpr() noexcept
+    {
+        return condExpr()->cast<EXPR>();
+    }
+
+    /**
+     * @brief      Return condition expression.
+     *
+     * @tparam     EXPR  Expression type.
+     *
+     * @return     Condition expression.
+     *
+     * @pre        `condExpr()->is<EXPR>()`.
+     */
+    template<typename EXPR>
+    const EXPR& condExpr() const noexcept
+    {
+        return condExpr()->cast<EXPR>();
+    }
 
     /**
      * @brief      Change condition expression.
      *
      * @param      expr  The new condition expression.
      */
-    void setCondExpr(UniquePtr<Expr> expr);
-
-
-    /**
-     * @brief      Return then branch statement.
-     *
-     * @return     Then branch statement.
-     */
-    ViewPtr<Stmt> getThenStmt() noexcept;
-
+    void setCondExpr(ExprPtr expr)
+    {
+        m_condExpr = std::move(expr);
+    }
 
     /**
      * @brief      Return then branch statement.
      *
      * @return     Then branch statement.
      */
-    ViewPtr<const Stmt> getThenStmt() const noexcept;
+    const StmtPtr& thenStmt() const noexcept
+    {
+        return m_thenStmt;
+    }
 
+    /**
+     * @brief      Return then branch statement.
+     *
+     * @tparam     STMT  Statement type.
+     *
+     * @return     Then branch statement.
+     *
+     * @pre        `thenStmt()->is<STMT>()`.
+     */
+    template<typename STMT>
+    STMT& thenStmt() noexcept
+    {
+        return thenStmt()->cast<STMT>();
+    }
+
+    /**
+     * @brief      Return then branch statement.
+     *
+     * @tparam     STMT  Statement type.
+     *
+     * @return     Then branch statement.
+     *
+     * @pre        `thenStmt()->is<STMT>()`.
+     */
+    template<typename STMT>
+    const STMT& thenStmt() const noexcept
+    {
+        return thenStmt()->cast<STMT>();
+    }
 
     /**
      * @brief      Change then branch statement.
      *
      * @param      stmt  The new then branch statement.
      */
-    void setThenStmt(UniquePtr<Stmt> stmt);
-
-
-    /**
-     * @brief      Return else branch statement.
-     *
-     * @return     Else branch statement.
-     */
-    ViewPtr<Stmt> getElseStmt() noexcept;
-
+    void setThenStmt(StmtPtr stmt)
+    {
+        m_thenStmt = std::move(stmt);
+    }
 
     /**
      * @brief      Return else branch statement.
      *
      * @return     Else branch statement.
      */
-    ViewPtr<const Stmt> getElseStmt() const noexcept;
+    const StmtPtr& elseStmt() const noexcept
+    {
+        return m_elseStmt;
+    }
 
+    /**
+     * @brief      Return else branch statement.
+     *
+     * @tparam     STMT  Statement type.
+     *
+     * @return     Then branch statement.
+     *
+     * @pre        `elseStmt()->is<STMT>()`.
+     */
+    template<typename STMT>
+    STMT& elseStmt() noexcept
+    {
+        return elseStmt()->cast<STMT>();
+    }
+
+    /**
+     * @brief      Return else branch statement.
+     *
+     * @tparam     STMT  Statement type.
+     *
+     * @return     Then branch statement.
+     *
+     * @pre        `elseStmt()->is<STMT>()`.
+     */
+    template<typename STMT>
+    const STMT& elseStmt() const noexcept
+    {
+        return elseStmt()->cast<STMT>();
+    }
 
     /**
      * @brief      Change else branch statement.
      *
      * @param      stmt  The new else branch statement.
      */
-    void setElseStmt(UniquePtr<Stmt> stmt);
+    void setElseStmt(StmtPtr stmt)
+    {
+        m_elseStmt = std::move(stmt);
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      condExpr  Condition expression.
-     * @param      thenStmt  Then branch statement.
-     * @param      elseStmt  Else branch statement.
-     * @param      range     Source range.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<IfStmt> make(UniquePtr<Expr> condExpr, UniquePtr<Stmt> thenStmt, UniquePtr<Stmt> elseStmt = nullptr, SourceRange range = {});
-
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Condition expression.
-    UniquePtr<Expr> m_condExpr;
+    ExprPtr m_condExpr;
 
     /// Then branch statement.
-    UniquePtr<Stmt> m_thenStmt;
+    StmtPtr m_thenStmt;
 
     /// Else branch statement.
-    UniquePtr<Stmt> m_elseStmt;
-
+    StmtPtr m_elseStmt;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline ViewPtr<Expr> IfStmt::getCondExpr() noexcept
-{
-    return makeView(m_condExpr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Expr> IfStmt::getCondExpr() const noexcept
-{
-    return makeView(m_condExpr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<Stmt> IfStmt::getThenStmt() noexcept
-{
-    return makeView(m_thenStmt);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Stmt> IfStmt::getThenStmt() const noexcept
-{
-    return makeView(m_thenStmt);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<Stmt> IfStmt::getElseStmt() noexcept
-{
-    return makeView(m_elseStmt);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Stmt> IfStmt::getElseStmt() const noexcept
-{
-    return makeView(m_elseStmt);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

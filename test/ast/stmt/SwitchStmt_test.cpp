@@ -39,7 +39,6 @@ TEST(SwitchStmt, base)
         // switch (id) {}
         const SwitchStmt stmt(IdentifierExpr::make("id"), CompoundStmt::make({}));
 
-        EXPECT_EQ(StmtKind::Switch, stmt.getKind());
         EXPECT_TRUE(stmt.is<SwitchStmt>());
         ASSERT_NE(nullptr, stmt.getCondExpr());
         EXPECT_TRUE(stmt.getCondExpr()->is<IdentifierExpr>());
@@ -51,7 +50,6 @@ TEST(SwitchStmt, base)
         // switch (id) {}
         SwitchStmt stmt(IdentifierExpr::make("id"), CompoundStmt::make({}));
 
-        EXPECT_EQ(StmtKind::Switch, stmt.getKind());
         EXPECT_TRUE(stmt.is<SwitchStmt>());
         ASSERT_NE(nullptr, stmt.getCondExpr());
         EXPECT_TRUE(stmt.getCondExpr()->is<IdentifierExpr>());
@@ -74,14 +72,13 @@ TEST(SwitchStmt, base)
         EXPECT_TRUE(stmt.getCondExpr()->is<IdentifierExpr>());
         ASSERT_NE(nullptr, stmt.getBodyStmt());
         EXPECT_TRUE(stmt.getBodyStmt()->is<CompoundStmt>());
-        EXPECT_EQ(1, stmt.getBodyStmt()->getStmts().size());
+        EXPECT_EQ(1, stmt.getBodyStmt()->stmts().size());
     }
 
     {
         // switch (id) {}
         const auto stmt = SwitchStmt::make(IdentifierExpr::make("id"), CompoundStmt::make({}));
 
-        EXPECT_EQ(StmtKind::Switch, stmt->getKind());
         EXPECT_TRUE(stmt->is<SwitchStmt>());
         ASSERT_NE(nullptr, stmt->getCondExpr());
         EXPECT_TRUE(stmt->getCondExpr()->is<IdentifierExpr>());

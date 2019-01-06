@@ -19,18 +19,13 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
-#include "shard/ViewPtr.hpp"
-#include "shard/ast/utility.hpp"
+#include "shard/ast/Expr.hpp"
 #include "shard/ast/Stmt.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
-
-/* ************************************************************************* */
-
-class Expr;
 
 /* ************************************************************************* */
 
@@ -39,20 +34,11 @@ class Expr;
  *
  * @details    In the source it appears as: `return <resExpr>;` or `return;`.
  */
-[[deprecated]] class ReturnStmt final : public Stmt
+class ReturnStmt final : public Stmt
 {
 
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr StmtKind Kind = StmtKind::Return;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -60,46 +46,68 @@ public:
      * @param      resExpr  Result expression.
      * @param      range    Source range.
      */
-    explicit ReturnStmt(UniquePtr<Expr> resExpr = nullptr, SourceRange range = {});
+    explicit ReturnStmt(ExprPtr resExpr = nullptr, SourceRange range = {})
+        : Stmt(range)
+        , m_resExpr(std::move(resExpr))
+    {
+        // Nothing to do
+    }
 
-
-    /**
-     * @brief      Destructor.
-     */
-    ~ReturnStmt();
-
-
-// Public Accessors & Mutators
 public:
-
-
-    /**
-     * @brief      Returns result expression.
-     *
-     * @return     Result expression.
-     */
-    ViewPtr<Expr> getResExpr() noexcept;
-
+    // Accessors & Mutators
 
     /**
      * @brief      Returns result expression.
      *
      * @return     Result expression.
      */
-    ViewPtr<const Expr> getResExpr() const noexcept;
+    const ExprPtr& resExpr() const noexcept
+    {
+        return m_resExpr;
+    }
 
+    /**
+     * @brief      Returns result expression.
+     *
+     * @tparam     EXPR  Expession type.
+     *
+     * @return     Result expression.
+     *
+     * @pre        `resExpr().is<EXPR>()`.
+     */
+    template<typename EXPR>
+    EXPR& resExpr() noexcept
+    {
+        return resExpr()->cast<EXPR>();
+    }
+
+    /**
+     * @brief      Returns result expression.
+     *
+     * @tparam     EXPR  Expession type.
+     *
+     * @return     Result expression.
+     *
+     * @pre        `resExpr().is<EXPR>()`.
+     */
+    template<typename EXPR>
+    const EXPR& resExpr() const noexcept
+    {
+        return resExpr()->cast<EXPR>();
+    }
 
     /**
      * @brief      Change result epxression.
      *
      * @param      expr  The new result expression.
      */
-    void setResExpr(UniquePtr<Expr> expr);
+    void setResExpr(UniquePtr<Expr> expr)
+    {
+        m_resExpr = std::move(expr);
+    }
 
-
-// Public Operations
 public:
-
+    // Operations
 
     /**
      * @brief      Construct object.
@@ -109,37 +117,22 @@ public:
      *
      * @return     Created unique pointer.
      */
-    static UniquePtr<ReturnStmt> make(UniquePtr<Expr> resExpr = nullptr, SourceRange range = {});
+    static UniquePtr<ReturnStmt> make(
+        ExprPtr resExpr   = nullptr,
+        SourceRange range = {})
+    {
+        return makeUnique<ReturnStmt>(std::move(resExpr), range);
+    }
 
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Return expression.
-    UniquePtr<Expr> m_resExpr;
-
+    ExprPtr m_resExpr;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-/* ************************************************************************* */
-
-inline ViewPtr<Expr> ReturnStmt::getResExpr() noexcept
-{
-    return makeView(m_resExpr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Expr> ReturnStmt::getResExpr() const noexcept
-{
-    return makeView(m_resExpr);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

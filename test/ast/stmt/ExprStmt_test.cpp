@@ -35,44 +35,40 @@ TEST(ExprStmt, base)
         // ;
         const ExprStmt stmt;
 
-        EXPECT_EQ(StmtKind::Expr, stmt.getKind());
         EXPECT_TRUE(stmt.is<ExprStmt>());
-        ASSERT_EQ(nullptr, stmt.getExpr());
+        ASSERT_EQ(nullptr, stmt.expr());
     }
 
     {
         // 5;
         const ExprStmt stmt(IntLiteralExpr::make(5));
 
-        EXPECT_EQ(StmtKind::Expr, stmt.getKind());
         EXPECT_TRUE(stmt.is<ExprStmt>());
-        ASSERT_NE(nullptr, stmt.getExpr());
-        EXPECT_TRUE(stmt.getExpr()->is<IntLiteralExpr>());
+        ASSERT_NE(nullptr, stmt.expr());
+        EXPECT_TRUE(stmt.expr()->is<IntLiteralExpr>());
     }
 
     {
         // 5;
         ExprStmt stmt(IntLiteralExpr::make(5));
 
-        EXPECT_EQ(StmtKind::Expr, stmt.getKind());
         EXPECT_TRUE(stmt.is<ExprStmt>());
-        ASSERT_NE(nullptr, stmt.getExpr());
-        EXPECT_TRUE(stmt.getExpr()->is<IntLiteralExpr>());
+        ASSERT_NE(nullptr, stmt.expr());
+        EXPECT_TRUE(stmt.expr()->is<IntLiteralExpr>());
 
         // true;
         stmt.setExpr(BoolLiteralExpr::make(true));
         EXPECT_TRUE(stmt.is<ExprStmt>());
-        ASSERT_NE(nullptr, stmt.getExpr());
-        EXPECT_TRUE(stmt.getExpr()->is<BoolLiteralExpr>());
+        ASSERT_NE(nullptr, stmt.expr());
+        EXPECT_TRUE(stmt.expr()->is<BoolLiteralExpr>());
     }
 
     {
         // ;
         const auto stmt = ExprStmt::make(nullptr);
 
-        EXPECT_EQ(StmtKind::Expr, stmt->getKind());
         EXPECT_TRUE(stmt->is<ExprStmt>());
-        ASSERT_EQ(nullptr, stmt->getExpr());
+        ASSERT_EQ(nullptr, stmt->expr());
     }
 }
 

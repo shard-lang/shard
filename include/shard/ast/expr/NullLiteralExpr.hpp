@@ -44,7 +44,7 @@ public:
      * @param      range  Location in source.
      */
     explicit NullLiteralExpr(SourceRange range = {}) noexcept
-        : Expr(ExprKind::NullLiteral, range)
+        : Expr(range)
     {
         // Nothing to do
     }

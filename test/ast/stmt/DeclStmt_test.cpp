@@ -34,7 +34,7 @@ namespace {
 
 struct TestDecl : Decl, public PtrBuilder<TestDecl, String>
 {
-    TestDecl(String name, SourceRange range) : Decl(DeclKind::Variable, std::move(name), range) {}
+    TestDecl(String name, SourceRange range) : Decl(std::move(name), range) {}
 };
 
 /* ************************************************************************ */

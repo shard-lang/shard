@@ -19,12 +19,14 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
-#include "shard/ViewPtr.hpp"
-#include "shard/String.hpp"
 #include "shard/PtrVector.hpp"
+#include "shard/String.hpp"
+#include "shard/UniquePtr.hpp"
 #include "shard/ast/Decl.hpp"
 #include "shard/ast/Type.hpp"
+#include "shard/ast/decl/VariableDecl.hpp"
+#include "shard/ast/stmt/CompoundStmt.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -40,22 +42,20 @@ class CompoundStmt;
 /**
  * @brief      Function declaration.
  *
- * @details    In the source it appears as: `<retType> <name> (<params>) <bodyStmt>`.
+ * @details    In the source it appears as: `<retType> <name> (<params>)
+ * <bodyStmt>`.
  */
-[[deprecated]] class FunctionDecl final : public Decl
+class FunctionDecl final : public Decl,
+                           public PtrBuilder<
+                               FunctionDecl,
+                               Type,
+                               String,
+                               CompoundStmtPtr,
+                               PtrVector<VariableDecl>>
 {
 
-// Public Constants
 public:
-
-
-    /// Declaration kind
-    static constexpr DeclKind Kind = DeclKind::Function;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -66,97 +66,85 @@ public:
      * @param      bodyStmt  The function body.
      * @param      range     The declaration location within the source.
      */
-    explicit FunctionDecl(Type retType, String name, UniquePtr<CompoundStmt> bodyStmt,
-        PtrVector<VariableDecl> params = {}, SourceRange range = {});
+    FunctionDecl(
+        Type retType,
+        String name,
+        CompoundStmtPtr bodyStmt,
+        PtrVector<VariableDecl> params = {},
+        SourceRange range              = {})
+        : Decl(std::move(name), std::move(range))
+        , m_retType(std::move(retType))
+        , m_parameters(std::move(params))
+        , m_bodyStmt(std::move(bodyStmt))
+    {
+        SHARD_ASSERT(m_bodyStmt);
+    }
 
-
-    /**
-     * @brief      Destructor.
-     */
-    ~FunctionDecl();
-
-
-// Public Accessors & Mutators
 public:
-
+    // Accessors & Mutators
 
     /**
      * @brief      Return the function return type.
      *
      * @return     The function return type.
      */
-    const Type& getRetType() const noexcept;
-
+    const Type& retType() const noexcept
+    {
+        return m_retType;
+    }
 
     /**
      * @brief      Change the return type.
      *
      * @param      type  The return type.
      */
-    void setRetType(Type type);
-
+    void setRetType(Type type)
+    {
+        m_retType = type;
+    }
 
     /**
      * @brief      Returns the function parameters.
      *
      * @return     A list of function parameters.
      */
-    const PtrVector<VariableDecl>& getParameters() const noexcept;
-
+    const PtrVector<VariableDecl>& parameters() const noexcept
+    {
+        return m_parameters;
+    }
 
     /**
      * @brief      Change the function parameters.
      *
      * @param      params  The function parameters.
      */
-    void setParameters(PtrVector<VariableDecl> params);
-
-
-    /**
-     * @brief      Returns the function body statement.
-     *
-     * @return     The function body compound statement.
-     */
-    ViewPtr<const CompoundStmt> getBodyStmt() const noexcept;
-
+    void setParameters(PtrVector<VariableDecl> params)
+    {
+        m_parameters = std::move(params);
+    }
 
     /**
      * @brief      Returns the function body statement.
      *
      * @return     The function body compound statement.
      */
-    ViewPtr<CompoundStmt> getBodyStmt() noexcept;
-
+    const CompoundStmtPtr& bodyStmt() const noexcept
+    {
+        return m_bodyStmt;
+    }
 
     /**
      * @brief      Change the function body.
      *
      * @param      stmt  The function body compound statement.
      */
-    void setBodyStmt(UniquePtr<CompoundStmt> stmt);
+    void setBodyStmt(CompoundStmtPtr stmt)
+    {
+        m_bodyStmt = std::move(stmt);
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      retType   The function return type.
-     * @param      name      The function name.
-     * @param      bodyStmt  The function body.
-     * @param      params    The function parameters.
-     * @param      range     The declaration location within the source.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<FunctionDecl> make(Type retType, String name, UniquePtr<CompoundStmt> bodyStmt,
-        PtrVector<VariableDecl> params = {}, SourceRange range = {});
-
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Return type.
     Type m_retType;
@@ -165,43 +153,11 @@ private:
     PtrVector<VariableDecl> m_parameters;
 
     /// Function body.
-    UniquePtr<CompoundStmt> m_bodyStmt;
+    CompoundStmtPtr m_bodyStmt;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-/* ************************************************************************* */
-
-inline const Type& FunctionDecl::getRetType() const noexcept
-{
-    return m_retType;
-}
-
-/* ************************************************************************* */
-
-inline const PtrVector<VariableDecl>& FunctionDecl::getParameters() const noexcept
-{
-    return m_parameters;
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const CompoundStmt> FunctionDecl::getBodyStmt() const noexcept
-{
-    return makeView(m_bodyStmt);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<CompoundStmt> FunctionDecl::getBodyStmt() noexcept
-{
-    return makeView(m_bodyStmt);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

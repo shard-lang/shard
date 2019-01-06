@@ -43,14 +43,6 @@ class Expr;
 [[deprecated]] class ForStmt final : public Stmt
 {
 
-// Public Constants
-public:
-
-
-    /// Expression kind
-    static constexpr StmtKind Kind = StmtKind::For;
-
-
 // Public Ctors & Dtors
 public:
 

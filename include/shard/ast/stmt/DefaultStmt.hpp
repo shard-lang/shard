@@ -38,14 +38,6 @@ namespace shard::ast {
 [[deprecated]] class DefaultStmt final : public Stmt
 {
 
-// Public Constants
-public:
-
-
-    /// Expression kind
-    static constexpr StmtKind Kind = StmtKind::Default;
-
-
 // Public Ctors & Dtors
 public:
 

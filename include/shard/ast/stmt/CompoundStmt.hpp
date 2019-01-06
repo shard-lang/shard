@@ -28,6 +28,14 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+class CompoundStmt;
+
+/* ************************************************************************* */
+
+using CompoundStmtPtr = UniquePtr<CompoundStmt>;
+
+/* ************************************************************************* */
+
 /**
  * @brief      Compound statement.
  *
@@ -47,7 +55,7 @@ public:
      * @param      range  Source range.
      */
     explicit CompoundStmt(StmtPtrVector stmts = {}, SourceRange range = {})
-        : Stmt(StmtKind::Compound, range)
+        : Stmt(range)
         , m_statements(std::move(stmts))
     {
         // Nothing to do
@@ -62,16 +70,6 @@ public:
      * @return     The statements.
      */
     const StmtPtrVector& stmts() const noexcept
-    {
-        return m_statements;
-    }
-
-    /**
-     * @brief      Returns the statements.
-     *
-     * @return     The statements.
-     */
-    [[deprecated]] const StmtPtrVector& getStmts() const noexcept
     {
         return m_statements;
     }

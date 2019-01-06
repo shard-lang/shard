@@ -23,25 +23,6 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-ContinueStmt::ContinueStmt(SourceRange range)
-    : Stmt(Kind, range)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-ContinueStmt::~ContinueStmt() = default;
-
-/* ************************************************************************* */
-
-UniquePtr<ContinueStmt> ContinueStmt::make(SourceRange range)
-{
-    return makeUnique<ContinueStmt>(range);
-}
-
-/* ************************************************************************* */
-
 }
 
 /* ************************************************************************* */

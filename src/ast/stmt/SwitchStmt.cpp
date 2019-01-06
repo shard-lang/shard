@@ -29,7 +29,7 @@ namespace shard::ast {
 /* ************************************************************************* */
 
 SwitchStmt::SwitchStmt(UniquePtr<Expr> condExpr, UniquePtr<CompoundStmt> bodyStmt, SourceRange range)
-    : Stmt(Kind, range)
+    : Stmt(range)
     , m_condExpr(std::move(condExpr))
     , m_bodyStmt(std::move(bodyStmt))
 {

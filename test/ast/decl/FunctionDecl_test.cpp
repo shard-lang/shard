@@ -18,10 +18,10 @@
 #include "gtest/gtest.h"
 
 // Shard
+#include "shard/ast/Expr.hpp"
+#include "shard/ast/Type.hpp"
 #include "shard/ast/decl/FunctionDecl.hpp"
 #include "shard/ast/decl/VariableDecl.hpp"
-#include "shard/ast/Type.hpp"
-#include "shard/ast/Expr.hpp"
 #include "shard/ast/stmt/CompoundStmt.hpp"
 
 /* ************************************************************************ */
@@ -35,77 +35,75 @@ TEST(FunctionDecl, base)
 {
     {
         // int foo() {}
-        const FunctionDecl decl(TypeKind::Int, "foo", makeUnique<CompoundStmt>());
+        const FunctionDecl decl(
+            TypeKind::Int, "foo", makeUnique<CompoundStmt>(), {});
 
-        EXPECT_EQ(DeclKind::Function, decl.getKind());
         EXPECT_TRUE(decl.is<FunctionDecl>());
-        EXPECT_EQ("foo", decl.getName());
-        EXPECT_EQ(TypeKind::Int, decl.getRetType());
-        EXPECT_TRUE(decl.getParameters().empty());
-        ASSERT_NE(nullptr, decl.getBodyStmt());
-        EXPECT_TRUE(decl.getBodyStmt()->is<CompoundStmt>());
+        EXPECT_EQ("foo", decl.name());
+        EXPECT_EQ(TypeKind::Int, decl.retType());
+        EXPECT_TRUE(decl.parameters().empty());
+        ASSERT_NE(nullptr, decl.bodyStmt());
+        EXPECT_TRUE(decl.bodyStmt()->is<CompoundStmt>());
     }
 
     {
         // int foo() {}
         FunctionDecl decl(TypeKind::Int, "foo", makeUnique<CompoundStmt>());
 
-        EXPECT_EQ(DeclKind::Function, decl.getKind());
         EXPECT_TRUE(decl.is<FunctionDecl>());
-        EXPECT_EQ("foo", decl.getName());
-        EXPECT_EQ(TypeKind::Int, decl.getRetType());
-        EXPECT_TRUE(decl.getParameters().empty());
-        ASSERT_NE(nullptr, decl.getBodyStmt());
-        EXPECT_TRUE(decl.getBodyStmt()->is<CompoundStmt>());
+        EXPECT_EQ("foo", decl.name());
+        EXPECT_EQ(TypeKind::Int, decl.retType());
+        EXPECT_TRUE(decl.parameters().empty());
+        ASSERT_NE(nullptr, decl.bodyStmt());
+        EXPECT_TRUE(decl.bodyStmt()->is<CompoundStmt>());
 
         // int bar() {}
         decl.setName("bar");
-        EXPECT_EQ("bar", decl.getName());
-        EXPECT_EQ(TypeKind::Int, decl.getRetType());
-        EXPECT_TRUE(decl.getParameters().empty());
-        ASSERT_NE(nullptr, decl.getBodyStmt());
-        EXPECT_TRUE(decl.getBodyStmt()->is<CompoundStmt>());
+        EXPECT_EQ("bar", decl.name());
+        EXPECT_EQ(TypeKind::Int, decl.retType());
+        EXPECT_TRUE(decl.parameters().empty());
+        ASSERT_NE(nullptr, decl.bodyStmt());
+        EXPECT_TRUE(decl.bodyStmt()->is<CompoundStmt>());
 
         // void bar() {}
         decl.setRetType(TypeKind::Void);
-        EXPECT_EQ("bar", decl.getName());
-        EXPECT_EQ(TypeKind::Void, decl.getRetType());
-        EXPECT_TRUE(decl.getParameters().empty());
-        ASSERT_NE(nullptr, decl.getBodyStmt());
-        EXPECT_TRUE(decl.getBodyStmt()->is<CompoundStmt>());
+        EXPECT_EQ("bar", decl.name());
+        EXPECT_EQ(TypeKind::Void, decl.retType());
+        EXPECT_TRUE(decl.parameters().empty());
+        ASSERT_NE(nullptr, decl.bodyStmt());
+        EXPECT_TRUE(decl.bodyStmt()->is<CompoundStmt>());
 
         // void bar(int x, int y) {}
         PtrVector<VariableDecl> params;
-        params.push_back(VariableDecl::make(TypeKind::Int, "x"));
-        params.push_back(VariableDecl::make(TypeKind::Int, "y"));
+        params.push_back(VariableDecl::make(TypeKind::Int, "x", nullptr));
+        params.push_back(VariableDecl::make(TypeKind::Int, "y", nullptr));
         decl.setParameters(std::move(params));
-        EXPECT_EQ("bar", decl.getName());
-        EXPECT_EQ(TypeKind::Void, decl.getRetType());
-        EXPECT_FALSE(decl.getParameters().empty());
-        ASSERT_EQ(2, decl.getParameters().size());
-        ASSERT_TRUE(decl.getParameters()[0]->is<VariableDecl>());
-        ASSERT_TRUE(decl.getParameters()[1]->is<VariableDecl>());
-        EXPECT_EQ("x", decl.getParameters()[0]->getName());
-        EXPECT_EQ("y", decl.getParameters()[1]->getName());
+        EXPECT_EQ("bar", decl.name());
+        EXPECT_EQ(TypeKind::Void, decl.retType());
+        EXPECT_FALSE(decl.parameters().empty());
+        ASSERT_EQ(2, decl.parameters().size());
+        ASSERT_TRUE(decl.parameters()[0]->is<VariableDecl>());
+        ASSERT_TRUE(decl.parameters()[1]->is<VariableDecl>());
+        EXPECT_EQ("x", decl.parameters()[0]->name());
+        EXPECT_EQ("y", decl.parameters()[1]->name());
 
         decl.setBodyStmt(makeUnique<CompoundStmt>());
-        ASSERT_NE(nullptr, decl.getBodyStmt());
-        EXPECT_TRUE(decl.getBodyStmt()->is<CompoundStmt>());
+        ASSERT_NE(nullptr, decl.bodyStmt());
+        EXPECT_TRUE(decl.bodyStmt()->is<CompoundStmt>());
     }
 
     {
         // int foo() {}
-        const auto decl = FunctionDecl::make(TypeKind::Int, "foo", makeUnique<CompoundStmt>());
+        const auto decl = FunctionDecl::make(
+            TypeKind::Int, "foo", makeUnique<CompoundStmt>(), {});
 
-        EXPECT_EQ(DeclKind::Function, decl->getKind());
         EXPECT_TRUE(decl->is<FunctionDecl>());
-        EXPECT_EQ("foo", decl->getName());
-        EXPECT_EQ(TypeKind::Int, decl->getRetType());
-        EXPECT_TRUE(decl->getParameters().empty());
-        ASSERT_NE(nullptr, decl->getBodyStmt());
-        EXPECT_TRUE(decl->getBodyStmt()->is<CompoundStmt>());
+        EXPECT_EQ("foo", decl->name());
+        EXPECT_EQ(TypeKind::Int, decl->retType());
+        EXPECT_TRUE(decl->parameters().empty());
+        ASSERT_NE(nullptr, decl->bodyStmt());
+        EXPECT_TRUE(decl->bodyStmt()->is<CompoundStmt>());
     }
-
 }
 
 /* ************************************************************************ */

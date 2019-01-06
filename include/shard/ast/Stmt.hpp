@@ -30,27 +30,6 @@ namespace shard::ast {
 /* ************************************************************************* */
 
 /**
- * @brief      Statement kind.
- */
-enum class [[deprecated]] StmtKind {
-    Expr,
-    Decl,
-    Compound,
-    If,
-    While,
-    DoWhile,
-    For,
-    Switch,
-    Case,
-    Default,
-    Continue,
-    Break,
-    Return
-};
-
-/* ************************************************************************* */
-
-/**
  * @brief      Base statement class.
  */
 class Stmt : public Node
@@ -64,19 +43,6 @@ public:
      */
     virtual ~Stmt() = default;
 
-public:
-    // Accessors & Mutators
-
-    /**
-     * @brief      Returns statement kind.
-     *
-     * @return     Statement kind.
-     */
-    [[deprecated]] StmtKind getKind() const noexcept
-    {
-        return m_kind;
-    }
-
 protected:
     // Ctors & Dtors
 
@@ -86,18 +52,11 @@ protected:
      * @param      kind   Statement kind.
      * @param      range  Source range.
      */
-    [[deprecated]] explicit Stmt(StmtKind kind, SourceRange range)
+    explicit Stmt(SourceRange range)
         : Node(range)
-        , m_kind(kind)
     {
         // Nothing to do
     }
-
-private:
-    // Data Members
-
-    /// Statement kind.
-    StmtKind m_kind;
 };
 
 /* ************************************************************************* */

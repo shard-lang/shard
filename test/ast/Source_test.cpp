@@ -35,7 +35,10 @@ namespace {
 struct TestStmt : public Stmt, public PtrBuilder<TestStmt>
 {
     TestStmt(SourceRange range = {}) noexcept
-        : Stmt(StmtKind::Expr, range) {}
+        : Stmt(range)
+    {
+        // Nothing
+    }
 };
 
 /* ************************************************************************ */
@@ -43,12 +46,15 @@ struct TestStmt : public Stmt, public PtrBuilder<TestStmt>
 struct TestStmt2 : public Stmt, public PtrBuilder<TestStmt2>
 {
     TestStmt2(SourceRange range = {}) noexcept
-        : Stmt(StmtKind::Expr, range) {}
+        : Stmt(range)
+    {
+        // Nothing
+    }
 };
 
 /* ************************************************************************ */
 
-}
+} // namespace
 
 /* ************************************************************************ */
 

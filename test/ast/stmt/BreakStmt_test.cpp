@@ -33,7 +33,6 @@ TEST(BreakStmt, base)
         // break;
         const BreakStmt stmt;
 
-        EXPECT_EQ(StmtKind::Break, stmt.getKind());
         EXPECT_TRUE(stmt.is<BreakStmt>());
     }
 
@@ -41,7 +40,6 @@ TEST(BreakStmt, base)
         // break;
         const auto stmt = BreakStmt::make();
 
-        EXPECT_EQ(StmtKind::Break, stmt->getKind());
         EXPECT_TRUE(stmt->is<BreakStmt>());
     }
 }

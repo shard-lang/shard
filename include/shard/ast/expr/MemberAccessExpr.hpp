@@ -52,7 +52,7 @@ public:
      * @param      range  Location in source.
      */
     explicit MemberAccessExpr(ExprPtr expr, String name, SourceRange range = {})
-        : Expr(ExprKind::MemberAccess, range)
+        : Expr(range)
         , m_expr(std::move(expr))
         , m_name(std::move(name))
     {
@@ -85,51 +85,31 @@ public:
     /**
      * @brief      Returns the inner expression.
      *
-     * @tparam     ExprType  The required expression type.
+     * @tparam     EXPR  The required expression type.
      *
      * @return     The inner expression.
      *
-     * @pre        `expr()->is<ExprType>()`
+     * @pre        `expr()->is<EXPR>()`
      */
-    template<typename ExprType>
-    const ExprType& expr() const noexcept
+    template<typename EXPR>
+    const EXPR& expr() const noexcept
     {
-        return m_expr->cast<ExprType>();
+        return m_expr->cast<EXPR>();
     }
 
     /**
      * @brief      Returns the inner expression.
      *
-     * @tparam     ExprType  The required expression type.
+     * @tparam     EXPR  The required expression type.
      *
      * @return     The inner expression.
      *
-     * @pre        `expr()->is<ExprType>()`
+     * @pre        `expr()->is<EXPR>()`
      */
-    template<typename ExprType>
-    ExprType& expr() noexcept
+    template<typename EXPR>
+    EXPR& expr() noexcept
     {
-        return m_expr->cast<ExprType>();
-    }
-
-    /**
-     * @brief      Returns inner expression.
-     *
-     * @return     Inner expression.
-     */
-    [[deprecated]] ViewPtr<const Expr> getExpr() const noexcept
-    {
-        return makeView(m_expr);
-    }
-
-    /**
-     * @brief      Returns inner expression.
-     *
-     * @return     Inner expression.
-     */
-    [[deprecated]] ViewPtr<Expr> getExpr() noexcept
-    {
-        return makeView(m_expr);
+        return m_expr->cast<EXPR>();
     }
 
     /**
@@ -149,16 +129,6 @@ public:
      * @return     Identifier name.
      */
     const String& name() const noexcept
-    {
-        return m_name;
-    }
-
-    /**
-     * @brief      Returns identifier name.
-     *
-     * @return     Identifier name.
-     */
-    [[deprecated]] const String& getName() const noexcept
     {
         return m_name;
     }

@@ -35,19 +35,17 @@ TEST(ReturnStmt, base)
         // return;
         const ReturnStmt stmt;
 
-        EXPECT_EQ(StmtKind::Return, stmt.getKind());
         EXPECT_TRUE(stmt.is<ReturnStmt>());
-        ASSERT_EQ(nullptr, stmt.getResExpr());
+        ASSERT_EQ(nullptr, stmt.resExpr());
     }
 
     {
         // return true;
         const ReturnStmt stmt(BoolLiteralExpr::make(true));
 
-        EXPECT_EQ(StmtKind::Return, stmt.getKind());
         EXPECT_TRUE(stmt.is<ReturnStmt>());
-        ASSERT_NE(nullptr, stmt.getResExpr());
-        EXPECT_TRUE(stmt.getResExpr()->is<BoolLiteralExpr>());
+        ASSERT_NE(nullptr, stmt.resExpr());
+        EXPECT_TRUE(stmt.resExpr()->is<BoolLiteralExpr>());
     }
 
 
@@ -55,24 +53,22 @@ TEST(ReturnStmt, base)
         // return;
         ReturnStmt stmt;
 
-        EXPECT_EQ(StmtKind::Return, stmt.getKind());
         EXPECT_TRUE(stmt.is<ReturnStmt>());
-        ASSERT_EQ(nullptr, stmt.getResExpr());
+        ASSERT_EQ(nullptr, stmt.resExpr());
 
         // return 1.1;
         stmt.setResExpr(FloatLiteralExpr::make(1.1));
 
-        ASSERT_NE(nullptr, stmt.getResExpr());
-        EXPECT_TRUE(stmt.getResExpr()->is<FloatLiteralExpr>());
+        ASSERT_NE(nullptr, stmt.resExpr());
+        EXPECT_TRUE(stmt.resExpr()->is<FloatLiteralExpr>());
     }
 
     {
         // return;
         const auto stmt = ReturnStmt::make();
 
-        EXPECT_EQ(StmtKind::Return, stmt->getKind());
         EXPECT_TRUE(stmt->is<ReturnStmt>());
-        ASSERT_EQ(nullptr, stmt->getResExpr());
+        ASSERT_EQ(nullptr, stmt->resExpr());
     }
 
 }

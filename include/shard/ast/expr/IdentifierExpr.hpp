@@ -47,7 +47,7 @@ public:
      * @param      range  Location in source.
      */
     explicit IdentifierExpr(String name, SourceRange range = {})
-        : Expr(ExprKind::Identifier, range)
+        : Expr(range)
         , m_name(std::move(name))
     {
         SHARD_ASSERT(!m_name.empty());
@@ -61,16 +61,6 @@ public:
      * @return     Identifier name.
      */
     const String& name() const noexcept
-    {
-        return m_name;
-    }
-
-    /**
-     * @brief      Returns identifier name.
-     *
-     * @return     Identifier name.
-     */
-    [[deprecated]] const String& getName() const noexcept
     {
         return m_name;
     }

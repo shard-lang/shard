@@ -33,10 +33,10 @@ TEST(UnaryExpr, base)
 {
     {
         // !true
-        const UnaryExpr expr(UnaryExpr::OpKind::Not, BoolLiteralExpr::make(true));
+        const UnaryExpr expr(UnaryOpKind::Not, BoolLiteralExpr::make(true));
 
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::Not, expr.op());
+        EXPECT_EQ(UnaryOpKind::Not, expr.op());
         ASSERT_NE(nullptr, expr.expr());
         ASSERT_TRUE(expr.expr()->is<BoolLiteralExpr>());
         EXPECT_TRUE(expr.expr()->cast<BoolLiteralExpr>().value());
@@ -45,10 +45,10 @@ TEST(UnaryExpr, base)
 
     {
         // -10
-        const UnaryExpr expr(UnaryExpr::OpKind::Minus, IntLiteralExpr::make(10));
+        const UnaryExpr expr(UnaryOpKind::Minus, IntLiteralExpr::make(10));
 
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::Minus, expr.op());
+        EXPECT_EQ(UnaryOpKind::Minus, expr.op());
         ASSERT_NE(nullptr, expr.expr());
         ASSERT_TRUE(expr.expr()->is<IntLiteralExpr>());
         EXPECT_EQ(10, expr.expr()->cast<IntLiteralExpr>().value());
@@ -57,10 +57,10 @@ TEST(UnaryExpr, base)
 
     {
         // 5++
-        const UnaryExpr expr(UnaryExpr::OpKind::PostInc, IntLiteralExpr::make(5));
+        const UnaryExpr expr(UnaryOpKind::PostInc, IntLiteralExpr::make(5));
 
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::PostInc, expr.op());
+        EXPECT_EQ(UnaryOpKind::PostInc, expr.op());
         ASSERT_NE(nullptr, expr.expr());
         ASSERT_TRUE(expr.expr()->is<IntLiteralExpr>());
         EXPECT_EQ(5, expr.expr()->cast<IntLiteralExpr>().value());
@@ -69,10 +69,10 @@ TEST(UnaryExpr, base)
 
     {
         // true--
-        const UnaryExpr expr(UnaryExpr::OpKind::PostDec, BoolLiteralExpr::make(true));
+        const UnaryExpr expr(UnaryOpKind::PostDec, BoolLiteralExpr::make(true));
 
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::PostDec, expr.op());
+        EXPECT_EQ(UnaryOpKind::PostDec, expr.op());
         ASSERT_NE(nullptr, expr.expr());
         ASSERT_TRUE(expr.expr()->is<BoolLiteralExpr>());
         EXPECT_TRUE(expr.expr()->cast<BoolLiteralExpr>().value());
@@ -81,19 +81,19 @@ TEST(UnaryExpr, base)
 
     {
         // -10
-        UnaryExpr expr(UnaryExpr::OpKind::Minus, IntLiteralExpr::make(0));
+        UnaryExpr expr(UnaryOpKind::Minus, IntLiteralExpr::make(0));
 
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::Minus, expr.op());
+        EXPECT_EQ(UnaryOpKind::Minus, expr.op());
         ASSERT_NE(nullptr, expr.expr());
         ASSERT_TRUE(expr.expr()->is<IntLiteralExpr>());
         EXPECT_EQ(0, expr.expr()->cast<IntLiteralExpr>().value());
         EXPECT_EQ(0, expr.expr<IntLiteralExpr>().value());
 
         // !0
-        expr.setOp(UnaryExpr::OpKind::Not);
+        expr.setOp(UnaryOpKind::Not);
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::Not, expr.op());
+        EXPECT_EQ(UnaryOpKind::Not, expr.op());
         ASSERT_NE(nullptr, expr.expr());
         ASSERT_TRUE(expr.expr()->is<IntLiteralExpr>());
         EXPECT_EQ(0, expr.expr()->cast<IntLiteralExpr>().value());
@@ -102,7 +102,7 @@ TEST(UnaryExpr, base)
         // !true
         expr.setExpr(BoolLiteralExpr::make(true));
         EXPECT_TRUE(expr.is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::Not, expr.op());
+        EXPECT_EQ(UnaryOpKind::Not, expr.op());
         ASSERT_NE(nullptr, expr.expr());
         ASSERT_TRUE(expr.expr()->is<BoolLiteralExpr>());
         EXPECT_TRUE(expr.expr()->cast<BoolLiteralExpr>().value());
@@ -111,11 +111,11 @@ TEST(UnaryExpr, base)
 
     {
         // !true
-        const auto expr = UnaryExpr::make(UnaryExpr::OpKind::Not, BoolLiteralExpr::make(true));
+        const auto expr = UnaryExpr::make(UnaryOpKind::Not, BoolLiteralExpr::make(true));
         ASSERT_NE(nullptr, expr);
 
         EXPECT_TRUE(expr->is<UnaryExpr>());
-        EXPECT_EQ(UnaryExpr::OpKind::Not, expr->op());
+        EXPECT_EQ(UnaryOpKind::Not, expr->op());
         ASSERT_NE(nullptr, expr->expr());
         ASSERT_TRUE(expr->expr()->is<BoolLiteralExpr>());
         EXPECT_TRUE(expr->expr()->cast<BoolLiteralExpr>().value());

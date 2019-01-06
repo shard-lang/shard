@@ -39,12 +39,6 @@ namespace shard::ast {
 [[deprecated]] class TernaryExpr final : public Expr
 {
 public:
-    // Constants
-
-    /// Expression kind
-    static constexpr ExprKind Kind = ExprKind::Ternary;
-
-public:
     // Ctors & Dtors
 
     /**
@@ -60,7 +54,7 @@ public:
         ExprPtr trueExpr,
         ExprPtr falseExpr,
         SourceRange range = {})
-        : Expr(Kind, range)
+        : Expr(range)
         , m_condExpr(std::move(condExpr))
         , m_trueExpr(std::move(trueExpr))
         , m_falseExpr(std::move(falseExpr))

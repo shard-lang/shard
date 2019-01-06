@@ -49,8 +49,8 @@ TEST(NullLiteralExpr, base)
 
         EXPECT_TRUE(expr.is<NullLiteralExpr>());
         EXPECT_FALSE(expr.is<TestExpr>());
-        EXPECT_EQ(SourceLocation{}, expr.getSourceStart());
-        EXPECT_EQ(SourceLocation{}, expr.getSourceEnd());
+        EXPECT_EQ(SourceLocation{}, expr.sourceRange().start());
+        EXPECT_EQ(SourceLocation{}, expr.sourceRange().end());
     }
 
     {

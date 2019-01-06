@@ -28,7 +28,7 @@ namespace shard::ast {
 /* ************************************************************************* */
 
 DefaultStmt::DefaultStmt(PtrVector<Stmt> stmts, SourceRange range)
-    : Stmt(Kind, range)
+    : Stmt(range)
     , m_statements(std::move(stmts))
 {
     // Nothing to do

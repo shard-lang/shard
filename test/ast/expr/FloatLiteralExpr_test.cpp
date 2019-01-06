@@ -67,20 +67,20 @@ TEST(FloatLiteralExpr, base)
 
     {
         // Min value
-        const FloatLiteralExpr expr(std::numeric_limits<FloatLiteralExpr::ValueType>::min());
+        const FloatLiteralExpr expr(std::numeric_limits<FloatLiteralExpr::Value>::min());
 
         EXPECT_TRUE(expr.is<FloatLiteralExpr>());
         EXPECT_FALSE(expr.is<TestExpr>());
-        EXPECT_FLOAT_EQ(std::numeric_limits<FloatLiteralExpr::ValueType>::min(), expr.value());
+        EXPECT_FLOAT_EQ(std::numeric_limits<FloatLiteralExpr::Value>::min(), expr.value());
     }
 
     {
         // Max value
-        const FloatLiteralExpr expr(std::numeric_limits<FloatLiteralExpr::ValueType>::max());
+        const FloatLiteralExpr expr(std::numeric_limits<FloatLiteralExpr::Value>::max());
 
         EXPECT_TRUE(expr.is<FloatLiteralExpr>());
         EXPECT_FALSE(expr.is<TestExpr>());
-        EXPECT_FLOAT_EQ(std::numeric_limits<FloatLiteralExpr::ValueType>::max(), expr.value());
+        EXPECT_FLOAT_EQ(std::numeric_limits<FloatLiteralExpr::Value>::max(), expr.value());
     }
 
     {
@@ -94,8 +94,8 @@ TEST(FloatLiteralExpr, base)
         expr.setValue(0.456e5f);
         EXPECT_FLOAT_EQ(0.456e5f, expr.value());
 
-        expr.setValue(-756e45f);
-        EXPECT_FLOAT_EQ(-7560e45f, expr.value());
+        expr.setValue(-756e20f);
+        EXPECT_FLOAT_EQ(-756e20f, expr.value());
     }
 
     {

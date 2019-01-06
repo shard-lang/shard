@@ -37,7 +37,6 @@ TEST(DefaultStmt, base)
         // default: ;
         const DefaultStmt stmt;
 
-        EXPECT_EQ(StmtKind::Default, stmt.getKind());
         EXPECT_TRUE(stmt.is<DefaultStmt>());
         ASSERT_TRUE(stmt.getStmts().empty());
     }
@@ -48,7 +47,6 @@ TEST(DefaultStmt, base)
 
         stmt.addStmt(ExprStmt::make(nullptr));
 
-        EXPECT_EQ(StmtKind::Default, stmt.getKind());
         EXPECT_TRUE(stmt.is<DefaultStmt>());
         ASSERT_FALSE(stmt.getStmts().empty());
         EXPECT_EQ(1, stmt.getStmts().size());
@@ -60,7 +58,6 @@ TEST(DefaultStmt, base)
 
         stmt.addStmt(ExprStmt::make(nullptr));
 
-        EXPECT_EQ(StmtKind::Default, stmt.getKind());
         EXPECT_TRUE(stmt.is<DefaultStmt>());
         ASSERT_FALSE(stmt.getStmts().empty());
         EXPECT_EQ(1, stmt.getStmts().size());
@@ -76,7 +73,6 @@ TEST(DefaultStmt, base)
         // default:
         DefaultStmt stmt;
 
-        EXPECT_EQ(StmtKind::Default, stmt.getKind());
         EXPECT_TRUE(stmt.is<DefaultStmt>());
         ASSERT_TRUE(stmt.getStmts().empty());
 
@@ -86,7 +82,6 @@ TEST(DefaultStmt, base)
         // default: ;
         stmt.setStmts(std::move(stmts));
 
-        EXPECT_EQ(StmtKind::Default, stmt.getKind());
         EXPECT_TRUE(stmt.is<DefaultStmt>());
         ASSERT_FALSE(stmt.getStmts().empty());
         ASSERT_EQ(1, stmt.getStmts().size());
@@ -96,7 +91,6 @@ TEST(DefaultStmt, base)
         // default: ;
         const auto stmt = DefaultStmt::make();
 
-        EXPECT_EQ(StmtKind::Default, stmt->getKind());
         EXPECT_TRUE(stmt->is<DefaultStmt>());
         ASSERT_TRUE(stmt->getStmts().empty());
     }

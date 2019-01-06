@@ -48,7 +48,7 @@ public:
      * @param      range  Location in source.
      */
     explicit BoolLiteralExpr(bool value, SourceRange range = {}) noexcept
-        : LiteralExpr<bool>(ExprKind::BoolLiteral, value, range)
+        : LiteralExpr<bool>(value, range)
     {
         // Nothing to do
     }

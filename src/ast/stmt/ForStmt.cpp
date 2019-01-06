@@ -30,7 +30,7 @@ namespace shard::ast {
 /* ************************************************************************* */
 
 ForStmt::ForStmt(UniquePtr<Stmt> initStmt, UniquePtr<Expr> condExpr, UniquePtr<Expr> incExpr, UniquePtr<Stmt> bodyStmt, SourceRange range)
-    : Stmt(Kind, range)
+    : Stmt(range)
     , m_initStmt(std::move(initStmt))
     , m_condExpr(std::move(condExpr))
     , m_incExpr(std::move(incExpr))

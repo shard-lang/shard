@@ -19,9 +19,9 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
-#include "shard/ViewPtr.hpp"
+#include "shard/ast/Expr.hpp"
 #include "shard/ast/Stmt.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -33,25 +33,25 @@ class Expr;
 
 /* ************************************************************************* */
 
+class WhileStmt;
+
+/* ************************************************************************* */
+
+using WhileStmtPtr = UniquePtr<WhileStmt>;
+
+/* ************************************************************************* */
+
 /**
  * @brief      While loop statement.
  *
  * @details    In the source it appears as: `while (<condExpr>) <bodyStmt>`.
  */
-[[deprecated]] class WhileStmt final : public Stmt
+class WhileStmt final : public Stmt,
+                        public PtrBuilder<WhileStmt, ExprPtr, StmtPtr>
 {
 
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr StmtKind Kind = StmtKind::While;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -60,126 +60,130 @@ public:
      * @param      bodyStmt  Body statement.
      * @param      range     Source range.
      */
-    explicit WhileStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range = {}) ;
+    WhileStmt(ExprPtr condExpr, StmtPtr bodyStmt, SourceRange range = {})
+        : Stmt(range)
+        , m_condExpr(std::move(condExpr))
+        , m_bodyStmt(std::move(bodyStmt))
+    {
+        SHARD_ASSERT(m_condExpr);
+        SHARD_ASSERT(m_bodyStmt);
+    }
 
-
-    /**
-     * @brief      Destructor.
-     */
-    ~WhileStmt();
-
-
-// Public Accessors & Mutators
 public:
-
-
-    /**
-     * @brief      Returns condition expression.
-     *
-     * @return     Expression.
-     */
-    ViewPtr<Expr> getCondExpr() noexcept;
-
+    // Accessors & Mutators
 
     /**
      * @brief      Returns condition expression.
      *
      * @return     Expression.
      */
-    ViewPtr<const Expr> getCondExpr() const noexcept;
+    const ExprPtr& condExpr() const noexcept
+    {
+        return m_condExpr;
+    }
 
+    /**
+     * @brief      Returns condition expression.
+     *
+     * @tparam     EXPR  Expession type.
+     *
+     * @return     Result expression.
+     *
+     * @pre        `condExpr().is<EXPR>()`.
+     */
+    template<typename EXPR>
+    const EXPR& condExpr() noexcept
+    {
+        return condExpr()->cast<EXPR>();
+    }
+
+    /**
+     * @brief      Returns condition expression.
+     *
+     * @tparam     EXPR  Expession type.
+     *
+     * @return     Result expression.
+     *
+     * @pre        `condExpr().is<EXPR>()`.
+     */
+    template<typename EXPR>
+    const EXPR& condExpr() const noexcept
+    {
+        return condExpr()->cast<EXPR>();
+    }
 
     /**
      * @brief      Change condition expression.
      *
      * @param      expr  The new condition expression.
      */
-    void setCondExpr(UniquePtr<Expr> expr);
-
-
-    /**
-     * @brief      Returns body statement.
-     *
-     * @return     Body statement.
-     */
-    ViewPtr<Stmt> getBodyStmt() noexcept;
-
+    void setCondExpr(UniquePtr<Expr> expr)
+    {
+        m_condExpr = std::move(expr);
+    }
 
     /**
      * @brief      Returns body statement.
      *
      * @return     Body statement.
      */
-    ViewPtr<const Stmt> getBodyStmt() const noexcept;
+    const StmtPtr& bodyStmt() const noexcept
+    {
+        return m_bodyStmt;
+    }
 
+    /**
+     * @brief      Returns body statement.
+     *
+     * @tparam     STMT  The statement type.
+     *
+     * @return     Body statement.
+     *
+     * @pre        `bodyStmt().is<STMT>()`.
+     */
+    template<typename STMT>
+    STMT& bodyStmt() noexcept
+    {
+        return bodyStmt()->cast<STMT>();
+    }
+
+    /**
+     * @brief      Returns body statement.
+     *
+     * @tparam     STMT  The statement type.
+     *
+     * @return     Body statement.
+     *
+     * @pre        `bodyStmt().is<STMT>()`.
+     */
+    template<typename STMT>
+    const STMT& bodyStmt() const noexcept
+    {
+        return bodyStmt()->cast<STMT>();
+    }
 
     /**
      * @brief      Change body statement.
      *
      * @param      stmt  The new body statement.
      */
-    void setBodyStmt(UniquePtr<Stmt> stmt);
+    void setBodyStmt(StmtPtr stmt)
+    {
+        m_bodyStmt = std::move(stmt);
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      condExpr  Condition expression.
-     * @param      bodyStmt  Body statement.
-     * @param      range     Source range.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<WhileStmt> make(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range = {});
-
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Loop condition.
-    UniquePtr<Expr> m_condExpr;
+    ExprPtr m_condExpr;
 
     /// Body statement.
-    UniquePtr<Stmt> m_bodyStmt;
-
+    StmtPtr m_bodyStmt;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline ViewPtr<Expr> WhileStmt::getCondExpr() noexcept
-{
-    return makeView(m_condExpr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Expr> WhileStmt::getCondExpr() const noexcept
-{
-    return makeView(m_condExpr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<Stmt> WhileStmt::getBodyStmt() noexcept
-{
-    return makeView(m_bodyStmt);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Stmt> WhileStmt::getBodyStmt() const noexcept
-{
-    return makeView(m_bodyStmt);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

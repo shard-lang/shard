@@ -17,47 +17,9 @@
 // Declaration
 #include "shard/ast/decl/VariableDecl.hpp"
 
-// Shard
-#include "shard/ast/Expr.hpp"
-
 /* ************************************************************************* */
 
 namespace shard::ast {
-
-/* ************************************************************************* */
-
-VariableDecl::VariableDecl(Type type, String name, UniquePtr<Expr> initExpr, SourceRange range)
-    : Decl(Kind, std::move(name), std::move(range))
-    , m_type(std::move(type))
-    , m_initExpr(std::move(initExpr))
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-VariableDecl::~VariableDecl() = default;
-
-/* ************************************************************************* */
-
-void VariableDecl::setType(Type type)
-{
-    m_type = std::move(type);
-}
-
-/* ************************************************************************* */
-
-void VariableDecl::setInitExpr(UniquePtr<Expr> expr)
-{
-    m_initExpr = std::move(expr);
-}
-
-/* ************************************************************************* */
-
-UniquePtr<VariableDecl> VariableDecl::make(Type type, String name, UniquePtr<Expr> initExpr, SourceRange range)
-{
-    return makeUnique<VariableDecl>(std::move(type), std::move(name), std::move(initExpr), std::move(range));
-}
 
 /* ************************************************************************* */
 

@@ -37,45 +37,42 @@ TEST(WhileStmt, base)
         // while (true);
         const WhileStmt stmt(BoolLiteralExpr::make(true), ExprStmt::make(nullptr));
 
-        EXPECT_EQ(StmtKind::While, stmt.getKind());
         EXPECT_TRUE(stmt.is<WhileStmt>());
-        ASSERT_NE(nullptr, stmt.getCondExpr());
-        EXPECT_TRUE(stmt.getCondExpr()->is<BoolLiteralExpr>());
-        ASSERT_NE(nullptr, stmt.getBodyStmt());
-        EXPECT_TRUE(stmt.getBodyStmt()->is<ExprStmt>());
+        ASSERT_NE(nullptr, stmt.condExpr());
+        EXPECT_TRUE(stmt.condExpr()->is<BoolLiteralExpr>());
+        ASSERT_NE(nullptr, stmt.bodyStmt());
+        EXPECT_TRUE(stmt.bodyStmt()->is<ExprStmt>());
     }
 
     {
         // while (true);
         WhileStmt stmt(BoolLiteralExpr::make(true), ExprStmt::make(nullptr));
 
-        EXPECT_EQ(StmtKind::While, stmt.getKind());
         EXPECT_TRUE(stmt.is<WhileStmt>());
-        ASSERT_NE(nullptr, stmt.getCondExpr());
-        EXPECT_TRUE(stmt.getCondExpr()->is<BoolLiteralExpr>());
-        ASSERT_NE(nullptr, stmt.getBodyStmt());
-        EXPECT_TRUE(stmt.getBodyStmt()->is<ExprStmt>());
+        ASSERT_NE(nullptr, stmt.condExpr());
+        EXPECT_TRUE(stmt.condExpr()->is<BoolLiteralExpr>());
+        ASSERT_NE(nullptr, stmt.bodyStmt());
+        EXPECT_TRUE(stmt.bodyStmt()->is<ExprStmt>());
 
         // while (1) continue;
         stmt.setCondExpr(IntLiteralExpr::make(1));
         stmt.setBodyStmt(ContinueStmt::make());
 
-        ASSERT_NE(nullptr, stmt.getCondExpr());
-        EXPECT_TRUE(stmt.getCondExpr()->is<IntLiteralExpr>());
-        ASSERT_NE(nullptr, stmt.getBodyStmt());
-        EXPECT_TRUE(stmt.getBodyStmt()->is<ContinueStmt>());
+        ASSERT_NE(nullptr, stmt.condExpr());
+        EXPECT_TRUE(stmt.condExpr()->is<IntLiteralExpr>());
+        ASSERT_NE(nullptr, stmt.bodyStmt());
+        EXPECT_TRUE(stmt.bodyStmt()->is<ContinueStmt>());
     }
 
     {
         // while (true);
         const auto stmt = WhileStmt::make(BoolLiteralExpr::make(true), ExprStmt::make(nullptr));
 
-        EXPECT_EQ(StmtKind::While, stmt->getKind());
         EXPECT_TRUE(stmt->is<WhileStmt>());
-        ASSERT_NE(nullptr, stmt->getCondExpr());
-        EXPECT_TRUE(stmt->getCondExpr()->is<BoolLiteralExpr>());
-        ASSERT_NE(nullptr, stmt->getBodyStmt());
-        EXPECT_TRUE(stmt->getBodyStmt()->is<ExprStmt>());
+        ASSERT_NE(nullptr, stmt->condExpr());
+        EXPECT_TRUE(stmt->condExpr()->is<BoolLiteralExpr>());
+        ASSERT_NE(nullptr, stmt->bodyStmt());
+        EXPECT_TRUE(stmt->bodyStmt()->is<ExprStmt>());
     }
 }
 

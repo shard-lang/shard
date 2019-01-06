@@ -17,52 +17,9 @@
 // Declaration
 #include "shard/ast/stmt/WhileStmt.hpp"
 
-// Shard
-#include "shard/Assert.hpp"
-#include "shard/ast/Expr.hpp"
-#include "shard/ast/Stmt.hpp"
-
 /* ************************************************************************* */
 
 namespace shard::ast {
-
-/* ************************************************************************* */
-
-WhileStmt::WhileStmt(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range)
-    : Stmt(Kind, range)
-    , m_condExpr(std::move(condExpr))
-    , m_bodyStmt(std::move(bodyStmt))
-{
-    SHARD_ASSERT(m_condExpr);
-    SHARD_ASSERT(m_bodyStmt);
-}
-
-/* ************************************************************************* */
-
-WhileStmt::~WhileStmt() = default;
-
-/* ************************************************************************* */
-
-void WhileStmt::setCondExpr(UniquePtr<Expr> expr)
-{
-    SHARD_ASSERT(expr);
-    m_condExpr = std::move(expr);
-}
-
-/* ************************************************************************* */
-
-void WhileStmt::setBodyStmt(UniquePtr<Stmt> stmt)
-{
-    SHARD_ASSERT(stmt);
-    m_bodyStmt = std::move(stmt);
-}
-
-/* ************************************************************************* */
-
-UniquePtr<WhileStmt> WhileStmt::make(UniquePtr<Expr> condExpr, UniquePtr<Stmt> bodyStmt, SourceRange range)
-{
-    return makeUnique<WhileStmt>(std::move(condExpr), std::move(bodyStmt), range);
-}
 
 /* ************************************************************************* */
 

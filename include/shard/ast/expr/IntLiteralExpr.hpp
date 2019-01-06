@@ -44,7 +44,7 @@ public:
      * @param      range  Location in source.
      */
     explicit IntLiteralExpr(int value, SourceRange range = {}) noexcept
-        : LiteralExpr<int>(ExprKind::IntLiteral, value, range)
+        : LiteralExpr<int>(value, range)
     {
         // Nothing to do
     }

@@ -48,7 +48,7 @@ public:
      * @param      range  Location in source.
      */
     explicit FloatLiteralExpr(float value, SourceRange range = {}) noexcept
-        : LiteralExpr<float>(ExprKind::FloatLiteral, value, range)
+        : LiteralExpr<float>(value, range)
     {
         // Nothing to do
     }

@@ -36,56 +36,53 @@ TEST(ClassDecl, base)
         // class Foo {}
         const ClassDecl decl("Foo");
 
-        EXPECT_EQ(DeclKind::Class, decl.getKind());
         EXPECT_TRUE(decl.is<ClassDecl>());
-        EXPECT_EQ("Foo", decl.getName());
+        EXPECT_EQ("Foo", decl.name());
     }
 
     {
         // class Point { int x; int y; }
         ClassDecl decl("Point");
 
-        decl.addDecl(VariableDecl::make(TypeKind::Int, "x"));
-        decl.addDecl(VariableDecl::make(TypeKind::Int, "y"));
+        decl.addDecl(VariableDecl::make(TypeKind::Int, "x", nullptr));
+        decl.addDecl(VariableDecl::make(TypeKind::Int, "y", nullptr));
 
-        ASSERT_EQ(2, decl.getDecls().size());
-        ASSERT_TRUE(decl.getDecls()[0]->is<VariableDecl>());
-        ASSERT_TRUE(decl.getDecls()[1]->is<VariableDecl>());
-        EXPECT_EQ("x", decl.getDecls()[0]->cast<VariableDecl>().getName());
-        EXPECT_EQ("y", decl.getDecls()[1]->cast<VariableDecl>().getName());
+        ASSERT_EQ(2, decl.decls().size());
+        ASSERT_TRUE(decl.decls()[0]->is<VariableDecl>());
+        ASSERT_TRUE(decl.decls()[1]->is<VariableDecl>());
+        EXPECT_EQ("x", decl.decls()[0]->cast<VariableDecl>().name());
+        EXPECT_EQ("y", decl.decls()[1]->cast<VariableDecl>().name());
     }
 
     {
         // class Point { }
         ClassDecl decl("Point");
 
-        EXPECT_EQ(DeclKind::Class, decl.getKind());
         EXPECT_TRUE(decl.is<ClassDecl>());
-        EXPECT_EQ("Point", decl.getName());
-        EXPECT_TRUE(decl.getDecls().empty());
+        EXPECT_EQ("Point", decl.name());
+        EXPECT_TRUE(decl.decls().empty());
 
-        PtrVector<Decl> decls;
-        decls.push_back(VariableDecl::make(TypeKind::Int, "x"));
-        decls.push_back(VariableDecl::make(TypeKind::Int, "y"));
+        DeclPtrVector decls;
+        decls.push_back(VariableDecl::make(TypeKind::Int, "x", nullptr));
+        decls.push_back(VariableDecl::make(TypeKind::Int, "y", nullptr));
 
         // class Point { int x; int y; }
         decl.setDecls(std::move(decls));
 
-        EXPECT_FALSE(decl.getDecls().empty());
-        ASSERT_EQ(2, decl.getDecls().size());
-        ASSERT_TRUE(decl.getDecls()[0]->is<VariableDecl>());
-        ASSERT_TRUE(decl.getDecls()[1]->is<VariableDecl>());
-        EXPECT_EQ("x", decl.getDecls()[0]->cast<VariableDecl>().getName());
-        EXPECT_EQ("y", decl.getDecls()[1]->cast<VariableDecl>().getName());
+        EXPECT_FALSE(decl.decls().empty());
+        ASSERT_EQ(2, decl.decls().size());
+        ASSERT_TRUE(decl.decls()[0]->is<VariableDecl>());
+        ASSERT_TRUE(decl.decls()[1]->is<VariableDecl>());
+        EXPECT_EQ("x", decl.decls()[0]->cast<VariableDecl>().name());
+        EXPECT_EQ("y", decl.decls()[1]->cast<VariableDecl>().name());
     }
 
     {
         // class Foo {}
-        const auto decl = ClassDecl::make("Foo");
+        const auto decl = ClassDecl::make("Foo", {});
 
-        EXPECT_EQ(DeclKind::Class, decl->getKind());
         EXPECT_TRUE(decl->is<ClassDecl>());
-        EXPECT_EQ("Foo", decl->getName());
+        EXPECT_EQ("Foo", decl->name());
     }
 
 }

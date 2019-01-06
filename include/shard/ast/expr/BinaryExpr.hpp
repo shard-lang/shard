@@ -79,11 +79,9 @@ class BinaryExpr final
 {
 
 public:
-    // Enums
+    // Types
 
-    /**
-     * @brief      Binary expression operation kind.
-     */
+    /// Operation kind.
     using OpKind[[deprecated]] = BinaryOpKind;
 
 public:
@@ -102,7 +100,7 @@ public:
         ExprPtr lhs,
         ExprPtr rhs,
         SourceRange range = {})
-        : Expr(ExprKind::Binary, range)
+        : Expr(range)
         , m_operator(op)
         , m_lhs(std::move(lhs))
         , m_rhs(std::move(rhs))
@@ -124,31 +122,11 @@ public:
     }
 
     /**
-     * @brief      Returns operation kind.
-     *
-     * @return     Operation kind.
-     */
-    [[deprecated]] BinaryOpKind getOpKind() const noexcept
-    {
-        return m_operator;
-    }
-
-    /**
      * @brief      Change the operator.
      *
      * @param      op    The new operator.
      */
     void setOp(BinaryOpKind op) noexcept
-    {
-        m_operator = op;
-    }
-
-    /**
-     * @brief      Change operation kind.
-     *
-     * @param      op    The new operation kind.
-     */
-    [[deprecated]] void setOpKind(BinaryOpKind op) noexcept
     {
         m_operator = op;
     }
@@ -176,51 +154,31 @@ public:
     /**
      * @brief      Returns the inner expression.
      *
-     * @tparam     ExprType  The required expression type.
+     * @tparam     EXPR  The required expression type.
      *
      * @return     The inner expression.
      *
-     * @pre        `lhs()->is<ExprType>()`
+     * @pre        `lhs()->is<EXPR>()`
      */
-    template<typename ExprType>
-    const ExprType& lhs() const noexcept
+    template<typename EXPR>
+    const EXPR& lhs() const noexcept
     {
-        return m_lhs->cast<ExprType>();
+        return m_lhs->cast<EXPR>();
     }
 
     /**
      * @brief      Returns the inner expression.
      *
-     * @tparam     ExprType  The required expression type.
+     * @tparam     EXPR  The required expression type.
      *
      * @return     The inner expression.
      *
-     * @pre        `lhs()->is<ExprType>()`
+     * @pre        `lhs()->is<EXPR>()`
      */
-    template<typename ExprType>
-    ExprType& lhs() noexcept
+    template<typename EXPR>
+    EXPR& lhs() noexcept
     {
-        return m_lhs->cast<ExprType>();
-    }
-
-    /**
-     * @brief      Returns LHS expression.
-     *
-     * @return     LHS expression.
-     */
-    [[deprecated]] ViewPtr<const Expr> getLhs() const noexcept
-    {
-        return makeView(m_lhs);
-    }
-
-    /**
-     * @brief      Returns LHS expression.
-     *
-     * @return     LHS expression.
-     */
-    [[deprecated]] ViewPtr<Expr> getLhs() noexcept
-    {
-        return makeView(m_lhs);
+        return m_lhs->cast<EXPR>();
     }
 
     /**
@@ -232,26 +190,6 @@ public:
     {
         SHARD_ASSERT(lhs);
         m_lhs = std::move(lhs);
-    }
-
-    /**
-     * @brief      Returns RHS expression.
-     *
-     * @return     RHS expression.
-     */
-    [[deprecated]] ViewPtr<const Expr> getRhs() const noexcept
-    {
-        return makeView(m_rhs);
-    }
-
-    /**
-     * @brief      Returns RHS expression.
-     *
-     * @return     RHS expression.
-     */
-    [[deprecated]] ViewPtr<Expr> getRhs() noexcept
-    {
-        return makeView(m_rhs);
     }
 
     /**
@@ -277,31 +215,31 @@ public:
     /**
      * @brief      Returns the inner expression.
      *
-     * @tparam     ExprType  The required expression type.
+     * @tparam     EXPR  The required expression type.
      *
      * @return     The inner expression.
      *
-     * @pre        `rhs()->is<ExprType>()`
+     * @pre        `rhs()->is<EXPR>()`
      */
-    template<typename ExprType>
-    const ExprType& rhs() const noexcept
+    template<typename EXPR>
+    const EXPR& rhs() const noexcept
     {
-        return m_rhs->cast<ExprType>();
+        return m_rhs->cast<EXPR>();
     }
 
     /**
      * @brief      Returns the inner expression.
      *
-     * @tparam     ExprType  The required expression type.
+     * @tparam     EXPR  The required expression type.
      *
      * @return     The inner expression.
      *
-     * @pre        `rhs()->is<ExprType>()`
+     * @pre        `rhs()->is<EXPR>()`
      */
-    template<typename ExprType>
-    ExprType& rhs() noexcept
+    template<typename EXPR>
+    EXPR& rhs() noexcept
     {
-        return m_rhs->cast<ExprType>();
+        return m_rhs->cast<EXPR>();
     }
 
     /**

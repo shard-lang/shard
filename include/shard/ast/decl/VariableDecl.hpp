@@ -19,19 +19,15 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
-#include "shard/ViewPtr.hpp"
 #include "shard/String.hpp"
-#include "shard/ast/Type.hpp"
 #include "shard/ast/Decl.hpp"
+#include "shard/ast/Expr.hpp"
+#include "shard/ast/Type.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
-
-/* ************************************************************************* */
-
-class Expr;
 
 /* ************************************************************************* */
 
@@ -41,20 +37,13 @@ class Expr;
  * @details    In the source it appears as: `<type> <name>` or `<type> <name> =
  *             <initExpr>`.
  */
-[[deprecated]] class VariableDecl final : public Decl
+class VariableDecl final
+    : public Decl,
+      public PtrBuilder<VariableDecl, Type, String, ExprPtr>
 {
 
-// Public Constants
 public:
-
-
-    /// Declaration kind
-    static constexpr DeclKind Kind = DeclKind::Variable;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -64,113 +53,103 @@ public:
      * @param      initExpr  The optional initialization expression.
      * @param      range     The declaration location within the source.
      */
-    explicit VariableDecl(Type type, String name, UniquePtr<Expr> initExpr = nullptr, SourceRange range = {});
+    explicit VariableDecl(
+        Type type,
+        String name,
+        ExprPtr initExpr  = nullptr,
+        SourceRange range = {})
+        : Decl(std::move(name), std::move(range))
+        , m_type(std::move(type))
+        , m_initExpr(std::move(initExpr))
+    {
+        // Nothing to do
+    }
 
-
-    /**
-     * @brief      Destructor.
-     */
-    ~VariableDecl();
-
-
-// Public Accessors & Mutators
 public:
-
+    // Accessors & Mutators
 
     /**
      * @brief      Return the variable type.
      *
      * @return     The variable type.
      */
-    const Type& getType() const noexcept;
-
+    const Type& type() const noexcept
+    {
+        return m_type;
+    }
 
     /**
      * @brief      Change the variable type.
      *
      * @param      type  The variable type.
      */
-    void setType(Type type);
-
-
-    /**
-     * @brief      Returns the initialization expression.
-     *
-     * @return     The initialization expression.
-     */
-    ViewPtr<const Expr> getInitExpr() const noexcept;
-
+    void setType(Type type)
+    {
+        m_type = type;
+    }
 
     /**
      * @brief      Returns the initialization expression.
      *
      * @return     The initialization expression.
      */
-    ViewPtr<Expr> getInitExpr() noexcept;
+    const ExprPtr& initExpr() const noexcept
+    {
+        return m_initExpr;
+    }
 
+    /**
+     * @brief      Returns the initialization expression.
+     *
+     * @tparam     EXPR  The expression type.
+     *
+     * @return     The initialization expression.
+     *
+     * @pre        `initExpr()->is<EXPR>()`.
+     */
+    template<typename EXPR>
+    EXPR& initExpr() noexcept
+    {
+        return initExpr()->cast<EXPR>();
+    }
+
+    /**
+     * @brief      Returns the initialization expression.
+     *
+     * @tparam     EXPR  The expression type.
+     *
+     * @return     The initialization expression.
+     *
+     * @pre        `initExpr()->is<EXPR>()`.
+     */
+    template<typename EXPR>
+    const EXPR& initExpr() const noexcept
+    {
+        return initExpr()->cast<EXPR>();
+    }
 
     /**
      * @brief      Change the initialization expression.
      *
      * @param      expr  The initialization expression.
      */
-    void setInitExpr(UniquePtr<Expr> expr);
+    void setInitExpr(ExprPtr expr)
+    {
+        m_initExpr = std::move(expr);
+    }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      type      The variable type.
-     * @param      name      The variable name.
-     * @param      initExpr  The optional initialization expression.
-     * @param      range     The declaration location within the source.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<VariableDecl> make(Type type, String name, UniquePtr<Expr> initExpr = nullptr, SourceRange range = {});
-
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Variable type.
     Type m_type;
 
     /// Initializer expression.
-    UniquePtr<Expr> m_initExpr;
+    ExprPtr m_initExpr;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-/* ************************************************************************* */
-
-inline const Type& VariableDecl::getType() const noexcept
-{
-    return m_type;
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<const Expr> VariableDecl::getInitExpr() const noexcept
-{
-    return makeView(m_initExpr);
-}
-
-/* ************************************************************************* */
-
-inline ViewPtr<Expr> VariableDecl::getInitExpr() noexcept
-{
-    return makeView(m_initExpr);
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

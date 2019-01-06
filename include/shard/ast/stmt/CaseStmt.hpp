@@ -42,14 +42,6 @@ class Expr;
 [[deprecated]] class CaseStmt final : public Stmt
 {
 
-// Public Constants
-public:
-
-
-    /// Expression kind
-    static constexpr StmtKind Kind = StmtKind::Case;
-
-
 // Public Ctors & Dtors
 public:
 

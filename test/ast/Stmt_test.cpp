@@ -35,19 +35,22 @@ namespace {
 struct TestStmt : public Stmt, public PtrBuilder<TestStmt>
 {
     TestStmt(SourceRange range = {}) noexcept
-        : Stmt(StmtKind::Expr, range) {}
+        : Stmt(range)
+    {
+        // Nothing
+    }
 };
 
 /* ************************************************************************ */
 
 struct TestStmt2 : public Stmt
 {
-
+    // Nothing
 };
 
 /* ************************************************************************ */
 
-}
+} // namespace
 
 /* ************************************************************************ */
 

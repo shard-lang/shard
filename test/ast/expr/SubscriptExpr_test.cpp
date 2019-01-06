@@ -63,7 +63,7 @@ TEST(SubscriptExpr, base)
         EXPECT_TRUE(expr.args().empty());
 
         // val[x, y]
-        PtrVector<Expr> args;
+        ExprPtrVector args;
         args.push_back(IdentifierExpr::make("x"));
         args.push_back(IdentifierExpr::make("y"));
 

@@ -19,12 +19,20 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
 #include "shard/ast/Stmt.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
+
+/* ************************************************************************* */
+
+class BreakStmt;
+
+/* ************************************************************************* */
+
+using BreakStmtPtr = UniquePtr<BreakStmt>;
 
 /* ************************************************************************* */
 
@@ -33,52 +41,26 @@ namespace shard::ast {
  *
  * @details    In the source it appears as: `break;`.
  */
-class BreakStmt final : public Stmt
+class BreakStmt final : public Stmt, public PtrBuilder<BreakStmt>
 {
 
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr StmtKind Kind = StmtKind::Break;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
      *
      * @param      range  Source range.
      */
-    explicit BreakStmt(SourceRange range = {});
-
-
-    /**
-     * @brief      Destructor.
-     */
-    ~BreakStmt();
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      range  Source range.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<BreakStmt> make(SourceRange range = {});
-
+    explicit BreakStmt(SourceRange range = {})
+        : Stmt(range)
+    {
+        // Nothing to do
+    }
 };
 
 /* ************************************************************************* */
 
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

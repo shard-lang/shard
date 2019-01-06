@@ -19,14 +19,22 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
-#include "shard/String.hpp"
 #include "shard/PtrVector.hpp"
+#include "shard/String.hpp"
 #include "shard/ast/decl/CompoundDecl.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
+
+/* ************************************************************************* */
+
+class ClassDecl;
+
+/* ************************************************************************* */
+
+using ClassDeclPtr = UniquePtr<ClassDecl>;
 
 /* ************************************************************************* */
 
@@ -35,20 +43,12 @@ namespace shard::ast {
  *
  * @details    In the source it appears as: `class <name> { <decls> }`.
  */
-[[deprecated]] class ClassDecl final : public CompoundDecl
+class ClassDecl final : public CompoundDecl,
+                        public PtrBuilder<ClassDecl, String, DeclPtrVector>
 {
 
-// Public Constants
 public:
-
-
-    /// Declaration kind
-    static constexpr DeclKind Kind = DeclKind::Class;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -57,34 +57,18 @@ public:
      * @param      decls  The list of declarations.
      * @param      range  The declaration location within the source.
      */
-    explicit ClassDecl(String name, PtrVector<Decl> decls = {}, SourceRange range = {});
-
-
-    /**
-     * @brief      Destructor.
-     */
-    ~ClassDecl();
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      name   The class name.
-     * @param      decls  The list of declarations.
-     * @param      range  The declaration location within the source.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<ClassDecl> make(String name, PtrVector<Decl> decls = {}, SourceRange range = {});
-
+    explicit ClassDecl(
+        String name,
+        DeclPtrVector decls = {},
+        SourceRange range   = {})
+        : CompoundDecl(std::move(name), std::move(decls), std::move(range))
+    {
+        // Nothing to do
+    }
 };
 
 /* ************************************************************************* */
 
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

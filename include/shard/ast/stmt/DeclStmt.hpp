@@ -20,7 +20,6 @@
 
 // Shard
 #include "shard/Assert.hpp"
-#include "shard/ViewPtr.hpp"
 #include "shard/ast/Decl.hpp"
 #include "shard/ast/Stmt.hpp"
 #include "shard/ast/utility.hpp"
@@ -28,6 +27,14 @@
 /* ************************************************************************* */
 
 namespace shard::ast {
+
+/* ************************************************************************* */
+
+class DeclStmt;
+
+/* ************************************************************************* */
+
+using DeclStmtPtr = UniquePtr<DeclStmt>;
 
 /* ************************************************************************* */
 
@@ -49,7 +56,7 @@ public:
      * @param      range  Source range.
      */
     explicit DeclStmt(DeclPtr decl, SourceRange range = {})
-        : Stmt(StmtKind::Decl, range)
+        : Stmt(range)
         , m_decl(std::move(decl))
     {
         SHARD_ASSERT(m_decl);
@@ -81,51 +88,31 @@ public:
     /**
      * @brief      Returns declaration.
      *
-     * @tparam     DeclType  Declaration type.
+     * @tparam     DECL  Declaration type.
      *
      * @return     Declaration.
      *
-     * @pre        `decl().is<DeclType>()`
+     * @pre        `decl().is<DECL>()`
      */
-    template<typename DeclType>
-    DeclType& decl() noexcept
+    template<typename DECL>
+    DECL& decl() noexcept
     {
-        return m_decl->cast<DeclType>();
+        return m_decl->cast<DECL>();
     }
 
     /**
      * @brief      Returns declaration.
      *
-     * @tparam     DeclType  Declaration type.
+     * @tparam     DECL  Declaration type.
      *
      * @return     Declaration.
      *
-     * @pre        `decl().is<DeclType>()`
+     * @pre        `decl().is<DECL>()`
      */
-    template<typename DeclType>
-    const DeclType& decl() const noexcept
+    template<typename DECL>
+    const DECL& decl() const noexcept
     {
-        return m_decl->cast<DeclType>();
-    }
-
-    /**
-     * @brief      Returns declaration.
-     *
-     * @return     Declaration.
-     */
-    [[deprecated]] ViewPtr<Decl> getDecl() noexcept
-    {
-        return makeView(m_decl);
-    }
-
-    /**
-     * @brief      Returns declaration.
-     *
-     * @return     Declaration.
-     */
-    [[deprecated]] ViewPtr<const Decl> getDecl() const noexcept
-    {
-        return makeView(m_decl);
+        return m_decl->cast<DECL>();
     }
 
     /**

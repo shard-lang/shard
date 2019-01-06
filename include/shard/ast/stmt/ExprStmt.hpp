@@ -19,7 +19,6 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/ViewPtr.hpp"
 #include "shard/ast/Expr.hpp"
 #include "shard/ast/Stmt.hpp"
 #include "shard/ast/utility.hpp"
@@ -27,6 +26,14 @@
 /* ************************************************************************* */
 
 namespace shard::ast {
+
+/* ************************************************************************* */
+
+class ExprStmt;
+
+/* ************************************************************************* */
+
+using ExprStmtPtr = UniquePtr<ExprStmt>;
 
 /* ************************************************************************* */
 
@@ -48,7 +55,7 @@ public:
      * @param      range  Source range.
      */
     explicit ExprStmt(ExprPtr expr = nullptr, SourceRange range = {})
-        : Stmt(StmtKind::Expr, range)
+        : Stmt(range)
         , m_expr(std::move(expr))
     {
         // Nothing to do
@@ -56,16 +63,6 @@ public:
 
 public:
     // Accessors & Mutators
-
-    /**
-     * @brief      Returns expression.
-     *
-     * @return     Expression.
-     */
-    ExprPtr& expr() noexcept
-    {
-        return m_expr;
-    }
 
     /**
      * @brief      Returns expression.
@@ -80,21 +77,31 @@ public:
     /**
      * @brief      Returns expression.
      *
+     * @tparam     EXPR  Expession type.
+     *
      * @return     Expression.
+     *
+     * @pre        `expr().is<EXPR>()`
      */
-    [[deprecated]] ViewPtr<Expr> getExpr() noexcept
+    template<typename EXPR>
+    EXPR& expr() noexcept
     {
-        return makeView(m_expr);
+        return expr()->cast<EXPR>();
     }
 
     /**
      * @brief      Returns expression.
      *
+     * @tparam     EXPR  Expession type.
+     *
      * @return     Expression.
+     *
+     * @pre        `expr().is<EXPR>()`
      */
-    [[deprecated]] ViewPtr<const Expr> getExpr() const noexcept
+    template<typename EXPR>
+    const EXPR& expr() const noexcept
     {
-        return makeView(m_expr);
+        return expr()->cast<EXPR>();
     }
 
     /**

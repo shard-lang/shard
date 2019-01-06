@@ -39,7 +39,6 @@ TEST(CaseStmt, base)
 
         stmt.addStmt(ExprStmt::make(nullptr));
 
-        EXPECT_EQ(StmtKind::Case, stmt.getKind());
         EXPECT_TRUE(stmt.is<CaseStmt>());
         ASSERT_NE(nullptr, stmt.getExpr());
         EXPECT_TRUE(stmt.getExpr()->is<IntLiteralExpr>());
@@ -52,7 +51,6 @@ TEST(CaseStmt, base)
 
         stmt.addStmt(ExprStmt::make(nullptr));
 
-        EXPECT_EQ(StmtKind::Case, stmt.getKind());
         EXPECT_TRUE(stmt.is<CaseStmt>());
         ASSERT_NE(nullptr, stmt.getExpr());
         EXPECT_TRUE(stmt.getExpr()->is<IntLiteralExpr>());
@@ -72,7 +70,6 @@ TEST(CaseStmt, base)
         // case 0:
         CaseStmt stmt(IntLiteralExpr::make(0));
 
-        EXPECT_EQ(StmtKind::Case, stmt.getKind());
         EXPECT_TRUE(stmt.is<CaseStmt>());
         ASSERT_NE(nullptr, stmt.getExpr());
         EXPECT_TRUE(stmt.getExpr()->is<IntLiteralExpr>());
@@ -84,7 +81,6 @@ TEST(CaseStmt, base)
         // case 0: ;
         stmt.setStmts(std::move(stmts));
 
-        EXPECT_EQ(StmtKind::Case, stmt.getKind());
         EXPECT_TRUE(stmt.is<CaseStmt>());
         ASSERT_NE(nullptr, stmt.getExpr());
         EXPECT_TRUE(stmt.getExpr()->is<IntLiteralExpr>());
@@ -96,7 +92,6 @@ TEST(CaseStmt, base)
         // case 0: ;
         const auto stmt = CaseStmt::make(IntLiteralExpr::make(0));
 
-        EXPECT_EQ(StmtKind::Case, stmt->getKind());
         EXPECT_TRUE(stmt->is<CaseStmt>());
         ASSERT_NE(nullptr, stmt->getExpr());
         EXPECT_TRUE(stmt->getExpr()->is<IntLiteralExpr>());

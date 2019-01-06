@@ -48,7 +48,7 @@ public:
      * @param      range  Location in source.
      */
     explicit CharLiteralExpr(char32_t value, SourceRange range = {}) noexcept
-        : LiteralExpr<char32_t>(ExprKind::CharLiteral, value, range)
+        : LiteralExpr<char32_t>(value, range)
     {
         // Nothing to do
     }

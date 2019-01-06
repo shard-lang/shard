@@ -37,7 +37,6 @@ TEST(DoWhileStmt, base)
         // do {} while (true);
         const DoWhileStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make({}));
 
-        EXPECT_EQ(StmtKind::DoWhile, stmt.getKind());
         EXPECT_TRUE(stmt.is<DoWhileStmt>());
         ASSERT_NE(nullptr, stmt.getCondExpr());
         EXPECT_TRUE(stmt.getCondExpr()->is<BoolLiteralExpr>());
@@ -49,7 +48,6 @@ TEST(DoWhileStmt, base)
         // do {} while (true);
         DoWhileStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make({}));
 
-        EXPECT_EQ(StmtKind::DoWhile, stmt.getKind());
         EXPECT_TRUE(stmt.is<DoWhileStmt>());
         ASSERT_NE(nullptr, stmt.getCondExpr());
         EXPECT_TRUE(stmt.getCondExpr()->is<BoolLiteralExpr>());
@@ -66,17 +64,16 @@ TEST(DoWhileStmt, base)
 
         ASSERT_NE(nullptr, stmt.getCondExpr());
         EXPECT_TRUE(stmt.getCondExpr()->is<BoolLiteralExpr>());
-        EXPECT_FALSE(stmt.getCondExpr()->cast<BoolLiteralExpr>().getValue());
+        EXPECT_FALSE(stmt.getCondExpr()->cast<BoolLiteralExpr>().value());
         ASSERT_NE(nullptr, stmt.getBodyStmt());
         EXPECT_TRUE(stmt.getBodyStmt()->is<CompoundStmt>());
-        EXPECT_EQ(1, stmt.getBodyStmt()->getStmts().size());
+        EXPECT_EQ(1, stmt.getBodyStmt()->stmts().size());
     }
 
     {
         // do {} while (true);
         const auto stmt = DoWhileStmt::make(BoolLiteralExpr::make(true), CompoundStmt::make({}));
 
-        EXPECT_EQ(StmtKind::DoWhile, stmt->getKind());
         EXPECT_TRUE(stmt->is<DoWhileStmt>());
         ASSERT_NE(nullptr, stmt->getCondExpr());
         EXPECT_TRUE(stmt->getCondExpr()->is<BoolLiteralExpr>());

@@ -19,12 +19,20 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
 #include "shard/ast/Stmt.hpp"
+#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
+
+/* ************************************************************************* */
+
+class ContinueStmt;
+
+/* ************************************************************************* */
+
+using ContinueStmtPtr = UniquePtr<ContinueStmt>;
 
 /* ************************************************************************* */
 
@@ -33,52 +41,26 @@ namespace shard::ast {
  *
  * @details    In the source it appears as: `continue;`.
  */
-[[deprecated]] class ContinueStmt final : public Stmt
+class ContinueStmt final : public Stmt, public PtrBuilder<ContinueStmt>
 {
 
-// Public Constants
 public:
-
-
-    /// Expression kind
-    static constexpr StmtKind Kind = StmtKind::Continue;
-
-
-// Public Ctors & Dtors
-public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
      *
      * @param      range  Source range.
      */
-    explicit ContinueStmt(SourceRange range = {});
-
-
-    /**
-     * @brief      Destructor.
-     */
-    ~ContinueStmt();
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      range  Source range.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<ContinueStmt> make(SourceRange range = {});
-
+    explicit ContinueStmt(SourceRange range = {})
+        : Stmt(range)
+    {
+        // Nothing to do
+    }
 };
 
 /* ************************************************************************* */
 
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

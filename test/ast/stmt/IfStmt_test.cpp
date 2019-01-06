@@ -38,65 +38,61 @@ TEST(IfStmt, base)
         // if (true) {}
         const IfStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make({}));
 
-        EXPECT_EQ(StmtKind::If, stmt.getKind());
         EXPECT_TRUE(stmt.is<IfStmt>());
-        ASSERT_NE(nullptr, stmt.getCondExpr());
-        EXPECT_TRUE(stmt.getCondExpr()->is<BoolLiteralExpr>());
-        ASSERT_NE(nullptr, stmt.getThenStmt());
-        EXPECT_TRUE(stmt.getThenStmt()->is<CompoundStmt>());
-        EXPECT_EQ(nullptr, stmt.getElseStmt());
+        ASSERT_NE(nullptr, stmt.condExpr());
+        EXPECT_TRUE(stmt.condExpr()->is<BoolLiteralExpr>());
+        ASSERT_NE(nullptr, stmt.thenStmt());
+        EXPECT_TRUE(stmt.thenStmt()->is<CompoundStmt>());
+        EXPECT_EQ(nullptr, stmt.elseStmt());
     }
 
     {
         // if (true) {} else ;
         const IfStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make({}), ExprStmt::make(nullptr));
 
-        EXPECT_EQ(StmtKind::If, stmt.getKind());
         EXPECT_TRUE(stmt.is<IfStmt>());
-        ASSERT_NE(nullptr, stmt.getCondExpr());
-        EXPECT_TRUE(stmt.getCondExpr()->is<BoolLiteralExpr>());
-        ASSERT_NE(nullptr, stmt.getThenStmt());
-        EXPECT_TRUE(stmt.getThenStmt()->is<CompoundStmt>());
-        ASSERT_NE(nullptr, stmt.getElseStmt());
-        EXPECT_TRUE(stmt.getElseStmt()->is<ExprStmt>());
+        ASSERT_NE(nullptr, stmt.condExpr());
+        EXPECT_TRUE(stmt.condExpr()->is<BoolLiteralExpr>());
+        ASSERT_NE(nullptr, stmt.thenStmt());
+        EXPECT_TRUE(stmt.thenStmt()->is<CompoundStmt>());
+        ASSERT_NE(nullptr, stmt.elseStmt());
+        EXPECT_TRUE(stmt.elseStmt()->is<ExprStmt>());
     }
 
     {
         // if (true) {} else ;
         IfStmt stmt(BoolLiteralExpr::make(true), CompoundStmt::make({}), ExprStmt::make(nullptr));
 
-        EXPECT_EQ(StmtKind::If, stmt.getKind());
         EXPECT_TRUE(stmt.is<IfStmt>());
-        ASSERT_NE(nullptr, stmt.getCondExpr());
-        EXPECT_TRUE(stmt.getCondExpr()->is<BoolLiteralExpr>());
-        ASSERT_NE(nullptr, stmt.getThenStmt());
-        EXPECT_TRUE(stmt.getThenStmt()->is<CompoundStmt>());
-        ASSERT_NE(nullptr, stmt.getElseStmt());
-        EXPECT_TRUE(stmt.getElseStmt()->is<ExprStmt>());
+        ASSERT_NE(nullptr, stmt.condExpr());
+        EXPECT_TRUE(stmt.condExpr()->is<BoolLiteralExpr>());
+        ASSERT_NE(nullptr, stmt.thenStmt());
+        EXPECT_TRUE(stmt.thenStmt()->is<CompoundStmt>());
+        ASSERT_NE(nullptr, stmt.elseStmt());
+        EXPECT_TRUE(stmt.elseStmt()->is<ExprStmt>());
 
         // if (1) return;
         stmt.setCondExpr(IntLiteralExpr::make(1));
         stmt.setThenStmt(ReturnStmt::make());
         stmt.setElseStmt(nullptr);
 
-        ASSERT_NE(nullptr, stmt.getCondExpr());
-        EXPECT_TRUE(stmt.getCondExpr()->is<IntLiteralExpr>());
-        ASSERT_NE(nullptr, stmt.getThenStmt());
-        EXPECT_TRUE(stmt.getThenStmt()->is<ReturnStmt>());
-        ASSERT_EQ(nullptr, stmt.getElseStmt());
+        ASSERT_NE(nullptr, stmt.condExpr());
+        EXPECT_TRUE(stmt.condExpr()->is<IntLiteralExpr>());
+        ASSERT_NE(nullptr, stmt.thenStmt());
+        EXPECT_TRUE(stmt.thenStmt()->is<ReturnStmt>());
+        ASSERT_EQ(nullptr, stmt.elseStmt());
     }
 
     {
         // if (true) {}
-        const auto stmt = IfStmt::make(BoolLiteralExpr::make(true), CompoundStmt::make({}));
+        const auto stmt = IfStmt::make(BoolLiteralExpr::make(true), CompoundStmt::make({}), nullptr);
 
-        EXPECT_EQ(StmtKind::If, stmt->getKind());
         EXPECT_TRUE(stmt->is<IfStmt>());
-        ASSERT_NE(nullptr, stmt->getCondExpr());
-        EXPECT_TRUE(stmt->getCondExpr()->is<BoolLiteralExpr>());
-        ASSERT_NE(nullptr, stmt->getThenStmt());
-        EXPECT_TRUE(stmt->getThenStmt()->is<CompoundStmt>());
-        EXPECT_EQ(nullptr, stmt->getElseStmt());
+        ASSERT_NE(nullptr, stmt->condExpr());
+        EXPECT_TRUE(stmt->condExpr()->is<BoolLiteralExpr>());
+        ASSERT_NE(nullptr, stmt->thenStmt());
+        EXPECT_TRUE(stmt->thenStmt()->is<CompoundStmt>());
+        EXPECT_EQ(nullptr, stmt->elseStmt());
     }
 }
 

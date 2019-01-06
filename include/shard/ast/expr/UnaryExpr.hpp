@@ -66,7 +66,7 @@ public:
     /**
      * @brief      Unary operation kind.
      */
-    using OpKind = UnaryOpKind;
+    using OpKind [[deprecated]] = UnaryOpKind;
 
 public:
     // Ctors & Dtors
@@ -79,7 +79,7 @@ public:
      * @param      range  Location in source.
      */
     explicit UnaryExpr(UnaryOpKind op, ExprPtr expr, SourceRange range = {})
-        : Expr(ExprKind::Unary, range)
+        : Expr(range)
         , m_operator(op)
         , m_expr(std::move(expr))
     {
@@ -100,16 +100,6 @@ public:
     }
 
     /**
-     * @brief      Returns operation kind.
-     *
-     * @return     Operation kind.
-     */
-    [[deprecated]] UnaryOpKind getOpKind() const noexcept
-    {
-        return m_operator;
-    }
-
-    /**
      * @brief      Change operator.
      *
      * @param      op    The new operator.
@@ -118,13 +108,6 @@ public:
     {
         m_operator = op;
     }
-
-    /**
-     * @brief      Change operation kind.
-     *
-     * @param      op    The new operation kind.
-     */
-    [[deprecated]] void setOpKind(UnaryOpKind op) { m_operator = op; }
 
     /**
      * @brief      Returns the inner expression.
@@ -149,51 +132,31 @@ public:
     /**
      * @brief      Returns the inner expression.
      *
-     * @tparam     ExprType  The required expression type.
+     * @tparam     EXPR  The required expression type.
      *
      * @return     The inner expression.
      *
-     * @pre        `expr()->is<ExprType>()`
+     * @pre        `expr()->is<EXPR>()`
      */
-    template<typename ExprType>
-    const ExprType& expr() const noexcept
+    template<typename EXPR>
+    const EXPR& expr() const noexcept
     {
-        return m_expr->cast<ExprType>();
+        return m_expr->cast<EXPR>();
     }
 
     /**
      * @brief      Returns the inner expression.
      *
-     * @tparam     ExprType  The required expression type.
+     * @tparam     EXPR  The required expression type.
      *
      * @return     The inner expression.
      *
-     * @pre        `expr()->is<ExprType>()`
+     * @pre        `expr()->is<EXPR>()`
      */
-    template<typename ExprType>
-    ExprType& expr() noexcept
+    template<typename EXPR>
+    EXPR& expr() noexcept
     {
-        return m_expr->cast<ExprType>();
-    }
-
-    /**
-     * @brief      Returns subexpression.
-     *
-     * @return     Subexpression.
-     */
-    [[deprecated]] ViewPtr<const Expr> getExpr() const noexcept
-    {
-        return makeView(m_expr);
-    }
-
-    /**
-     * @brief      Returns subexpression.
-     *
-     * @return     Subexpression.
-     */
-    [[deprecated]] ViewPtr<Expr> getExpr() noexcept
-    {
-        return makeView(m_expr);
+        return m_expr->cast<EXPR>();
     }
 
     /**
@@ -211,7 +174,7 @@ private:
     // Data Members
 
     /// OpKind.
-    OpKind m_operator;
+    UnaryOpKind m_operator;
 
     /// Operand.
     ExprPtr m_expr;

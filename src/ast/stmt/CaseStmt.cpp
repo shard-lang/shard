@@ -30,7 +30,7 @@ namespace shard::ast {
 /* ************************************************************************* */
 
 CaseStmt::CaseStmt(UniquePtr<Expr> expr, PtrVector<Stmt> stmts, SourceRange range)
-    : Stmt(Kind, range)
+    : Stmt(range)
     , m_expr(std::move(expr))
     , m_statements(std::move(stmts))
 {

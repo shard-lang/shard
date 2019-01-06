@@ -22,38 +22,13 @@
 #include <utility>
 
 // Shard
-#include "shard/Assert.hpp"
 #include "shard/UniquePtr.hpp"
-#include "shard/ViewPtr.hpp"
-#include "shard/PtrVector.hpp"
+#include "shard/Vector.hpp"
 #include "shard/ast/Node.hpp"
-#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
-
-/* ************************************************************************* */
-
-/**
- * @brief      Type of expression.
- */
-enum class [[deprecated]] ExprKind {
-    NullLiteral,
-    BoolLiteral,
-    IntLiteral,
-    FloatLiteral,
-    CharLiteral,
-    StringLiteral,
-    Binary,
-    Unary,
-    Ternary,
-    Paren,
-    Identifier,
-    FunctionCall,
-    MemberAccess,
-    Subscript,
-};
 
 /* ************************************************************************* */
 
@@ -76,19 +51,6 @@ public:
      */
     virtual ~Expr() = default;
 
-public:
-    // Accessors & Mutators
-
-    /**
-     * @brief      Returns expression kind.
-     *
-     * @return     Expression kind.
-     */
-    [[deprecated]] ExprKind getKind() const noexcept
-    {
-        return m_kind;
-    }
-
 protected:
     // Ctors & Dtors
 
@@ -98,18 +60,11 @@ protected:
      * @param      kind   Expression kind.
      * @param      range  Source range.
      */
-    explicit Expr(ExprKind kind, SourceRange range) noexcept
+    explicit Expr(SourceRange range) noexcept
         : Node(range)
-        , m_kind(kind)
     {
         // Nothing to do
     }
-
-private:
-    // Data Members
-
-    /// Expression kind.
-    ExprKind m_kind;
 };
 
 /* ************************************************************************* */
@@ -122,14 +77,12 @@ private:
 template<typename T>
 class LiteralExpr : public Expr
 {
+
 public:
     // Types
 
     /// Value type.
     using Value = T;
-
-    /// Value type.
-    using ValueType [[deprecated]] = T;
 
 public:
     // Accessors & Mutators
@@ -140,16 +93,6 @@ public:
      * @return     The literal value.
      */
     const Value& value() const noexcept
-    {
-        return m_value;
-    }
-
-    /**
-     * @brief      Returns the literal value.
-     *
-     * @return     The literal value.
-     */
-    [[deprecated]] const Value& getValue() const noexcept
     {
         return m_value;
     }
@@ -174,11 +117,8 @@ protected:
      * @param      value  The literal value.
      * @param      range  Location in source.
      */
-    explicit LiteralExpr(
-        ExprKind kind,
-        Value value,
-        SourceRange range = {}) noexcept
-        : Expr(kind, range)
+    explicit LiteralExpr(Value value, SourceRange range = {}) noexcept
+        : Expr(range)
         , m_value(value)
     {
         // Nothing to do

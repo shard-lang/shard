@@ -35,7 +35,7 @@ namespace {
 struct TestExpr : public Expr, public PtrBuilder<TestExpr>
 {
     explicit TestExpr(SourceRange range = {}) noexcept
-        : Expr(ExprKind::NullLiteral, range) {}
+        : Expr(range) {}
 };
 
 /* ************************************************************************ */

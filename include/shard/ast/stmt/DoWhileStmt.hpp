@@ -43,14 +43,6 @@ class Expr;
 [[deprecated]] class DoWhileStmt final : public Stmt
 {
 
-// Public Constants
-public:
-
-
-    /// Expression kind
-    static constexpr StmtKind Kind = StmtKind::DoWhile;
-
-
 // Public Ctors & Dtors
 public:
 

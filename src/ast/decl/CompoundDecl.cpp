@@ -23,33 +23,6 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-CompoundDecl::CompoundDecl(DeclKind kind, String name, PtrVector<Decl> decls, SourceRange range)
-    : Decl(kind, std::move(name), std::move(range))
-    , m_declarations(std::move(decls))
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-CompoundDecl::~CompoundDecl() = default;
-
-/* ************************************************************************* */
-
-void CompoundDecl::setDecls(PtrVector<Decl> decls)
-{
-    m_declarations = std::move(decls);
-}
-
-/* ************************************************************************* */
-
-void CompoundDecl::addDecl(UniquePtr<Decl> decl)
-{
-    m_declarations.push_back(std::move(decl));
-}
-
-/* ************************************************************************* */
-
 }
 
 /* ************************************************************************* */

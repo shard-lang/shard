@@ -33,7 +33,6 @@ TEST(ContinueStmt, base)
         // continue;
         const ContinueStmt stmt;
 
-        EXPECT_EQ(StmtKind::Continue, stmt.getKind());
         EXPECT_TRUE(stmt.is<ContinueStmt>());
     }
 
@@ -41,7 +40,6 @@ TEST(ContinueStmt, base)
         // continue;
         const auto stmt = ContinueStmt::make();
 
-        EXPECT_EQ(StmtKind::Continue, stmt->getKind());
         EXPECT_TRUE(stmt->is<ContinueStmt>());
     }
 }

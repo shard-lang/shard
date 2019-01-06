@@ -19,8 +19,6 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/UniquePtr.hpp"
-#include "shard/PtrVector.hpp"
 #include "shard/ast/Decl.hpp"
 
 /* ************************************************************************* */
@@ -33,81 +31,68 @@ namespace shard::ast {
  * @brief      Base class for declaration which are compound of other
  *             declarations (class, namespace, ...).
  */
-[[deprecated]] class CompoundDecl : public Decl
+class CompoundDecl : public Decl
 {
 
-// Public Ctors & Dtors
 public:
-
-
-    /**
-     * @brief      Destructor.
-     */
-    ~CompoundDecl();
-
-
-// Public Accessors & Mutators
-public:
-
+    // Accessors & Mutators
 
     /**
      * @brief      Returns declarations.
      *
      * @return     The declarations.
      */
-    const PtrVector<Decl>& getDecls() const noexcept;
-
+    const DeclPtrVector& decls() const noexcept
+    {
+        return m_declarations;
+    }
 
     /**
      * @brief      Set declarations.
      *
      * @param      decls  The declarations.
      */
-    void setDecls(PtrVector<Decl> decls);
-
+    void setDecls(DeclPtrVector decls)
+    {
+        m_declarations = std::move(decls);
+    }
 
     /**
      * @brief      Add declaration.
      *
      * @param      decl  The declaration to add.
      */
-    void addDecl(UniquePtr<Decl> decl);
+    void addDecl(DeclPtr decl)
+    {
+        m_declarations.push_back(std::move(decl));
+    }
 
-
-// Protected Ctors & Dtors
 public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
      *
-     * @param      kind   The declaration kind.
      * @param      name   The declaration name in local scope naming scheme.
      * @param      decls  The declarations.
      * @param      range  The declaration location within the source.
      */
-    explicit CompoundDecl(DeclKind kind, String name, PtrVector<Decl> decls, SourceRange range);
+    CompoundDecl(String name, DeclPtrVector decls, SourceRange range)
+        : Decl(std::move(name), std::move(range))
+        , m_declarations(std::move(decls))
+    {
+        // Nothing to do
+    }
 
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Declarations
-    PtrVector<Decl> m_declarations;
-
+    DeclPtrVector m_declarations;
 };
 
 /* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
 
-inline const PtrVector<Decl>& CompoundDecl::getDecls() const noexcept
-{
-    return m_declarations;
-}
-
-/* ************************************************************************* */
-
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

@@ -49,7 +49,7 @@ public:
      * @param      range  Location in source.
      */
     explicit StringLiteralExpr(String value, SourceRange range = {})
-        : LiteralExpr<String>(ExprKind::StringLiteral, std::move(value), range)
+        : LiteralExpr<String>(std::move(value), range)
     {
         // Nothing to do
     }

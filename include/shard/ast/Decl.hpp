@@ -20,25 +20,13 @@
 
 // Shard
 #include "shard/String.hpp"
-#include "shard/Vector.hpp"
 #include "shard/UniquePtr.hpp"
+#include "shard/Vector.hpp"
 #include "shard/ast/Node.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
-
-/* ************************************************************************* */
-
-/**
- * @brief      Kind of Declaration.
- */
-enum class [[deprecated]] DeclKind {
-    Variable,
-    Function,
-    Class,
-    Namespace,
-};
 
 /* ************************************************************************* */
 
@@ -91,33 +79,11 @@ public:
     // Accessors & Mutators
 
     /**
-     * @brief      Returns the declaration kind.
-     *
-     * @details    Use for specific declaration type identification.
-     *
-     * @return     The declaration kind.
-     */
-    [[deprecated]] DeclKind getKind() const noexcept
-    {
-        return m_kind;
-    }
-
-    /**
      * @brief      Returns the declaration name in local scope naming scheme.
      *
      * @return     The declaration name.
      */
     const String& name() const noexcept
-    {
-        return m_name;
-    }
-
-    /**
-     * @brief      Returns the declaration name in local scope naming scheme.
-     *
-     * @return     The declaration name.
-     */
-    [[deprecated]] const String& getName() const noexcept
     {
         return m_name;
     }
@@ -143,16 +109,6 @@ public:
     }
 
     /**
-     * @brief      Returns the declaration access specifier.
-     *
-     * @return     The access specifier.
-     */
-    [[deprecated]] DeclAccessSpecifier getAccessSpecifier() const noexcept
-    {
-        return m_accessSpecifier;
-    }
-
-    /**
      * @brief      Change the declaration access specifier.
      *
      * @param      spec  The access specifier.
@@ -172,9 +128,8 @@ protected:
      * @param      name   The declaration name in local scope naming scheme.
      * @param      range  The declaration location within the source.
      */
-    explicit Decl(DeclKind kind, String name, SourceRange range)
+    explicit Decl(String name, SourceRange range)
         : Node(range)
-        , m_kind(kind)
         , m_name(std::move(name))
     {
         // Nothing to do
@@ -182,9 +137,6 @@ protected:
 
 private:
     // Data Members
-
-    /// Declaration kind.
-    DeclKind m_kind;
 
     /// Declaration name.
     String m_name;

@@ -43,14 +43,6 @@ class CompoundStmt;
 [[deprecated]] class SwitchStmt final : public Stmt
 {
 
-// Public Constants
-public:
-
-
-    /// Expression kind
-    static constexpr StmtKind Kind = StmtKind::Switch;
-
-
 // Public Ctors & Dtors
 public:
 

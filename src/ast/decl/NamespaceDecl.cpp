@@ -23,25 +23,6 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-NamespaceDecl::NamespaceDecl(String name, PtrVector<Decl> decls, SourceRange range)
-    : CompoundDecl(Kind, std::move(name), std::move(decls), std::move(range))
-{
-    // Nothing to do
-}
-
-/* ************************************************************************* */
-
-NamespaceDecl::~NamespaceDecl() = default;
-
-/* ************************************************************************* */
-
-UniquePtr<NamespaceDecl> NamespaceDecl::make(String name, PtrVector<Decl> decls, SourceRange range)
-{
-    return makeUnique<NamespaceDecl>(std::move(name), std::move(decls), std::move(range));
-}
-
-/* ************************************************************************* */
-
 }
 
 /* ************************************************************************* */
