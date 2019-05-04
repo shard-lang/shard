@@ -73,7 +73,7 @@ TEST(IfStmt, base)
 
         // if (1) return;
         stmt.setCondExpr(IntLiteralExpr::make(1));
-        stmt.setThenStmt(ReturnStmt::make());
+        stmt.setThenStmt(ReturnStmt::make(nullptr));
         stmt.setElseStmt(nullptr);
 
         ASSERT_NE(nullptr, stmt.condExpr());

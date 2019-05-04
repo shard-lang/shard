@@ -35,7 +35,7 @@ namespace shard::ast {
  *
  * @details    In the source it appears as: `default: <bodyStmt>`.
  */
-[[deprecated]] class DefaultStmt final : public Stmt
+class [[deprecated]] DefaultStmt final : public Stmt
 {
 
 // Public Ctors & Dtors

@@ -65,7 +65,7 @@ TEST(ReturnStmt, base)
 
     {
         // return;
-        const auto stmt = ReturnStmt::make();
+        const auto stmt = ReturnStmt::make(nullptr);
 
         EXPECT_TRUE(stmt->is<ReturnStmt>());
         ASSERT_EQ(nullptr, stmt->resExpr());

@@ -22,8 +22,8 @@
 #include <utility>
 
 // Shard
-#include "shard/UniquePtr.hpp"
 #include "shard/SourceRange.hpp"
+#include "shard/UniquePtr.hpp"
 
 /* ************************************************************************* */
 
@@ -56,6 +56,6 @@ struct PtrBuilder
 
 /* ************************************************************************* */
 
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

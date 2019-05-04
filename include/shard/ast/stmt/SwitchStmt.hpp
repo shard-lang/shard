@@ -40,7 +40,7 @@ class CompoundStmt;
  *
  * @details    In the source it appears as: `switch (<condExpr>) <bodyStmt>`.
  */
-[[deprecated]] class SwitchStmt final : public Stmt
+class [[deprecated]] SwitchStmt final : public Stmt
 {
 
 // Public Ctors & Dtors

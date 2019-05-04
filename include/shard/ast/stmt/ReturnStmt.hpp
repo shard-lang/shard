@@ -34,7 +34,7 @@ namespace shard::ast {
  *
  * @details    In the source it appears as: `return <resExpr>;` or `return;`.
  */
-class ReturnStmt final : public Stmt
+class ReturnStmt final : public Stmt, public PtrBuilder<ReturnStmt, ExprPtr>
 {
 
 public:
@@ -104,24 +104,6 @@ public:
     void setResExpr(UniquePtr<Expr> expr)
     {
         m_resExpr = std::move(expr);
-    }
-
-public:
-    // Operations
-
-    /**
-     * @brief      Construct object.
-     *
-     * @param      resExpr  Result expression.
-     * @param      range    Source range.
-     *
-     * @return     Created unique pointer.
-     */
-    static UniquePtr<ReturnStmt> make(
-        ExprPtr resExpr   = nullptr,
-        SourceRange range = {})
-    {
-        return makeUnique<ReturnStmt>(std::move(resExpr), range);
     }
 
 private:

@@ -36,9 +36,9 @@ enum class [[deprecated]] TypeKind
     /// variable type.
     Var,
 
-    /// Automatic variable type which is deduced by initializer expression. The
-    /// type cannot be changed later and only values with same type can be
-    /// stored withing the variable.
+    /// Automatic variable type which is deduced by initializer expression.
+    /// The type cannot be changed later and only values with same type can
+    /// be stored withing the variable.
     Auto,
 
     /// No type. Usable only as functions return type.
@@ -71,13 +71,14 @@ enum class [[deprecated]] TypeKind
  * @details    This class is used for store information about variable (and
  *             function return type and parameters) type. Variable type can be
  *             one of the builtin types or user defined type.
+ *
+ * @deprecated The type it self is not deprecated but it's structure is
+ *             deprecated.
  */
-[[deprecated]] class Type
+class [[deprecated]] Type
 {
-
-// Public Ctors & Dtors
 public:
-
+    // Ctors & Dtors
 
     /**
      * @brief      Constructor.
@@ -85,7 +86,6 @@ public:
      * @param      kind  Type kind. The `TypeKind::Typename` cannot be used.
      */
     Type(TypeKind kind) noexcept;
-
 
     /**
      * @brief      Constructor.
@@ -96,37 +96,41 @@ public:
      */
     Type(String name);
 
-
-// Public Accessors & Mutators
 public:
-
+    // Accessors & Mutators
 
     /**
      * @brief      Returns type kind
      *
      * @return     The kind.
      */
-    TypeKind getKind() const noexcept;
-
+    TypeKind getKind() const noexcept
+    {
+        return m_kind;
+    }
 
     /**
      * @brief      Determines if type is builtin.
      *
      * @return     True if builtin, False otherwise.
      */
-    bool isBuiltin() const noexcept;
-
+    bool isBuiltin() const noexcept
+    {
+        return getKind() != TypeKind::Typename;
+    }
 
     /**
      * @brief      Returns the typename.
      *
      * @return     The name.
      */
-    const String& getName() const noexcept;
+    const String& getName() const noexcept
+    {
+        return m_name;
+    }
 
-
-// Private Data Members
 private:
+    // Data Members
 
     /// Type kind.
     TypeKind m_kind;
@@ -157,33 +161,6 @@ bool operator==(const Type& lhs, const Type& rhs) noexcept;
  *
  * @return     Comparision result.
  */
-bool operator!=(const Type& lhs, const Type& rhs) noexcept;
-
-/* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
-
-inline TypeKind Type::getKind() const noexcept
-{
-    return m_kind;
-}
-
-/* ************************************************************************* */
-
-inline bool Type::isBuiltin() const noexcept
-{
-    return getKind() != TypeKind::Typename;
-}
-
-/* ************************************************************************* */
-
-inline const String& Type::getName() const noexcept
-{
-    return m_name;
-}
-
-/* ************************************************************************* */
-
 inline bool operator!=(const Type& lhs, const Type& rhs) noexcept
 {
     return !operator==(lhs, rhs);
@@ -191,6 +168,6 @@ inline bool operator!=(const Type& lhs, const Type& rhs) noexcept
 
 /* ************************************************************************* */
 
-}
+} // namespace shard::ast
 
 /* ************************************************************************* */

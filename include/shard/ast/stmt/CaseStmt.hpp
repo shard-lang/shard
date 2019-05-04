@@ -39,7 +39,7 @@ class Expr;
  *
  * @details    In the source it appears as: `case <expr>: <bodyStmt>`.
  */
-[[deprecated]] class CaseStmt final : public Stmt
+class [[deprecated]] CaseStmt final : public Stmt
 {
 
 // Public Ctors & Dtors

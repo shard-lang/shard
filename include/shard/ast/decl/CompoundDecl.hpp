@@ -67,7 +67,7 @@ public:
         m_declarations.push_back(std::move(decl));
     }
 
-public:
+protected:
     // Ctors & Dtors
 
     /**

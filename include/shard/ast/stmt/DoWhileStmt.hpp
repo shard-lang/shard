@@ -40,7 +40,7 @@ class Expr;
  *
  * @details    In the source it appears as: `do <bodyStmt> while (<condExpr>);`.
  */
-[[deprecated]] class DoWhileStmt final : public Stmt
+class [[deprecated]] DoWhileStmt final : public Stmt
 {
 
 // Public Ctors & Dtors

@@ -31,7 +31,7 @@ namespace shard::ast {
 /**
  * @brief      The compilation unit.
  */
-[[deprecated]] class Unit
+class [[deprecated]] Unit
 {
 
 // Public Ctors & Dtors

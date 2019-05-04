@@ -40,7 +40,7 @@ class Expr;
  * @details    In the source it appears as: `for (<initStmt> <condExpr> ;
  *             <incExpr>) <bodyStmt>`.
  */
-[[deprecated]] class ForStmt final : public Stmt
+class [[deprecated]] ForStmt final : public Stmt
 {
 
 // Public Ctors & Dtors
