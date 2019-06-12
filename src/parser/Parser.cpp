@@ -18,801 +18,245 @@
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace parser {
-
-using namespace ast;
-using namespace tokenizer;
+namespace shard::parser {
 
 /* ************************************************************************* */
 
-UniquePtr<Unit> Parser::parseUnit()
+namespace {
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Calculate node end location from start location and token value.
+ *
+ * @param      start  The start location.
+ * @param      value  The token value.
+ *
+ * @return     End location.
+ */
+SourceLocation endLocation(const SourceLocation& start, const String& value)
 {
-	auto unit = makeUnique<Unit>(parseDeclList());
-
-	if (!m_tokenizer.empty())
-	{
-		throw ExpectedDeclException();
-	}
-
-	return std::move(unit);
+    return {start.line(), start.column() + int(value.size())};
 }
 
 /* ************************************************************************* */
 
-PtrDynamicArray<Decl> Parser::parseDeclList()
+} // namespace
+
+/* ************************************************************************* */
+
+ast::IntLiteralExpr Parser::parseIntLiteralExpr()
 {
-	PtrDynamicArray<Decl> list;
+    checkEol();
 
-	while (!m_tokenizer.empty())
-	{
-		switch (m_tokenizer.get().getType())
-		{
-			case TokenType::Class:
-				m_tokenizer.toss();  
-				list.push_back(parseClassDecl());
-				continue;
-			case TokenType::Auto:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::Auto)));
-				continue;
-			case TokenType::Var:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::Var)));
-				continue;
-			case TokenType::Int:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::Int)));
-				continue;
-			case TokenType::Bool:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::Bool)));
-				continue;
-			case TokenType::Char:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::Char)));
-				continue;
-			case TokenType::Float:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::Float)));
-				continue;
-			case TokenType::String:
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(Type(TypeKind::String)));
-				continue;
-			case TokenType::Identifier:
-			{
-				const Type type(getIdentifier());
-				m_tokenizer.toss();
-				list.push_back(parseFunctionOrVariableDecl(type));
-				continue;
-			}
+    // Must be number
+    check(tokenizer::TokenType::NumberLiteral);
 
-			default:
-				throw ExpectedDeclException();
-		}
-	}
+    auto value = std::stoi(token().value());
+    auto start = token().location();
+    auto end   = endLocation(start, token().value());
 
-	return std::move(list);
+    next();
+
+    return ast::IntLiteralExpr{value, {start, end}};
 }
 
 /* ************************************************************************* */
 
-UniquePtr<ClassDecl> Parser::parseClassDecl()
+ast::IdentifierExpr Parser::parseIdentifierExpr()
 {
-	String name = getIdentifier();
-	m_tokenizer.toss();
+    checkEol();
 
-	if (!match(TokenType::BraceO))
-	{
-		throw ExpectedBraceException();
-	}
+    // Must be identifier
+    check(tokenizer::TokenType::Identifier);
 
-	auto decls = parseDeclList();
+    auto value = token().value();
+    auto start = token().location();
+    auto end   = endLocation(start, token().value());
 
-	if (!match(TokenType::BraceC))
-	{
-		throw ExpectedClosingBraceException();
-	}
+    next();
 
-	return makeUnique<ClassDecl>(name, std::move(decls));
+    return ast::IdentifierExpr{value, {start, end}};
 }
 
 /* ************************************************************************* */
 
-UniquePtr<VariableDecl> Parser::parseVariableDecl(const Type type)
+ast::ParenExpr Parser::parseParenExpr()
 {
-	String name = getIdentifier();
-	m_tokenizer.toss();
+    checkEol();
 
-	return makeUnique<VariableDecl>(type, name, parseVariableInit());
+    // "(", EXPRESSION, ")"
+
+    auto start = token().location();
+
+    requireOther("(");
+
+    // Parse expression
+    auto expr = parseExpr();
+
+    requireOther(")");
+
+    auto cur = token().location();
+    auto end = endLocation(cur, token().value());
+
+    return ast::ParenExpr{std::move(expr), {start, end}};
 }
 
 /* ************************************************************************* */
 
-UniquePtr<Decl> Parser::parseFunctionOrVariableDecl(const Type type)
+ast::ExprPtr Parser::parsePrimaryExpr()
 {
-	String name = getIdentifier();
-	m_tokenizer.toss();
-	
-	if (match(TokenType::ParenO))
-	{
-		PtrDynamicArray<VariableDecl> params;
+    checkEol();
 
-		if (!match(TokenType::ParenC))
-		{
-			params = parseDeclArray();
-
-			if (!match(TokenType::ParenC))
-			{
-				throw ExpectedClosingParenException();
-			}
-		}
-
-		if (!match(TokenType::BraceO))
-		{
-			throw ExpectedBraceException();
-		}
-
-		return makeUnique<FunctionDecl>(type, name, parseCompoundStmt(), std::move(params));
-	}
-
-	auto init = parseVariableInit();
-
-	if (!match(TokenType::Semicolon))
-	{
-		throw ExpectedSemicolonException();
-	}
-
-	return makeUnique<VariableDecl>(type, name, std::move(init));
+    // IDENTIFIER_EXPRESSION
+    if (is(tokenizer::TokenType::Identifier))
+    {
+        return makeUnique<ast::IdentifierExpr>(parseIdentifierExpr());
+    }
+    // LITERAL_EXPRESSION
+    else if (is(tokenizer::TokenType::NumberLiteral))
+    {
+        return makeUnique<ast::IntLiteralExpr>(parseIntLiteralExpr());
+    }
+    // PAREN_EXPRESSION
+    else if (isOther("("))
+    {
+        return makeUnique<ast::ParenExpr>(parseParenExpr());
+    }
+    // Unknown
+    else
+    {
+        throw ParseError("unsupported expression", token().location());
+    }
 }
 
 /* ************************************************************************* */
 
-UniquePtr<Expr> Parser::parseVariableInit()
+ast::ExprPtr Parser::parsePrefixExpr()
 {
-	UniquePtr<Expr> init = nullptr;
+    checkEol();
 
-	if (match(TokenType::Equal))
-	{
-		init = parseExpr();
-	}
+    auto start = token().location();
 
-	return std::move(init);
+    if (!isPrefixOperator())
+        return parsePostfixExpr();
+
+    auto op = token().value();
+    next();
+
+    // Parse another expression
+    auto expr = parsePrefixExpr();
+
+    auto cur = token().location();
+    auto end = endLocation(cur, token().value());
+
+    return makeUnique<ast::PrefixUnaryExpr>(
+        std::move(op), std::move(expr), SourceRange{start, end});
 }
 
 /* ************************************************************************* */
 
-PtrDynamicArray<VariableDecl> Parser::parseDeclArray()
+ast::ExprPtr Parser::parsePostfixExpr()
 {
-	PtrDynamicArray<VariableDecl> temp;
+    checkEol();
 
-	do
-	{
-		switch (m_tokenizer.get().getType())
-		{
-			case TokenType::Auto:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::Auto)));
-				break;
-			case TokenType::Var:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::Var)));
-				break;
-			case TokenType::Int:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::Int)));
-				break;
-			case TokenType::Bool:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::Bool)));
-				break;
-			case TokenType::Char:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::Char)));
-				break;
-			case TokenType::Float:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::Float)));
-				break;
-			case TokenType::String:
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(Type(TypeKind::String)));
-				break;
-			case TokenType::Identifier:
-			{
-				const Type type(getIdentifier());
-				m_tokenizer.toss();
-				temp.push_back(parseVariableDecl(type));
-				break;
-			}
-			default:
-				throw ExpectedDeclException();
-		}
-	}
-	while (match(TokenType::Comma));
+    auto start = token().location();
 
-	return std::move(temp);
+    ast::ExprPtr expr1 = parsePrimaryExpr();
+
+    while (!isEmpty() && isPostfixOperator())
+    {
+        auto op  = token().value();
+        auto cur = token().location();
+        auto end = endLocation(cur, token().value());
+
+        next();
+
+        expr1 = makeUnique<ast::PostfixUnaryExpr>(
+            std::move(expr1), std::move(op), SourceRange{start, end});
+    }
+
+    return expr1;
 }
 
 /* ************************************************************************* */
 
-PtrDynamicArray<Expr> Parser::parseExprArray()
+ast::ExprPtr Parser::parseBinaryExpr()
 {
-	PtrDynamicArray<Expr> temp;
+    checkEol();
 
-	do
-	{
-		temp.push_back(parseExpr());
-	}
-	while (match(TokenType::Comma));
+    auto start = token().location();
 
-	return std::move(temp);
+    // Parse prefix operator
+    auto expr1 = parsePrefixExpr();
+
+    if (isBinaryOperator())
+    {
+        auto op = token().value();
+        next();
+
+        auto expr2 = parseBinaryExpr();
+
+        auto end = expr2->sourceRange().end();
+
+        return makeUnique<ast::BinaryExpr>(
+            std::move(op),
+            std::move(expr1),
+            std::move(expr2),
+            SourceRange{start, end});
+    }
+    else
+    {
+        return expr1;
+    }
 }
 
 /* ************************************************************************* */
 
-UniquePtr<Stmt> Parser::parseStmt()
+ast::ExprPtr Parser::parseExpr()
 {
-	UniquePtr<Stmt> temp;
-
-	switch (m_tokenizer.get().getType())
-	{
-		case TokenType::Semicolon:
-			m_tokenizer.toss();
-			return nullptr;
-		case TokenType::BraceO:
-			m_tokenizer.toss();
-			return parseCompoundStmt();
-		case TokenType::Return:
-			m_tokenizer.toss();
-			if (match(TokenType::Semicolon))
-			{
-				return makeUnique<ReturnStmt>(nullptr);
-			}
-			temp = makeUnique<ReturnStmt>(parseExpr());
-			break;
-		case TokenType::Break:
-			m_tokenizer.toss();
-			temp = makeUnique<BreakStmt>();
-			break;
-		case TokenType::Continue: 
-			m_tokenizer.toss();
-			temp = makeUnique<ContinueStmt>();
-			break;
-		case TokenType::Throw: 
-			m_tokenizer.toss();
-			temp = makeUnique<ReturnStmt>(parseExpr());
-			break;
-		case TokenType::Do:
-			m_tokenizer.toss();
-			temp = parseDoWhileStmt();
-			break;
-		case TokenType::If:
-			m_tokenizer.toss();
-			return parseIfStmt();
-		case TokenType::For: 
-			m_tokenizer.toss();
-			return parseForStmt();
-		case TokenType::While: 
-			m_tokenizer.toss();
-			return parseWhileStmt();
-		case TokenType::Switch:
-			m_tokenizer.toss();
-			return parseSwitchStmt();
-		case TokenType::Try:
-			m_tokenizer.toss();
-			return parseTryCatchStmt();
-		case TokenType::Auto:
-			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Auto));
-			break;
-		case TokenType::Var:
-			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Var));
-			break;
-		case TokenType::Int:
-			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Int));
-			break;
-		case TokenType::Bool:
-			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Bool));
-			break;
-		case TokenType::Char:
-			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Char));
-			break;
-		case TokenType::Float:
-			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::Float));
-			break;
-		case TokenType::String:
-			m_tokenizer.toss();
-			temp = makeUnique<DeclStmt>(parseVariableDecl(TypeKind::String));
-			break;
-		case TokenType::Identifier:
-			// TODO decision making
-
-		default:
-			temp = makeUnique<ExprStmt>(parseExpr());
-	}
-
-	if (!match(TokenType::Semicolon))
-	{
-		throw ExpectedSemicolonException();
-	}
-
-	return std::move(temp);
+    return parseBinaryExpr();
 }
 
 /* ************************************************************************* */
 
-UniquePtr<IfStmt> Parser::parseIfStmt()
+ast::Source Parser::parseSource()
 {
-	if (!match(TokenType::ParenO))
-	{
-		throw ExpectedParenException();
-	}
+    ast::StmtPtrVector stmts;
 
-	auto cond = parseExpr();
+    while (!isEmpty())
+        stmts.push_back(parseStmt());
 
-	if (!match(TokenType::ParenC))
-	{
-		throw ExpectedClosingParenException();
-	}
-
-	auto thanStmt = parseStmt();
-
-	UniquePtr<Stmt> elseStmt = nullptr;
-
-	if (match(TokenType::Else))
-	{
-		elseStmt = parseStmt();
-	}
-
-	return makeUnique<IfStmt>(std::move(cond), std::move(thanStmt), std::move(elseStmt));
+    return ast::Source{std::move(stmts)};
 }
 
 /* ************************************************************************* */
 
-UniquePtr<ForStmt> Parser::parseForStmt()
+ast::StmtPtr Parser::parseStmt()
 {
-	if (!match(TokenType::ParenO))
-	{
-		throw ExpectedParenException();
-	}
+    checkEol();
 
-	auto init = parseStmt();
+    // Find handler
+    auto it = m_stmtParsers.find(token().value());
 
-	UniquePtr<Expr> cond = nullptr;
+    if (it != m_stmtParsers.end())
+    {
+        return it->second(*this);
+    }
+    else
+    {
+        // Parse expression
+        auto expr = parseExpr();
 
-	if (!match(TokenType::Semicolon))
-	{
-		cond = parseExpr();
+        // Must be terminated by semicolon
+        requireOther(";");
 
-		if (!match(TokenType::Semicolon))
-		{
-			throw ExpectedSemicolonException();
-		}
-	}
-
-	UniquePtr<Expr> incr = nullptr;
-
-	if (!match(TokenType::ParenC))
-	{
-		incr = parseExpr();
-
-		if (!match(TokenType::ParenC))
-		{
-			throw ExpectedClosingParenException();
-		}
-	}
-
-	return makeUnique<ForStmt>(std::move(init), std::move(cond), std::move(incr), parseStmt());
+        return makeUnique<ast::ExprStmt>(std::move(expr));
+    }
 }
 
 /* ************************************************************************* */
 
-UniquePtr<WhileStmt> Parser::parseWhileStmt()
-{
-	if (!match(TokenType::ParenO))
-	{
-		throw ExpectedParenException();
-	}
-
-	auto cond = parseExpr();
-
-	if (!match(TokenType::ParenC))
-	{
-		throw ExpectedClosingParenException();
-	}
-
-	return makeUnique<WhileStmt>(std::move(cond), parseStmt());
-}
-
-/* ************************************************************************* */
-
-UniquePtr<SwitchStmt> Parser::parseSwitchStmt()
-{
-	if (!match(TokenType::ParenO))
-	{
-		throw ExpectedParenException();
-	}
-
-	auto cond = parseExpr();
-
-	if (!match(TokenType::ParenC))
-	{
-		throw ExpectedClosingParenException();
-	}
-
-	if (!match(TokenType::BraceO))
-	{
-		throw ExpectedBraceException();
-	}
-
-	auto body = makeUnique<CompoundStmt>(parseCaseList());
-
-	if (!match(TokenType::BraceC))
-	{
-		throw ExpectedClosingBraceException();
-	}
-
-	return makeUnique<SwitchStmt>(std::move(cond), std::move(body));
-}
-
-/* ************************************************************************* */
-
-PtrDynamicArray<Stmt> Parser::parseCaseList()
-{
-	PtrDynamicArray<Stmt> temp;
-
-	while (true)
-	{
-		if (match(TokenType::Case))
-		{
-			auto cond = parseExpr();
-
-			if (!match(TokenType::Colon))
-			{
-				throw ExpectedColonException();
-			}
-
-			temp.push_back(makeUnique<CaseStmt>(std::move(cond), parseCaseStmtList()));
-			continue;
-		}
-		else if (match(TokenType::Default))
-		{
-			if (!match(TokenType::Colon))
-			{
-				throw ExpectedColonException();
-			}
-
-			temp.push_back(makeUnique<DefaultStmt>(parseCaseStmtList()));
-			continue;
-		}
-
-		break;
-	}
-
-	return std::move(temp);
-}
-
-/* ************************************************************************* */
-
-PtrDynamicArray<Stmt> Parser::parseCaseStmtList()
-{
-	PtrDynamicArray<Stmt> temp;
-
-	while (!is(TokenType::BraceC, TokenType::Case, TokenType::Default))
-	{
-		temp.push_back(parseStmt());
-	}
-
-	return std::move(temp);
-}
-
-/* ************************************************************************* */
-
-UniquePtr<DoWhileStmt> Parser::parseDoWhileStmt()
-{
-	if (!match(TokenType::BraceO))
-	{
-		throw ExpectedWhileException();
-	}
-
-	auto body = parseCompoundStmt();
-
-	if (!match(TokenType::While))
-	{
-		throw ExpectedWhileException();
-	}
-
-	if (!match(TokenType::ParenO))
-	{
-		throw ExpectedParenException();
-	}
-
-	auto cond = parseExpr();
-
-	if (!match(TokenType::ParenC))
-	{
-		throw ExpectedClosingParenException();
-	}
-
-	return makeUnique<DoWhileStmt>(std::move(cond), std::move(body));
-}
-
-/* ************************************************************************* */
-
-UniquePtr<CompoundStmt> Parser::parseCompoundStmt()
-{
-	PtrDynamicArray<Stmt> temp;
-
-	while (!match(TokenType::BraceC))
-	{
-		temp.push_back(parseStmt());
-	}
-
-	return makeUnique<CompoundStmt>(std::move(temp));
-}
-
-/* ************************************************************************* */
-
-UniquePtr<CompoundStmt> Parser::parseTryCatchStmt()
-{
-	// TODO
-	return nullptr;
-}
-
-/* ************************************************************************* */
-
-UniquePtr<Expr> Parser::parseExpr()
-{
-	auto temp = parseRelationalExpr();
-
-	if (match(TokenType::Question))
-	{
-		auto trueExpr = parseExpr();
-
-		if (!match(TokenType::Colon))
-		{
-			throw ExpectedColonException();
-		}
-
-		return makeUnique<TernaryExpr>(std::move(temp), std::move(trueExpr), parseExpr());
-	}
-
-	switch (m_tokenizer.get().getType())
-	{
-		case TokenType::Equal:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Assign, std::move(temp), parseExpr());
-		case TokenType::PlusEqual:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::AddAssign, std::move(temp), parseExpr());
-		case TokenType::MinusEqual:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::SubAssign, std::move(temp), parseExpr());
-		case TokenType::StarEqual:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::MulAssign, std::move(temp), parseExpr());
-		case TokenType::SlashEqual:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::DivAssign, std::move(temp), parseExpr());
-		case TokenType::PercentEqual:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::RemAssign, std::move(temp), parseExpr());
-
-		default:
-			return std::move(temp);
-	}
-}
-
-/* ************************************************************************* */
-
-UniquePtr<Expr> Parser::parseRelationalExpr()
-{
-	auto temp = parseAdditiveExpr();
-
-	switch (m_tokenizer.get().getType())
-	{
-		case TokenType::EqualEqual:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::EQ, std::move(temp), parseExpr());
-		case TokenType::ExclaimEqual:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::NE, std::move(temp), parseExpr());
-		case TokenType::Less:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::LT, std::move(temp), parseExpr());
-		case TokenType::Greater:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::GT, std::move(temp), parseExpr());
-		case TokenType::LessEqual:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::LE, std::move(temp), parseExpr());
-		case TokenType::GreaterEqual:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::GE, std::move(temp), parseExpr());
-
-		default: return std::move(temp);
-	}
-}
-
-/* ************************************************************************* */
-
-UniquePtr<Expr> Parser::parseAdditiveExpr()
-{
-	auto temp = parseMultiplicativeExpr();
-
-	switch (m_tokenizer.get().getType())
-	{
-		case TokenType::Plus:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Add, std::move(temp), parseExpr());
-		case TokenType::Minus:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Sub, std::move(temp), parseExpr());
-
-		default:
-			return std::move(temp);
-	}
-}
-
-/* ************************************************************************* */
-
-UniquePtr<Expr> Parser::parseMultiplicativeExpr()
-{
-	auto temp = parsePrefixUnaryExpr();
-
-	switch (m_tokenizer.get().getType())
-	{
-		case TokenType::Star:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Mul, std::move(temp), parseExpr());
-		case TokenType::Slash:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Div, std::move(temp), parseExpr());
-		case TokenType::Percent:
-			m_tokenizer.toss();
-			return makeUnique<BinaryExpr>(BinaryExpr::OpKind::Rem, std::move(temp), parseExpr());
-
-		default:
-			return std::move(temp);
-	}
-}
-
-/* ************************************************************************* */
-
-UniquePtr<Expr> Parser::parsePrefixUnaryExpr()
-{
-	switch (m_tokenizer.get().getType())
-	{
-		case TokenType::PlusPlus:
-			m_tokenizer.toss();
-			return makeUnique<UnaryExpr>(UnaryExpr::OpKind::PreInc, parsePrefixUnaryExpr());
-		case TokenType::MinusMinus: 
-			m_tokenizer.toss();
-			return makeUnique<UnaryExpr>(UnaryExpr::OpKind::PreDec, parsePrefixUnaryExpr());
-		case TokenType::Plus:       
-			m_tokenizer.toss();
-			return makeUnique<UnaryExpr>(UnaryExpr::OpKind::Plus, parsePrefixUnaryExpr());
-		case TokenType::Minus:
-			m_tokenizer.toss();
-			return makeUnique<UnaryExpr>(UnaryExpr::OpKind::Minus, parsePrefixUnaryExpr());
-		case TokenType::Exclaim:
-			m_tokenizer.toss();
-			return makeUnique<UnaryExpr>(UnaryExpr::OpKind::Not, parsePrefixUnaryExpr());
-
-		default:
-			return parsePostfixUnaryExpr();
-	}
-}
-
-/* ************************************************************************* */
-
-UniquePtr<Expr> Parser::parsePostfixUnaryExpr()
-{
-	auto temp = parsePrimaryExpr();
-
-	while (true)
-	{
-		switch (m_tokenizer.get().getType())
-		{
-			case TokenType::PlusPlus:
-				temp = makeUnique<UnaryExpr>(UnaryExpr::OpKind::PostInc, std::move(temp));
-				break;
-			case TokenType::MinusMinus:
-				temp = makeUnique<UnaryExpr>(UnaryExpr::OpKind::PostDec, std::move(temp));
-				break;
-			case TokenType::Period:
-				m_tokenizer.toss();
-				temp = makeUnique<MemberAccessExpr>(std::move(temp), getIdentifier());
-				break;
-			case TokenType::ParenO:
-				m_tokenizer.toss();
-				if (is(TokenType::ParenC))
-				{
-					temp = makeUnique<FunctionCallExpr>(std::move(temp));
-				}
-				else
-				{
-					temp = makeUnique<FunctionCallExpr>(std::move(temp), parseExprArray());
-					if (!is(TokenType::ParenC))
-					{
-						throw ExpectedClosingParenException();
-					}
-				}
-				break;      
-			case TokenType::SquareO:
-				m_tokenizer.toss();
-				temp = makeUnique<SubscriptExpr>(std::move(temp), parseExprArray());
-				if (!is(TokenType::SquareC))
-				{
-					throw ExpectedClosingSquareException();
-				}
-				break;  
-
-			default:
-				return std::move(temp);
-		}
-		m_tokenizer.toss();
-	}
-}
-
-/* ************************************************************************* */
-
-UniquePtr<Expr> Parser::parsePrimaryExpr()
-{
-	auto token = m_tokenizer.extract();
-
-	switch (token.getType())
-	{
-		case TokenType::Identifier:
-			return makeUnique<IdentifierExpr>(token.getValue<String>());
-		case TokenType::StringLiteral:
-			return makeUnique<StringLiteralExpr>(token.getValue<String>());
-		case TokenType::FloatLiteral:
-			return makeUnique<FloatLiteralExpr>(token.getValue<Token::FloatType>());
-		case TokenType::CharLiteral:
-			return makeUnique<CharLiteralExpr>(token.getValue<Token::CharType>());
-		case TokenType::IntLiteral:
-			return makeUnique<IntLiteralExpr>(token.getValue<Token::IntType>());
-		case TokenType::ParenO:
-			return parseParenExpr();
-		case TokenType::Null:     
-			return makeUnique<NullLiteralExpr>();
-		case TokenType::True:   
-			return makeUnique<BoolLiteralExpr>(true);
-		case TokenType::False: 
-			return makeUnique<BoolLiteralExpr>(false);
-
-		default:
-			throw ExpectedExprException();
-	}
-}
-
-/* ************************************************************************* */
-
-UniquePtr<Expr> Parser::parseParenExpr()
-{
-	auto temp = parseExpr();
-
-	if (match(TokenType::ParenC))
-	{
-		return makeUnique<ParenExpr>(std::move(temp));
-	}
-
-	throw ExpectedClosingParenException();
-}
-
-/* ************************************************************************* */
-
-}
-}
-}
+} // namespace shard::parser
 
 /* ************************************************************************* */

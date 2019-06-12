@@ -22,7 +22,8 @@ endif ()
 
 # Create test executable
 add_executable(shard-parser_test
-    ParserTest.cpp
+    exceptions_test.cpp
+    Parser_test.cpp
 )
 
 # Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
