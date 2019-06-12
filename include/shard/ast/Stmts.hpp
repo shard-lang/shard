@@ -20,17 +20,12 @@
 
 #include "shard/ast/Stmt.hpp"
 #include "shard/ast/stmt/BreakStmt.hpp"
-#include "shard/ast/stmt/CaseStmt.hpp"
 #include "shard/ast/stmt/CompoundStmt.hpp"
 #include "shard/ast/stmt/ContinueStmt.hpp"
 #include "shard/ast/stmt/DeclStmt.hpp"
-#include "shard/ast/stmt/DefaultStmt.hpp"
-#include "shard/ast/stmt/DoWhileStmt.hpp"
 #include "shard/ast/stmt/ExprStmt.hpp"
-#include "shard/ast/stmt/ForStmt.hpp"
 #include "shard/ast/stmt/IfStmt.hpp"
 #include "shard/ast/stmt/ReturnStmt.hpp"
-#include "shard/ast/stmt/SwitchStmt.hpp"
 #include "shard/ast/stmt/WhileStmt.hpp"
 
 /* ************************************************************************* */

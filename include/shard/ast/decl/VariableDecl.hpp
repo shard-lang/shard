@@ -22,7 +22,6 @@
 #include "shard/String.hpp"
 #include "shard/ast/Decl.hpp"
 #include "shard/ast/Expr.hpp"
-#include "shard/ast/Type.hpp"
 #include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
@@ -33,13 +32,10 @@ namespace shard::ast {
 
 /**
  * @brief      Variable declaration.
- *
- * @details    In the source it appears as: `<type> <name>` or `<type> <name> =
- *             <initExpr>`.
  */
 class VariableDecl final
     : public Decl,
-      public PtrBuilder<VariableDecl, Type, String, ExprPtr>
+      public PtrBuilder<VariableDecl, String, String, ExprPtr>
 {
 
 public:
@@ -54,10 +50,10 @@ public:
      * @param      range     The declaration location within the source.
      */
     explicit VariableDecl(
-        Type type,
+        String type,
         String name,
-        ExprPtr initExpr  = nullptr,
-        SourceRange range = {})
+        ExprPtr initExpr      = nullptr,
+        SourceRange range     = {})
         : Decl(std::move(name), std::move(range))
         , m_type(std::move(type))
         , m_initExpr(std::move(initExpr))
@@ -73,7 +69,7 @@ public:
      *
      * @return     The variable type.
      */
-    const Type& type() const noexcept
+    const String& type() const noexcept
     {
         return m_type;
     }
@@ -83,7 +79,7 @@ public:
      *
      * @param      type  The variable type.
      */
-    void setType(Type type)
+    void setType(String type)
     {
         m_type = type;
     }
@@ -142,7 +138,7 @@ private:
     // Data Members
 
     /// Variable type.
-    Type m_type;
+    String m_type;
 
     /// Initializer expression.
     ExprPtr m_initExpr;

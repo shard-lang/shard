@@ -20,6 +20,7 @@
 
 // Shard
 #include "shard/Assert.hpp"
+#include "shard/String.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/ast/Expr.hpp"
 #include "shard/ast/utility.hpp"
@@ -31,24 +32,6 @@ namespace shard::ast {
 /* ************************************************************************* */
 
 /**
- * @brief      Unary operation kind.
- *
- * @todo       Support dynamic specification.
- */
-enum class UnaryOpKind
-{
-    PostInc,
-    PostDec,
-    PreInc,
-    PreDec,
-    Plus,
-    Minus,
-    Not
-};
-
-/* ************************************************************************* */
-
-/**
  * @brief      Unary expression.
  *
  * @details    This expression is used for single prefix or postfix expressions
@@ -56,35 +39,8 @@ enum class UnaryOpKind
  *             decrement. In the source it can be identified as: `<op><expr>` or
  *             `<expr><op>`.
  */
-class UnaryExpr final : public Expr,
-                        public PtrBuilder<UnaryExpr, UnaryOpKind, ExprPtr>
+class UnaryExpr : public Expr
 {
-
-public:
-    // Enums
-
-    /**
-     * @brief      Unary operation kind.
-     */
-    using OpKind [[deprecated]] = UnaryOpKind;
-
-public:
-    // Ctors & Dtors
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      op     Operation kind.
-     * @param      expr   Operand expression.
-     * @param      range  Location in source.
-     */
-    explicit UnaryExpr(UnaryOpKind op, ExprPtr expr, SourceRange range = {})
-        : Expr(range)
-        , m_operator(op)
-        , m_expr(std::move(expr))
-    {
-        // Nothing to do
-    }
 
 public:
     // Accessors & Mutators
@@ -94,7 +50,7 @@ public:
      *
      * @return     The operator.
      */
-    UnaryOpKind op() const noexcept
+    const String& op() const noexcept
     {
         return m_operator;
     }
@@ -104,9 +60,9 @@ public:
      *
      * @param      op    The new operator.
      */
-    void setOp(UnaryOpKind op) noexcept
+    void setOp(String op) noexcept
     {
-        m_operator = op;
+        m_operator = std::move(op);
     }
 
     /**
@@ -170,14 +126,86 @@ public:
         m_expr = std::move(expr);
     }
 
+protected:
+    // Ctors & Dtors
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      op     Operation kind.
+     * @param      expr   Operand expression.
+     * @param      range  Location in source.
+     */
+    explicit UnaryExpr(String op, ExprPtr expr, SourceRange range = {})
+        : Expr(range)
+        , m_operator(std::move(op))
+        , m_expr(std::move(expr))
+    {
+        // Nothing to do
+    }
+
 private:
     // Data Members
 
     /// OpKind.
-    UnaryOpKind m_operator;
+    String m_operator;
 
     /// Operand.
     ExprPtr m_expr;
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Prefix unary expression.
+ */
+class PrefixUnaryExpr final
+    : public UnaryExpr,
+      public PtrBuilder<PrefixUnaryExpr, String, ExprPtr>
+{
+
+public:
+    // Ctors & Dtors
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      op     Operation kind.
+     * @param      expr   Operand expression.
+     * @param      range  Location in source.
+     */
+    explicit PrefixUnaryExpr(String op, ExprPtr expr, SourceRange range = {})
+        : UnaryExpr(std::move(op), std::move(expr), range)
+    {
+        // Nothing to do
+    }
+};
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Postfix unary expression.
+ */
+class PostfixUnaryExpr final
+    : public UnaryExpr,
+      public PtrBuilder<PrefixUnaryExpr, ExprPtr, String>
+{
+
+public:
+    // Ctors & Dtors
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      expr   Operand expression.
+     * @param      op     Operation kind.
+     * @param      range  Location in source.
+     */
+    explicit PostfixUnaryExpr(ExprPtr expr, String op, SourceRange range = {})
+        : UnaryExpr(std::move(op), std::move(expr), range)
+    {
+        // Nothing to do
+    }
 };
 
 /* ************************************************************************* */

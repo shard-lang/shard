@@ -33,10 +33,10 @@ TEST(BinaryExpr, base)
 {
     {
         // 5 + 2
-        const BinaryExpr expr(BinaryOpKind::Add, IntLiteralExpr::make(5), IntLiteralExpr::make(2));
+        const BinaryExpr expr("+", IntLiteralExpr::make(5), IntLiteralExpr::make(2));
 
         EXPECT_TRUE(expr.is<BinaryExpr>());
-        EXPECT_EQ(BinaryOpKind::Add, expr.op());
+        EXPECT_EQ("+", expr.op());
         ASSERT_NE(nullptr, expr.lhs());
         ASSERT_NE(nullptr, expr.rhs());
         ASSERT_TRUE(expr.lhs()->is<IntLiteralExpr>());
@@ -49,10 +49,10 @@ TEST(BinaryExpr, base)
 
     {
         // 10 * 4.0
-        const BinaryExpr expr(BinaryOpKind::Mul, IntLiteralExpr::make(10), FloatLiteralExpr::make(4.0));
+        const BinaryExpr expr("*", IntLiteralExpr::make(10), FloatLiteralExpr::make(4.0));
 
         EXPECT_TRUE(expr.is<BinaryExpr>());
-        EXPECT_EQ(BinaryOpKind::Mul, expr.op());
+        EXPECT_EQ("*", expr.op());
         ASSERT_NE(nullptr, expr.lhs());
         ASSERT_NE(nullptr, expr.rhs());
         ASSERT_TRUE(expr.lhs()->is<IntLiteralExpr>());
@@ -65,10 +65,10 @@ TEST(BinaryExpr, base)
 
     {
         // 10 * 4.0
-        BinaryExpr expr(BinaryOpKind::Mul, IntLiteralExpr::make(10), FloatLiteralExpr::make(4.0));
+        BinaryExpr expr("*", IntLiteralExpr::make(10), FloatLiteralExpr::make(4.0));
 
         EXPECT_TRUE(expr.is<BinaryExpr>());
-        EXPECT_EQ(BinaryOpKind::Mul, expr.op());
+        EXPECT_EQ("*", expr.op());
         ASSERT_NE(nullptr, expr.lhs());
         ASSERT_NE(nullptr, expr.rhs());
         ASSERT_TRUE(expr.lhs()->is<IntLiteralExpr>());
@@ -79,8 +79,8 @@ TEST(BinaryExpr, base)
         EXPECT_FLOAT_EQ(4.0, expr.rhs<FloatLiteralExpr>().value());
 
         // 10 + 4.0
-        expr.setOp(BinaryOpKind::Add);
-        EXPECT_EQ(BinaryOpKind::Add, expr.op());
+        expr.setOp("+");
+        EXPECT_EQ("+", expr.op());
         ASSERT_NE(nullptr, expr.lhs());
         ASSERT_NE(nullptr, expr.rhs());
         ASSERT_TRUE(expr.lhs()->is<IntLiteralExpr>());
@@ -89,8 +89,8 @@ TEST(BinaryExpr, base)
         EXPECT_FLOAT_EQ(4.0, expr.rhs()->cast<FloatLiteralExpr>().value());
 
         // 10 - 4.0
-        expr.setOp(BinaryOpKind::Sub);
-        EXPECT_EQ(BinaryOpKind::Sub, expr.op());
+        expr.setOp("-");
+        EXPECT_EQ("-", expr.op());
         ASSERT_NE(nullptr, expr.lhs());
         ASSERT_NE(nullptr, expr.rhs());
         ASSERT_TRUE(expr.lhs()->is<IntLiteralExpr>());
@@ -100,7 +100,7 @@ TEST(BinaryExpr, base)
 
         // 1.0 - 4.0
         expr.setLhs(FloatLiteralExpr::make(1.0));
-        EXPECT_EQ(BinaryOpKind::Sub, expr.op());
+        EXPECT_EQ("-", expr.op());
         ASSERT_NE(nullptr, expr.lhs());
         ASSERT_NE(nullptr, expr.rhs());
         ASSERT_TRUE(expr.lhs()->is<FloatLiteralExpr>());
@@ -109,7 +109,7 @@ TEST(BinaryExpr, base)
         EXPECT_FLOAT_EQ(4.0, expr.rhs()->cast<FloatLiteralExpr>().value());
 
         expr.setRhs(FloatLiteralExpr::make(50.3));
-        EXPECT_EQ(BinaryOpKind::Sub, expr.op());
+        EXPECT_EQ("-", expr.op());
         ASSERT_NE(nullptr, expr.lhs());
         ASSERT_NE(nullptr, expr.rhs());
         ASSERT_TRUE(expr.lhs()->is<FloatLiteralExpr>());
@@ -120,11 +120,11 @@ TEST(BinaryExpr, base)
 
     {
         // 5 + 2
-        const auto expr = BinaryExpr::make(BinaryOpKind::Add, IntLiteralExpr::make(5), IntLiteralExpr::make(2));
+        const auto expr = BinaryExpr::make("+", IntLiteralExpr::make(5), IntLiteralExpr::make(2));
         ASSERT_NE(nullptr, expr);
 
         EXPECT_TRUE(expr->is<BinaryExpr>());
-        EXPECT_EQ(BinaryOpKind::Add, expr->op());
+        EXPECT_EQ("+", expr->op());
         ASSERT_NE(nullptr, expr->lhs());
         ASSERT_NE(nullptr, expr->rhs());
         ASSERT_TRUE(expr->lhs()->is<IntLiteralExpr>());

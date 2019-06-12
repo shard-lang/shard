@@ -26,7 +26,6 @@ add_executable(shard-ast_test
     Expr_test.cpp
     Stmt_test.cpp
     Source_test.cpp
-    Type_test.cpp
 
     # Expr
     Expr_test.cpp
@@ -52,17 +51,12 @@ add_executable(shard-ast_test
 
     # Stmt
     stmt/BreakStmt_test.cpp
-    stmt/CaseStmt_test.cpp
     stmt/CompoundStmt_test.cpp
     stmt/ContinueStmt_test.cpp
     stmt/DeclStmt_test.cpp
-    stmt/DefaultStmt_test.cpp
-    stmt/DoWhileStmt_test.cpp
     stmt/ExprStmt_test.cpp
-    stmt/ForStmt_test.cpp
     stmt/IfStmt_test.cpp
     stmt/ReturnStmt_test.cpp
-    stmt/SwitchStmt_test.cpp
     stmt/WhileStmt_test.cpp
 )
 

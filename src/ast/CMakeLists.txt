@@ -27,9 +27,6 @@ endif ()
 
 # Create Shard part
 add_library(shard-ast
-    Type.cpp
-    Unit.cpp
-
     # Decl
     decl/ClassDecl.cpp
     decl/CompoundDecl.cpp
@@ -39,14 +36,9 @@ add_library(shard-ast
 
     # Stmt
     stmt/BreakStmt.cpp
-    stmt/CaseStmt.cpp
     stmt/ContinueStmt.cpp
-    stmt/DefaultStmt.cpp
-    stmt/DoWhileStmt.cpp
-    stmt/ForStmt.cpp
     stmt/IfStmt.cpp
     stmt/ReturnStmt.cpp
-    stmt/SwitchStmt.cpp
     stmt/WhileStmt.cpp
 )
 

@@ -19,6 +19,7 @@
 /* ************************************************************************* */
 
 // Shard
+#include "shard/String.hpp"
 #include "shard/UniquePtr.hpp"
 #include "shard/ViewPtr.hpp"
 #include "shard/ast/Expr.hpp"
@@ -31,41 +32,6 @@ namespace shard::ast {
 /* ************************************************************************* */
 
 /**
- * @brief      Binary expression operation kind.
- */
-enum class BinaryOpKind
-{
-    //  Equality operators
-    EQ,
-    NE,
-
-    // Relational operators
-    LT,
-    LE,
-    GT,
-    GE,
-
-    // Additive operators
-    Add,
-    Sub,
-
-    // Multiplicative operators
-    Mul,
-    Div,
-    Rem,
-
-    // Assignment operators
-    Assign,
-    MulAssign,
-    DivAssign,
-    RemAssign,
-    AddAssign,
-    SubAssign
-};
-
-/* ************************************************************************* */
-
-/**
  * @brief      Binary expression.
  *
  * @details    This expression is used for expressions where an operation is
@@ -73,16 +39,9 @@ enum class BinaryOpKind
  *             relation. In the source it can be identified as:
  *             `<lhs><op><rhs>`.
  */
-class BinaryExpr final
-    : public Expr,
-      public PtrBuilder<BinaryExpr, BinaryOpKind, ExprPtr, ExprPtr>
+class BinaryExpr final : public Expr,
+                         public PtrBuilder<BinaryExpr, String, ExprPtr, ExprPtr>
 {
-
-public:
-    // Types
-
-    /// Operation kind.
-    using OpKind[[deprecated]] = BinaryOpKind;
 
 public:
     // Ctors & Dtors
@@ -96,7 +55,7 @@ public:
      * @param      range  Location in source.
      */
     explicit BinaryExpr(
-        BinaryOpKind op,
+        String op,
         ExprPtr lhs,
         ExprPtr rhs,
         SourceRange range = {})
@@ -116,7 +75,7 @@ public:
      *
      * @return     The operator.
      */
-    BinaryOpKind op() const noexcept
+    const String& op() const noexcept
     {
         return m_operator;
     }
@@ -126,9 +85,9 @@ public:
      *
      * @param      op    The new operator.
      */
-    void setOp(BinaryOpKind op) noexcept
+    void setOp(String op) noexcept
     {
-        m_operator = op;
+        m_operator = std::move(op);
     }
 
     /**
@@ -257,7 +216,7 @@ private:
     // Data Members
 
     /// The operator.
-    BinaryOpKind m_operator;
+    String m_operator;
 
     /// LHS expression.
     ExprPtr m_lhs;

@@ -31,7 +31,6 @@
 #include "shard/ast/expr/ParenExpr.hpp"
 #include "shard/ast/expr/StringLiteralExpr.hpp"
 #include "shard/ast/expr/SubscriptExpr.hpp"
-#include "shard/ast/expr/TernaryExpr.hpp"
 #include "shard/ast/expr/UnaryExpr.hpp"
 
 /* ************************************************************************* */

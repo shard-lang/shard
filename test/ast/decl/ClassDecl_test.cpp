@@ -20,7 +20,6 @@
 // Shard
 #include "shard/ast/decl/ClassDecl.hpp"
 #include "shard/ast/decl/VariableDecl.hpp"
-#include "shard/ast/Type.hpp"
 #include "shard/ast/Expr.hpp"
 
 /* ************************************************************************ */
@@ -44,8 +43,8 @@ TEST(ClassDecl, base)
         // class Point { int x; int y; }
         ClassDecl decl("Point");
 
-        decl.addDecl(VariableDecl::make(TypeKind::Int, "x", nullptr));
-        decl.addDecl(VariableDecl::make(TypeKind::Int, "y", nullptr));
+        decl.addDecl(VariableDecl::make("int", "x", nullptr));
+        decl.addDecl(VariableDecl::make("int", "y", nullptr));
 
         ASSERT_EQ(2, decl.decls().size());
         ASSERT_TRUE(decl.decls()[0]->is<VariableDecl>());
@@ -63,8 +62,8 @@ TEST(ClassDecl, base)
         EXPECT_TRUE(decl.decls().empty());
 
         DeclPtrVector decls;
-        decls.push_back(VariableDecl::make(TypeKind::Int, "x", nullptr));
-        decls.push_back(VariableDecl::make(TypeKind::Int, "y", nullptr));
+        decls.push_back(VariableDecl::make("int", "x", nullptr));
+        decls.push_back(VariableDecl::make("int", "y", nullptr));
 
         // class Point { int x; int y; }
         decl.setDecls(std::move(decls));

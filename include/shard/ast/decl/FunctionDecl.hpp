@@ -23,7 +23,6 @@
 #include "shard/String.hpp"
 #include "shard/UniquePtr.hpp"
 #include "shard/ast/Decl.hpp"
-#include "shard/ast/Type.hpp"
 #include "shard/ast/decl/VariableDecl.hpp"
 #include "shard/ast/stmt/CompoundStmt.hpp"
 #include "shard/ast/utility.hpp"
@@ -48,7 +47,7 @@ class CompoundStmt;
 class FunctionDecl final : public Decl,
                            public PtrBuilder<
                                FunctionDecl,
-                               Type,
+                               String,
                                String,
                                CompoundStmtPtr,
                                PtrVector<VariableDecl>>
@@ -60,14 +59,14 @@ public:
     /**
      * @brief      Constructor.
      *
-     * @param      retType   The function return type.
+     * @param      retType   The function return type name.
      * @param      name      The function name.
      * @param      params    The function parameters.
      * @param      bodyStmt  The function body.
      * @param      range     The declaration location within the source.
      */
     FunctionDecl(
-        Type retType,
+        String retType,
         String name,
         CompoundStmtPtr bodyStmt,
         PtrVector<VariableDecl> params = {},
@@ -88,7 +87,7 @@ public:
      *
      * @return     The function return type.
      */
-    const Type& retType() const noexcept
+    const String& retType() const noexcept
     {
         return m_retType;
     }
@@ -98,7 +97,7 @@ public:
      *
      * @param      type  The return type.
      */
-    void setRetType(Type type)
+    void setRetType(String type)
     {
         m_retType = type;
     }
@@ -147,7 +146,7 @@ private:
     // Data Members
 
     /// Return type.
-    Type m_retType;
+    String m_retType;
 
     /// Function parameters.
     PtrVector<VariableDecl> m_parameters;

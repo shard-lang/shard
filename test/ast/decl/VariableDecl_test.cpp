@@ -19,7 +19,6 @@
 
 // Shard
 #include "shard/ast/decl/VariableDecl.hpp"
-#include "shard/ast/Type.hpp"
 #include "shard/ast/expr/StringLiteralExpr.hpp"
 
 /* ************************************************************************ */
@@ -33,20 +32,21 @@ TEST(VariableDecl, base)
 {
     {
         // int foo;
-        const VariableDecl decl(TypeKind::Int, "foo");
+        const VariableDecl decl("int", "foo");
 
         EXPECT_TRUE(decl.is<VariableDecl>());
         EXPECT_EQ("foo", decl.name());
-        EXPECT_EQ(TypeKind::Int, decl.type());
+        EXPECT_EQ("int", decl.type());
     }
 
     {
         // string foo = "bar";
-        const VariableDecl decl(TypeKind::String, "foo2", StringLiteralExpr::make("bar"));
+        const VariableDecl decl(
+            "string", "foo2", StringLiteralExpr::make("bar"));
 
         EXPECT_TRUE(decl.is<VariableDecl>());
         EXPECT_EQ("foo2", decl.name());
-        EXPECT_EQ(TypeKind::String, decl.type());
+        EXPECT_EQ("string", decl.type());
         ASSERT_NE(nullptr, decl.initExpr());
         ASSERT_TRUE(decl.initExpr()->is<StringLiteralExpr>());
         EXPECT_EQ("bar", decl.initExpr<StringLiteralExpr>().value());
@@ -54,29 +54,29 @@ TEST(VariableDecl, base)
 
     {
         // int foo;
-        VariableDecl decl(TypeKind::Int, "foo");
+        VariableDecl decl("int", "foo");
 
         EXPECT_TRUE(decl.is<VariableDecl>());
         EXPECT_EQ("foo", decl.name());
-        EXPECT_EQ(TypeKind::Int, decl.type());
+        EXPECT_EQ("int", decl.type());
         EXPECT_EQ(nullptr, decl.initExpr());
 
         // int foo2;
         decl.setName("foo2");
         EXPECT_EQ("foo2", decl.name());
-        EXPECT_EQ(TypeKind::Int, decl.type());
+        EXPECT_EQ("int", decl.type());
         EXPECT_EQ(nullptr, decl.initExpr());
 
         // float foo2;
-        decl.setType(TypeKind::Float);
+        decl.setType("float");
         EXPECT_EQ("foo2", decl.name());
-        EXPECT_EQ(TypeKind::Float, decl.type());
+        EXPECT_EQ("float", decl.type());
         EXPECT_EQ(nullptr, decl.initExpr());
 
         // string foo2;
-        decl.setType(TypeKind::String);
+        decl.setType("string");
         EXPECT_EQ("foo2", decl.name());
-        EXPECT_EQ(TypeKind::String, decl.type());
+        EXPECT_EQ("string", decl.type());
         EXPECT_EQ(nullptr, decl.initExpr());
 
         // string foo2 = "Hello";
@@ -88,11 +88,11 @@ TEST(VariableDecl, base)
 
     {
         // int foo;
-        const auto decl = VariableDecl::make(TypeKind::Int, "foo", nullptr);
+        const auto decl = VariableDecl::make("int", "foo", nullptr);
 
         EXPECT_TRUE(decl->is<VariableDecl>());
         EXPECT_EQ("foo", decl->name());
-        EXPECT_EQ(TypeKind::Int, decl->type());
+        EXPECT_EQ("int", decl->type());
     }
 }
 

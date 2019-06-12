@@ -18,10 +18,9 @@
 #include "gtest/gtest.h"
 
 // Shard
+#include "shard/ast/Expr.hpp"
 #include "shard/ast/decl/NamespaceDecl.hpp"
 #include "shard/ast/decl/VariableDecl.hpp"
-#include "shard/ast/Type.hpp"
-#include "shard/ast/Expr.hpp"
 
 /* ************************************************************************ */
 
@@ -44,8 +43,8 @@ TEST(NamespaceDecl, base)
         // namespace foo { int x; int y; }
         NamespaceDecl decl("foo");
 
-        decl.addDecl(VariableDecl::make(TypeKind::Int, "x", nullptr));
-        decl.addDecl(VariableDecl::make(TypeKind::Int, "y", nullptr));
+        decl.addDecl(VariableDecl::make("int", "x", nullptr));
+        decl.addDecl(VariableDecl::make("int", "y", nullptr));
 
         ASSERT_EQ(2, decl.decls().size());
         ASSERT_TRUE(decl.decls()[0]->is<VariableDecl>());
@@ -63,8 +62,8 @@ TEST(NamespaceDecl, base)
         EXPECT_TRUE(decl.decls().empty());
 
         DeclPtrVector decls;
-        decls.push_back(VariableDecl::make(TypeKind::Int, "x", nullptr));
-        decls.push_back(VariableDecl::make(TypeKind::Int, "y", nullptr));
+        decls.push_back(VariableDecl::make("int", "x", nullptr));
+        decls.push_back(VariableDecl::make("int", "y", nullptr));
 
         // namespace foo { int x; int y; }
         decl.setDecls(std::move(decls));
@@ -84,7 +83,6 @@ TEST(NamespaceDecl, base)
         EXPECT_TRUE(decl->is<NamespaceDecl>());
         EXPECT_EQ("foo", decl->name());
     }
-
 }
 
 /* ************************************************************************ */
