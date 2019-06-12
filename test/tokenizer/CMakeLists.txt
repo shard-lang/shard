@@ -22,8 +22,13 @@ endif ()
 
 # Create test executable
 add_executable(shard-tokenizer_test
-    TokenizerTest.cpp
-    SourceTest.cpp
+    exceptions_test.cpp
+    Token_test.cpp
+    Source_test.cpp
+    SourceIterator_test.cpp
+    Tokenizer_test.cpp
+    TokenizerIterator_test.cpp
+    TokenFilterIterator_test.cpp
 )
 
 # Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)
@@ -44,14 +49,5 @@ endif ()
 # ************************************************************************* #
 
 add_test(shard-tokenizer_test shard-tokenizer_test)
-
-# ************************************************************************* #
-
-# Copy test files
-file(COPY
-    SourceTest-file_empty.txt
-    SourceTest-file_basic.txt
-    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
-)
 
 # ************************************************************************* #

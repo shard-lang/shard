@@ -18,79 +18,16 @@
 
 /* ************************************************************************* */
 
-#include <fstream>
-
 // Shard
-#include "shard/Path.hpp"
-#include "shard/String.hpp"
-#include "shard/ViewPtr.hpp"
-#include "shard/UniquePtr.hpp"
+#include "shard/FilePath.hpp"
 #include "shard/SourceLocation.hpp"
+#include "shard/String.hpp"
+#include "shard/Vector.hpp"
+#include "shard/tokenizer/SourceIterator.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace tokenizer {
-
-/* ************************************************************************* */
-
-using ReadMode = char;
-
-/* ************************************************************************* */
-
-class Source; //FWD declaration
-
-/* ************************************************************************* */
-
-/**
- * @brief Input iterator from Source.
- */
-class SourceIterator
-{
-
-private:
-
-    ViewPtr<Source> m_source;
-
-public:
-
-    /**
-     * @brief constructs empty SourceIterator.
-     */
-    SourceIterator() = default;
-
-    /**
-     * @brief constructs SourceIterator for given Source.
-     */
-    explicit SourceIterator(ViewPtr<Source> source):
-        m_source(source) {}
-
-    inline int operator*() const;
-    inline SourceIterator& operator++();
-    inline SourceIterator operator++(int);
-
-    /**
-     * @brief returns pointer to related Source.
-     */
-    inline ViewPtr<Source> getSource() const noexcept
-    {
-        return m_source;
-    }
-};
-
-/* ************************************************************************* */
-
-inline bool operator==(const SourceIterator& lhs, const SourceIterator& rhs)
-{
-    return (lhs.getSource() == nullptr || (*lhs) == std::char_traits<ReadMode>::eof())
-        && (rhs.getSource() == nullptr || (*rhs) == std::char_traits<ReadMode>::eof());
-}
-
-inline bool operator!=(const SourceIterator& lhs, const SourceIterator& rhs)
-{
-    return !(lhs == rhs);
-}
+namespace shard::tokenizer {
 
 /* ************************************************************************* */
 
@@ -99,172 +36,132 @@ inline bool operator!=(const SourceIterator& lhs, const SourceIterator& rhs)
  */
 class Source
 {
+public:
+    // Ctors & Dtors
+
+    /**
+     * @brief      Constructor.
+     *
+     * @param      source    The source code.
+     * @param      filename  The source filename.
+     */
+    explicit Source(const String& source, FilePath filename = "<input>")
+        : m_filename(std::move(filename))
+    {
+        // Process source code
+        process(source);
+    }
+
+public:
+    // Operators
+
+    /**
+     * @brief      Returns character at given position.
+     *
+     * @return     The character.
+     */
+    char operator[](std::size_t position) const noexcept
+    {
+        return m_source[position];
+    }
+
+public:
+    // Accessors & Mutators
+
+    /**
+     * @brief      Returns the source.
+     *
+     * @return     The source.
+     */
+    const String& source() const noexcept
+    {
+        return m_source;
+    }
+
+    /**
+     * @brief      Returns the source filename.
+     *
+     * @return     The source filename.
+     */
+    const FilePath& filename() const noexcept
+    {
+        return m_filename;
+    }
+
+    /**
+     * @brief      Returns source size.
+     *
+     * @return     The size.
+     */
+    std::size_t size() const noexcept
+    {
+        return m_source.size();
+    }
+
+    /**
+     * @brief      Returns character at given position.
+     *
+     * @return     The character.
+     */
+    char at(std::size_t position) const
+    {
+        return m_source.at(position);
+    }
+
+    /**
+     * @brief      Returns the begin iterator.
+     *
+     * @return     The begin iterator.
+     */
+    SourceIterator begin() const noexcept
+    {
+        return SourceIterator(*this, 0);
+    }
+
+    /**
+     * @brief      Returns the end iterator.
+     *
+     * @return     The end iterator.
+     */
+    SourceIterator end() const noexcept
+    {
+        return SourceIterator(*this, m_source.size());
+    }
+
+    /**
+     * @brief      Returns source location for given position.
+     *
+     * @param      position  The position.
+     *
+     * @return     The source location.
+     */
+    SourceLocation location(std::size_t position) const noexcept;
 
 private:
-
-    UniquePtr<std::basic_streambuf<ReadMode>> m_sb;
-    SourceLocation m_loc;
-
-/* ************************************************************************* */
-
-public:
+    // Operations
 
     /**
-     * @brief constructs Source with input from file.
+     * @brief      Process input source.
+     *
+     * @param      source  The source.
      */
-    explicit Source (const Path& path):
-            m_sb([](const auto& l_path)
-            {
-                auto ptr = makeUnique<std::basic_filebuf<ReadMode>>();
-                ptr->open(l_path, std::ios_base::in | std::ios_base::binary);
-                return ptr;
-            }(path)),
-            m_loc({1, 1}) {}
-
-    /**
-     * @brief constructs Source with input from string.
-     */
-    explicit Source (const String& source):
-            m_sb(makeUnique<std::basic_stringbuf<ReadMode>>(source)),
-            m_loc({1, 1}) {}
-
-/* ************************************************************************* */    
-
-public:
-
-    /**
-     * @brief returns if input is empty.
-     */
-    inline bool empty() const
-    {
-        return get() == std::char_traits<ReadMode>::eof();
-        //return m_sb->in_avail() <= 0;
-    }
-
-    /**
-     * @brief returns current character - replaces platform dependent newline with UNIXs \n.
-     */
-    inline int get() const
-    {
-        auto temp = m_sb->sgetc();
-        
-        if (temp == '\r')
-        {
-            if (m_sb->snextc() != '\n')
-            {
-                m_sb->sungetc();
-            }
-            return '\n';
-        }
-
-        return temp;
-    }
-
-    /**
-     * @brief returns current character and moves to next.
-     */
-    inline int extract()
-    {
-        incrementLocation();
-        return m_sb->sbumpc();
-    }
-
-    /**
-     * @brief moves to next character and returns it.
-     */
-    inline int getNext()
-    {
-        incrementLocation();
-        return m_sb->snextc();
-    }
-
-    /**
-     * @brief discards current character and moves to next.
-     */
-    inline void toss()
-    {
-        incrementLocation();
-        m_sb->sbumpc();
-    }
-
-/* ************************************************************************* */
-
-public:
-
-    const SourceLocation& getLocation() const noexcept
-    {
-        return m_loc;
-    }
-
-/* ************************************************************************* */
-
-public:
-
-    /**
-     * @brief returns tokenizer iterator pointing to currect token.
-     */
-    inline SourceIterator begin() noexcept
-    {
-        return SourceIterator(this);
-    }
-
-    /**
-     * @brief returns tokenizer iterator pointing to token with end.
-     */
-    inline SourceIterator end() noexcept
-    {
-        return SourceIterator(nullptr);
-    }
-
-/* ************************************************************************* */
+    void process(const String& source);
 
 private:
+    // Data Members
 
-    /**
-     * @brief increments location indicator.
-     */
-    inline void incrementLocation() noexcept
-    {
-        auto temp = get();
-        if (temp == '\n')
-        {
-            m_loc.addLine();
-        }
-        else if (temp >= 0x80 && temp < 0xC0) // UTF8 additional bytes
-        {
-            return;
-        }
-        else
-        {
-            m_loc.addColumn();
-        }
-    }
+    /// Source code.
+    String m_source;
+
+    /// Source file name.
+    FilePath m_filename;
+
+    /// Map for position to line number.
+    Vector<std::size_t> m_lines;
 };
 
 /* ************************************************************************* */
 
-inline int SourceIterator::operator*() const
-{
-    return m_source->get();
-}
-
-inline SourceIterator& SourceIterator::operator++()
-{
-    m_source->extract();
-    return *this;
-}
-
-inline SourceIterator SourceIterator::operator++(int)
-{
-    SourceIterator tmp(*this);
-    operator++();
-    return tmp;
-}
-
-/* ************************************************************************* */
-
-}
-}
-}
+} // namespace shard::tokenizer
 
 /* ************************************************************************* */

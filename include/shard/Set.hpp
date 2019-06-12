@@ -18,50 +18,25 @@
 
 /* ************************************************************************* */
 
-// Shard
-#include "shard/utility.hpp"
+// C++
+#include <set>
 
 /* ************************************************************************* */
 
-namespace shard::tokenizer {
+namespace shard {
 
 /* ************************************************************************* */
 
 /**
- * @brief      Supported token types.
+ * @brief      Set type.
+ *
+ * @tparam     Key   Key type.
  */
-enum class TokenType
-{
-    /// Unknown token type.
-    Unknown,
-
-    /// Identifier: [a-zA-Z_][a-zA-Z0-9_]*
-    Identifier,
-
-    /// String inside double quotes.
-    StringLiteral,
-
-    /// String inside single quotes.
-    CharLiteral,
-
-    /// Number: [0-9]+
-    NumberLiteral,
-
-    /// Comment.
-    Comment,
-
-    /// Nonprintable character.
-    WhiteSpace,
-
-    /// End of line/new line character.
-    EndOfLine,
-
-    // Other sequence of printable characters.
-    Other,
-};
+template<typename T>
+using Set = std::set<T>;
 
 /* ************************************************************************* */
 
-} // namespace shard::tokenizer
+} // namespace shard
 
 /* ************************************************************************* */

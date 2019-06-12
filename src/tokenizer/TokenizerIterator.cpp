@@ -14,34 +14,29 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#pragma once
+#include "shard/tokenizer/TokenizerIterator.hpp"
 
 /* ************************************************************************* */
 
 // Shard
-#include "shard/utility.hpp"
+#include "shard/tokenizer/Tokenizer.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace tokenizer {
+namespace shard::tokenizer {
 
 /* ************************************************************************* */
 
-/**
- * @brief Number of keywords.
- */
-/*inline*/ constexpr auto KeywordCount = ARG_COUNT<
-#define KEYWORD(name, str) void,
-#include "Token.def"
-    void
-> - 1;
+void TokenizerIterator::fetch()
+{
+    if (auto token = m_tokenizer->tokenize(); token)
+        m_current = *token;
+    else
+        m_tokenizer = nullptr;
+}
 
 /* ************************************************************************* */
 
-}
-}
-}
+} // namespace shard::tokenizer
 
 /* ************************************************************************* */

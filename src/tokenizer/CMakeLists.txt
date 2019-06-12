@@ -27,6 +27,9 @@ endif ()
 
 # Create Shard part
 add_library(shard-tokenizer
+    SourceIterator.cpp
+    Source.cpp
+    TokenizerIterator.cpp
     Tokenizer.cpp
 )
 

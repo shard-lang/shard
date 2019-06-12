@@ -18,391 +18,322 @@
 
 /* ************************************************************************* */
 
+// C++
+#include <algorithm>
+
 // Shard
-#include "shard/Path.hpp"
-#include "shard/Assert.hpp"
-#include "shard/String.hpp"
-#include "shard/ViewPtr.hpp"
 #include "shard/SourceLocation.hpp"
+#include "shard/Optional.hpp"
 #include "shard/tokenizer/Source.hpp"
-#include "shard/tokenizer/KeywordType.hpp"
-#include "shard/tokenizer/TokenType.hpp"
 #include "shard/tokenizer/Token.hpp"
-#include "shard/tokenizer/TokenizerException.hpp"
+#include "shard/tokenizer/TokenizerIterator.hpp"
 
 /* ************************************************************************* */
 
-namespace shard {
-inline namespace v1 {
-namespace tokenizer {
-
-/* ************************************************************************* */
-
-class Tokenizer; //FWD declaration
+namespace shard::tokenizer {
 
 /* ************************************************************************* */
 
 /**
- * @brief Input iterator from Shard lexical analyzer.
- */
-class TokenizerIterator
-{
-
-private:
-
-    ViewPtr<Tokenizer> m_tokenizer;
-
-public:
-
-    /**
-     * @brief constructs empty TokenizerIterator.
-     */
-    TokenizerIterator() = default;
-
-    /**
-     * @brief constructs TokenizerIterator for given Tokenizer.
-     */
-    explicit TokenizerIterator(ViewPtr<Tokenizer> tokenizer):
-        m_tokenizer(tokenizer) {}
-
-    inline const Token& operator*() const;
-    inline TokenizerIterator& operator++();
-    inline TokenizerIterator operator++(int);
-
-    /**
-     * @brief returns pointer to related tokenizer.
-     */
-    inline ViewPtr<Tokenizer> getTokenizer() const noexcept
-    {
-        return m_tokenizer;
-    }
-};
-
-/* ************************************************************************* */
-
-/**
- * @brief checks whether lhs or rhs is at final token.
- *
- * This operator serves for range-for purposes. 
- */
-inline bool operator==(const TokenizerIterator& lhs, const TokenizerIterator& rhs)
-{
-    return (lhs.getTokenizer() == nullptr || (*lhs).getType() == TokenType::End)
-        && (rhs.getTokenizer() == nullptr || (*rhs).getType() == TokenType::End);
-}
-
-inline bool operator!=(const TokenizerIterator& lhs, const TokenizerIterator& rhs)
-{
-    return !(lhs == rhs);
-}
-
-/* ************************************************************************* */
-
-/**
- * @brief Shard lexical analyzer.
+ * @brief      Shard lexical analyzer.
  */
 class Tokenizer
 {
 
-private:
+public:
+    // Ctors & Dtors
 
-    Source m_src;
-    Token m_current;
-    const bool m_incDoc;
+    /**
+     * @brief      Constructor.
+     *
+     * @param      begin  The begin iterator.
+     * @param      end    The end iterator.
+     *
+     * @tparam     IT     Iterator type.
+     */
+    template<typename IT>
+    explicit Tokenizer(IT begin, IT end)
+        : m_current(begin)
+        , m_end(end)
+    {
+        // Nothing to do
+    }
 
-    static constexpr char string_literal_border = '"';
-    static constexpr char char_literal_border = '\'';
-
-/* ************************************************************************* */
+    /**
+     * @brief      Constructor.
+     *
+     * @param      source  The source code.
+     */
+    explicit Tokenizer(Source& source)
+        : Tokenizer(source.begin(), source.end())
+    {
+        // Nothing to do
+    }
 
 public:
+    // Accessors & Mutators
 
     /**
-     * @brief Constructs Tokenizer which reads from file.
-     * @param path    path to file
-     * @param incDoc  whether tokenizer should tokenize documentation comments
+     * @brief      Returns if tokenizer is finished.
+     *
+     * @return     If finished.
      */
-    explicit Tokenizer(const Path& path, bool incDoc = true): m_src(path), m_incDoc(incDoc)
+    bool isEmpty() const noexcept
     {
-        tokenize();
+        return m_current == m_end;
     }
 
     /**
-     * @brief Constructs Tokenizer which reads from String.
-     * @param path    source as string
-     * @param incDoc  whether tokenizer should tokenize documentation comments
+     * @brief      Returns the begin iterator.
+     *
+     * @return     The begin iterator.
      */
-    explicit Tokenizer(const String& source, bool incDoc = true): m_src(source), m_incDoc(incDoc)
+    TokenizerIterator begin() noexcept
     {
-        tokenize();
+        return TokenizerIterator(*this);
     }
-            
-/* ************************************************************************* */
+
+    /**
+     * @brief      Returns the begin iterator.
+     *
+     * @return     The begin iterator.
+     */
+    TokenizerIterator end() noexcept
+    {
+        return TokenizerIterator();
+    }
 
 public:
+    // Operations
 
     /**
-     * @brief load next token.
+     * @brief      Tokenize new token.
+     *
+     * @return     The token or nullopt if end of source is reached.
      */
-    void tokenize();
-
-/* ************************************************************************* */
-
-public:
-
-    /**
-     * @brief get current token.
-     */
-    inline const Token& get() const noexcept
-    {
-        return m_current;
-    }
-
-    /**
-     * @brief get current token and move to next.
-     */
-    inline Token extract()
-    {
-        auto tmp = m_current;
-        tokenize();
-        return tmp;
-    }
-
-    /**
-     * @brief move to next token and return it.
-     */
-    inline const Token& getNext()
-    {
-        tokenize();
-        return m_current;
-    }
-
-    /**
-     * @brief discards current token and moves to next.
-     */
-    inline void toss()
-    {
-        tokenize();
-    }
-
-/* ************************************************************************* */
-
-public:
-
-    /**
-     * @brief checks if current token is final EOF type.
-     */
-    inline bool empty()
-    {
-        return m_current.getType() == TokenType::End;
-    }
-
-/* ************************************************************************* */
-
-public:
-
-    /**
-     * @brief returns tokenizer iterator pointing to currect token.
-     */
-    inline TokenizerIterator begin() noexcept
-    {
-        return TokenizerIterator(this);
-    }
-
-    /**
-     * @brief returns empty tokenizer iterator.
-     */
-    inline TokenizerIterator end() noexcept
-    {
-        return TokenizerIterator(nullptr);
-    }
-
-/* ************************************************************************* */
+    Optional<Token> tokenize();
 
 private:
+    // Operations
 
     /**
-     * @brief returns if current character is tested character.
+     * @brief      Return if current character matches given character.
+     *
+     * @param      value  The value compare to.
+     *
+     * @return     If values matches.
      */
-    inline bool is(char value) noexcept
+    bool is(char value) const noexcept
     {
-        return !m_src.empty() && m_src.get() == value;
+        return !isEmpty() && *m_current == value;
     }
 
     /**
-     * @brief returns if current character is one of tested characters.
+     * @brief      Returns if current character is one of given characters.
+     *
+     * @param      values  The possible values.
+     *
+     * @tparam     VALUES    The values.
+     *
+     * @return     True if any, False otherwise.
      */
-    template<typename... Chars>
-    inline bool is(Chars... options) noexcept
+    template<typename... VALUES>
+    bool isAny(VALUES... values) const noexcept
     {
-        char chars[] {options...};
-        for (const char option : chars)
-        {
-            if (is(option))
-            {
-                return true;
-            }
-        }
-        return false;
+        return (is(values) || ...);
     }
 
     /**
-     * @brief returns if current character is between two chars in the ASCII table.
+     * @brief      Returns if current character is between two characters.
+     *
+     * @param      value1  The first value.
+     * @param      value2  The second value.
+     *
+     * @return     True if is between, False otherwise.
      */
-    inline bool isBetween(char value1, char value2) noexcept
+    bool isBetween(char value1, char value2) const noexcept
     {
-        return !m_src.empty() && (m_src.get() >= value1) && (m_src.get() <= value2);
+        return !isEmpty() && *m_current >= value1 && *m_current <= value2;
     }
 
     /**
-    * @brief returns if current character is whitespace.
-    */
-    inline bool isWhitespace() noexcept
+     * @brief      Returns if current character is whitespace.
+     *
+     * @return     True if whitespace, False otherwise.
+     */
+    bool isWhitespace() const noexcept
     {
-        return isBetween('\1', ' ');
+        return isAny(' ', '\t');
     }
 
     /**
-     * @brief returns if current character is a letter.
+     * @brief      Returns if current character is end of line.
+     *
+     * @return     True if end of line, False otherwise.
      */
-    inline bool isLetter() noexcept
+    bool isEndOfLine() const noexcept
+    {
+        return is('\n');
+    }
+
+    /**
+     * @brief      Returns if current character is a letter.
+     *
+     * @return     True if character is letter, False otherwise.
+     */
+    bool isLetter() const noexcept
     {
         return isBetween('a', 'z') || isBetween('A', 'Z');
     }
 
     /**
-     * @brief returns if current character is a letter, number or '_'.
+     * @brief      Returns if current character is a number.
+     *
+     * @return     True if character is digit, False otherwise.
      */
-    inline bool isIdentifier() noexcept
+    bool isDigit() const noexcept
+    {
+        return isBetween('0', '9');
+    }
+
+    /**
+     * @brief      Returns if current character is a letter, number or '_'.
+     *
+     * @return     True if identifier, False otherwise.
+     */
+    bool isIdentifier() noexcept
     {
         return isLetter() || isDigit() || is('_');
     }
 
     /**
-     * @brief returns if current character is a number in given numeric system.
+     * @brief      Returns if current character is matches given character and
+     *             if then advance.
+     *
+     * @param      value  The value match against to.
+     *
+     * @return     If values has matched.
      */
-    inline bool isDigit(int base = 10) noexcept
-    {
-        SHARD_ASSERT(base == 10 || base == 16 || base == 8 || base == 2);
-        switch (base)
-        {
-            case 10: return isBetween('0', '9');
-            case 16: return isBetween('0', '9') || isBetween('a', 'f') || isBetween('A', 'F');
-            case 8: return isBetween('0', '7');
-            case 2: return isBetween('0', '1');
-            default: return false;
-        }
-    }
-
-    /**
-     * @brief returns if current character is tested character.
-     * If so, moves to next character.
-     */
-    inline bool match(char value) noexcept
+    bool match(char value) noexcept
     {
         if (is(value))
         {
-            m_src.toss();
+            ++m_current;
             return true;
         }
+
         return false;
     }
 
     /**
-     * @brief returns if current character is one of tested characters.
-     * If so, moves to next character.
+     * @brief      Returns if current character is matches any of given
+     *             characters and if then advance.
+     *
+     * @param      values  The values match against to.
+     *
+     * @tparam     VALUES  Value types to match.
+     *
+     * @return     If value has matched.
      */
-    template<typename... Chars>
-    inline bool match(Chars... options) noexcept
+    template<typename... VALUES>
+    bool matchAny(VALUES... values) noexcept
     {
-        const char chars[] {options...};
-        for (const char option : chars)
+        if (isAny(values...))
         {
-            if (is(option))
-            {
-                m_src.toss();
-                return true;
-            }
+            ++m_current;
+            return true;
         }
+
         return false;
     }
 
-/* ************************************************************************* */
+private:
+    // Operations
+
+    /**
+     * @brief      Tokenizes an identifier.
+     *
+     * @return     The result token.
+     */
+    Token tokenizeIdentifier();
+
+    /**
+     * @brief      Tokenizes integer literal.
+     *
+     * @return     The result token.
+     */
+    Token tokenizeNumber();
+
+    /**
+     * @brief      Tokenizes string literal.
+     *
+     * @return     The result token.
+     */
+    Token tokenizeString();
+
+    /**
+     * @brief      Tokenizes character literal.
+     *
+     * @return     The result token.
+     */
+    Token tokenizeChar();
+
+    /**
+     * @brief      Tokenizes white space.
+     *
+     * @return     The result token.
+     */
+    Token tokenizeWhiteSpace();
+
+    /**
+     * @brief      Tokenizes end of line.
+     *
+     * @return     The result token.
+     */
+    Token tokenizeEndOfLine();
+
+    /**
+     * @brief      Tokenizes others.
+     *
+     * @return     The result token.
+     */
+    Token tokenizeOther();
 
 private:
+    // Data Members
 
-    /**
-     * @brief Iterates to next non-whitespace char.
-     */
-    inline void skipWhitespace() noexcept
-    {
-        while (isWhitespace())
-        {
-            m_src.toss();
-        }
-    }
+    /// Current source position.
+    SourceIterator m_current;
 
-    /**
-     * @brief returns escaped char value.
-     */
-    Token::CharType getEscaped(const char value);
-
-/* ************************************************************************* */
-
-private:
-
-    /**
-     * @brief tokenizes int or float literal.
-     */
-    void tokenizeNumber();
-
-    /**
-     * @brief tokenizes identifier or keyword.
-     */
-    void tokenizeIdentifier() noexcept;
-
-    /**
-     * @brief tokenizes string literal.
-     */
-    void tokenizeString();
-
-    /**
-     * @brief tokenizes char literal.
-     */
-    void tokenizeChar();
-
-    /**
-     * @brief tokenizes operators.
-     */
-    void tokenizeOperator();
-
+    /// End source position.
+    SourceIterator m_end;
 };
 
 /* ************************************************************************* */
 
-inline const Token& TokenizerIterator::operator*() const
+/**
+ * @brief      Tokenize input range.
+ *
+ * @param      first      The first input iterator.
+ * @param      last       The last input iterator.
+ * @param      output     The output iterator.
+ *
+ * @tparam     INPUT_IT   Input iterator type.
+ * @tparam     OUTPUT_IT  Output iterator type.
+ *
+ * @return     Result output iterator.
+ */
+template<typename INPUT_IT, typename OUTPUT_IT>
+OUTPUT_IT tokenize(INPUT_IT first, INPUT_IT last, OUTPUT_IT output)
 {
-    return m_tokenizer->get();
-}
+    // Create tokenizer
+    Tokenizer tokenizer(first, last);
 
-inline TokenizerIterator& TokenizerIterator::operator++()
-{
-    m_tokenizer->tokenize();
-    return *this;
-}
-
-inline TokenizerIterator TokenizerIterator::operator++(int)
-{
-    TokenizerIterator tmp(*this);
-    operator++();
-    return tmp;
+    return std::copy(tokenizer.begin(), tokenizer.end(), output);
 }
 
 /* ************************************************************************* */
 
-}
-}
-}
+} // namespace shard::tokenizer
 
 /* ************************************************************************* */
-

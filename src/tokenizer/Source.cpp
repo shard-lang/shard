@@ -14,14 +14,12 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#pragma once
+#include "shard/tokenizer/Source.hpp"
 
 /* ************************************************************************* */
 
-// Shard
-#include "shard/SourceLocation.hpp"
-#include "shard/String.hpp"
-#include "shard/tokenizer/TokenType.hpp"
+// C++
+#include <algorithm>
 
 /* ************************************************************************* */
 
@@ -29,82 +27,53 @@ namespace shard::tokenizer {
 
 /* ************************************************************************* */
 
-/**
- * @brief      Lexical element.
- *
- * @details    It's used for storing lexical element from the source code which
- *             is a sequence of characters.
- */
-class Token
+void Source::process(const String& source)
 {
-public:
-    // Ctors & Dtors
+    // Result size will be same or smaller than source
+    m_source.reserve(source.size());
 
-    /**
-     * @brief      Default constructor.
-     */
-    Token() = default;
+    // First line starts at position 0
+    m_lines.push_back(0);
 
-    /**
-     * @brief      Constructs token.
-     *
-     * @param      type      The token type.
-     * @param      value     The token value.
-     * @param      location  The source location.
-     */
-    explicit Token(TokenType type, String value, SourceLocation location)
-        : m_type(type)
-        , m_value(std::move(value))
-        , m_location(location)
+    // Foreach characters
+    for (std::size_t i = 0; i < source.size(); ++i)
     {
-        // Nothing to do
+        // NOTE: Is safe when `i` is last character, the standard specifies the
+        // following character will be `\0`.
+        if (source[i] == '\r' && source[i + 1] == '\n')
+        {
+            // Store new line and advance
+            m_source.push_back('\n');
+            ++i;
+            m_lines.push_back(m_source.size());
+        }
+        else if (source[i] == '\n')
+        {
+            m_source.push_back(source[i]);
+            m_lines.push_back(m_source.size());
+        }
+        else
+        {
+            m_source.push_back(source[i]);
+        }
     }
+}
 
-public:
-    // Accessors & Mutators
+/* ************************************************************************* */
 
-    /**
-     * @brief      Returns token type.
-     *
-     * @return     The type.
-     */
-    TokenType type() const noexcept
-    {
-        return m_type;
-    }
+SourceLocation Source::location(std::size_t position) const noexcept
+{
+    // The array contains sorted positions. At first it will find first element
+    // which is greater than position so we need to get the previous one.
+    auto it =
+        std::prev(std::upper_bound(m_lines.begin(), m_lines.end(), position));
 
-    /**
-     * @brief      Returns token value.
-     *
-     * @return     The value.
-     */
-    const String& value() const noexcept
-    {
-        return m_value;
-    }
+    // Line is index in the array + 1
+    const int line   = std::distance(m_lines.begin(), it) + 1;
+    const int column = position - *it + 1;
 
-    /**
-     * @brief      Returns token starting location.
-     *
-     * @return     The source location.
-     */
-    SourceLocation location() const noexcept
-    {
-        return m_location;
-    }
-
-private:
-    // Data Members
-
-    /// Token type.
-    TokenType m_type = TokenType::Unknown;
-
-    /// Token value.
-    String m_value;
-
-    // Token start location in the source.
-    SourceLocation m_location;
-};
+    return SourceLocation{line, column};
+}
 
 /* ************************************************************************* */
 

@@ -14,54 +14,50 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#pragma once
-
-/* ************************************************************************* */
+// Google test
+#include "gtest/gtest.h"
 
 // Shard
-#include "shard/utility.hpp"
+#include "shard/tokenizer/Token.hpp"
 
 /* ************************************************************************* */
 
-namespace shard::tokenizer {
+using namespace shard;
+using namespace shard::tokenizer;
 
 /* ************************************************************************* */
 
-/**
- * @brief      Supported token types.
- */
-enum class TokenType
+TEST(Token, def)
 {
-    /// Unknown token type.
-    Unknown,
+    Token token;
 
-    /// Identifier: [a-zA-Z_][a-zA-Z0-9_]*
-    Identifier,
-
-    /// String inside double quotes.
-    StringLiteral,
-
-    /// String inside single quotes.
-    CharLiteral,
-
-    /// Number: [0-9]+
-    NumberLiteral,
-
-    /// Comment.
-    Comment,
-
-    /// Nonprintable character.
-    WhiteSpace,
-
-    /// End of line/new line character.
-    EndOfLine,
-
-    // Other sequence of printable characters.
-    Other,
-};
+    EXPECT_EQ(token.type(), TokenType::Unknown);
+    EXPECT_EQ(token.value(), "");
+    EXPECT_EQ(token.location(), (SourceLocation{0, 0}));
+}
 
 /* ************************************************************************* */
 
-} // namespace shard::tokenizer
+TEST(Token, construct)
+{
+    Token token{TokenType::Identifier, "var", SourceLocation{5, 10}};
+
+    EXPECT_EQ(token.type(), TokenType::Identifier);
+    EXPECT_EQ(token.value(), "var");
+    EXPECT_EQ(token.location(), (SourceLocation{5, 10}));
+
+    // Copy
+    Token token2 = token;
+
+    EXPECT_EQ(token2.type(), TokenType::Identifier);
+    EXPECT_EQ(token2.value(), "var");
+    EXPECT_EQ(token2.location(), (SourceLocation{5, 10}));
+
+    token = Token{TokenType::NumberLiteral, "15", SourceLocation{1, 3}};
+
+    EXPECT_EQ(token.type(), TokenType::NumberLiteral);
+    EXPECT_EQ(token.value(), "15");
+    EXPECT_EQ(token.location(), (SourceLocation{1, 3}));
+}
 
 /* ************************************************************************* */

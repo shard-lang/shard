@@ -18,10 +18,12 @@
 
 /* ************************************************************************* */
 
+// C++
+#include <exception>
+
 // Shard
 #include "shard/SourceLocation.hpp"
 #include "shard/String.hpp"
-#include "shard/tokenizer/TokenType.hpp"
 
 /* ************************************************************************* */
 
@@ -30,32 +32,23 @@ namespace shard::tokenizer {
 /* ************************************************************************* */
 
 /**
- * @brief      Lexical element.
- *
- * @details    It's used for storing lexical element from the source code which
- *             is a sequence of characters.
+ * @brief      Tokenize error.
  */
-class Token
+class TokenizerError : public std::exception
 {
 public:
     // Ctors & Dtors
 
     /**
-     * @brief      Default constructor.
-     */
-    Token() = default;
-
-    /**
-     * @brief      Constructs token.
+     * @brief      Constructor.
      *
-     * @param      type      The token type.
-     * @param      value     The token value.
-     * @param      location  The source location.
+     * @param      message   The message.
+     * @param      location  The source code location.
      */
-    explicit Token(TokenType type, String value, SourceLocation location)
-        : m_type(type)
-        , m_value(std::move(value))
+    explicit TokenizerError(String message, SourceLocation location)
+        : m_message(std::move(message))
         , m_location(location)
+        , m_what(formatMessage(m_message, location))
     {
         // Nothing to do
     }
@@ -64,46 +57,52 @@ public:
     // Accessors & Mutators
 
     /**
-     * @brief      Returns token type.
+     * @brief      Returns error source location.
      *
-     * @return     The type.
+     * @return     The location.
      */
-    TokenType type() const noexcept
-    {
-        return m_type;
-    }
-
-    /**
-     * @brief      Returns token value.
-     *
-     * @return     The value.
-     */
-    const String& value() const noexcept
-    {
-        return m_value;
-    }
-
-    /**
-     * @brief      Returns token starting location.
-     *
-     * @return     The source location.
-     */
-    SourceLocation location() const noexcept
+    const SourceLocation& location() const noexcept
     {
         return m_location;
+    }
+
+    /**
+     * @brief      Returns error message.
+     *
+     * @return     The message.
+     */
+    const char* what() const noexcept
+    {
+        return m_what.c_str();
+    }
+
+public:
+    // Operations
+
+    /**
+     * @brief      Format result error message.
+     *
+     * @param      msg   The message.
+     * @param      loc   The location.
+     *
+     * @return     The error message.
+     */
+    static String formatMessage(const String& msg, const SourceLocation& loc)
+    {
+        return toString(loc.line()) + ":" + toString(loc.column()) + ": " + msg;
     }
 
 private:
     // Data Members
 
-    /// Token type.
-    TokenType m_type = TokenType::Unknown;
+    /// Error message.
+    String m_message;
 
-    /// Token value.
-    String m_value;
-
-    // Token start location in the source.
+    /// Location where the error comes from.
     SourceLocation m_location;
+
+    /// The result message.
+    String m_what;
 };
 
 /* ************************************************************************* */

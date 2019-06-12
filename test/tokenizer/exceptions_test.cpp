@@ -14,54 +14,31 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-#pragma once
-
-/* ************************************************************************* */
+// Google test
+#include "gtest/gtest.h"
 
 // Shard
-#include "shard/utility.hpp"
+#include "shard/UniquePtr.hpp"
+#include "shard/tokenizer/exceptions.hpp"
 
 /* ************************************************************************* */
 
-namespace shard::tokenizer {
+using namespace shard;
+using namespace shard::tokenizer;
 
 /* ************************************************************************* */
 
-/**
- * @brief      Supported token types.
- */
-enum class TokenType
+TEST(exceptions, TokenizerError)
 {
-    /// Unknown token type.
-    Unknown,
+    TokenizerError error("failed", SourceLocation{1, 1});
 
-    /// Identifier: [a-zA-Z_][a-zA-Z0-9_]*
-    Identifier,
+    EXPECT_STREQ(error.what(), "1:1: failed");
+    EXPECT_EQ(error.location(), (SourceLocation{1, 1}));
 
-    /// String inside double quotes.
-    StringLiteral,
+    auto errPtr = makeUnique<TokenizerError>("error", SourceLocation{5, 8});
 
-    /// String inside single quotes.
-    CharLiteral,
-
-    /// Number: [0-9]+
-    NumberLiteral,
-
-    /// Comment.
-    Comment,
-
-    /// Nonprintable character.
-    WhiteSpace,
-
-    /// End of line/new line character.
-    EndOfLine,
-
-    // Other sequence of printable characters.
-    Other,
-};
-
-/* ************************************************************************* */
-
-} // namespace shard::tokenizer
+    EXPECT_STREQ(errPtr->what(), "5:8: error");
+    EXPECT_EQ(errPtr->location(), (SourceLocation{5, 8}));
+}
 
 /* ************************************************************************* */
