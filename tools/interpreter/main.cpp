@@ -17,6 +17,7 @@
 // C++
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <algorithm>
 #include <iterator>
 #include <ios>
@@ -26,7 +27,7 @@
 #include "shard/String.hpp"
 #include "shard/StringView.hpp"
 #include "shard/Exception.hpp"
-#include "shard/ast/Unit.hpp"
+#include "shard/ast/Source.hpp"
 #include "shard/parser/Parser.hpp"
 #include "shard/ir/Module.hpp"
 #include "shard/interpreter/Interpreter.hpp"
@@ -48,23 +49,43 @@ namespace {
  *
  * @return     AST.
  */
-UniquePtr<ast::Unit> createAst(StringView filename)
+#if 0
+ast::Source createAst(StringView filename)
 {
-    if (filename != "-")
-        return parser::Parser(FilePath(String(filename))).parseUnit();
-
     String input;
     input.reserve(4096);
 
-    // Copy standard input to string
-    std::copy(
-        std::istream_iterator<char>(std::cin >> std::noskipws),
-        std::istream_iterator<char>(),
-        std::back_inserter(input)
-    );
+    if (filename == "-")
+    {
+        // Copy standard input to string
+        std::copy(
+            std::istream_iterator<char>(std::cin >> std::noskipws),
+            std::istream_iterator<char>(),
+            std::back_inserter(input)
+        );
+    }
+    else
+    {
+        std::ifstream file{String(filename)};
 
-    return parser::Parser(std::move(input)).parseUnit();
+        if (!file.is_open())
+            throw std::runtime_error("file not found: " + String(filename));
+
+        std::copy(
+            std::istream_iterator<char>(file >> std::noskipws),
+            std::istream_iterator<char>(),
+            std::back_inserter(input)
+        );
+
+    }
+
+    tokenizer::Source source("");
+    tokenizer::Tokenizer tokenizer(source);
+    parser::Parser parser(tokenizer);
+
+    return parser.parseSource();
 }
+#endif
 
 /* ************************************************************************* */
 
