@@ -31,9 +31,9 @@ matrix:
     include:
         - compiler: gcc
           env:
-            - CC=gcc-7
-            - CXX=g++-7
-            - PKG=g++-7
+            - CC=gcc-8
+            - CXX=g++-8
+            - PKG=g++-8
 
 install:
     - docker build -t shard --build-arg PKG=$PKG --build-arg CC=$CC --build-arg CXX=$CXX .
