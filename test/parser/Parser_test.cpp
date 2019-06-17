@@ -810,6 +810,7 @@ TEST(Parser, stmt)
         Parser parser(tokenizer);
 
         parser.addStmtParser("{", [](auto& parser) {
+            auto start = parser.location();
             parser.requireOther("{");
 
             ast::StmtPtrVector stmts;
@@ -817,15 +818,19 @@ TEST(Parser, stmt)
             while (!parser.isEmpty() && !parser.isOther("}"))
                 stmts.push_back(parser.parseStmt());
 
+            auto end = parser.location();
             parser.requireOther("}");
 
-            return makeUnique<ast::CompoundStmt>(std::move(stmts));
+            return makeUnique<ast::CompoundStmt>(
+                std::move(stmts), SourceRange{start, end});
         });
 
         auto stmt = parser.parseStmt();
 
         ASSERT_TRUE(stmt->is<ast::CompoundStmt>());
         auto& compound = stmt->cast<ast::CompoundStmt>();
+        EXPECT_EQ(compound.sourceRange().start(), (SourceLocation{1, 1}));
+        EXPECT_EQ(compound.sourceRange().end(), (SourceLocation{1, 2}));
 
         EXPECT_TRUE(compound.stmts().empty());
 
@@ -839,6 +844,7 @@ TEST(Parser, stmt)
         Parser parser(tokenizer);
 
         parser.addStmtParser("{", [](auto& parser) {
+            auto start = parser.location();
             parser.requireOther("{");
 
             ast::StmtPtrVector stmts;
@@ -846,9 +852,11 @@ TEST(Parser, stmt)
             while (!parser.isEmpty() && !parser.isOther("}"))
                 stmts.push_back(parser.parseStmt());
 
+            auto end = parser.location();
             parser.requireOther("}");
 
-            return makeUnique<ast::CompoundStmt>(std::move(stmts));
+            return makeUnique<ast::CompoundStmt>(
+                std::move(stmts), SourceRange{start, end});
         });
 
         // Variable declaration
@@ -875,6 +883,8 @@ TEST(Parser, stmt)
 
         ASSERT_TRUE(stmt->is<ast::CompoundStmt>());
         const auto& compound = stmt->cast<ast::CompoundStmt>();
+        EXPECT_EQ(compound.sourceRange().start(), (SourceLocation{1, 1}));
+        EXPECT_EQ(compound.sourceRange().end(), (SourceLocation{1, 15}));
 
         ASSERT_EQ(compound.stmts().size(), 1);
         const auto& stmts = compound.stmts();
@@ -912,7 +922,39 @@ TEST(Parser, source)
 
         auto stmt = parser.parseSource();
 
-        EXPECT_EQ(stmt.stmts().size(), 2);
+        ASSERT_EQ(stmt.stmts().size(), 2);
+        const auto& stmt1 = stmt.stmts()[0];
+        const auto& stmt2 = stmt.stmts()[1];
+
+        ASSERT_TRUE(stmt1->is<ast::ExprStmt>());
+        const auto& expr1 = stmt1->cast<ast::ExprStmt>().expr();
+
+        ASSERT_TRUE(stmt2->is<ast::ExprStmt>());
+        const auto& expr2 = stmt2->cast<ast::ExprStmt>().expr();
+
+        ASSERT_TRUE(expr1->is<ast::BinaryExpr>());
+        const auto& bin1 = expr1->cast<ast::BinaryExpr>();
+        EXPECT_EQ(bin1.op(), "+");
+
+        ASSERT_TRUE(bin1.lhs()->is<ast::IntLiteralExpr>());
+        const auto& integer11 = bin1.lhs()->cast<ast::IntLiteralExpr>();
+        EXPECT_EQ(integer11.value(), 5);
+
+        ASSERT_TRUE(bin1.rhs()->is<ast::IntLiteralExpr>());
+        const auto& integer12 = bin1.rhs()->cast<ast::IntLiteralExpr>();
+        EXPECT_EQ(integer12.value(), 2);
+
+        ASSERT_TRUE(expr2->is<ast::BinaryExpr>());
+        const auto& bin2 = expr2->cast<ast::BinaryExpr>();
+        EXPECT_EQ(bin2.op(), "*");
+
+        ASSERT_TRUE(bin2.lhs()->is<ast::IntLiteralExpr>());
+        const auto& integer21 = bin2.lhs()->cast<ast::IntLiteralExpr>();
+        EXPECT_EQ(integer21.value(), 2);
+
+        ASSERT_TRUE(bin2.rhs()->is<ast::IntLiteralExpr>());
+        const auto& integer22 = bin2.rhs()->cast<ast::IntLiteralExpr>();
+        EXPECT_EQ(integer22.value(), 9);
 
         EXPECT_TRUE(parser.isEmpty());
     }

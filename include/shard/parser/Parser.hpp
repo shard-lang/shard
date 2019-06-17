@@ -158,8 +158,6 @@ public:
      * @brief      Returns current token.
      *
      * @return     Current token.
-     *
-     * @pre        `!isEmpty()`.
      */
     const tokenizer::Token& token() const noexcept
     {
@@ -177,6 +175,16 @@ public:
     {
         ++m_current;
         return token();
+    }
+
+    /**
+     * @brief      Returns parser's current source location.
+     *
+     * @return     The location.
+     */
+    SourceLocation location() const noexcept
+    {
+        return m_current->location();
     }
 
     /**
