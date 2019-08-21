@@ -306,6 +306,22 @@ public:
     // Operations
 
     /**
+     * @brief      Make node for AST
+     *
+     * @param      args  The construction arguments.
+     *
+     * @tparam     T     Created type.
+     * @tparam     Args  Argument types.
+     *
+     * @return     Created node.
+     */
+    template<typename T, typename... Args>
+    UniquePtr<T> make(Args&&... args)
+    {
+        return makeUnique<T>(std::forward<Args>(args)...);
+    }
+
+    /**
      * @brief      Parse a integer literal from current state.
      *
      * @return     The parsed expr.
@@ -394,6 +410,53 @@ public:
      * @throws     ParserError  In case of parsing error.
      */
     ast::StmtPtr parseStmt();
+
+    /**
+     * @brief      Parse list of items.
+     *
+     * @param      itemFn       The item function which will be called for
+     *                          obtaining an item.
+     * @param      termFn       The termination function which is used to
+     *                          determine if parsing should end.
+     * @param      sepFn        The separator check function.
+     *
+     * @tparam     ItemFn       Item callback function type.
+     * @tparam     TerminateFn  Terminate callback function type.
+     * @tparam     SeparatorFn  Separate callback function type.
+     *
+     * @return     Parsed list of items.
+     */
+    template<typename ItemFn, typename TerminateFn, typename SeparatorFn>
+    Vector<std::invoke_result_t<ItemFn>>
+    parseList(ItemFn&& itemFn, TerminateFn&& termFn, SeparatorFn&& sepFn)
+    {
+        Vector<std::invoke_result_t<ItemFn>> list;
+
+        while (!isEmpty() && !termFn())
+        {
+            list.push_back(itemFn());
+
+            if (termFn())
+                break;
+
+            sepFn();
+        }
+
+        // Perform final requirement check
+        check(termFn());
+        next();
+
+        return list;
+    }
+
+    /**
+     * @brief      Parse list of expressions.
+     *
+     * @param      term  The termination token.
+     *
+     * @return     List of expressions.
+     */
+    ast::ExprPtrVector parseExprList(const String& term);
 
     /**
      * @brief      Test if current token is required type and advance if is

@@ -111,17 +111,17 @@ ast::ExprPtr Parser::parsePrimaryExpr()
     // IDENTIFIER_EXPRESSION
     if (is(tokenizer::TokenType::Identifier))
     {
-        return makeUnique<ast::IdentifierExpr>(parseIdentifierExpr());
+        return make<ast::IdentifierExpr>(parseIdentifierExpr());
     }
     // LITERAL_EXPRESSION
     else if (is(tokenizer::TokenType::NumberLiteral))
     {
-        return makeUnique<ast::IntLiteralExpr>(parseIntLiteralExpr());
+        return make<ast::IntLiteralExpr>(parseIntLiteralExpr());
     }
     // PAREN_EXPRESSION
     else if (isOther("("))
     {
-        return makeUnique<ast::ParenExpr>(parseParenExpr());
+        return make<ast::ParenExpr>(parseParenExpr());
     }
     // Unknown
     else
@@ -150,7 +150,7 @@ ast::ExprPtr Parser::parsePrefixExpr()
     auto cur = token().location();
     auto end = endLocation(cur, token().value());
 
-    return makeUnique<ast::PrefixUnaryExpr>(
+    return make<ast::PrefixUnaryExpr>(
         std::move(op), std::move(expr), SourceRange{start, end});
 }
 
@@ -162,8 +162,10 @@ ast::ExprPtr Parser::parsePostfixExpr()
 
     auto start = token().location();
 
-    ast::ExprPtr expr1 = parsePrimaryExpr();
+    // Primary expression
+    ast::ExprPtr expr = parsePrimaryExpr();
 
+    // Additinal postfix operators
     while (!isEmpty() && isPostfixOperator())
     {
         auto op  = token().value();
@@ -172,11 +174,22 @@ ast::ExprPtr Parser::parsePostfixExpr()
 
         next();
 
-        expr1 = makeUnique<ast::PostfixUnaryExpr>(
-            std::move(expr1), std::move(op), SourceRange{start, end});
+        expr = make<ast::PostfixUnaryExpr>(
+            std::move(expr), std::move(op), SourceRange{start, end});
     }
 
-    return expr1;
+    // Function call
+    if (matchOther("("))
+    {
+        // Create function call
+        expr = make<ast::FunctionCallExpr>(std::move(expr), parseExprList(")"));
+    }
+    else if (matchOther("["))
+    {
+        expr = make<ast::SubscriptExpr>(std::move(expr), parseExprList("]"));
+    }
+
+    return expr;
 }
 
 /* ************************************************************************* */
@@ -199,7 +212,7 @@ ast::ExprPtr Parser::parseBinaryExpr()
 
         auto end = expr2->sourceRange().end();
 
-        return makeUnique<ast::BinaryExpr>(
+        return make<ast::BinaryExpr>(
             std::move(op),
             std::move(expr1),
             std::move(expr2),
@@ -251,8 +264,19 @@ ast::StmtPtr Parser::parseStmt()
         // Must be terminated by semicolon
         requireOther(";");
 
-        return makeUnique<ast::ExprStmt>(std::move(expr));
+        return make<ast::ExprStmt>(std::move(expr));
     }
+}
+
+/* ************************************************************************* */
+
+ast::ExprPtrVector Parser::parseExprList(const String& term)
+{
+    // Parse arguments
+    return parseList(
+        [this] { return parseExpr(); },
+        [this, &term] { return isOther(term); },
+        [this] { requireOther(","); });
 }
 
 /* ************************************************************************* */

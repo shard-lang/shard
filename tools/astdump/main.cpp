@@ -120,19 +120,14 @@ ast::StmtPtr parseFunc(parser::Parser& parser)
 
     parser.requireOther("(");
 
-    PtrVector<ast::VariableDecl> args;
-
-    while (!parser.isEmpty() && !parser.isOther(")"))
-    {
-        args.push_back(parseVariableDecl(parser));
-
-         if (parser.isOther(")"))
-            break;
-
+    // Parse list of arguments
+    PtrVector<ast::VariableDecl> args = parser.parseList([&] {
+        return parseVariableDecl(parser);
+    }, [&] {
+        return parser.isOther(")");
+    }, [&] {
         parser.requireOther(",");
-    }
-
-    parser.requireOther(")");
+    });
 
     auto body = parseCompoundStmt(parser);
     auto end  = parser.location();
@@ -201,9 +196,6 @@ int main(int argc, char** argv)
 
         auto code = std::string{std::istreambuf_iterator<char>{file},
                                 std::istreambuf_iterator<char>{}};
-
-        using TokenFilter =
-            tokenizer::TokenFilterIterator<tokenizer::TokenType::EndOfLine>;
 
         auto source    = tokenizer::Source{code};
         auto tokenizer = tokenizer::Tokenizer{source};
