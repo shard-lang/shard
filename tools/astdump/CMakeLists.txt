@@ -20,9 +20,7 @@ add_executable(shard-astdump
 )
 
 target_link_libraries(shard-astdump
-    PUBLIC shard-ast
-    PUBLIC shard-tokenizer
-    PUBLIC shard-parser
+    PUBLIC shard-builtin
 )
 
 # Required C++ features (see CMAKE_CXX_KNOWN_FEATURES)

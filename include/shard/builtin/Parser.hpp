@@ -14,77 +14,88 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-// C++
-#include <algorithm>
-#include <fstream>
-#include <ios>
-#include <iostream>
-#include <iterator>
+#pragma once
+
+/* ************************************************************************* */
 
 // Shard
-#include "shard/Exception.hpp"
-#include "shard/builtin/Parser.hpp"
-#include "shard/tokenizer/Source.hpp"
-#include "shard/tokenizer/Tokenizer.hpp"
+#include "shard/ast/Stmt.hpp"
+#include "shard/parser/Parser.hpp"
 
 /* ************************************************************************* */
 
-using namespace shard;
-
-/* ************************************************************************* */
-
-namespace {
-
-/* ************************************************************************* */
-
-int printError(const char* msg) noexcept
-{
-    std::cerr << "\033[31mERROR\033[0m: " << msg << std::endl;
-    return -1;
-}
-
-/* ************************************************************************* */
-
-} // namespace
+namespace shard::builtin {
 
 /* ************************************************************************* */
 
 /**
- * @brief      Entry function.
+ * @brief      Parse function statement.
  *
- * @param      argc  Number of argument.
- * @param      argv  Arguments.
+ * @param      parser  The parser.
  *
- * @return     Result code.
+ * @return     The result statement.
  */
-int main(int argc, char** argv)
+ast::StmtPtr parseFunction(parser::Parser& parser);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Parse return statement.
+ *
+ * @param      parser  The parser.
+ *
+ * @return     Return statement.
+ */
+ast::StmtPtr parseReturn(parser::Parser& parser);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Extend parser by builtin extensions.
+ *
+ * @param      parser  The parser.
+ */
+void extendParser(parser::Parser& parser);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Shard parser extended by builtin language.
+ */
+class Parser : public parser::Parser
 {
-    if (argc < 2)
-        return printError("no input file");
+public:
+    // Ctors & Dtors
 
-    try
+    /**
+     * @brief      Create a parser.
+     *
+     * @param      begin  The begin iterator.
+     * @param      end    The end iterator.
+     *
+     * @tparam     IT     Iterator type.
+     */
+    template<typename IT>
+    explicit Parser(IT begin, IT end)
+        : parser::Parser(begin, end)
     {
-        std::ifstream file(argv[1]);
-
-        if (!file.is_open())
-            return printError("unable to open file");
-
-        auto code = std::string{std::istreambuf_iterator<char>{file},
-                                std::istreambuf_iterator<char>{}};
-
-        auto source    = tokenizer::Source{code};
-        auto tokenizer = tokenizer::Tokenizer{source};
-        auto parser    = builtin::Parser{tokenizer};
-
-        // Parse source
-        auto ast = parser.parseSource();
-
-        ast.dump(std::cout);
+        extendParser(*this);
     }
-    catch (const Exception& err)
+
+    /**
+     * @brief      Create a parser.
+     *
+     * @param      tokenizer  The tokenizer.
+     */
+    explicit Parser(tokenizer::Tokenizer& tokenizer)
+        : Parser(tokenizer.begin(), tokenizer.end())
     {
-        return printError(err.what());
+        // Nothing to do
     }
-}
+};
+
+/* ************************************************************************* */
+
+} // namespace shard::builtin
 
 /* ************************************************************************* */
