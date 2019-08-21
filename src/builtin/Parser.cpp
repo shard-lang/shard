@@ -79,7 +79,7 @@ UniquePtr<ast::VariableDecl> parseVariableDecl(parser::Parser& parser)
 
 /* ************************************************************************* */
 
-ast::StmtPtr parseFunction(parser::Parser& parser)
+ast::StmtPtr parseFunc(parser::Parser& parser)
 {
     auto start = parser.location();
 
@@ -113,6 +113,66 @@ ast::StmtPtr parseFunction(parser::Parser& parser)
 
 /* ************************************************************************* */
 
+ast::StmtPtr parseVar(parser::Parser& parser)
+{
+    auto start = parser.location();
+
+    // Prefix
+    parser.requireIdentifier("var");
+
+    // Name
+    parser.checkIdentifier();
+    auto name = parser.token().value();
+    parser.next();
+
+    ast::ExprPtr expr;
+
+    // Initializer
+    if (parser.matchOther("="))
+        expr = parser.parseExpr();
+
+    parser.requireOther(";");
+
+    auto end  = parser.location();
+
+    auto decl = makeUnique<ast::VariableDecl>(
+        "Any", name, std::move(expr), SourceRange{start, end});
+
+    return makeUnique<ast::DeclStmt>(std::move(decl), SourceRange{start, end});
+}
+
+/* ************************************************************************* */
+
+ast::StmtPtr parseConst(parser::Parser& parser)
+{
+    auto start = parser.location();
+
+    // Prefix
+    parser.requireIdentifier("const");
+
+    // Name
+    parser.checkIdentifier();
+    auto name = parser.token().value();
+    parser.next();
+
+    ast::ExprPtr expr;
+
+    // Initializer
+    if (parser.matchOther("="))
+        expr = parser.parseExpr();
+
+    parser.requireOther(";");
+
+    auto end  = parser.location();
+
+    auto decl = makeUnique<ast::VariableDecl>(
+        "Any", name, std::move(expr), SourceRange{start, end});
+
+    return makeUnique<ast::DeclStmt>(std::move(decl), SourceRange{start, end});
+}
+
+/* ************************************************************************* */
+
 ast::StmtPtr parseReturn(parser::Parser& parser)
 {
     auto start = parser.location();
@@ -139,12 +199,19 @@ ast::StmtPtr parseReturn(parser::Parser& parser)
 void extendParser(parser::Parser& parser)
 {
     // Statements
-    parser.addStmtParser("func", &parseFunction);
+    parser.addStmtParser("func", &parseFunc);
+    parser.addStmtParser("var", &parseVar);
+    parser.addStmtParser("const", &parseConst);
+
     parser.addStmtParser("return", &parseReturn);
 
     // Operators
+    parser.addBinaryOperator("=");
     parser.addBinaryOperator("+");
     parser.addBinaryOperator("-");
+    parser.addBinaryOperator("*");
+    parser.addBinaryOperator("/");
+    parser.addBinaryOperator("!");
 }
 
 /* ************************************************************************* */

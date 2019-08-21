@@ -18,10 +18,8 @@
 
 /* ************************************************************************* */
 
-// C++
-#include <exception>
-
 // Shard
+#include "shard/Exception.hpp"
 #include "shard/SourceLocation.hpp"
 #include "shard/String.hpp"
 
@@ -34,7 +32,7 @@ namespace shard::parser {
 /**
  * @brief      Parse error.
  */
-class ParseError : public std::exception
+class ParseError : public Exception
 {
 public:
     // Ctors & Dtors

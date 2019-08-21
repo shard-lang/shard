@@ -32,7 +32,7 @@ namespace shard::ast {
 void VariableDecl::dump(const DumpContext& context) const
 {
     context.header(this, "VariableDecl")
-        << " " << name() << "'" << m_type << "'"
+        << " " << name() << " '" << m_type << "'"
         << "\n";
 
     if (m_initExpr)

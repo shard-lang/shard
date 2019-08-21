@@ -35,7 +35,29 @@ namespace shard::builtin {
  *
  * @return     The result statement.
  */
-ast::StmtPtr parseFunction(parser::Parser& parser);
+ast::StmtPtr parseFunc(parser::Parser& parser);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Parse var statement.
+ *
+ * @param      parser  The parser.
+ *
+ * @return     The result statement.
+ */
+ast::StmtPtr parseVar(parser::Parser& parser);
+
+/* ************************************************************************* */
+
+/**
+ * @brief      Parse const statement.
+ *
+ * @param      parser  The parser.
+ *
+ * @return     The result statement.
+ */
+ast::StmtPtr parseConst(parser::Parser& parser);
 
 /* ************************************************************************* */
 
