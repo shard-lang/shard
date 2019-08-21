@@ -17,12 +17,28 @@
 // Declaration
 #include "shard/ast/stmt/ReturnStmt.hpp"
 
+// C++
+#include <ostream>
+
+// Shard
+#include "shard/ast/DumpContext.hpp"
+
 /* ************************************************************************* */
 
 namespace shard::ast {
 
 /* ************************************************************************* */
 
+void ReturnStmt::dump(const DumpContext& context) const
+{
+    context.header(this, "ReturnStmt") << "\n";
+
+    if (m_resExpr)
+        m_resExpr->dump(context.child());
 }
+
+/* ************************************************************************* */
+
+} // namespace shard::ast
 
 /* ************************************************************************* */

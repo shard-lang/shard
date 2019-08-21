@@ -776,7 +776,8 @@ private:
     /// Internal iterator
     using Iterator = tokenizer::TokenFilterIterator<
         tokenizer::TokenType::Comment,
-        tokenizer::TokenType::WhiteSpace>;
+        tokenizer::TokenType::WhiteSpace,
+        tokenizer::TokenType::EndOfLine>;
 
 private:
     // Data Members

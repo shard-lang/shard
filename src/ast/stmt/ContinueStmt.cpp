@@ -17,12 +17,25 @@
 // Declaration
 #include "shard/ast/stmt/ContinueStmt.hpp"
 
+// C++
+#include <ostream>
+
+// Shard
+#include "shard/ast/DumpContext.hpp"
+
 /* ************************************************************************* */
 
 namespace shard::ast {
 
 /* ************************************************************************* */
 
+void ContinueStmt::dump(const DumpContext& context) const
+{
+    context.header(this, "ContinueStmt") << "\n";
 }
+
+/* ************************************************************************* */
+
+} // namespace shard::ast
 
 /* ************************************************************************* */

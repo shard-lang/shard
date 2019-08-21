@@ -17,12 +17,25 @@
 // Declaration
 #include "shard/ast/decl/ClassDecl.hpp"
 
+// C++
+#include <ostream>
+
+// Shard
+#include "shard/ast/DumpContext.hpp"
+
 /* ************************************************************************* */
 
 namespace shard::ast {
 
 /* ************************************************************************* */
 
+void ClassDecl::dump(const DumpContext& context) const
+{
+    context.header(this, "ClassDecl") << "\n";
 }
+
+/* ************************************************************************* */
+
+} // namespace shard::ast
 
 /* ************************************************************************* */

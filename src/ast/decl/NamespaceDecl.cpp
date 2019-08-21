@@ -17,12 +17,26 @@
 // Declaration
 #include "shard/ast/decl/NamespaceDecl.hpp"
 
+// C++
+#include <ostream>
+
+// Shard
+#include "shard/ast/DumpContext.hpp"
+
 /* ************************************************************************* */
 
 namespace shard::ast {
 
 /* ************************************************************************* */
 
+void NamespaceDecl::dump(const DumpContext& context) const
+{
+    context.header(this, "NamespaceDecl") << "\n";
+    context.childs(decls());
 }
+
+/* ************************************************************************* */
+
+} // namespace shard::ast
 
 /* ************************************************************************* */

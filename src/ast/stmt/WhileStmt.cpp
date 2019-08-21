@@ -17,12 +17,25 @@
 // Declaration
 #include "shard/ast/stmt/WhileStmt.hpp"
 
+// C++
+#include <ostream>
+
+// Shard
+#include "shard/ast/DumpContext.hpp"
+
 /* ************************************************************************* */
 
 namespace shard::ast {
 
 /* ************************************************************************* */
 
+void WhileStmt::dump(const DumpContext& context) const
+{
+    context.header(this, "WhileStmt") << "\n";
 }
+
+/* ************************************************************************* */
+
+} // namespace shard::ast
 
 /* ************************************************************************* */

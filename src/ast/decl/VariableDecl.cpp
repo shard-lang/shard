@@ -17,12 +17,30 @@
 // Declaration
 #include "shard/ast/decl/VariableDecl.hpp"
 
+// C++
+#include <ostream>
+
+// Shard
+#include "shard/ast/DumpContext.hpp"
+
 /* ************************************************************************* */
 
 namespace shard::ast {
 
 /* ************************************************************************* */
 
+void VariableDecl::dump(const DumpContext& context) const
+{
+    context.header(this, "VariableDecl")
+        << " " << name() << "'" << m_type << "'"
+        << "\n";
+
+    if (m_initExpr)
+        m_initExpr->dump(context.child());
 }
+
+/* ************************************************************************* */
+
+} // namespace shard::ast
 
 /* ************************************************************************* */

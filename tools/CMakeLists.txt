@@ -28,6 +28,10 @@ if (SHARD_BUILD_INTERPRETER)
     add_subdirectory(interpreter)
 endif()
 
+if (SHARD_BUILD_AST)
+    add_subdirectory(astdump)
+endif ()
+
 if (SHARD_BUILD_IR)
     add_subdirectory(irdump)
 endif ()

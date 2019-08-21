@@ -30,6 +30,10 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+class DumpContext;
+
+/* ************************************************************************* */
+
 /**
  * @brief      Declaration access specifier.
  */
@@ -117,6 +121,26 @@ public:
     {
         m_accessSpecifier = spec;
     }
+
+public:
+    // Operations
+
+    /**
+     * @brief      Perform semantic analysis.
+     *
+     * @return     If AST is semantically valid.
+     */
+    virtual bool analyse()
+    {
+        return true;
+    }
+
+    /**
+     * @brief      Dump declaration to stream.
+     *
+     * @param      context  The context.
+     */
+    virtual void dump(const DumpContext& context) const;
 
 protected:
     // Ctors & Dtors

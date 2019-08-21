@@ -17,12 +17,26 @@
 // Declaration
 #include "shard/ast/decl/CompoundDecl.hpp"
 
+// C++
+#include <ostream>
+
+// Shard
+#include "shard/ast/DumpContext.hpp"
+
 /* ************************************************************************* */
 
 namespace shard::ast {
 
 /* ************************************************************************* */
 
+void CompoundDecl::dump(const DumpContext& context) const
+{
+    context.header(this, "CompoundDecl") << "\n";
+    context.childs(decls());
 }
+
+/* ************************************************************************* */
+
+} // namespace shard::ast
 
 /* ************************************************************************* */

@@ -17,12 +17,38 @@
 // Declaration
 #include "shard/ast/decl/FunctionDecl.hpp"
 
+// C++
+#include <ostream>
+
+// Shard
+#include "shard/ast/DumpContext.hpp"
+
 /* ************************************************************************* */
 
 namespace shard::ast {
 
 /* ************************************************************************* */
 
+void FunctionDecl::dump(const DumpContext& context) const
+{
+    context.header(this, "FunctionDecl")
+        << " " << name() << " '(";
+
+    for (size_t i = 0; i < m_parameters.size(); ++i)
+    {
+        if (i > 0)
+            context << ", ";
+
+        context << m_parameters[i]->type();
+    }
+
+    context << ") -> " << m_retType << "'\n";
+
+    m_bodyStmt->dump(context.child());
 }
+
+/* ************************************************************************* */
+
+} // namespace shard::ast
 
 /* ************************************************************************* */

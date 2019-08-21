@@ -62,6 +62,16 @@ public:
     {
         // Nothing to do
     }
+
+public:
+    // Operations
+
+    /**
+     * @brief      Dump declaration to stream.
+     *
+     * @param      context  The context.
+     */
+    void dump(const DumpContext& context) const override;
 };
 
 /* ************************************************************************* */

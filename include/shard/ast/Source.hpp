@@ -18,6 +18,9 @@
 
 /* ************************************************************************* */
 
+// C++
+#include <iosfwd>
+
 // Shard
 #include "shard/ast/Stmt.hpp"
 
@@ -93,6 +96,23 @@ public:
     {
         m_statements.push_back(std::move(stmt));
     }
+
+public:
+    // Operations
+
+    /**
+     * @brief      Perform semantic analysis.
+     *
+     * @return     If AST is semantically valid.
+     */
+    bool analyse();
+
+    /**
+     * @brief      Dump source to stream.
+     *
+     * @param      os    Output stream.
+     */
+    void dump(std::ostream& os) const;
 
 private:
     // Data Members

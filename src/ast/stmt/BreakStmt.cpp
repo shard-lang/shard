@@ -17,12 +17,25 @@
 // Declaration
 #include "shard/ast/stmt/BreakStmt.hpp"
 
+// C++
+#include <ostream>
+
+// Shard
+#include "shard/ast/DumpContext.hpp"
+
 /* ************************************************************************* */
 
 namespace shard::ast {
 
 /* ************************************************************************* */
 
+void BreakStmt::dump(const DumpContext& context) const
+{
+    context.header(this, "BreakStmt") << "\n";
 }
+
+/* ************************************************************************* */
+
+} // namespace shard::ast
 
 /* ************************************************************************* */

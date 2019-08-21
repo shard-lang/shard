@@ -17,12 +17,25 @@
 // Declaration
 #include "shard/ast/stmt/IfStmt.hpp"
 
+// C++
+#include <ostream>
+
+// Shard
+#include "shard/ast/DumpContext.hpp"
+
 /* ************************************************************************* */
 
 namespace shard::ast {
 
 /* ************************************************************************* */
 
+void IfStmt::dump(const DumpContext& context) const
+{
+    context.header(this, "IfStmt") << "\n";
 }
+
+/* ************************************************************************* */
+
+} // namespace shard::ast
 
 /* ************************************************************************* */

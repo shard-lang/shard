@@ -27,6 +27,13 @@ endif ()
 
 # Create Shard part
 add_library(shard-ast
+    Node.cpp
+    Expr.cpp
+    Stmt.cpp
+    Decl.cpp
+    Source.cpp
+    DumpContext.cpp
+
     # Decl
     decl/ClassDecl.cpp
     decl/CompoundDecl.cpp
@@ -36,10 +43,28 @@ add_library(shard-ast
 
     # Stmt
     stmt/BreakStmt.cpp
+    stmt/CompoundStmt.cpp
     stmt/ContinueStmt.cpp
+    stmt/DeclStmt.cpp
+    stmt/ExprStmt.cpp
     stmt/IfStmt.cpp
     stmt/ReturnStmt.cpp
     stmt/WhileStmt.cpp
+
+    # Expr
+    expr/BinaryExpr.cpp
+    expr/BoolLiteralExpr.cpp
+    expr/FloatLiteralExpr.cpp
+    expr/FunctionCallExpr.cpp
+    expr/CharLiteralExpr.cpp
+    expr/IdentifierExpr.cpp
+    expr/IntLiteralExpr.cpp
+    expr/MemberAccessExpr.cpp
+    expr/NullLiteralExpr.cpp
+    expr/ParenExpr.cpp
+    expr/StringLiteralExpr.cpp
+    expr/SubscriptExpr.cpp
+    expr/UnaryExpr.cpp
 )
 
 # Include directories
