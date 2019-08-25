@@ -105,11 +105,9 @@ public:
      * @param      container  The container with child nodes.
      *
      * @tparam     Container  The container type.
-     *
-     * @return     *this.
      */
     template<typename Container>
-    DumpContext& childs(Container& container) const noexcept
+    void childs(Container& container) const noexcept
     {
         auto context = child();
 
