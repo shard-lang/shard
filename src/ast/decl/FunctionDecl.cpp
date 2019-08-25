@@ -21,7 +21,9 @@
 #include <ostream>
 
 // Shard
+#include "shard/ast/AnalysisContext.hpp"
 #include "shard/ast/DumpContext.hpp"
+#include "shard/ast/exceptions.hpp"
 
 /* ************************************************************************* */
 
@@ -29,10 +31,30 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+void FunctionDecl::analyse(AnalysisContext& context)
+{
+    auto decl = context.findDecl(name());
+
+    if (decl)
+        throw SemanticError(
+            "redefinition of '" + name() + "'", sourceRange().start());
+
+    // Add declaration
+    context.addDecl(this);
+
+    auto ctx = context.push();
+
+    for (auto& param : m_parameters)
+        ctx.addDecl(param.get());
+
+    m_bodyStmt->analyse(ctx);
+}
+
+/* ************************************************************************* */
+
 void FunctionDecl::dump(const DumpContext& context) const
 {
-    context.header(this, "FunctionDecl")
-        << " " << name() << " '(";
+    context.header(this, "FunctionDecl") << " " << name() << " '(";
 
     for (size_t i = 0; i < m_parameters.size(); ++i)
     {
@@ -43,6 +65,9 @@ void FunctionDecl::dump(const DumpContext& context) const
     }
 
     context << ") -> " << m_retType << "'\n";
+
+    for (const auto& param : m_parameters)
+        param->dump(context.child());
 
     m_bodyStmt->dump(context.child());
 }

@@ -22,6 +22,7 @@
 
 // Shard
 #include "shard/ast/DumpContext.hpp"
+#include "shard/ast/AnalysisContext.hpp"
 
 /* ************************************************************************* */
 
@@ -29,15 +30,13 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-bool Source::analyse()
+void Source::analyse()
 {
-    bool res = true;
+    AnalysisContext context;
 
     // Foreach all statements
     for (const auto& stmt : m_statements)
-        stmt->analyse();
-
-    return res;
+        stmt->analyse(context);
 }
 
 /* ************************************************************************* */

@@ -21,7 +21,9 @@
 #include <ostream>
 
 // Shard
+#include "shard/ast/AnalysisContext.hpp"
 #include "shard/ast/DumpContext.hpp"
+#include "shard/ast/exceptions.hpp"
 
 /* ************************************************************************* */
 
@@ -29,9 +31,27 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+void IdentifierExpr::analyse(AnalysisContext& context)
+{
+    auto decl = context.findDecl(name());
+
+    if (decl == nullptr)
+        throw SemanticError(
+            "Symbol '" + name() + "' not found", sourceRange().start());
+
+    setDecl(decl);
+}
+
+/* ************************************************************************* */
+
 void IdentifierExpr::dump(const DumpContext& context) const
 {
-    context.header(this, "IdentifierExpr") << " " << name() << "\n";
+    context.header(this, "IdentifierExpr") << " " << name();
+
+    if (decl())
+        context << " @" << decl().get();
+
+    context << "\n";
 }
 
 /* ************************************************************************* */

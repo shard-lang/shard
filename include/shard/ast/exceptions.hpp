@@ -14,15 +14,12 @@
 /* along with this program. If not, see <http://www.gnu.org/licenses/>.      */
 /* ************************************************************************* */
 
-// Declaration
-#include "shard/ast/expr/UnaryExpr.hpp"
+#pragma once
 
-// C++
-#include <ostream>
+/* ************************************************************************* */
 
 // Shard
-#include "shard/ast/DumpContext.hpp"
-#include "shard/ast/AnalysisContext.hpp"
+#include "shard/exceptions.hpp"
 
 /* ************************************************************************* */
 
@@ -30,19 +27,26 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-void UnaryExpr::analyse(AnalysisContext& context)
+/**
+ * @brief      Semantic error.
+ */
+class SemanticError : public LocationError
 {
-    // TODO: check operator
+public:
+    // Ctors & Dtors
 
-    m_expr->analyse(context);
-}
-
-/* ************************************************************************* */
-
-void UnaryExpr::dump(const DumpContext& context) const
-{
-    context.header(this, "UnaryExpr") << "\n";
-}
+    /**
+     * @brief      Constructor.
+     *
+     * @param      message   The message.
+     * @param      location  The source code location.
+     */
+    SemanticError(String message, SourceLocation location)
+        : LocationError(std::move(message), std::move(location))
+    {
+        // Nothing to do
+    }
+};
 
 /* ************************************************************************* */
 

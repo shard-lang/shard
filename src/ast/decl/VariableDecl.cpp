@@ -21,11 +21,26 @@
 #include <ostream>
 
 // Shard
+#include "shard/ast/AnalysisContext.hpp"
 #include "shard/ast/DumpContext.hpp"
+#include "shard/ast/exceptions.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
+
+/* ************************************************************************* */
+
+void VariableDecl::analyse(AnalysisContext& context)
+{
+    auto decl = context.findDecl(name());
+
+    if (decl)
+        throw SemanticError(
+            "redefinition of '" + name() + "'", sourceRange().start());
+
+    context.addDecl(this);
+}
 
 /* ************************************************************************* */
 

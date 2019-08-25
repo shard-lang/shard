@@ -22,10 +22,18 @@
 
 // Shard
 #include "shard/ast/DumpContext.hpp"
+#include "shard/ast/AnalysisContext.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
+
+/* ************************************************************************* */
+
+void ExprStmt::analyse(AnalysisContext& context)
+{
+    m_expr->analyse(context);
+}
 
 /* ************************************************************************* */
 

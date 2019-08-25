@@ -57,7 +57,7 @@ const DumpContext& DumpContext::header(
     ViewPtr<const Node> ptr,
     const char* name) const noexcept
 {
-    return prefix() << name << " " << this << " " << ptr->sourceRange();
+    return prefix() << name << " " << ptr.get() << " " << ptr->sourceRange();
 }
 
 /* ************************************************************************* */

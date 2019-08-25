@@ -19,9 +19,7 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/Exception.hpp"
-#include "shard/SourceLocation.hpp"
-#include "shard/String.hpp"
+#include "shard/exceptions.hpp"
 
 /* ************************************************************************* */
 
@@ -32,7 +30,7 @@ namespace shard::parser {
 /**
  * @brief      Parse error.
  */
-class ParseError : public Exception
+class ParseError : public LocationError
 {
 public:
     // Ctors & Dtors
@@ -43,64 +41,11 @@ public:
      * @param      message   The message.
      * @param      location  The source code location.
      */
-    explicit ParseError(String message, SourceLocation location)
-        : m_message(std::move(message))
-        , m_location(location)
-        , m_what(formatMessage(m_message, location))
+    ParseError(String message, SourceLocation location)
+        : LocationError(std::move(message), std::move(location))
     {
         // Nothing to do
     }
-
-public:
-    // Accessors & Mutators
-
-    /**
-     * @brief      Returns error source location.
-     *
-     * @return     The location.
-     */
-    const SourceLocation& location() const noexcept
-    {
-        return m_location;
-    }
-
-    /**
-     * @brief      Returns error message.
-     *
-     * @return     The message.
-     */
-    const char* what() const noexcept
-    {
-        return m_what.c_str();
-    }
-
-public:
-    // Operations
-
-    /**
-     * @brief      Format result error message.
-     *
-     * @param      msg   The message.
-     * @param      loc   The location.
-     *
-     * @return     The error message.
-     */
-    static String formatMessage(const String& msg, const SourceLocation& loc)
-    {
-        return toString(loc.line()) + ":" + toString(loc.column()) + ": " + msg;
-    }
-
-private:
-    // Data Members
-
-    /// Error message.
-    String m_message;
-
-    /// Location where the error comes from.
-    SourceLocation m_location;
-
-    /// The result message.
-    String m_what;
 };
 
 /* ************************************************************************* */

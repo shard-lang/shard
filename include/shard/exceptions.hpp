@@ -19,28 +19,20 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/Assert.hpp"
+#include "shard/Exception.hpp"
+#include "shard/SourceLocation.hpp"
 #include "shard/String.hpp"
-#include "shard/ViewPtr.hpp"
-#include "shard/ast/Expr.hpp"
-#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
-namespace shard::ast {
-
-/* ************************************************************************* */
-
-class Decl;
+namespace shard {
 
 /* ************************************************************************* */
 
 /**
- * @brief      Identifier expression - represents usage of variable, function or
- *             anything that can be declared.
+ * @brief      Error with source location.
  */
-class IdentifierExpr final : public Expr,
-                             public PtrBuilder<IdentifierExpr, String>
+class LocationError : public Exception
 {
 public:
     // Ctors & Dtors
@@ -48,88 +40,71 @@ public:
     /**
      * @brief      Constructor.
      *
-     * @param      name   Identifier name.
-     * @param      range  Location in source.
+     * @param      message   The message.
+     * @param      location  The source code location.
      */
-    explicit IdentifierExpr(String name, SourceRange range = {})
-        : Expr(range)
-        , m_name(std::move(name))
+    LocationError(String message, SourceLocation location)
+        : m_message(std::move(message))
+        , m_location(location)
+        , m_what(formatMessage(m_message, location))
     {
-        SHARD_ASSERT(!m_name.empty());
+        // Nothing to do
     }
 
-    // Public Accessors & Mutators
 public:
+    // Accessors & Mutators
+
     /**
-     * @brief      Returns identifier name.
+     * @brief      Returns error source location.
      *
-     * @return     Identifier name.
+     * @return     The location.
      */
-    const String& name() const noexcept
+    const SourceLocation& location() const noexcept
     {
-        return m_name;
+        return m_location;
     }
 
     /**
-     * @brief      Change identifier name.
+     * @brief      Returns error message.
      *
-     * @param      name  The new identifier name.
+     * @return     The message.
      */
-    void setName(String name)
+    const char* what() const noexcept
     {
-        SHARD_ASSERT(!name.empty());
-        m_name = std::move(name);
-    }
-
-    /**
-     * @brief      Return pointer to identifier declaration.
-     *
-     * @return     Pointer or nullptr.
-     */
-    ViewPtr<Decl> decl() const noexcept
-    {
-        return m_decl;
-    }
-
-    /**
-     * @brief      Set identifier declaration.
-     *
-     * @param      decl  The declaration.
-     */
-    void setDecl(ViewPtr<Decl> decl) noexcept
-    {
-        m_decl = decl;
+        return m_what.c_str();
     }
 
 public:
     // Operations
 
     /**
-     * @brief      Perform semantic analysis.
+     * @brief      Format result error message.
      *
-     * @param      context  The context.
-     */
-    void analyse(AnalysisContext& context) override;
-
-    /**
-     * @brief      Dump declaration to stream.
+     * @param      msg   The message.
+     * @param      loc   The location.
      *
-     * @param      context  The context.
+     * @return     The error message.
      */
-    void dump(const DumpContext& context) const override;
+    static String formatMessage(const String& msg, const SourceLocation& loc)
+    {
+        return toString(loc.line()) + ":" + toString(loc.column()) + ": " + msg;
+    }
 
 private:
     // Data Members
 
-    /// Identifier name.
-    String m_name;
+    /// Error message.
+    String m_message;
 
-    /// Pointer to identifier declaration.
-    ViewPtr<Decl> m_decl;
+    /// Location where the error comes from.
+    SourceLocation m_location;
+
+    /// The result message.
+    String m_what;
 };
 
 /* ************************************************************************* */
 
-} // namespace shard::ast
+} // namespace shard
 
 /* ************************************************************************* */

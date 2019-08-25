@@ -19,11 +19,9 @@
 /* ************************************************************************* */
 
 // Shard
-#include "shard/Assert.hpp"
 #include "shard/String.hpp"
+#include "shard/Map.hpp"
 #include "shard/ViewPtr.hpp"
-#include "shard/ast/Expr.hpp"
-#include "shard/ast/utility.hpp"
 
 /* ************************************************************************* */
 
@@ -36,96 +34,49 @@ class Decl;
 /* ************************************************************************* */
 
 /**
- * @brief      Identifier expression - represents usage of variable, function or
- *             anything that can be declared.
+ * @brief      Helper class for semantic analysis of the AST.
  */
-class IdentifierExpr final : public Expr,
-                             public PtrBuilder<IdentifierExpr, String>
+class AnalysisContext
 {
-public:
-    // Ctors & Dtors
-
-    /**
-     * @brief      Constructor.
-     *
-     * @param      name   Identifier name.
-     * @param      range  Location in source.
-     */
-    explicit IdentifierExpr(String name, SourceRange range = {})
-        : Expr(range)
-        , m_name(std::move(name))
-    {
-        SHARD_ASSERT(!m_name.empty());
-    }
-
-    // Public Accessors & Mutators
-public:
-    /**
-     * @brief      Returns identifier name.
-     *
-     * @return     Identifier name.
-     */
-    const String& name() const noexcept
-    {
-        return m_name;
-    }
-
-    /**
-     * @brief      Change identifier name.
-     *
-     * @param      name  The new identifier name.
-     */
-    void setName(String name)
-    {
-        SHARD_ASSERT(!name.empty());
-        m_name = std::move(name);
-    }
-
-    /**
-     * @brief      Return pointer to identifier declaration.
-     *
-     * @return     Pointer or nullptr.
-     */
-    ViewPtr<Decl> decl() const noexcept
-    {
-        return m_decl;
-    }
-
-    /**
-     * @brief      Set identifier declaration.
-     *
-     * @param      decl  The declaration.
-     */
-    void setDecl(ViewPtr<Decl> decl) noexcept
-    {
-        m_decl = decl;
-    }
-
 public:
     // Operations
 
     /**
-     * @brief      Perform semantic analysis.
+     * @brief      Create child context.
      *
-     * @param      context  The context.
+     * @return     The context.
      */
-    void analyse(AnalysisContext& context) override;
+    AnalysisContext push()
+    {
+        AnalysisContext context;
+        context.m_parent = this;
+        return context;
+    }
 
     /**
-     * @brief      Dump declaration to stream.
+     * @brief      Add new declaration.
      *
-     * @param      context  The context.
+     * @param      decl  The declaration.
      */
-    void dump(const DumpContext& context) const override;
+    void addDecl(ViewPtr<Decl> decl);
+
+    /**
+     * @brief      Try to find declaration by name.
+     *
+     * @param      name  The name.
+     *
+     * @return     Declaration or nullptr.
+     */
+    ViewPtr<Decl> findDecl(const String& name) const;
 
 private:
     // Data Members
 
-    /// Identifier name.
-    String m_name;
+    /// Parent context.
+    ViewPtr<AnalysisContext> m_parent;
 
-    /// Pointer to identifier declaration.
-    ViewPtr<Decl> m_decl;
+    /// Context declarations.
+    Map<String, ViewPtr<Decl>> m_declarations;
 };
 
 /* ************************************************************************* */

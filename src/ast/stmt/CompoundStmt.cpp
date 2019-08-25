@@ -22,10 +22,21 @@
 
 // Shard
 #include "shard/ast/DumpContext.hpp"
+#include "shard/ast/AnalysisContext.hpp"
 
 /* ************************************************************************* */
 
 namespace shard::ast {
+
+/* ************************************************************************* */
+
+void CompoundStmt::analyse(AnalysisContext& context)
+{
+    auto ctx = context.push();
+
+    for (const auto& stmt : m_statements)
+        stmt->analyse(ctx);
+}
 
 /* ************************************************************************* */
 

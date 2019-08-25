@@ -79,6 +79,9 @@ int main(int argc, char** argv)
         // Parse source
         auto ast = parser.parseSource();
 
+        // Semantic analysis
+        ast.analyse();
+
         ast.dump(std::cout);
     }
     catch (const Exception& err)

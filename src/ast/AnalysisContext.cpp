@@ -15,14 +15,10 @@
 /* ************************************************************************* */
 
 // Declaration
-#include "shard/ast/expr/UnaryExpr.hpp"
-
-// C++
-#include <ostream>
+#include "shard/ast/AnalysisContext.hpp"
 
 // Shard
-#include "shard/ast/DumpContext.hpp"
-#include "shard/ast/AnalysisContext.hpp"
+#include "shard/ast/Decl.hpp"
 
 /* ************************************************************************* */
 
@@ -30,18 +26,24 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
-void UnaryExpr::analyse(AnalysisContext& context)
+void AnalysisContext::addDecl(ViewPtr<Decl> decl)
 {
-    // TODO: check operator
-
-    m_expr->analyse(context);
+    m_declarations.emplace(decl->name(), decl);
 }
 
 /* ************************************************************************* */
 
-void UnaryExpr::dump(const DumpContext& context) const
+ViewPtr<Decl> AnalysisContext::findDecl(const String& name) const
 {
-    context.header(this, "UnaryExpr") << "\n";
+    auto it = m_declarations.find(name);
+
+    if (it != m_declarations.end())
+        return it->second;
+
+    if (m_parent)
+        return m_parent->findDecl(name);
+
+    return nullptr;
 }
 
 /* ************************************************************************* */

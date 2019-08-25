@@ -29,6 +29,16 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+void FunctionCallExpr::analyse(AnalysisContext& context)
+{
+    m_expr->analyse(context);
+
+    for (auto& arg : m_arguments)
+        arg->analyse(context);
+}
+
+/* ************************************************************************* */
+
 void FunctionCallExpr::dump(const DumpContext& context) const
 {
     context.header(this, "FunctionCallExpr") << "\n";

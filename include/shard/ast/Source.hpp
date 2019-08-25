@@ -102,10 +102,8 @@ public:
 
     /**
      * @brief      Perform semantic analysis.
-     *
-     * @return     If AST is semantically valid.
      */
-    bool analyse();
+    void analyse();
 
     /**
      * @brief      Dump source to stream.

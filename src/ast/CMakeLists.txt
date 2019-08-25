@@ -33,6 +33,7 @@ add_library(shard-ast
     Decl.cpp
     Source.cpp
     DumpContext.cpp
+    AnalysisContext.cpp
 
     # Decl
     decl/ClassDecl.cpp

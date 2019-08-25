@@ -29,6 +29,16 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+void BinaryExpr::analyse(AnalysisContext& context)
+{
+    // TODO: analyse operator
+
+    m_lhs->analyse(context);
+    m_rhs->analyse(context);
+}
+
+/* ************************************************************************* */
+
 void BinaryExpr::dump(const DumpContext& context) const
 {
     context.header(this, "BinaryExpr") << " '" << m_operator << "' \n";

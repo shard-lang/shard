@@ -29,6 +29,13 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+void ParenExpr::analyse(AnalysisContext& context)
+{
+    m_expr->analyse(context);
+}
+
+/* ************************************************************************* */
+
 void ParenExpr::dump(const DumpContext& context) const
 {
     context.header(this, "ParenExpr") << "\n";

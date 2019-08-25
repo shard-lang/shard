@@ -30,6 +30,7 @@ namespace shard::ast {
 /* ************************************************************************* */
 
 class DumpContext;
+class AnalysisContext;
 
 /* ************************************************************************* */
 
@@ -53,11 +54,11 @@ public:
     /**
      * @brief      Perform semantic analysis.
      *
-     * @return     If AST is semantically valid.
+     * @param      context  The context.
      */
-    virtual bool analyse()
+    virtual void analyse([[maybe_unused]] AnalysisContext& context)
     {
-        return true;
+        // Nothing to do
     }
 
     /**

@@ -216,6 +216,13 @@ public:
     // Operations
 
     /**
+     * @brief      Perform semantic analysis.
+     *
+     * @param      context  The context.
+     */
+    void analyse(AnalysisContext& context) override;
+
+    /**
      * @brief      Dump declaration to stream.
      *
      * @param      context  The context.

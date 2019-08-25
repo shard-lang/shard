@@ -29,6 +29,13 @@ namespace shard::ast {
 
 /* ************************************************************************* */
 
+void DeclStmt::analyse(AnalysisContext& context)
+{
+    m_decl->analyse(context);
+}
+
+/* ************************************************************************* */
+
 void DeclStmt::dump(const DumpContext& context) const
 {
     context.header(this, "DeclStmt") << "\n";
